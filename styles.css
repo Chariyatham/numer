@@ -113,9 +113,11 @@ button { font-family: inherit; cursor: pointer; }
 
 .main {
   padding: 40px 56px 120px;
-  max-width: 1080px;
   width: 100%;
+  min-width: 0;       /* prevent grid blowout from wide tables/code */
 }
+.main > * { max-width: 1400px; margin-left: auto; margin-right: auto; }
+.main .hero { max-width: none; }
 
 @media (max-width: 900px) {
   .app { grid-template-columns: 1fr; }

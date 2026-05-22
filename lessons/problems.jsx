@@ -622,6 +622,315 @@ print(f"x ≈ {ans:.6f} → F(x) = {F(ans):.6f}")`} height={200}/>,
     q: <p>แบบจำลอง population: <M>{`dP/dt = 0.1 P(1 - P/1000)`}</M>, <M>{`P(0) = 50`}</M> — ใช้ Euler step h = 5 ทำนาย P(50) จากนั้น regression fit logistic model จาก data ที่ได้</p>,
     a: <p>นี่เป็นโจทย์ project แบบหลายขั้น — รวม Euler ODE + regression — ดู Mock Exam Set H</p>
   },
+
+  // ============ ระดับ "ข้อสอบจริง" — ยากกว่าแบบฝึกฉบับเต็ม ============
+  { id: "X01", topic: "root", diff: "hard", title: "🔥 EXAM · Newton + พิสูจน์ convergence rate",
+    q: <div>
+      <p>กำหนด <M>{`f(x) = x - \\cos x = 0`}</M></p>
+      <p><b>(a)</b> ใช้ Newton-Raphson หา x โดย <M>{`x_0 = 0.5`}</M> ทำมือ 4 iterations แสดง <M>{`x, f(x), f'(x), x_{\\text{new}}, \\varepsilon_a`}</M> ทุกรอบ</p>
+      <p><b>(b)</b> คำนวณ <em>true error</em> จากค่าจริง (~0.7390851332) เทียบ <em>approximate error</em> ทุก iter — สังเกตว่า quadratic convergence: <M>{`e_{n+1} \\approx C e_n^2`}</M></p>
+      <p><b>(c)</b> เขียน code Python รับ tolerance + พิมพ์ table</p>
+    </div>,
+    a: <div>
+      <p><M>{`f'(x) = 1 + \\sin x`}</M></p>
+      <NumTable headers={["i","x","f(x)","f'(x)","x_new","true err","approx %"]} rows={[
+        [1, 0.5000000, -0.3775826, 1.4794255, 0.7552224, 0.0161372, "33.79"],
+        [2, 0.7552224, 0.0271033, 1.6854230, 0.7391412, 0.0000561, "2.18"],
+        [3, 0.7391412, 0.0000946, 1.6736322, 0.7390851, 0.0000001, "0.0076"],
+        [4, 0.7390851, 0.0000000, 1.6735909, 0.7390851, "≈ 0", "≈ 0"],
+      ]}/>
+      <p>สังเกต e₁ = 0.0161, e₂ = 5.6×10⁻⁵, e₃ = 1×10⁻⁷</p>
+      <p>e₂ / e₁² = 5.6e-5 / (0.0161)² = 0.216 ≈ |f''(x*)/(2 f'(x*))| → ยืนยัน quadratic convergence ✓</p>
+      <PythonRunner code={`import math
+def newton(f, fp, x0, tol=1e-10, max_iter=100):
+    x = x0
+    print(f"{'i':>3} {'x':>14} {'f(x)':>14} {'εₐ %':>10}")
+    for i in range(max_iter):
+        fx, fpx = f(x), fp(x)
+        xn = x - fx/fpx
+        err = abs((xn-x)/xn) if xn else abs(xn-x)
+        print(f"{i+1:3d} {x:14.10f} {fx:14.6e} {err*100:10.6f}")
+        if err < tol: return xn
+        x = xn
+ans = newton(lambda x: x - math.cos(x), lambda x: 1 + math.sin(x), 0.5)
+print(f"\\nคำตอบ x ≈ {ans:.10f}")`} height={200}/>
+    </div>
+  },
+
+  { id: "X02", topic: "linear", diff: "hard", title: "🔥 EXAM · LU + Cholesky + Inverse บน matrix เดียว",
+    q: <div>
+      <p>กำหนด <MB>{`A = \\begin{pmatrix} 9 & 6 & 3 \\\\ 6 & 13 & 8 \\\\ 3 & 8 & 14 \\end{pmatrix},\\ b = \\begin{pmatrix} 12 \\\\ 23 \\\\ 30 \\end{pmatrix}`}</MB></p>
+      <p><b>(a)</b> ตรวจว่า A เป็น SPD — แสดง leading minor det ทุก order</p>
+      <p><b>(b)</b> แตก A ด้วย LU Doolittle — แสดง L, U ทำมือ</p>
+      <p><b>(c)</b> ใช้ LU แก้ Ax = b</p>
+      <p><b>(d)</b> ทำ Cholesky decomposition: A = LLᵀ — แสดง L ทำมือทุก lᵢⱼ</p>
+      <p><b>(e)</b> หา A⁻¹ ด้วย Gauss-Jordan</p>
+      <p><b>(f)</b> เขียน Python ทำทุกข้อ + verify A·x = b</p>
+    </div>,
+    a: <PythonRunner code={`import numpy as np
+A = np.array([[9,6,3],[6,13,8],[3,8,14]], float)
+b = np.array([12,23,30], float)
+
+# (a) leading minors
+m1 = A[0,0]; m2 = np.linalg.det(A[:2,:2]); m3 = np.linalg.det(A)
+print(f"Leading mins: {m1}, {m2}, {m3:.4f} → SPD ✓\\n")
+
+# (b)(c) LU
+from scipy.linalg import lu_factor, lu_solve
+lu_f, piv = lu_factor(A)
+x_lu = lu_solve((lu_f, piv), b)
+print(f"LU x = {x_lu}\\n")
+
+# (d) Cholesky
+L = np.linalg.cholesky(A)
+print("L =\\n", L.round(4))
+y = np.linalg.solve(L, b)
+x_ch = np.linalg.solve(L.T, y)
+print(f"Cholesky x = {x_ch}\\n")
+
+# (e) Inverse
+A_inv = np.linalg.inv(A)
+print("A⁻¹ =\\n", A_inv.round(4))
+x_inv = A_inv @ b
+print(f"\\nA⁻¹·b = {x_inv}")
+
+# Verify
+print(f"\\nVerify A·x = b? {np.allclose(A @ x_lu, b)}")`} height={300}/>
+  },
+
+  { id: "X03", topic: "interp", diff: "hard", title: "🔥 EXAM · Newton DD + Lagrange + Spline เปรียบเทียบ",
+    q: <div>
+      <p>ข้อมูล <em>การวัดอุณหภูมิดาวเทียม</em>:</p>
+      <NumTable headers={["t (วินาที)", "T (°C)"]} rows={[
+        [0, -2.5], [10, 8.3], [20, 24.6], [30, 41.2], [40, 52.8], [50, 49.1]
+      ]}/>
+      <p>(เห็นได้ว่า T เพิ่มแล้วลด — มี peak ระหว่าง t = 40-50)</p>
+      <p><b>(a)</b> สร้างตาราง Newton's Divided Difference ครบทุกคอลัมน์ — แสดงทำมือ</p>
+      <p><b>(b)</b> ใช้ Newton DD degree 5 ประมาณ T(25) และ T(45)</p>
+      <p><b>(c)</b> ใช้ Lagrange degree 5 ประมาณ T(25) — เปรียบเทียบกับ (b) ต้องเท่ากัน (พิสูจน์ทฤษฎี polynomial เอกลักษณ์)</p>
+      <p><b>(d)</b> ใช้ Cubic Spline ประมาณ T(25), T(45) — เทียบกับ Newton</p>
+      <p><b>(e)</b> โจทย์ <b>extrapolate</b>: ใช้พหุนาม degree 5 ประมาณ T(60) — เห็น Runge phenomenon: extrapolate ไกล → error ระเบิด</p>
+      <p><b>(f)</b> Python: plot T(t) จาก 3 methods (Newton, Lagrange, Spline) + ข้อมูลจริง</p>
+    </div>,
+    a: <PythonRunner code={`import numpy as np
+from scipy.interpolate import CubicSpline, lagrange
+
+t = [0, 10, 20, 30, 40, 50]
+T = [-2.5, 8.3, 24.6, 41.2, 52.8, 49.1]
+
+# Newton DD
+def newton_dd(xs, ys):
+    n = len(xs)
+    dd = [list(ys)] + [[0]*(n-j) for j in range(1,n)]
+    coeffs = [ys[0]]
+    for j in range(1, n):
+        for i in range(n-j):
+            dd[j][i] = (dd[j-1][i+1] - dd[j-1][i]) / (xs[i+j] - xs[i])
+        coeffs.append(dd[j][0])
+    return coeffs
+
+def eval_newton(coeffs, xs, x):
+    s = coeffs[0]; term = 1
+    for k in range(1, len(coeffs)):
+        term *= (x - xs[k-1])
+        s += coeffs[k] * term
+    return s
+
+coeffs = newton_dd(t, T)
+print("Newton DD coefficients:", [round(c, 4) for c in coeffs])
+
+for x in [25, 45, 60]:
+    n_val = eval_newton(coeffs, t, x)
+    l_val = lagrange(t, T)(x)
+    cs = CubicSpline(t, T)
+    s_val = cs(x)
+    print(f"t={x}: Newton={n_val:.4f}, Lagrange={l_val:.4f}, Spline={s_val:.4f}")
+
+# (e) Extrapolation warning
+print("\\n⚠ t=60 อยู่นอกข้อมูล — Newton/Lagrange ระเบิด, Spline ดีกว่าแต่ก็ไม่เชื่อ")`} height={300}/>
+  },
+
+  { id: "X04", topic: "regression", diff: "hard", title: "🔥 EXAM · Multiple Linear + Nonlinear (Logistic)",
+    q: <div>
+      <p>ข้อมูลผลทดลอง: ระดับยา (mg) × อายุ (yrs) × เพศ (0/1) → effectiveness (0-100)</p>
+      <NumTable headers={["dose","age","sex","y"]} rows={[
+        [5, 25, 0, 38], [10, 30, 1, 56], [15, 22, 0, 67],
+        [20, 45, 1, 78], [25, 38, 0, 81], [30, 50, 1, 88],
+        [35, 28, 0, 91], [40, 60, 1, 92],
+      ]}/>
+      <p><b>(a)</b> Multiple Linear Regression: <M>{`y = a_0 + a_1·\\text{dose} + a_2·\\text{age} + a_3·\\text{sex}`}</M> — แสดง <M>{`Z^T Z`}</M> และ <M>{`Z^T y`}</M></p>
+      <p><b>(b)</b> คำนวณ R² + residuals — ทำนาย y ที่ (dose=22, age=35, sex=0)</p>
+      <p><b>(c)</b> สังเกตว่า y ขึ้น เร็วตอนแรก แล้วช้าลง → Linearize <M>{`y = 100/(1 + e^{-(a + b\\,\\text{dose})})`}</M> (logistic)</p>
+      <p><b>(d)</b> เปรียบเทียบ RMSE ของ 2 model</p>
+    </div>,
+    a: <PythonRunner code={`import numpy as np, math
+X = np.array([[5,25,0],[10,30,1],[15,22,0],[20,45,1],[25,38,0],[30,50,1],[35,28,0],[40,60,1]], float)
+y = np.array([38,56,67,78,81,88,91,92], float)
+n = len(y)
+
+# (a) Multiple Linear
+Z = np.column_stack([np.ones(n), X])
+ZTZ = Z.T @ Z; ZTy = Z.T @ y
+a = np.linalg.solve(ZTZ, ZTy)
+print(f"Linear: y = {a[0]:.2f} + {a[1]:.3f}·dose + {a[2]:.3f}·age + {a[3]:.2f}·sex")
+y_pred = Z @ a
+ss_res = np.sum((y - y_pred)**2); ss_tot = np.sum((y - y.mean())**2)
+R2 = 1 - ss_res/ss_tot; rmse = math.sqrt(ss_res/n)
+print(f"R² = {R2:.4f}, RMSE = {rmse:.3f}")
+print(f"Predict (22, 35, 0): {a[0] + a[1]*22 + a[2]*35 + a[3]*0:.2f}")
+
+# (c) Logistic (linearize)
+# y = 100/(1+e^-(a+b·dose)) → ln(y/(100-y)) = a + b·dose
+dose = X[:,0]
+Y = np.log(y / (100 - y))
+sx, sy = dose.sum(), Y.sum(); sxx = (dose*dose).sum(); sxy = (dose*Y).sum()
+b = (n*sxy - sx*sy)/(n*sxx - sx*sx); a_log = (sy - b*sx)/n
+print(f"\\nLogistic: y = 100/(1+exp(-({a_log:.3f} + {b:.3f}·dose)))")
+y_log = 100 / (1 + np.exp(-(a_log + b*dose)))
+rmse_log = math.sqrt(np.mean((y - y_log)**2))
+print(f"RMSE_logistic = {rmse_log:.3f}  (vs linear {rmse:.3f})")`} height={300}/>
+  },
+
+  { id: "X05", topic: "integ", diff: "hard", title: "🔥 EXAM · Romberg + Adaptive + Gauss-Legendre บนฟังก์ชันเดียวกัน",
+    q: <div>
+      <p>คำนวณ <M>{`I = \\int_0^2 \\frac{\\sin(10x)}{1 + x^2}\\, dx`}</M> (มี oscillation สูง — ยากสำหรับ method ปกติ)</p>
+      <p><b>(a)</b> Composite Trapezoidal n = 8, 16, 32, 64 — เห็น convergence ช้า</p>
+      <p><b>(b)</b> Composite Simpson n = 8, 16, 32, 64 — เร็วขึ้น</p>
+      <p><b>(c)</b> Romberg ระดับ 5 — เร็วที่สุด</p>
+      <p><b>(d)</b> Gauss-Legendre 2-pt, 3-pt, 4-pt — เห็นว่า 4-pt ก็ยังไม่พอเพราะ <em>oscillation นอกขอบเขต polynomial</em></p>
+      <p><b>(e)</b> วิเคราะห์: ทำไม Gauss แพ้ Romberg ในเคสนี้?</p>
+    </div>,
+    a: <PythonRunner code={`import math
+f = lambda x: math.sin(10*x) / (1 + x*x)
+true_val = 0.34746  # อ้างอิงจาก scipy quad
+
+def trap(f, a, b, n):
+    h = (b-a)/n
+    return h/2 * (f(a) + f(b) + 2*sum(f(a+i*h) for i in range(1,n)))
+def simp(f, a, b, n):
+    h = (b-a)/n
+    s = f(a) + f(b)
+    for i in range(1, n): s += (4 if i%2 else 2)*f(a+i*h)
+    return h/3 * s
+def romberg(f, a, b, k):
+    R = [[0]*k for _ in range(k)]
+    for i in range(k): R[i][0] = trap(f, a, b, 2**i)
+    for j in range(1, k):
+        for i in range(j, k): R[i][j] = (4**j * R[i][j-1] - R[i-1][j-1])/(4**j-1)
+    return R[k-1][k-1]
+
+print(f"True = {true_val:.6f}\\n")
+print("(a)(b) Trap vs Simpson:")
+print(f"{'n':>4} {'Trap':>14} {'err%':>10} {'Simp':>14} {'err%':>10}")
+for n in [8, 16, 32, 64]:
+    t = trap(f, 0, 2, n); s = simp(f, 0, 2, n)
+    print(f"{n:4d} {t:14.6f} {abs(t-true_val)/true_val*100:10.4f} {s:14.6f} {abs(s-true_val)/true_val*100:10.4f}")
+
+print(f"\\n(c) Romberg k=5: {romberg(f, 0, 2, 5):.8f}  err = {abs(romberg(f,0,2,5)-true_val):.2e}")
+
+print("\\n(d) Gauss-Legendre:")
+GL = {2:[(-1/math.sqrt(3),1),(1/math.sqrt(3),1)],
+      3:[(-math.sqrt(3/5),5/9),(0,8/9),(math.sqrt(3/5),5/9)],
+      4:[(-0.861136,0.347855),(-0.339981,0.652145),(0.339981,0.652145),(0.861136,0.347855)]}
+for N, nw in GL.items():
+    mid, half = 1, 1
+    val = half * sum(w*f(mid+half*t) for t,w in nw)
+    print(f"  {N}-pt: {val:.6f}  err = {abs(val-true_val):.4f}")
+
+print("\\n(e) Gauss แพ้เพราะ sin(10x) ไม่ใช่ polynomial degree ต่ำ — มี oscillation 3 รอบใน [0,2]")
+print("    Romberg แม่นกว่าเพราะ Richardson extrapolate ที่หลายจุด → จับ oscillation ได้")`} height={400}/>
+  },
+
+  { id: "X06", topic: "diff", diff: "hard", title: "🔥 EXAM · Richardson + Higher-order Diff + Error analysis",
+    q: <div>
+      <p>กำหนด <M>{`f(x) = e^{-x^2}`}</M> ที่ <M>{`x = 0.5`}</M> ค่าจริง <M>{`f'(0.5) = -1·e^{-0.25}·1 = -0.7788`}</M></p>
+      <p><b>(a)</b> Central diff O(h²) ที่ h = 0.4, 0.2, 0.1, 0.05, 0.01 — รายงาน |error|</p>
+      <p><b>(b)</b> Richardson Extrapolation (h, h/2) ที่ h = 0.4, 0.2 — ลด error ขนาดไหน</p>
+      <p><b>(c)</b> Central 5-point O(h⁴) — เทียบ Richardson</p>
+      <p><b>(d)</b> โจทย์ <em>หา</em> h ที่ดีที่สุด: ลด h ต่อ → ตอนไหน round-off ชนะ truncation</p>
+    </div>,
+    a: <PythonRunner code={`import math
+f = lambda x: math.exp(-x*x)
+true_val = -math.exp(-0.25)   # = -0.7788
+
+def central(f, x, h): return (f(x+h)-f(x-h))/(2*h)
+def central5(f, x, h): return (-f(x+2*h) + 8*f(x+h) - 8*f(x-h) + f(x-2*h))/(12*h)
+def richardson(f, x, h):
+    D1 = central(f, x, h); D2 = central(f, x, h/2)
+    return (4*D2 - D1)/3
+
+print(f"True f'(0.5) = {true_val:.10f}\\n")
+print(f"{'h':>10} {'Central O(h²)':>18} {'|err|':>12} {'Richardson':>14} {'|err|':>12} {'Central5 O(h⁴)':>18} {'|err|':>12}")
+for h in [0.4, 0.2, 0.1, 0.05, 0.01, 0.001, 1e-6, 1e-10]:
+    c = central(f, 0.5, h); r = richardson(f, 0.5, h); c5 = central5(f, 0.5, h)
+    print(f"{h:10.0e} {c:18.12f} {abs(c-true_val):12.2e} {r:14.10f} {abs(r-true_val):12.2e} {c5:18.12f} {abs(c5-true_val):12.2e}")
+
+print("\\nสังเกต: ที่ h=10⁻¹⁰ Central O(h²) error เพิ่ม! round-off > truncation")
+print("Sweet spot: h ≈ 10⁻⁵ สำหรับ O(h²)  |  h ≈ 10⁻³ สำหรับ O(h⁴)")`} height={300}/>
+  },
+
+  { id: "X07", topic: "mixed", diff: "hard", title: "🔥 EXAM PROJECT · Heat Transfer (โจทย์ Project ระดับ Final)",
+    q: <div>
+      <p><b>โจทย์ระดับ project — ใช้ทุก method ที่เรียนมา</b></p>
+      <p>มีท่อความร้อน อุณหภูมิที่จุดต่าง ๆ ตามความยาว x:</p>
+      <NumTable headers={["x (cm)", "T (°C)"]} rows={[
+        [0, 100], [10, 78], [20, 62], [30, 51], [40, 43], [50, 38], [60, 35]
+      ]}/>
+      <p>การถ่ายเทความร้อน <M>{`Q = -k A \\frac{dT}{dx}`}</M> โดย k = 0.5 W/(m·K), A = 0.01 m²</p>
+      <p><b>(1)</b> ใช้ <b>Cubic Spline</b> สร้างฟังก์ชัน T(x) ต่อเนื่อง</p>
+      <p><b>(2)</b> ใช้ <b>Central Difference</b> หา dT/dx ที่ x = 25 — เทียบกับ Spline derivative</p>
+      <p><b>(3)</b> หา <b>Q</b> ที่ x = 25</p>
+      <p><b>(4)</b> ใช้ <b>Composite Simpson</b> คำนวณ <em>average T</em> = <M>{`\\frac{1}{60}\\int_0^{60} T(x)\\,dx`}</M></p>
+      <p><b>(5)</b> หา x ที่ T = 50 ด้วย <b>Bisection</b> บน spline interpolation</p>
+      <p><b>(6)</b> Linearize: ดู T(x) คล้าย exponential decay <M>{`T = T_∞ + (T_0 - T_∞)e^{-bx}`}</M> — fit b ด้วย linearization โดยสมมุติ <M>{`T_∞ = 30`}</M></p>
+      <p><b>(7)</b> เขียน <b>Python script เดียว</b> ทำทุกข้อ</p>
+    </div>,
+    a: <PythonRunner code={`import numpy as np, math
+from scipy.interpolate import CubicSpline
+
+x = np.array([0,10,20,30,40,50,60])
+T = np.array([100,78,62,51,43,38,35])
+k, A = 0.5, 0.01
+
+# (1) Cubic Spline
+cs = CubicSpline(x, T, bc_type='natural')
+
+# (2) Central diff vs Spline derivative
+h = 1.0
+dT_central = (cs(25+h) - cs(25-h)) / (2*h)
+dT_spline = cs(25, 1)
+print(f"(2) dT/dx ที่ x=25: Central = {dT_central:.4f}, Spline = {dT_spline:.4f}")
+
+# (3) Q at x=25
+Q = -k * A * dT_spline
+print(f"(3) Q(25) = {Q:.4f} W")
+
+# (4) Average T via Simpson
+def simp(f, a, b, n):
+    h = (b-a)/n; s = f(a)+f(b)
+    for i in range(1,n): s += (4 if i%2 else 2)*f(a+i*h)
+    return h/3 * s
+avg_T = simp(cs, 0, 60, 30) / 60
+print(f"(4) Average T = {avg_T:.4f} °C")
+
+# (5) Bisection หา T(x) = 50
+def bisect(f, a, b, tol=1e-6):
+    while b-a > tol:
+        m = (a+b)/2
+        if f(a)*f(m) < 0: b = m
+        else: a = m
+    return (a+b)/2
+x_50 = bisect(lambda v: cs(v) - 50, 20, 40)
+print(f"(5) T = 50 ที่ x = {x_50:.4f}")
+
+# (6) Linearize: ln(T - 30) = ln(T0 - 30) - bx
+T_inf = 30
+Y = np.log(T - T_inf)
+n = len(x); sx, sy = x.sum(), Y.sum(); sxx = (x*x).sum(); sxy = (x*Y).sum()
+b = -(n*sxy - sx*sy)/(n*sxx - sx*sx); T0 = math.exp((sy + b*sx)/n) + T_inf
+print(f"(6) Fit: T(x) = {T_inf} + {T0-T_inf:.2f}·exp(-{b:.5f}·x)")
+print(f"    ทำนาย T(25): {T_inf + (T0-T_inf)*math.exp(-b*25):.2f} (vs spline {cs(25):.2f})")`} height={400}/>
+  },
 ];
 
 const TOPICS = [

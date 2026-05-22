@@ -2,6 +2,27 @@
 
 const { useState: useStR, useMemo: useMmR, useRef: useRfR, useEffect: useEfR } = React;
 
+// === Hand-calculation walkthrough — shows EVERY substitution like a professor's solution ===
+function HandWalkthrough({ steps }) {
+  return (
+    <div style={{background:"linear-gradient(135deg, rgba(131,193,103,0.04), rgba(88,196,221,0.04))",
+                 border:"1px solid var(--green-dim)", borderRadius:10, padding:"14px 18px", margin:"14px 0"}}>
+      <div className="kicker" style={{color:"var(--green)", marginBottom:8}}>✍️ เขียนมือทีละขั้น (สไตล์เฉลยอาจารย์)</div>
+      {steps.map((s, i) => (
+        <div key={i} style={{margin:"10px 0", paddingLeft:14, borderLeft:"2px solid var(--green-dim)"}}>
+          <div style={{color:"var(--blue)", fontWeight:600, fontSize:13, marginBottom:4}}>ขั้น {i+1}: {s.title}</div>
+          <div style={{fontFamily:"var(--font-mono)", fontSize:13.5, lineHeight:1.85, whiteSpace:"pre-wrap"}}>{s.body}</div>
+          {s.calc && (
+            <div style={{marginTop:6, padding:"6px 10px", background:"var(--bg-soft)", border:"1px solid var(--blue-dim)", borderRadius:6, fontSize:12, fontFamily:"var(--font-mono)"}}>
+              <span style={{color:"var(--blue)"}}>📟 fx-991CW:</span> {s.calc}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // === Function plot with iteration markers ===
 function FnPlot({ fn, xDomain, yDomain, width = 640, height = 320, markers = [], extras = null }) {
   const padding = { l: 38, r: 12, t: 14, b: 26 };
@@ -577,8 +598,48 @@ print(f"f(root) = {f(best[1]):.6f}")`} height={220}/>
         <p>ตัวอย่าง: หาราก <M>{`f(x) = x^3 - x - 2`}</M> ในช่วง <M>{`[1, 2]`}</M></p>
         <BisectionViz fn={fEx} a0={1} b0={2} root={1.5213797}/>
 
-        <h3>ตัวอย่างทำมือ — หา <M>{`\\sqrt[4]{13}`}</M></h3>
+        <h3>ตัวอย่างทำมือ — หา <M>{`\\sqrt[4]{13}`}</M> · แบบละเอียดยิบ</h3>
         <p>โจทย์จริงจาก root1.pdf: หา <M>{`\\sqrt[4]{13}`}</M> โดยใช้ Bisection ในช่วง <M>{`[1.5, 2.0]`}</M></p>
+
+        <HandWalkthrough steps={[
+          { title: "แปลงโจทย์เป็น f(x) = 0",
+            body: `สมมุติ x = ⁴√13 → ยกกำลัง 4 ทั้งสองข้าง:
+x⁴ = 13
+x⁴ − 13 = 0  ← นี่คือ f(x)
+ดังนั้น  f(x) = x⁴ − 13` },
+          { title: "ตรวจช่วงเริ่มต้น f(a)·f(b) < 0",
+            body: `f(1.5) = (1.5)⁴ − 13 = 5.0625 − 13 = −7.9375  (ลบ)
+f(2.0) = (2.0)⁴ − 13 = 16 − 13 = +3  (บวก)
+f(1.5)·f(2.0) = (−7.9375)(3) = −23.81 < 0  ✓ มีรากในช่วง`,
+            calc: "1.5  x^y  4  −  13  =  → STO A  (ได้ −7.9375 → เก็บใน A)" },
+          { title: "Iteration 1 · หา xm = (a + b)/2",
+            body: `xm₁ = (1.5 + 2.0) / 2 = 3.5 / 2 = 1.75
+f(xm₁) = (1.75)⁴ − 13 = 9.3789 − 13 = −3.6211  (ลบ)
+f(a)·f(m) = (−7.9375)(−3.6211) = +28.74 > 0  → ราก<b>ไม่</b>อยู่ซ้าย → a ← m
+ดังนั้น: a = 1.75, b = 2.0`,
+            calc: "(1.5 + 2) ÷ 2 = → STO C   |   C^4 − 13 = (ดูเครื่องหมาย ลบ) → C → STO A" },
+          { title: "Iteration 2",
+            body: `xm₂ = (1.75 + 2.0) / 2 = 1.875
+f(xm₂) = (1.875)⁴ − 13 = 12.3596 − 13 = −0.6404  (ลบ)
+f(a)·f(m) = (−3.6211)(−0.6404) = +2.32 > 0  → a ← m
+a = 1.875, b = 2.0`,
+            calc: "(A + B) ÷ 2 = → STO C   |   C^4 − 13 =  ลบ → C → STO A" },
+          { title: "Iteration 3",
+            body: `xm₃ = (1.875 + 2.0) / 2 = 1.9375
+f(xm₃) = (1.9375)⁴ − 13 = 14.0991 − 13 = +1.0991  (บวก)
+f(a)·f(m) = (−0.6404)(1.0991) = −0.704 < 0  → ราก<b>อยู่ซ้าย</b> → b ← m
+a = 1.875, b = 1.9375`,
+            calc: "(A + B) ÷ 2 = → STO C   |   C^4 − 13 = บวก → C → STO B" },
+          { title: "Iteration 4 + คำนวณ error",
+            body: `xm₄ = (1.875 + 1.9375) / 2 = 1.90625
+f(xm₄) = (1.90625)⁴ − 13 = 13.2056 − 13 = +0.2056  (บวก)
+b ← m → a = 1.875, b = 1.90625
+εₐ = |xm₄ − xm₃| / |xm₄| = |1.90625 − 1.9375| / 1.90625 = 0.03125 / 1.90625 ≈ 0.0164 = 1.64%`,
+            calc: "(C − D) ÷ C · 100 =  (โดย D คือ xm รอบก่อน)" },
+          { title: "สรุป",
+            body: `หลัง 4 iterations: ⁴√13 ≈ 1.90625  (ค่าจริง = 1.898829...)
+ถ้าต้องการแม่นทศนิยม 6 ตำแหน่ง ต้อง iterate ต่อจนกว่า εₐ < 10⁻⁶ ≈ ~20 รอบ` },
+        ]}/>
         <Callout title="แปลงโจทย์เป็น f(x) = 0">
           ถ้า <M>{`x = \\sqrt[4]{13}`}</M> แล้ว <M>{`x^4 = 13`}</M> ดังนั้น <M>{`f(x) = x^4 - 13 = 0`}</M>
         </Callout>
@@ -801,6 +862,44 @@ print(f"\\n√7 ≈ {ans:.8f}  (จริง = {math.sqrt(7):.8f})")`} height={2
         <p>ลากเส้นสัมผัสที่จุด <M>{`(x_n, f(x_n))`}</M> → เส้นนั้นตัดแกน x ที่ <M>{`x_{n+1}`}</M></p>
         <p>หา <M>{`\\sqrt{7}`}</M> โดยใช้ <M>{`f(x) = x^2 - 7`}</M>, เริ่มที่ <M>{`x_0 = 2.0`}</M>:</p>
         <NewtonViz fn={f7} fprime={fp7} x0={2.0}/>
+
+        <h3>ตัวอย่างทำมือ — หา √7 · ทุก step + กดเครื่อง</h3>
+        <HandWalkthrough steps={[
+          { title: "ตั้งสูตร + derivative",
+            body: `f(x) = x² − 7
+f'(x) = 2x
+Newton: x_{n+1} = x_n − f(x_n) / f'(x_n)
+ค่าเริ่ม: x₀ = 2.0` },
+          { title: "Iteration 1",
+            body: `f(2) = 2² − 7 = 4 − 7 = −3
+f'(2) = 2(2) = 4
+x₁ = 2 − (−3) / 4 = 2 + 0.75 = 2.75
+εₐ = |2.75 − 2| / 2.75 = 0.75/2.75 ≈ 0.2727 = 27.27%`,
+            calc: "ตั้ง: 2 → STO x   |   พิมพ์สูตร: x − (x² − 7) ÷ (2x) =   |   ผลเก็บ → STO x   (กด ↑ = ↑ = ↑ = ซ้ำ)" },
+          { title: "Iteration 2",
+            body: `f(2.75) = 7.5625 − 7 = 0.5625
+f'(2.75) = 5.5
+x₂ = 2.75 − 0.5625/5.5 = 2.75 − 0.1023 = 2.6477
+εₐ = |2.6477 − 2.75| / 2.6477 = 0.1023/2.6477 ≈ 3.86%`,
+            calc: "กดลูกศรขึ้น (↑) เพื่อเรียกสูตรเดิม → = (จะใช้ค่า x ใหม่ที่เก็บไว้)" },
+          { title: "Iteration 3",
+            body: `f(2.6477) = 7.0103 − 7 = 0.0103
+f'(2.6477) = 5.2954
+x₃ = 2.6477 − 0.0103/5.2954 = 2.6477 − 0.00195 = 2.6458
+εₐ ≈ 0.074%`,
+            calc: "↑ = ซ้ำ (ตอนนี้ x = 2.6477 อยู่แล้ว)" },
+          { title: "Iteration 4",
+            body: `f(2.6458) ≈ 0.0000038
+f'(2.6458) = 5.2916
+x₄ = 2.6458 − 0.0000038/5.2916 = 2.6457513
+εₐ ≈ 0.00003%  ✓ หยุดได้`,
+            calc: "↑ = → ดูว่าค่าไม่เปลี่ยนใน 6 ทศนิยมแล้ว = stop" },
+          { title: "สรุป + เปรียบเทียบ",
+            body: `√7 ≈ 2.6457513  (ค่าจริง = 2.6457513110...)
+สังเกต quadratic convergence: error ลด ~ยกกำลัง 2 ทุกรอบ
+27% → 3.86% → 0.074% → 0.00003%
+Newton ใช้ 4 iter ได้ความแม่น 6 ทศนิยม — Bisection ต้องการ ~20 iter!` },
+        ]}/>
 
         <h3>ตัวอย่างทำมือ — root3.pdf</h3>
         <Problem label="โจทย์ root3.pdf · ข้อ 1" solution={
@@ -1104,3 +1203,4 @@ print(f"{nth_root(1265256, 12, 0, 1000):.4f}")  # 3.2249`} height={220}/>
 }
 
 window.RootFindingLesson = RootFindingLesson;
+window.HandWalkthrough = HandWalkthrough;
