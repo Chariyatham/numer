@@ -42,8 +42,8 @@ function getCurrentId() {
 function App() {
   const [current, setCurrent] = useStA(getCurrentId());
   const [fs, setFs] = useStA(() => {
-    const saved = localStorage.getItem("numer-fs");
-    return saved ? +saved : 16;
+    const saved = localStorage.getItem("numer-fs-v2");
+    return saved ? +saved : 18;
   });
   const [sidebarOpen, setSidebarOpen] = useStA(false);
   const [doneMap, setDoneMap] = useStA(() => window.getLessonDoneMap ? window.getLessonDoneMap() : {});
@@ -77,7 +77,7 @@ function App() {
 
   useEfA(() => {
     document.documentElement.style.setProperty("--fs-base", fs + "px");
-    localStorage.setItem("numer-fs", fs);
+    localStorage.setItem("numer-fs-v2", fs);
   }, [fs]);
 
   // Save scroll per chapter
@@ -165,9 +165,9 @@ function FontTweaks({ fs, setFs, sidebarOpen, setSidebarOpen }) {
       <button className="close" onClick={() => { setOpen(false); window.parent.postMessage({type:"__edit_mode_dismissed"},"*"); }}>×</button>
       <h5>Tweaks</h5>
       <label>ขนาดตัวอักษร: <b>{fs}px</b></label>
-      <input type="range" min={13} max={22} value={fs} onChange={e => setFs(+e.target.value)} style={{width:"100%"}}/>
+      <input type="range" min={14} max={26} value={fs} onChange={e => setFs(+e.target.value)} style={{width:"100%"}}/>
       <div style={{display:"flex", gap:6, marginTop:8}}>
-        {[14,15,16,18,20].map(v => (
+        {[16,18,20,22,24].map(v => (
           <button key={v} className={"btn small " + (fs === v ? "primary" : "")} onClick={() => setFs(v)}>{v}</button>
         ))}
       </div>

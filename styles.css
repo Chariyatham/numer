@@ -24,7 +24,7 @@
   --font-thai: "IBM Plex Sans Thai", "Inter", system-ui, sans-serif;
   --font-display: "Inter", "IBM Plex Sans Thai", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
-  --fs-base: 16px;
+  --fs-base: 18px;
 }
 
 * { box-sizing: border-box; }
@@ -112,11 +112,11 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 .main {
-  padding: 40px 56px 120px;
+  padding: 40px 48px 120px;
   width: 100%;
   min-width: 0;       /* prevent grid blowout from wide tables/code */
 }
-.main > * { max-width: 1400px; margin-left: auto; margin-right: auto; }
+.main > * { max-width: 1800px; margin-left: auto; margin-right: auto; }
 .main .hero { max-width: none; }
 
 @media (max-width: 900px) {
