@@ -402,6 +402,105 @@ cubic_spline_natural([1,2,3,4], [2,5,10,17])`} height={200}/>
         <MethodQuiz/>
       </Sect>
 
+      <Sect tag="Set K" title="ชุดที่ 11 — Mega Problems (โจทย์ผสมหลายบท ระดับ Project)">
+        <Callout kind="warn" title="โจทย์ระดับ Final Project — ใช้ 2–4 บทใน 1 ข้อ">
+          <p>แต่ละข้อใช้เวลา 30–45 นาทีในห้องสอบ — อาจารย์ชอบออกแนวนี้เพื่อแยกคนที่ <em>เข้าใจ</em> ออกจากคนที่ <em>ท่องสูตร</em></p>
+          <p style={{margin:0, fontSize:13}}>กลยุทธ์: ทำแต่ละ sub-part เป็น "ข้อย่อย" — ถ้าทำ (a) ไม่ออก ข้าม (b) ไม่ได้ ก็ทำต่อด้วยค่า assume ที่สมเหตุสมผล</p>
+        </Callout>
+
+        <Problem label="Mega 1 (40 คะแนน) · เภสัชจลศาสตร์ — Regression × Integration × Differentiation" solution={
+          <div>
+            <p><b>(a) Polynomial Regression order 2:</b> ใช้สูตร normal eqs 3×3 (ใน regression.jsx Sect 2) — ได้ <M>{`a_0 \\approx 5.605,\\; a_1 \\approx 4.900,\\; a_2 \\approx -0.445`}</M></p>
+            <MB>{`C(t) \\approx 5.605 + 4.900\\,t - 0.445\\,t^2`}</MB>
+            <p><b>(b) AUC = ∫₀¹² C(t) dt:</b> ใช้ Composite Simpson n=6 (h=2)</p>
+            <MB>{`\\text{AUC} = \\tfrac{2}{3}\\left[ C(0)+C(12) + 4(C(2)+C(6)+C(10)) + 2(C(4)+C(8)) \\right] \\approx 163.56\\ \\text{mg·hr/L}`}</MB>
+            <p><b>(c) เวลาที่ C สูงสุด:</b> <M>{`\\frac{dC}{dt} = a_1 + 2 a_2 t = 0`}</M></p>
+            <MB>{`t^* = -\\frac{a_1}{2 a_2} = -\\frac{4.900}{2(-0.445)} \\approx 5.50\\ \\text{hr}`}</MB>
+            <p><M>{`C(t^*) \\approx 19.08`}</M> mg/L (max concentration)</p>
+            <p><b>(d) Newton-Raphson บน f(t) = dC/dt:</b> ใช้สูตร <M>{`t_{n+1} = t_n - f(t_n)/f'(t_n)`}</M> — แต่เพราะ f เป็น linear ก็ลู่เข้า 1 รอบ — ตรงกับ (c) เป๊ะ</p>
+          </div>
+        }>
+          <p>วัดความเข้มข้นยา <M>C(t)</M> (mg/L) ที่เวลา <M>t</M> (ชั่วโมง) หลังให้ยา:</p>
+          <NumTable
+            headers={["t (hr)", "0", "1", "2", "4", "6", "8", "10", "12"]}
+            rows={[["C (mg/L)", "0", "12", "18", "22", "18", "12", "7", "4"]]}
+          />
+          <p style={{marginTop:8}}>(a) สร้าง Polynomial Regression order 2 — เขียน normal equations 3×3 และ solve ด้วย Gauss</p>
+          <p>(b) ใช้สมการที่ได้จาก (a) คำนวณ <b>area under curve (AUC)</b> จาก <M>t=0</M> ถึง <M>t=12</M> ด้วย Composite Simpson 1/3 Rule <M>n=6</M></p>
+          <p>(c) หาเวลา <M>t^*</M> ที่ <M>C(t)</M> สูงสุด — ใช้ analytical diff <M>{`dC/dt = 0`}</M></p>
+          <p>(d) ใช้ Newton-Raphson บน <M>{`f(t) = dC/dt`}</M> เริ่มที่ <M>{`t_0 = 4`}</M> → เปรียบเทียบกับคำตอบ (c)</p>
+        </Problem>
+
+        <Problem label="Mega 2 (35 คะแนน) · สะพาน — Cubic Spline × Bisection × Integration" solution={
+          <div>
+            <p><b>(a) Cubic Spline 5 จุด → matrix 16×16:</b> โครงสร้าง (ดู spline.jsx Sect 3) — แก้ด้วย LU/Gauss → ได้ 16 สัมประสิทธิ์ <M>{`a_i, b_i, c_i, d_i`}</M> สำหรับ 4 segments</p>
+            <p><b>(b) Max deflection:</b> ในแต่ละ segment คำนวณ <M>{`f_i'(x) = 3 a_i x^2 + 2 b_i x + c_i`}</M>, set = 0, ใช้ Bisection หา root → ดูว่า <M>|f_i(x^*)|</M> สูงสุดในช่วงไหน</p>
+            <p><b>(c) Total area:</b> ในแต่ละ segment <M>{`\\int_{x_i}^{x_{i+1}} f_i(x)\\,dx = \\tfrac{a_i}{4}x^4 + \\tfrac{b_i}{3}x^3 + \\tfrac{c_i}{2}x^2 + d_i x \\Big|_{x_i}^{x_{i+1}}`}</M> → รวม 4 segments</p>
+            <p><b>(d) Comparison:</b> ใช้ Composite Trapezoidal n=8 บนข้อมูลดิบ (ไม่ผ่าน spline) → ค่าจะต่ำกว่าเล็กน้อยเพราะ trap ตัดมุมโค้ง</p>
+          </div>
+        }>
+          <p>วิศวกรวัด deflection (mm) ของสะพานที่ระยะต่าง ๆ จากปลายหนึ่ง (m):</p>
+          <NumTable
+            headers={["x (m)", "0", "5", "10", "15", "20"]}
+            rows={[["deflection (mm)", "0", "8", "18", "12", "0"]]}
+          />
+          <p style={{marginTop:8}}>(a) สร้าง <b>Natural Cubic Spline</b> ผ่านทุกจุด — เขียน matrix 16×16 และ solve (ใช้ LU Decomposition จะเร็วสุด)</p>
+          <p>(b) หา x ที่ deflection <b>สูงสุด</b> — analytical (diff = 0) ไม่ได้ในแต่ละ segment เพราะเป็นพหุนามกำลัง 3 — ใช้ <b>Bisection</b> บน <M>{`f_i'(x) = 0`}</M> ในแต่ละช่วงที่เป็นไปได้</p>
+          <p>(c) คำนวณ <b>พื้นที่ใต้กราฟ deflection</b> โดย integrate cubic spline ทุก segment แบบ analytical แล้วบวกรวม</p>
+          <p>(d) เปรียบเทียบ (c) กับ Composite Trapezoidal n=8 — แบบไหนแม่นกว่า? อธิบาย</p>
+        </Problem>
+
+        <Problem label="Mega 3 (35 คะแนน) · บรรยากาศ — Newton Forward × Differentiation × Trapezoidal" solution={
+          <div>
+            <p>สังเกตจากตาราง: <M>{`\\Delta T = -32`}</M> คงที่ทุก step → <M>{`\\Delta^2 T = 0`}</M> → ข้อมูลเป็นเส้นตรงเป๊ะ <M>{`T(z) = 288 - 0.0064\\,z`}</M></p>
+            <p><b>(a) Newton Forward at z=7500:</b> h=5000, s = 7500/5000 = 1.5</p>
+            <MB>{`T(7500) = 288 + 1.5(-32) + 0 + 0 + \\ldots = 288 - 48 = 240\\ \\text{K}`}</MB>
+            <p><b>(b) dT/dz at z=10000:</b> ใช้ central O(h²) ที่ index 2:</p>
+            <MB>{`\\left.\\frac{dT}{dz}\\right|_{z=10000} \\approx \\frac{T(15000) - T(5000)}{2(5000)} = \\frac{192 - 256}{10000} = -0.0064\\ \\text{K/m}`}</MB>
+            <p><b>(c) Composite Trapezoidal n=4:</b> h = 5000</p>
+            <MB>{`I = \\tfrac{5000}{2}[288 + 160 + 2(256+224+192)] = 2500 \\times (448 + 1344) = 4{,}480{,}000\\ \\text{m·K}`}</MB>
+            <p><b>(d) Exact:</b> integrate T(z) = 288 − 0.0064z จาก 0 ถึง 20000 → 288(20000) − 0.0064(20000)²/2 = 5,760,000 − 1,280,000 = 4,480,000 — ตรงเป๊ะ! เพราะ Trap แม่นพอดีกับฟังก์ชัน linear</p>
+          </div>
+        }>
+          <p>วัดอุณหภูมิอากาศตามความสูง z:</p>
+          <NumTable
+            headers={["z (m)", "0", "5000", "10000", "15000", "20000"]}
+            rows={[["T (K)", "288", "256", "224", "192", "160"]]}
+          />
+          <p style={{marginTop:8}}>(a) สร้างตาราง Δ-forward 5-point เต็ม → หา T ที่ z = 7500 m ด้วย Newton Forward</p>
+          <p>(b) หา dT/dz ที่ z = 10000 m ด้วย central difference O(h²)</p>
+          <p>(c) คำนวณ ∫₀²⁰⁰⁰⁰ T(z) dz ด้วย Composite Trapezoidal n=4</p>
+          <p>(d) เปรียบเทียบกับค่า exact (ข้อมูลเป็นเส้นตรงเป๊ะ — Δ²T เป็น 0) — Trap แม่นแค่ไหน?</p>
+        </Problem>
+
+        <Problem label="Mega 4 (45 คะแนน) · มลพิษอากาศ — Multiple Linear × Linear Systems × CG" solution={
+          <div>
+            <p><b>(a) Multiple Linear Regression:</b> 4×4 normal equations (ดู regression.jsx Sect 3) — เกิด matrix สมมาตร PD เสมอ (เพราะคือ ZᵀZ)</p>
+            <p><b>(b) Cholesky:</b> เพราะ ZᵀZ สมมาตรและ PD ใช้ Cholesky ได้ตรง ๆ — ไม่ต้อง AᵀA trick</p>
+            <p><b>(c) CG:</b> CG ลู่เข้าใน <M>≤ n = 4</M> iterations (ทฤษฎี) — ใช้สูตรใน conjugate.jsx Sect 7</p>
+            <p><b>(d) เปรียบเทียบ:</b> Cholesky เป็น direct → ได้คำตอบเป๊ะ. CG เป็น iterative → ค่า x ใกล้เป๊ะหลัง 4 รอบ แต่อาจ "ลื่น" จากเลขทศนิยม → ใช้ Cholesky จะแน่นอนกว่า. แต่สำหรับ matrix ใหญ่ (n &gt; 1000) CG จะเร็วกว่า Cholesky เพราะ Cholesky O(n³), CG O(n²·iters)</p>
+          </div>
+        }>
+          <p>วัดมลพิษ PM2.5 (μg/m³) ในเมือง พร้อมตัวแปร x₁ = ความหนาแน่นจราจร, x₂ = อุณหภูมิ (°C), x₃ = ความเร็วลม (m/s):</p>
+          <NumTable
+            headers={["i", "x₁", "x₂", "x₃", "PM2.5"]}
+            rows={[
+              [1, 200, 25, 2.0, 75],
+              [2, 350, 28, 1.5, 95],
+              [3, 150, 22, 3.5, 50],
+              [4, 400, 32, 1.0, 110],
+              [5, 250, 27, 2.5, 70],
+              [6, 300, 30, 1.8, 88],
+              [7, 180, 24, 3.0, 55],
+            ]}
+          />
+          <p style={{marginTop:8}}>(a) สร้าง Multiple Linear Regression <M>{`y = a_0 + a_1 x_1 + a_2 x_2 + a_3 x_3`}</M> — เขียน normal equations 4×4 ครบ ทุก Σ</p>
+          <p>(b) แก้ระบบด้วย <b>Cholesky</b> — ตรวจก่อนว่า ZᵀZ เป็น SPD จริง</p>
+          <p>(c) แก้ระบบเดิมด้วย <b>Conjugate Gradient</b> เริ่มที่ <M>{`x^{(0)} = (0, 0, 0, 0)`}</M> ทำ 4 รอบ — เทียบกับ (b)</p>
+          <p>(d) อภิปราย — ในเชิงทฤษฎี Cholesky กับ CG ต่างกันอย่างไร? เมื่อไหร่ควรใช้แต่ละแบบ?</p>
+        </Problem>
+      </Sect>
+
       <Sect tag="✓" title="กลยุทธ์ทำข้อสอบ Final">
         <Callout kind="good" title="3 ชั่วโมง · เทคนิคบริหารเวลา">
           <ul>

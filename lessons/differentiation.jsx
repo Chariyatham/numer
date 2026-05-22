@@ -97,6 +97,21 @@ function DifferentiationLesson() {
             </tbody>
           </table>
         </Callout>
+
+        <Callout kind="tip" title="fx-991CW · 5-point เก็บ f-values ในตัวแปร A–E">
+          <p>สูตร 5-point เช่น <M>{`f'(x_i) = (-f_{i+2}+8f_{i+1}-8f_{i-1}+f_{i-2})/(12h)`}</M> มีค่าคงที่ <code>−1, 8, 0, −8, 1</code> — เก็บค่า f ในตัวแปรช่วยลดข้อผิดพลาด:</p>
+          <CalcSteps steps={[
+            <span>คำนวณ <M>{`f(x_{i-2})`}</M> → <Key>STO</Key> <Key>A</Key></span>,
+            <span>คำนวณ <M>{`f(x_{i-1})`}</M> → <Key>STO</Key> <Key>B</Key></span>,
+            <span>คำนวณ <M>{`f(x_i)`}</M> → <Key>STO</Key> <Key>C</Key>  (ใช้กับ f'' Central)</span>,
+            <span>คำนวณ <M>{`f(x_{i+1})`}</M> → <Key>STO</Key> <Key>D</Key></span>,
+            <span>คำนวณ <M>{`f(x_{i+2})`}</M> → <Key>STO</Key> <Key>E</Key></span>,
+            <span>ประกอบสูตร: <code>(−E + 8D − 8B + A) ÷ (12h)</code> → กด <Key>=</Key> ได้ <M>f'(x_i)</M> แม่นยำ O(h⁴)</span>,
+            <span>สำหรับ <M>f''</M>: <code>(−E + 16D − 30C + 16B − A) ÷ (12h²)</code></span>,
+          ]}/>
+          <p style={{margin:"6px 0 0", fontSize:13}}>ทริค: ถ้า h เป็น decimal คงที่ → คำนวณ <code>1/(12h)</code> ก่อน → <Key>STO</Key> <Key>F</Key> → ใช้ <code>(−E+8D−8B+A)×F</code></p>
+          <p style={{margin:"4px 0 0", fontSize:12, color:"var(--text-faint)"}}>คนสอบเร็วใช้เทคนิคนี้คำนวณ 5-point ได้ใน 30 วินาที — เร็วกว่าคำนวณทีละสูตรด้วยมือ 3 เท่า</p>
+        </Callout>
       </Sect>
 
       <Sect tag="4" title="fx-991CW · d/dx ในเครื่อง">

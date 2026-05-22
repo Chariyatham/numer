@@ -121,6 +121,28 @@ x = conjugate_gradient(A, b, [0,0,0])
 print(f"\\nคำตอบ x = {x.round(6)}")`} height={300}/>
       </Sect>
 
+      <Sect tag="4.5" title="fx-991CW · ใช้ Matrix mode เช็คคำนวณ A·D และ DᵀAD">
+        <Callout title="CG ต้องคำนวณ matrix-vector หลายครั้งต่อ iter — เครื่องช่วย">
+          <p>ทุกรอบ CG ใช้ค่า 3 ตัวต่อ iteration:</p>
+          <ul style={{margin:"0 0 8px", paddingLeft:18}}>
+            <li><M>{`A D^{(k)}`}</M> (vector ขนาด n) — ใช้ใน λₖ และ αₖ</li>
+            <li><M>{`(D^{(k)})^T A D^{(k)}`}</M> (scalar) — ตัวส่วนของทั้ง λₖ และ αₖ</li>
+            <li><M>{`(D^{(k)})^T R^{(k)}`}</M> หรือ <M>{`(R^{(k+1)})^T A D^{(k)}`}</M> (scalar) — ตัวเศษ</li>
+          </ul>
+          <CalcSteps steps={[
+            <span><Key>HOME</Key> → <Key>Matrix</Key> → <Key>Define Matrix</Key> → <Key>MatA</Key> (เก็บ A, ขนาด n×n)</span>,
+            <span>เก็บ <Key>MatB</Key> = <M>{`D^{(k)}`}</M> เป็น column vector n×1</span>,
+            <span>เก็บ <Key>MatC</Key> = <M>{`R^{(k)}`}</M> เป็น column vector n×1</span>,
+            <span><Key>OPTN</Key> → <Key>Matrix Calc</Key> → พิมพ์ <code>MatA × MatB</code> → ได้ AD (เก็บ <Key>MatD</Key>)</span>,
+            <span>พิมพ์ <code>Trn(MatB) × MatD</code> → ได้ scalar DᵀAD</span>,
+            <span>พิมพ์ <code>Trn(MatB) × MatC</code> → ได้ scalar DᵀR → ตัวเศษ λₖ</span>,
+            <span>กดสูตร <M>{`\\lambda_k = -D^T R / D^T A D`}</M> ใน Calculate mode ทันที</span>,
+          ]}/>
+          <p style={{margin:"6px 0 0", fontSize:13}}>การวน iteration ใช้เวลา ~30s ต่อรอบเมื่อคล่อง — เร็วกว่าคูณ matrix-vector ทีละช่องด้วยมือ</p>
+          <p style={{margin:"4px 0 0", fontSize:12, color:"var(--text-faint)"}}>ระวัง: fx-991CW เก็บ matrix ได้สูงสุด <b>4×4</b> ต่อตัว — โจทย์ CG ในชีท (4×4) พอดี</p>
+        </Callout>
+      </Sect>
+
       <Sect tag="5" title="Residual norm chart · ดู ‖r‖ ลดเป็น quasi-exponential">
         <CGResidualPlot/>
         <Callout kind="tip" title="ทฤษฎี">
@@ -131,6 +153,122 @@ print(f"\\nคำตอบ x = {x.round(6)}")`} height={300}/>
 
       <Sect tag="6" title="Interactive · CG Solver">
         <CGSolver/>
+      </Sect>
+
+      <Sect tag="7" title="พิสูจน์สูตร λₖ และ αₖ (ตามชีท conjugate.pdf ข้อ 3)">
+        <p>ในข้อสอบ Final อาจารย์อาจบังคับให้ <b>พิสูจน์</b> สูตรใน box "CONJUGATE GRADIENT PROCEDURE". สูตรไม่ได้เกิดมาลอย ๆ — มาจาก 2 หลักการเท่านั้น:</p>
+        <ul>
+          <li><b>λₖ</b> = step size → มาจาก minimize <M>{`f(x^{(k)} + \\lambda D^{(k)})`}</M> เทียบ λ</li>
+          <li><b>αₖ</b> = mixing factor → มาจากเงื่อนไข <em>A-conjugacy</em>: <M>{`(D^{(k+1)})^T A\\, D^{(k)} = 0`}</M></li>
+        </ul>
+
+        <Callout kind="warn" title="ระวังเรื่องสัญลักษณ์ — ชีท vs โค้ดสากล">
+          <p>อาจารย์ในชีทใช้สัญลักษณ์ต่างจากตำราต่างประเทศ. ความหมายเหมือนกัน — แค่ตัวอักษรต่างกัน:</p>
+          <NumTable
+            headers={["บทบาท", "ชีทอาจารย์", "ตำราสากล / โค้ดใน Sect 1, 4"]}
+            rows={[
+              ["Step size (ก้าวยาวเท่าไหร่)", "λₖ", "αₖ"],
+              ["Mixing factor (ผสมทิศเก่า)", "αₖ", "βₖ"],
+            ]}
+          />
+          <p style={{margin:"6px 0 0", fontSize:12}}>เพื่อให้พิสูจน์ตรงกับข้อสอบ ใน Sect 7 นี้ใช้ <b>สัญลักษณ์ชีท</b> (λₖ, αₖ)</p>
+        </Callout>
+
+        <h3>พิสูจน์ที่ 1 · สูตร λₖ จาก <M>∂f/∂λ = 0</M></h3>
+        <p>ฟังก์ชันที่ CG ลดลง (จาก Sect 0):</p>
+        <Formula><MB>{`f(x) = \\tfrac{1}{2}\\, x^T A x - b^T x \\quad (A \\text{ สมมาตร})`}</MB></Formula>
+        <p>การ update แต่ละรอบ: <M>{`x^{(k+1)} = x^{(k)} + \\lambda\\, D^{(k)}`}</M>. อยากเลือก λ ที่ทำให้ <M>{`f(x^{(k+1)})`}</M> ต่ำสุด → diff เทียบ λ แล้วเซตเป็น 0</p>
+
+        <window.HandWalkthrough steps={[
+          { title: "Step 1 · เขียน f(x^(k+1)) ในรูป λ",
+            body: `f(x^(k) + λD^(k)) = ½(x^(k) + λD^(k))ᵀ A (x^(k) + λD^(k))
+                   − bᵀ(x^(k) + λD^(k))` },
+          { title: "Step 2 · กระจาย (x + λD)ᵀ A (x + λD)",
+            body: `(x + λD)ᵀ A (x + λD)
+  = xᵀAx  +  xᵀA(λD)  +  (λD)ᵀAx  +  (λD)ᵀA(λD)
+  = xᵀAx  +  2λ · xᵀAD  +  λ² · DᵀAD
+
+ทำไม 2λ·xᵀAD?  เพราะ A สมมาตร → xᵀAD = (xᵀAD)ᵀ = DᵀAᵀx = DᵀAx
+รวม 2 ตัว xᵀAλD + λDᵀAx = 2λ·xᵀAD` },
+          { title: "Step 3 · รวมเข้ากับ −bᵀ(x + λD)",
+            body: `f(x + λD) = ½·xᵀAx  +  λ·xᵀAD  +  ½λ²·DᵀAD
+                  − bᵀx  −  λ·bᵀD` },
+          { title: "Step 4 · diff เทียบ λ",
+            body: `∂f/∂λ = xᵀAD  +  λ·DᵀAD  −  bᵀD
+       = (Ax − b)ᵀ D  +  λ·DᵀAD
+       = Rᵀ D  +  λ·DᵀAD             (กำหนด R = Ax − b = residual)` },
+          { title: "Step 5 · เซต ∂f/∂λ = 0 → ได้ λₖ",
+            body: `Rᵀ D + λ·DᵀAD = 0
+
+     λₖ = −Rᵀ D / (Dᵀ A D)
+
+หรือเขียนในสัญลักษณ์ที่ชีทใช้:
+
+     λₖ = − ⌊D⌋ᵏ {R}ᵏ / ( ⌊D⌋ᵏ [A] {D}ᵏ )    ✓ จบ` },
+        ]}/>
+
+        <h3 style={{marginTop:18}}>พิสูจน์ที่ 2 · สูตร αₖ จากเงื่อนไข A-conjugacy</h3>
+        <p>ทิศใหม่ <M>{`D^{(k+1)}`}</M> ต้อง <em>A-conjugate</em> กับทิศเก่า <M>{`D^{(k)}`}</M> — แปลว่า "ไม่เดินซ้ำทิศเดิม":</p>
+        <Formula><MB>{`(D^{(k+1)})^T \\, A \\, D^{(k)} = 0`}</MB></Formula>
+        <p>นิยามของทิศใหม่: <MB>{`D^{(k+1)} = -R^{(k+1)} + \\alpha_k\\, D^{(k)}`}</MB></p>
+
+        <window.HandWalkthrough steps={[
+          { title: "Step 1 · แทน D^(k+1) ในเงื่อนไข conjugacy",
+            body: `(−R^(k+1) + αₖ D^(k))ᵀ A D^(k) = 0` },
+          { title: "Step 2 · กระจาย transpose ของ sum",
+            body: `−(R^(k+1))ᵀ A D^(k)  +  αₖ (D^(k))ᵀ A D^(k)  =  0` },
+          { title: "Step 3 · แก้หา αₖ",
+            body: `αₖ (D^(k))ᵀ A D^(k) = (R^(k+1))ᵀ A D^(k)
+
+      αₖ = (R^(k+1))ᵀ A D^(k) / ( (D^(k))ᵀ A D^(k) )
+
+แบบสัญลักษณ์ที่ชีทใช้:
+
+      αₖ = ⌊R⌋^(k+1) [A] {D}ᵏ / ( ⌊D⌋ᵏ [A] {D}ᵏ )    ✓ จบ` },
+        ]}/>
+
+        <Callout kind="tip" title="ความหมายเชิงเรขาคณิต (ภาพ contour อยู่ที่ Sect 2 ด้านบน)">
+          <ul style={{margin:0, paddingLeft:18}}>
+            <li><b>λₖ</b> = "เดินลงเขาในทิศ D ไกลเท่าไหร่ก่อนชนทิศตั้งฉาก" — ที่ contour, จุดถัดไปอยู่ ณ ที่ tangent ของ level set ขนานกับ D</li>
+            <li><b>αₖ</b> = ปรับทิศใหม่ให้ <em>A-conjugate</em> กับทิศเก่า → ใน metric ของ A, ทิศใหม่ตั้งฉากกับทิศเก่า → ไม่เดินทับทางเดิม</li>
+            <li>เพราะ A-conjugate กัน → ในมิติ n, CG รับประกันลู่เข้าใน n รอบเป๊ะ (ดู Sect 2: 2×2 → 2 รอบถึงคำตอบ)</li>
+          </ul>
+        </Callout>
+
+        <h3 style={{marginTop:18}}>ตรวจสอบสูตรด้วยตัวเลข — ระบบ 2×2 จาก Sect 2</h3>
+        <p>ระบบเดียวกับ contour: <M>{`A = \\begin{pmatrix}4 & 1 \\\\ 1 & 3\\end{pmatrix}, \\; b = \\begin{pmatrix}1 \\\\ 2\\end{pmatrix}`}</M>, เริ่มที่ <M>{`x^{(0)} = (2, 1)`}</M></p>
+        <PythonRunner code={`import numpy as np
+
+A = np.array([[4,1],[1,3]], float)
+b = np.array([1,2], float)
+x0 = np.array([2,1], float)
+
+R0 = A @ x0 - b           # residual เริ่มต้น
+D0 = -R0                  # ทิศเริ่มต้น = -R⁽⁰⁾
+print(f"R⁽⁰⁾ = {R0}")
+print(f"D⁽⁰⁾ = {D0}")
+
+# พิสูจน์ที่ 1: λ₀ = -Dᵀ R / (Dᵀ A D)
+DTR  = D0 @ R0
+DTAD = D0 @ (A @ D0)
+lam0 = -DTR / DTAD
+print(f"\\nλ₀ = -DᵀR / (DᵀAD) = -({DTR}) / {DTAD} = {lam0:.6f}")
+
+# Update
+x1 = x0 + lam0 * D0
+R1 = A @ x1 - b
+print(f"\\nx⁽¹⁾ = {x1.round(6)}")
+print(f"R⁽¹⁾ = {R1.round(6)}")
+
+# พิสูจน์ที่ 2: α₀ = R⁽¹⁾ᵀ A D⁽⁰⁾ / (D⁽⁰⁾ᵀ A D⁽⁰⁾)
+RTAD = R1 @ (A @ D0)
+alp0 = RTAD / DTAD
+print(f"\\nα₀ = RᵀAD / (DᵀAD) = {RTAD:.6f} / {DTAD} = {alp0:.6f}")
+
+# ตรวจสอบ A-conjugacy ของ D⁽¹⁾
+D1 = -R1 + alp0 * D0
+print(f"\\nD⁽¹⁾ = {D1.round(6)}")
+print(f"D⁽¹⁾ᵀ A D⁽⁰⁾ = {D1 @ (A @ D0):.2e}   (ควรเป็น ~0 — A-conjugate ✓)")`} height={320}/>
       </Sect>
 
       <Sect tag="✸" title="ข้อสอบจำลอง">

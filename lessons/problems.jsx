@@ -931,6 +931,127 @@ b = -(n*sxy - sx*sy)/(n*sxx - sx*sx); T0 = math.exp((sy + b*sx)/n) + T_inf
 print(f"(6) Fit: T(x) = {T_inf} + {T0-T_inf:.2f}·exp(-{b:.5f}·x)")
 print(f"    ทำนาย T(25): {T_inf + (T0-T_inf)*math.exp(-b*25):.2f} (vs spline {cs(25):.2f})")`} height={400}/>
   },
+
+  // ============ PROOF PROBLEMS — อาจารย์ออกในข้อสอบบ่อย ============
+  { id: "P01", topic: "proof", diff: "medium", title: "พิสูจน์สูตร False Position",
+    q: <div>
+      <p>จงพิสูจน์ว่าสูตร False Position:</p>
+      <MB>{`x_m = \\frac{x_l\\,f(x_r) - x_r\\,f(x_l)}{f(x_r) - f(x_l)}`}</MB>
+      <p>มาจากการลากเส้นตรงผ่าน <M>{`(x_l, f(x_l))`}</M> และ <M>{`(x_r, f(x_r))`}</M> แล้วหาจุดที่เส้นนี้ตัดแกน <M>x</M></p>
+    </div>,
+    a: <div>
+      <p><b>ขั้นที่ 1</b> · สมการเส้นตรงผ่าน 2 จุด <M>{`(x_l, f_l)`}</M> และ <M>{`(x_r, f_r)`}</M>:</p>
+      <MB>{`\\frac{y - f_l}{x - x_l} = \\frac{f_r - f_l}{x_r - x_l}`}</MB>
+      <p><b>ขั้นที่ 2</b> · ให้ <M>{`y = 0`}</M> (จุดตัดแกน x = <M>{`x_m`}</M>):</p>
+      <MB>{`\\frac{-f_l}{x_m - x_l} = \\frac{f_r - f_l}{x_r - x_l}`}</MB>
+      <p><b>ขั้นที่ 3</b> · cross multiply:</p>
+      <MB>{`-f_l(x_r - x_l) = (f_r - f_l)(x_m - x_l)`}</MB>
+      <MB>{`x_m - x_l = \\frac{-f_l(x_r - x_l)}{f_r - f_l}`}</MB>
+      <MB>{`x_m = x_l - \\frac{f_l(x_r - x_l)}{f_r - f_l}`}</MB>
+      <p><b>ขั้นที่ 4</b> · จัดรูปอีกแบบ (รวมเป็นเศษเดียว):</p>
+      <MB>{`x_m = \\frac{x_l(f_r - f_l) - f_l(x_r - x_l)}{f_r - f_l} = \\frac{x_l f_r - f_l x_r}{f_r - f_l}`}</MB>
+      <p>หรือเทียบเท่า: <M>{`x_m = \\frac{x_l f(x_r) - x_r f(x_l)}{f(x_r) - f(x_l)}`}</M> ✓</p>
+    </div>
+  },
+
+  { id: "P02", topic: "proof", diff: "easy", title: "พิสูจน์ Newton-Raphson จาก Taylor",
+    q: <div>
+      <p>ใช้ Taylor expansion ลำดับ 1 รอบ <M>{`x_n`}</M>:</p>
+      <MB>{`f(x) \\approx f(x_n) + f'(x_n)(x - x_n)`}</MB>
+      <p>จงหา <M>{`x_{n+1}`}</M> ที่ทำให้ <M>{`f(x_{n+1}) = 0`}</M> — ได้สูตร Newton-Raphson</p>
+    </div>,
+    a: <div>
+      <p>ตั้ง <M>{`f(x_{n+1}) = 0`}</M> ในสูตร Taylor ลำดับ 1:</p>
+      <MB>{`0 \\approx f(x_n) + f'(x_n)(x_{n+1} - x_n)`}</MB>
+      <p>แก้หา <M>{`x_{n+1}`}</M>:</p>
+      <MB>{`f'(x_n)(x_{n+1} - x_n) = -f(x_n)`}</MB>
+      <MB>{`x_{n+1} - x_n = -\\frac{f(x_n)}{f'(x_n)}`}</MB>
+      <MB>{`\\boxed{\\; x_{n+1} = x_n - \\frac{f(x_n)}{f'(x_n)} \\;}`}</MB>
+      <p>เงื่อนไข: <M>{`f'(x_n) \\neq 0`}</M> (มิฉะนั้นวิธีพัง — แทนเจนต์ขนานแกน x)</p>
+    </div>
+  },
+
+  { id: "P03", topic: "proof", diff: "hard", title: "พิสูจน์ CG λₖ (step size)",
+    q: <div>
+      <p>กำหนด <M>{`f(x) = \\tfrac{1}{2} x^T A x - b^T x`}</M> และการ update <M>{`x^{(k+1)} = x^{(k)} + \\lambda D^{(k)}`}</M></p>
+      <p>จงพิสูจน์ว่า λ ที่ทำให้ <M>{`f(x^{(k+1)})`}</M> ต่ำสุดคือ:</p>
+      <MB>{`\\lambda_k = -\\frac{(D^{(k)})^T R^{(k)}}{(D^{(k)})^T A D^{(k)}}, \\quad R^{(k)} = A x^{(k)} - b`}</MB>
+    </div>,
+    a: <div>
+      <p><b>ขั้นที่ 1</b> · แทน <M>{`x^{(k)} + \\lambda D^{(k)}`}</M> ใน f:</p>
+      <MB>{`f(x + \\lambda D) = \\tfrac{1}{2}(x + \\lambda D)^T A (x + \\lambda D) - b^T(x + \\lambda D)`}</MB>
+      <p><b>ขั้นที่ 2</b> · กระจาย (ใช้ A สมมาตร <M>{`x^T A D = D^T A x`}</M>):</p>
+      <MB>{`= \\tfrac{1}{2} x^T A x + \\lambda x^T A D + \\tfrac{1}{2}\\lambda^2 D^T A D - b^T x - \\lambda b^T D`}</MB>
+      <p><b>ขั้นที่ 3</b> · diff เทียบ λ:</p>
+      <MB>{`\\frac{\\partial f}{\\partial \\lambda} = x^T A D + \\lambda D^T A D - b^T D = (Ax - b)^T D + \\lambda D^T A D = R^T D + \\lambda D^T A D`}</MB>
+      <p><b>ขั้นที่ 4</b> · เซต = 0:</p>
+      <MB>{`\\lambda_k = -\\frac{R^T D}{D^T A D} = -\\frac{D^T R}{D^T A D} \\quad \\blacksquare`}</MB>
+    </div>
+  },
+
+  { id: "P04", topic: "proof", diff: "hard", title: "พิสูจน์ CG αₖ (mixing factor)",
+    q: <div>
+      <p>กำหนดทิศใหม่ <M>{`D^{(k+1)} = -R^{(k+1)} + \\alpha_k D^{(k)}`}</M></p>
+      <p>จงพิสูจน์ว่า <M>{`\\alpha_k`}</M> ที่ทำให้ <M>{`D^{(k+1)}`}</M> และ <M>{`D^{(k)}`}</M> <em>A-conjugate</em> กัน (<M>{`(D^{(k+1)})^T A D^{(k)} = 0`}</M>) คือ:</p>
+      <MB>{`\\alpha_k = \\frac{(R^{(k+1)})^T A D^{(k)}}{(D^{(k)})^T A D^{(k)}}`}</MB>
+    </div>,
+    a: <div>
+      <p><b>ขั้นที่ 1</b> · แทน <M>{`D^{(k+1)}`}</M> ในเงื่อนไข conjugacy:</p>
+      <MB>{`(-R^{(k+1)} + \\alpha_k D^{(k)})^T A D^{(k)} = 0`}</MB>
+      <p><b>ขั้นที่ 2</b> · กระจาย:</p>
+      <MB>{`-(R^{(k+1)})^T A D^{(k)} + \\alpha_k (D^{(k)})^T A D^{(k)} = 0`}</MB>
+      <p><b>ขั้นที่ 3</b> · แก้หา αₖ:</p>
+      <MB>{`\\alpha_k = \\frac{(R^{(k+1)})^T A D^{(k)}}{(D^{(k)})^T A D^{(k)}} \\quad \\blacksquare`}</MB>
+      <p>หมายเหตุ: เพราะ <M>A</M> สมมาตรและ PD ตัวส่วน <M>{`D^T A D > 0`}</M> (เว้นกรณี D=0 ที่ระบุได้ว่าลู่เข้าแล้ว) — αₖ มีอยู่จริงและจำกัด</p>
+    </div>
+  },
+
+  { id: "P05", topic: "proof", diff: "hard", title: "พิสูจน์ Simpson's 1/3 จาก Lagrange",
+    q: <div>
+      <p>จงพิสูจน์สูตร Simpson's 1/3:</p>
+      <MB>{`\\int_{x_0}^{x_2} f(x)\\, dx \\approx \\frac{h}{3}\\left[ f(x_0) + 4 f(x_1) + f(x_2) \\right]`}</MB>
+      <p>โดยการ integrate Lagrange Polynomial 2nd-order ผ่าน 3 จุด <M>{`(x_0, f_0),\\, (x_1, f_1),\\, (x_2, f_2)`}</M> ที่ห่างเท่ากัน <M>{`h = x_1 - x_0 = x_2 - x_1`}</M></p>
+    </div>,
+    a: <div>
+      <p><b>ขั้นที่ 1</b> · ใช้พิกัดเลื่อน <M>{`u = x - x_1`}</M> → จุดเป็น <M>{`-h, 0, +h`}</M></p>
+      <p><b>ขั้นที่ 2</b> · Lagrange polynomial 3 จุด:</p>
+      <MB>{`P(u) = f_0 \\cdot \\frac{u(u-h)}{(-h)(-2h)} + f_1 \\cdot \\frac{(u+h)(u-h)}{(h)(-h)} + f_2 \\cdot \\frac{(u+h)\\,u}{(2h)(h)}`}</MB>
+      <p>ลดรูป:</p>
+      <MB>{`P(u) = \\frac{f_0\\,(u^2 - hu)}{2h^2} + \\frac{f_1\\,(h^2 - u^2)}{h^2} + \\frac{f_2\\,(u^2 + hu)}{2h^2}`}</MB>
+      <p><b>ขั้นที่ 3</b> · integrate จาก <M>{`u = -h`}</M> ถึง <M>{`u = h`}</M>:</p>
+      <p>ใช้: <M>{`\\int_{-h}^{h} u^2\\,du = \\tfrac{2h^3}{3}`}</M>, <M>{`\\int_{-h}^{h} hu\\,du = 0`}</M> (odd), <M>{`\\int_{-h}^{h} 1\\,du = 2h`}</M></p>
+      <MB>{`\\int_{-h}^{h} P(u)\\,du = \\frac{f_0}{2h^2}(\\tfrac{2h^3}{3}) + \\frac{f_1}{h^2}(2h^3 - \\tfrac{2h^3}{3}) + \\frac{f_2}{2h^2}(\\tfrac{2h^3}{3})`}</MB>
+      <MB>{`= \\frac{h f_0}{3} + \\frac{4 h f_1}{3} + \\frac{h f_2}{3} = \\frac{h}{3}(f_0 + 4 f_1 + f_2) \\quad \\blacksquare`}</MB>
+    </div>
+  },
+
+  { id: "P06", topic: "proof", diff: "hard", title: "พิสูจน์ A สมมาตร PD → มี Cholesky L (lower triangular)",
+    q: <div>
+      <p>กำหนด <M>{`A \\in \\mathbb{R}^{n \\times n}`}</M> สมมาตรและ positive-definite (SPD)</p>
+      <p>จงพิสูจน์ว่ามี matrix lower-triangular <M>L</M> ที่มี diagonal <em>เป็นบวก</em> และ <M>{`A = L L^T`}</M></p>
+      <p>(แนะนำ: ใช้การ induction บนขนาด n)</p>
+    </div>,
+    a: <div>
+      <p><b>Base case (n = 1):</b> <M>{`A = [a]`}</M> กับ <M>{`a > 0`}</M> (PD) → ตั้ง <M>{`L = [\\sqrt{a}]`}</M>, ได้ <M>{`L L^T = a = A`}</M> ✓</p>
+
+      <p><b>Inductive step:</b> สมมติทุก SPD ขนาด <M>{`(n-1)\\times(n-1)`}</M> มี Cholesky</p>
+      <p>แตก A ของขนาด n×n เป็น block:</p>
+      <MB>{`A = \\begin{pmatrix} a_{11} & v^T \\\\ v & A' \\end{pmatrix}, \\quad v \\in \\mathbb{R}^{n-1}, \\;\\; A' \\in \\mathbb{R}^{(n-1)\\times(n-1)}`}</MB>
+      <p><b>ขั้นที่ 1</b> · ตั้ง <M>{`l_{11} = \\sqrt{a_{11}}`}</M> (ทำได้เพราะ <M>{`a_{11} > 0`}</M> จาก leading-minor PD)</p>
+      <p><b>ขั้นที่ 2</b> · ตั้ง <M>{`l_{21} = v / l_{11}`}</M> ∈ <M>{`\\mathbb{R}^{n-1}`}</M></p>
+      <p><b>ขั้นที่ 3</b> · กำหนด <M>{`A'' = A' - l_{21} l_{21}^T`}</M> (Schur complement)</p>
+      <p>ต้องพิสูจน์ว่า A'' เป็น SPD ขนาด (n-1)×(n-1) → ใช้ inductive hypothesis ได้</p>
+      <ul style={{margin:0, paddingLeft:18}}>
+        <li><b>สมมาตร:</b> <M>{`A''^T = (A')^T - (l_{21} l_{21}^T)^T = A' - l_{21} l_{21}^T = A''`}</M> ✓</li>
+        <li><b>Positive definite:</b> ทุก <M>{`y \\in \\mathbb{R}^{n-1}, y \\neq 0`}</M> ใช้ <M>{`x = (- v^T y / a_{11}, y^T)^T`}</M> ทดสอบ <M>{`x^T A x > 0`}</M> → ลดรูปได้ <M>{`y^T A'' y > 0`}</M></li>
+      </ul>
+      <p><b>ขั้นที่ 4</b> · A'' มี Cholesky <M>{`L'(L')^T = A''`}</M> โดย induction</p>
+      <p><b>ขั้นที่ 5</b> · ประกอบ L ของ A:</p>
+      <MB>{`L = \\begin{pmatrix} l_{11} & 0 \\\\ l_{21} & L' \\end{pmatrix}`}</MB>
+      <p>ตรวจ <M>{`L L^T = A`}</M> โดยการคูณ block — ตรงทุก block ✓ <M>{`\\blacksquare`}</M></p>
+      <p style={{fontSize:13, color:"var(--text-faint)", margin:"6px 0 0"}}>ข้อสังเกต: diagonal ของ L (คือ <M>{`l_{11}, l_{22}, \\ldots`}</M>) เป็นบวกทุกตัว เพราะแต่ละตัวเท่ากับ √(positive number)</p>
+    </div>
+  },
 ];
 
 const TOPICS = [
@@ -944,6 +1065,7 @@ const TOPICS = [
   { id: "integ", label: "Integration" },
   { id: "diff", label: "Differentiation" },
   { id: "mixed", label: "ผสม / Project" },
+  { id: "proof", label: "พิสูจน์สูตร" },
 ];
 const DIFFS = [
   { id: "all", label: "ทุกระดับ", color: "#9aa4b2" },

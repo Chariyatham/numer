@@ -582,6 +582,49 @@ print(f"f(root) = {f(best[1]):.6f}")`} height={220}/>
             <span>กลับมาตั้ง Start = 3.5, End = 3.6, Step = 0.01 → ดูช่วงใหม่ → ตั้ง Step เล็กลงเรื่อย ๆ</span>,
           ]}/>
         </Callout>
+
+        <h3 style={{marginTop:24}}>โปรแกรมตรงสเปคชีท · root1.pdf ข้อ 1 (43x − 180 = 0)</h3>
+        <Callout title="โจทย์ของอาจารย์เป๊ะ (ออกซ้ำใน midterm)">
+          <p>หา root ของ <b>43x − 180 = 0</b> ในช่วง <M>{`0 \\le x \\le 10`}</M></p>
+          <ul style={{margin:0, paddingLeft:18}}>
+            <li><b>Phase 1:</b> scan ทีละ 1 → หาช่วงที่ <M>{`f(x_i)\\cdot f(x_{i+1}) < 0`}</M></li>
+            <li><b>Phase 2:</b> scan ทีละ 0.000001 ในช่วงนั้น → หา x ที่ <M>{`|f(x)|`}</M> น้อยที่สุด</li>
+            <li>คำตอบที่ควรได้: <M>{`x = 180/43 \\approx 4.186047`}</M></li>
+          </ul>
+          <p style={{margin:"6px 0 0", fontSize:12, color:"var(--text-faint)"}}>⚠ เป็นโจทย์ที่ <b>ชีท root1.pdf บังคับ</b> — Phase 2 จะวน ~186,000 รอบ (รอ ~2 วินาที)</p>
+        </Callout>
+        <PythonRunner code={`# โจทย์ root1.pdf ข้อ 1 — Modified Graphical Method
+# สมการ: 43x - 180 = 0  →  root จริง = 180/43 ≈ 4.186047
+
+def f(x):
+    return 43*x - 180
+
+xl, xr = 0, 10
+
+# === Phase 1: scan ทีละ 1 — หาช่วงที่ f เปลี่ยนเครื่องหมาย ===
+y, z = None, None
+x = xl
+while x <= xr:
+    if f(x) * f(x + 1) <= 0:
+        y, z = x, x + 1
+        break
+    x += 1
+print(f"Phase 1 (step=1):    root อยู่ในช่วง [{y}, {z}]")
+
+# === Phase 2: scan ทีละ 0.000001 ในช่วง [y, z] ===
+step = 0.000001
+x = y
+best_x, best_abs = x, abs(f(x))
+while x <= z:
+    if abs(f(x)) < best_abs:
+        best_x, best_abs = x, abs(f(x))
+    if f(x) * f(x + step) <= 0:     # หยุดทันทีเมื่อข้ามแกน
+        break
+    x += step
+
+print(f"Phase 2 (step=1e-6): root ≈ {best_x:.6f}")
+print(f"                     f(root) = {f(best_x):.2e}")
+print(f"\\nตรวจ: 180/43 = {180/43:.6f}")`} height={300}/>
       </Sect>
 
       {/* ============= METHOD 2: BISECTION ============= */}
@@ -719,6 +762,49 @@ print(f"\\n4√13 ≈ {root:.6f}")`} height={280}/>
             </ul>
           </Callout>
         </div>
+
+        <h3 style={{marginTop:24}}>โปรแกรมที่อาจารย์ขอ — โจทย์ root1.pdf ข้อ 3</h3>
+        <Callout title="สเปคโจทย์ (ออกข้อสอบแน่)">
+          <p style={{margin:"0 0 8px"}}>
+            <b>โปรแกรมถอดรากที่ n ของจำนวนเต็ม x</b> — ใช้ Bisection หา t ที่ <M>{`t^n = x`}</M>
+          </p>
+          <ul style={{margin:0, paddingLeft:18}}>
+            <li>บรรทัดที่ 1: <code>x n</code> &nbsp;(<M>{`2 \\le n \\le x \\le 2{,}000{,}000`}</M>)</li>
+            <li>บรรทัดที่ 2: <code>xl xr</code> &nbsp;ขอบเขตเริ่มต้น (<M>{`0 \\le xl, xr \\le 1{,}000{,}000`}</M>)</li>
+            <li>Output: t ที่ <b>ทศนิยม 4 ตำแหน่ง</b></li>
+            <li>เทส: <code>38 2</code> → <code>6.1644</code> &nbsp;·&nbsp; <code>1265256 12</code> → <code>3.2249</code></li>
+          </ul>
+          <p style={{margin:"8px 0 0", fontSize:12, color:"var(--text-faint)"}}>⚠ โจทย์โปรแกรมที่ <b>ชีท root1.pdf บังคับ</b> — แนวสอบยอดนิยม</p>
+        </Callout>
+        <PythonRunner code={`# โจทย์ root1.pdf ข้อ 3 — ถอดรากที่ n ด้วย Bisection
+# Input: บรรทัดที่ 1 = "x n", บรรทัดที่ 2 = "xl xr"
+# Output: ผลลัพธ์ t ที่ t^n = x (ทศนิยม 4 ตำแหน่ง)
+
+# ── สลับเทสได้ที่นี่ (ลบ # หน้าบรรทัดที่อยากใช้) ──
+INPUT = "38 2\\n6 7"            # เคส 1 → ควรได้ 6.1644
+# INPUT = "1265256 12\\n3 4"    # เคส 2 → ควรได้ 3.2249
+# ────────────────────────────────────────────────
+
+lines = INPUT.strip().split("\\n")
+x, n = map(int, lines[0].split())
+xl, xr = map(float, lines[1].split())
+
+f = lambda t: t**n - x
+assert f(xl) * f(xr) <= 0, "f(xl) และ f(xr) ต้องเครื่องหมายตรงข้าม"
+
+tol = 1e-7         # "ไม่เปลี่ยน 6 ทศนิยม" → ใช้ 1e-7 เผื่อ
+prev = None
+iters = 0
+for _ in range(500):
+    m = (xl + xr) / 2
+    iters += 1
+    if prev is not None and abs(m - prev) < tol:
+        break
+    if f(xl) * f(m) < 0: xr = m
+    else:                xl = m
+    prev = m
+
+print(f"{m:.4f}    (Bisection · {iters} iterations)")`} height={300}/>
       </Sect>
 
       {/* ============= METHOD 3: FALSE POSITION ============= */}
@@ -771,6 +857,50 @@ print(f"\\n4√13 ≈ {ans:.6f}")`} height={240}/>
 
         <h3>Interactive</h3>
         <RootSolver method="falsepos"/>
+
+        <h3 style={{marginTop:24}}>โปรแกรมที่อาจารย์ขอ — โจทย์ root1.pdf ข้อ 6</h3>
+        <Callout title="สเปคโจทย์ (ออกข้อสอบแน่)">
+          <p style={{margin:"0 0 8px"}}>
+            <b>โปรแกรมถอดรากที่ n ของจำนวนเต็ม x</b> — ใช้ False Position หา t ที่ <M>{`t^n = x`}</M>
+          </p>
+          <ul style={{margin:0, paddingLeft:18}}>
+            <li>บรรทัดที่ 1: <code>x n</code> &nbsp;(<M>{`2 \\le n \\le x \\le 2{,}000{,}000`}</M>)</li>
+            <li>บรรทัดที่ 2: <code>xl xr</code> &nbsp;ขอบเขตเริ่มต้น (<M>{`0 \\le xl, xr \\le 1{,}000{,}000`}</M>)</li>
+            <li>Output: t ที่ <b>ทศนิยม 4 ตำแหน่ง</b></li>
+            <li>เทส: <code>38 2</code> → <code>6.1644</code> &nbsp;·&nbsp; <code>1265256 12</code> → <code>3.2249</code></li>
+          </ul>
+          <p style={{margin:"8px 0 0", fontSize:12, color:"var(--text-faint)"}}>⚠ โจทย์โปรแกรมที่ <b>ชีท root1.pdf บังคับ</b> — แนวสอบยอดนิยม (คู่กับ Bisection)</p>
+        </Callout>
+        <PythonRunner code={`# โจทย์ root1.pdf ข้อ 6 — ถอดรากที่ n ด้วย False Position
+# Input: บรรทัดที่ 1 = "x n", บรรทัดที่ 2 = "xl xr"
+# Output: ผลลัพธ์ t ที่ t^n = x (ทศนิยม 4 ตำแหน่ง)
+
+# ── สลับเทสได้ที่นี่ (ลบ # หน้าบรรทัดที่อยากใช้) ──
+INPUT = "38 2\\n6 7"            # เคส 1 → ควรได้ 6.1644
+# INPUT = "1265256 12\\n3 4"    # เคส 2 → ควรได้ 3.2249
+# ────────────────────────────────────────────────
+
+lines = INPUT.strip().split("\\n")
+x, n = map(int, lines[0].split())
+xl, xr = map(float, lines[1].split())
+
+f = lambda t: t**n - x
+assert f(xl) * f(xr) <= 0, "f(xl) และ f(xr) ต้องเครื่องหมายตรงข้าม"
+
+tol = 1e-7
+prev = None
+iters = 0
+for _ in range(2000):
+    fl, fr = f(xl), f(xr)
+    m = (xl * fr - xr * fl) / (fr - fl)
+    iters += 1
+    if prev is not None and abs(m - prev) < tol:
+        break
+    if fl * f(m) < 0: xr = m
+    else:             xl = m
+    prev = m
+
+print(f"{m:.4f}    (False Position · {iters} iterations)")`} height={300}/>
       </Sect>
 
       {/* ============= METHOD 4: ONE-POINT ============= */}
@@ -793,6 +923,45 @@ print(f"\\n4√13 ≈ {ans:.6f}")`} height={240}/>
           ที่จุดราก <M>{`x^*`}</M>: ถ้า <M>{`|g'(x^*)| < 1`}</M> → ลู่เข้า, ถ้า <M>{`|g'(x^*)| > 1`}</M> → ลู่ออก
         </Callout>
 
+        <h3 style={{marginTop:20}}>ตัวอย่างเตือน · เลือก g(x) ผิด → ลู่ออก (ตามชีท Mid p.4)</h3>
+        <Callout kind="danger" title="กรณีคลาสสิก — g(x) = 7/x กับ x₀ = 1 → oscillate ไม่จบ">
+          <p>เริ่มจาก <M>{`x^2 = 7`}</M> ถ้าจัดเป็น <M>{`x = 7/x`}</M> แล้วเริ่มที่ <M>{`x_0 = 1`}</M>:</p>
+          <NumTable
+            headers={["i", "xᵢ", "xᵢ₊₁ = 7/xᵢ", "ε% = |Δx/xᵢ₊₁|"]}
+            rows={[
+              ["0", "1", "7 / 1 = 7",      "—"],
+              ["1", "7", "7 / 7 = 1",      "|1−7|/1 = 600%"],
+              ["2", "1", "7 / 1 = 7",      "|7−1|/7 ≈ 85.7%"],
+              ["3", "7", "7 / 7 = 1",      "|1−7|/1 = 600%"],
+              ["4", "1", "7 / 1 = 7",      "|7−1|/7 ≈ 85.7%"],
+              ["…", "…", "วน 7 ↔ 1 ไปเรื่อย ๆ", "ไม่ลด"],
+            ]}
+          />
+          <p style={{margin:"10px 0 4px"}}><b>วิเคราะห์ทำไม:</b></p>
+          <p style={{margin:"0 0 8px"}}><M>{`g(x) = 7/x \\Rightarrow g'(x) = -7/x^2`}</M>. ที่จุดราก <M>{`x^* = \\sqrt{7} \\approx 2.6458`}</M>:</p>
+          <MB>{`|g'(\\sqrt{7})| = |-7/7| = 1 \\;\\;\\not<\\; 1 \\quad \\Rightarrow \\quad \\text{ไม่ลู่เข้า}`}</MB>
+          <p style={{margin:"8px 0 0"}}>เนื่องจาก <M>{`|g'(x^*)| = 1`}</M> พอดี — มัน <b>oscillate</b> (สลับค่าไปกลับ) ไม่ลู่และไม่ระเบิด</p>
+          <p style={{margin:"8px 0 0", fontSize:13, color:"var(--text-faint)"}}>ทางออก: เลือก g(x) ใหม่ที่ <M>{`|g'(x^*)| < 1`}</M> เช่นรูป C: <M>{`g(x) = (x + 7/x)/2`}</M> มี <M>{`g'(\\sqrt{7}) = 0`}</M> → ลู่เข้าเร็วมาก (quadratic — เพราะนี่คือ Newton-Raphson นั่นเอง)</p>
+        </Callout>
+        <PythonRunner code={`# One-point Iteration · เปรียบเทียบ g(x) ที่ดีกับที่ลู่ออก
+# จากชีท Mid p.4 — เลือก g(x) ผิดทำให้คำตอบวนไม่หยุด
+
+def one_point(g, x0, label, max_iter=8):
+    print(f"=== {label} ===")
+    x = x0
+    for i in range(max_iter):
+        xn = g(x)
+        err = abs((xn - x) / xn) * 100 if xn != 0 else float('inf')
+        print(f"  i={i+1}: x={x:8.4f} → g(x)={xn:8.4f}   ε%={err:8.4f}")
+        x = xn
+    print()
+
+# รูป A — ลู่ออก (oscillate)
+one_point(lambda x: 7/x,            x0=1.0, label="A: g(x) = 7/x  (x₀=1)  → oscillate")
+# รูป C — ลู่เข้าเร็ว (quadratic)
+one_point(lambda x: 0.5*(x + 7/x),  x0=1.0, label="C: g(x) = (x + 7/x)/2  → ลู่เข้าเร็ว")`} height={260}/>
+
+        <h3 style={{marginTop:18}}>Python · One-point หา √7 (รูป C — ลู่เข้า)</h3>
         <PythonRunner code={`# One-point Iteration หา √7
 import math
 
@@ -1099,6 +1268,32 @@ for n in range(0, 6):
           <p>Error ของ Tₙ(x) เขียนได้:</p>
           <MB>{`R_n(x) = \\frac{f^{(n+1)}(\\xi)}{(n+1)!}(x-x_0)^{n+1}, \\quad \\xi \\in (x_0, x)`}</MB>
           <p style={{margin:0}}>ใช้หา upper bound ของ error โดยแทน <M>\xi</M> ที่ทำให้ <M>{`|f^{(n+1)}(\\xi)|`}</M> มากสุดในช่วง</p>
+        </Callout>
+
+        <Callout kind="tip" title="fx-991CW · เก็บ derivatives ใน A–D แล้วประกอบสูตร">
+          <p>วิธีเร็วในห้องสอบ — สำหรับ Taylor n=3 รอบ <M>{`x_0`}</M>:</p>
+          <CalcSteps steps={[
+            <span>คำนวณ <M>{`f(x_0)`}</M> → <Key>STO</Key> <Key>A</Key></span>,
+            <span>คำนวณ <M>{`f'(x_0)`}</M> (ใช้ <code>d/dx</code> ในเครื่อง) → <Key>STO</Key> <Key>B</Key></span>,
+            <span>คำนวณ <M>{`f''(x_0)`}</M> (ทำ d/dx ของ d/dx หรือคำนวณด้วยสูตรเอง) → <Key>STO</Key> <Key>C</Key></span>,
+            <span>คำนวณ <M>{`f'''(x_0)`}</M> → <Key>STO</Key> <Key>D</Key></span>,
+            <span>ประกอบสูตร: <code>A + B(X−x₀) + C÷2·(X−x₀)² + D÷6·(X−x₀)³</code></span>,
+            <span>กำหนด <Key>X</Key> = ค่า x ที่อยากหา → กด <Key>=</Key> → ได้ T₃(x) ทันที</span>,
+          ]}/>
+          <p style={{margin:"8px 0 4px"}}><b>ตัวอย่างกับ <M>{`f(x) = \\ln x`}</M>, <M>{`x_0 = 2`}</M>:</b></p>
+          <NumTable
+            headers={["ตัวแปร", "ค่า", "วิธีคิด"]}
+            rows={[
+              ["A = f(2)",     "ln 2 ≈ 0.6931",  "พิมพ์ ln(2)"],
+              ["B = f'(2)",    "1/2 = 0.5",      "f'(x) = 1/x"],
+              ["C = f''(2)",   "-1/4 = -0.25",   "f''(x) = -1/x²"],
+              ["D = f'''(2)",  "2/8 = 0.25",     "f'''(x) = 2/x³"],
+            ]}
+          />
+          <p style={{margin:"8px 0 0"}}>ที่ <M>x = 4</M>, <M>{`(x - x_0) = 2`}</M>:</p>
+          <MB>{`T_3(4) = 0.6931 + 0.5(2) + \\tfrac{-0.25}{2}(4) + \\tfrac{0.25}{6}(8) = 0.6931 + 1 - 0.5 + 0.3333 \\approx 1.5264`}</MB>
+          <p style={{margin:"4px 0 0", fontSize:13}}>(เทียบ <M>{`\\ln 4 \\approx 1.3863`}</M> — error ~10% เพราะ <M>{`|x-x_0|=2`}</M> ใหญ่ ใกล้รัศมีลู่เข้า)</p>
+          <p style={{margin:"6px 0 0", fontSize:12, color:"var(--text-faint)"}}>⚠ เครื่องคิดเลข fx-991CW ทำ d/dx ได้ลำดับเดียว (Central diff) — สำหรับ <M>f''</M> ขึ้นไปต้องคำนวณสูตรเอง หรือใช้ <code>d/dx(d/dx(f(x))|x=x₀)|x=x₀</code> ซ้อนกัน (ช้ากว่า แต่ทำได้)</p>
         </Callout>
       </Sect>
 

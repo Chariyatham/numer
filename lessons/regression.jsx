@@ -156,13 +156,115 @@ print(f"y({x_test}) ≈ {y_pred:.4f}")`} height={240}/>
           <MB>{`Z = \\begin{pmatrix} 1 & x_{11} & x_{21} & x_{31} \\\\ 1 & x_{12} & x_{22} & x_{32} \\\\ \\vdots & \\vdots & \\vdots & \\vdots \\end{pmatrix}, \\quad a = (Z^T Z)^{-1} Z^T y`}</MB>
         </Callout>
 
-        <h3>ตัวอย่างจาก MultipleLinear_Integration.pdf</h3>
-        <p>ข้อมูล:</p>
+        <h3>ตัวอย่างเต็มจากชีท MultipleLinear_Integration.pdf · 7 แถว</h3>
         <NumTable
-          headers={["x₁","x₂","x₃","y"]}
-          rows={[[1,0,1,4],[0,1,3,-5],[2,4,1,3],[3,2,5,-8],[1,5,3,-1]]}
+          headers={["i","x₁","x₂","x₃","y"]}
+          rows={[
+            [1,1,0,1,4],
+            [2,0,1,3,-5],
+            [3,2,4,1,-6],
+            [4,3,2,2,0],
+            [5,4,1,5,-1],
+            [6,2,3,3,-7],
+            [7,1,6,4,-20],
+          ]}
         />
-        <p>สร้าง Z<sup>T</sup>Z และ Z<sup>T</sup>y → แก้ระบบ 4×4 → ได้ <M>{`a_0, a_1, a_2, a_3`}</M></p>
+
+        <window.HandWalkthrough steps={[
+          { title: "Step 1 · นับ n และรวม Σx_k, Σy",
+            body: `n = 7
+
+Σx₁ = 1 + 0 + 2 + 3 + 4 + 2 + 1 = 13
+Σx₂ = 0 + 1 + 4 + 2 + 1 + 3 + 6 = 17
+Σx₃ = 1 + 3 + 1 + 2 + 5 + 3 + 4 = 19
+Σy  = 4 + (-5) + (-6) + 0 + (-1) + (-7) + (-20) = -35` },
+          { title: "Step 2 · กำลังสอง Σx_k²",
+            body: `Σx₁² = 1² + 0² + 2² + 3² + 4² + 2² + 1²
+     = 1 + 0 + 4 + 9 + 16 + 4 + 1 = 35
+
+Σx₂² = 0² + 1² + 4² + 2² + 1² + 3² + 6²
+     = 0 + 1 + 16 + 4 + 1 + 9 + 36 = 67
+
+Σx₃² = 1² + 3² + 1² + 2² + 5² + 3² + 4²
+     = 1 + 9 + 1 + 4 + 25 + 9 + 16 = 65` },
+          { title: "Step 3 · cross products Σx_i·x_j",
+            body: `Σx₁x₂ = 1·0 + 0·1 + 2·4 + 3·2 + 4·1 + 2·3 + 1·6
+      = 0 + 0 + 8 + 6 + 4 + 6 + 6 = 30
+
+Σx₁x₃ = 1·1 + 0·3 + 2·1 + 3·2 + 4·5 + 2·3 + 1·4
+      = 1 + 0 + 2 + 6 + 20 + 6 + 4 = 39
+
+Σx₂x₃ = 0·1 + 1·3 + 4·1 + 2·2 + 1·5 + 3·3 + 6·4
+      = 0 + 3 + 4 + 4 + 5 + 9 + 24 = 49` },
+          { title: "Step 4 · ผลคูณ Σx_k·y",
+            body: `Σx₁y = 1·4 + 0·(-5) + 2·(-6) + 3·0 + 4·(-1) + 2·(-7) + 1·(-20)
+     = 4 + 0 - 12 + 0 - 4 - 14 - 20 = -46
+
+Σx₂y = 0·4 + 1·(-5) + 4·(-6) + 2·0 + 1·(-1) + 3·(-7) + 6·(-20)
+     = 0 - 5 - 24 + 0 - 1 - 21 - 120 = -171
+
+Σx₃y = 1·4 + 3·(-5) + 1·(-6) + 2·0 + 5·(-1) + 3·(-7) + 4·(-20)
+     = 4 - 15 - 6 + 0 - 5 - 21 - 80 = -123` },
+          { title: "Step 5 · ประกอบ matrix 4×4 (Normal Equations)",
+            body: `| n    Σx₁  Σx₂  Σx₃ | |a₀|   | Σy   |
+| Σx₁  Σx₁² Σx₁x₂ Σx₁x₃| |a₁| = | Σx₁y|
+| Σx₂  Σx₁x₂ Σx₂² Σx₂x₃| |a₂|   | Σx₂y|
+| Σx₃  Σx₁x₃ Σx₂x₃ Σx₃²| |a₃|   | Σx₃y|
+
+แทนตัวเลข:
+
+|  7   13  17  19 | |a₀|   |  -35 |
+| 13   35  30  39 | |a₁| = |  -46 |
+| 17   30  67  49 | |a₂|   | -171 |
+| 19   39  49  65 | |a₃|   | -123 |
+
+(matrix นี้สมมาตร — เพราะ ZᵀZ สมมาตรเสมอ)` },
+          { title: "Step 6 · แก้ด้วย Gauss Elimination — Step 1 กำจัด col 1",
+            body: `f₂₁ = 13/7  → R₂ ← R₂ - (13/7)R₁
+f₃₁ = 17/7  → R₃ ← R₃ - (17/7)R₁
+f₄₁ = 19/7  → R₄ ← R₄ - (19/7)R₁
+
+R₂:  35 - (13/7)·13 = 35 - 169/7 = (245-169)/7 = 76/7
+     30 - (13/7)·17 = 30 - 221/7 = (210-221)/7 = -11/7
+     39 - (13/7)·19 = 39 - 247/7 = (273-247)/7 = 26/7
+     -46 - (13/7)·(-35) = -46 + 65 = 19
+
+R₃:  30 - (17/7)·13 = -11/7
+     67 - (17/7)·17 = 180/7
+     49 - (17/7)·19 = 20/7
+     -171 - (17/7)·(-35) = -171 + 85 = -86
+
+R₄:  39 - (19/7)·13 = 26/7
+     49 - (19/7)·17 = 20/7
+     65 - (19/7)·19 = 94/7
+     -123 - (19/7)·(-35) = -123 + 95 = -28
+
+|  7   13   17    19   |  -35 |
+|  0   76/7 -11/7 26/7 |   19 |
+|  0  -11/7 180/7 20/7 |  -86 |
+|  0   26/7 20/7  94/7 |  -28 |` },
+          { title: "Step 7 · ทำต่อ Gauss → solver (ใช้ Python ด้านล่าง)",
+            body: `ที่เหลือ (เคลียร์ col 2, col 3) คำนวณยุ่งมาก — เน้นความเข้าใจ pattern แล้วใช้
+Python หรือ Matrix mode บน fx-991CW แก้ Gauss
+
+ผลลัพธ์ (เลขสวย!):
+a₀ =  4
+a₁ =  2
+a₂ = -3
+a₃ = -2` },
+          { title: "Step 8 · สรุปสมการ Multiple Linear Regression",
+            body: `y = 4 + 2·x₁ − 3·x₂ − 2·x₃
+
+ตรวจกับแถว 7: x = (1, 6, 4) → y_pred = 4 + 2(1) - 3(6) - 2(4)
+              = 4 + 2 - 18 - 8 = -20 ✓ (ตรงกับ y_actual = -20)
+
+ตรวจกับแถว 1: x = (1, 0, 1) → y_pred = 4 + 2(1) - 3(0) - 2(1)
+              = 4 + 2 - 0 - 2 = 4 ✓ (ตรงกับ y_actual = 4)
+
+ข้อมูลชุดนี้พอดี (zero residuals ทุกแถว — โจทย์ตั้งใจให้คำตอบสวย)` },
+        ]}/>
+
+        <p style={{margin:"12px 0 6px"}}>สำหรับ general case ใช้ Z<sup>T</sup>Z, Z<sup>T</sup>y แล้วเรียก <code>numpy.linalg.solve</code> — สั้นและถูก:</p>
 
         <PythonRunner code={`import numpy as np
 
@@ -178,8 +280,8 @@ def multi_linear(X, y):
     coef = np.linalg.solve(ZTZ, ZTy)
     return coef, ZTZ, ZTy
 
-X = [[1,0,1],[0,1,3],[2,4,1],[3,2,5],[1,5,3]]
-y = [4, -5, 3, -8, -1]
+X = [[1,0,1],[0,1,3],[2,4,1],[3,2,2],[4,1,5],[2,3,3],[1,6,4]]
+y = [4, -5, -6, 0, -1, -7, -20]
 coef, _, _ = multi_linear(X, y)
 print(f"\\ny = {coef[0]:.4f} + {coef[1]:.4f}x₁ + {coef[2]:.4f}x₂ + {coef[3]:.4f}x₃")
 
@@ -189,6 +291,18 @@ y_pred = [coef[0] + coef[1]*r[0] + coef[2]*r[1] + coef[3]*r[2] for r in X]
 res = [yi - yp for yi, yp in zip(y, y_pred)]
 rmse = np.sqrt(np.mean(np.square(res)))
 print(f"RMSE = {rmse:.4f}")`} height={300}/>
+
+        <Callout kind="warn" title="fx-991CW · Stat mode ทำ Multiple Linear ไม่ได้! (สำคัญในห้องสอบ)">
+          <p><b>Stat mode</b> ของ fx-991CW รองรับแค่ตัวแปรอิสระ <em>เดี่ยว</em> (y = a + bx, y = aˣᵇ, y = a·eᵇˣ ฯลฯ) — ไม่มี option สำหรับ Multiple Linear ที่มี x₁, x₂, x₃</p>
+          <p style={{margin:"8px 0 4px"}}><b>วิธีในห้องสอบ — ใช้ 2 mode ผสมกัน:</b></p>
+          <ol style={{margin:0, paddingLeft:18}}>
+            <li>คำนวณ Σx_k, Σx_k², Σx_ix_j, Σx_ky <b>ทีละคู่</b> ใน <Key>Stat</Key> mode (เลือก 1-var หรือ 2-var)
+              <br/><span style={{fontSize:12, color:"var(--text-faint)"}}>เช่น ใส่ list x₁ กับ x₂ → ได้ Σx₁, Σx₂, Σx₁², Σx₂², Σx₁x₂</span></li>
+            <li>ประกอบ matrix 4×4 ในกระดาษ (ใช้ค่าที่ออกมาทุกตัว)</li>
+            <li>ไปที่ <Key>HOME</Key> → <Key>Equation</Key> → <Key>Simul Equation</Key> → เลือก <b>4 unknowns</b> → ใส่ matrix 4×4 + RHS → กด <Key>=</Key> ได้ <M>{`a_0, a_1, a_2, a_3`}</M> ทันที</li>
+          </ol>
+          <p style={{margin:"6px 0 0", fontSize:13}}>fx-991CW รองรับ Simul Equation สูงสุด <b>4×4</b> — พอดีกับ Multiple Linear 3 ตัวแปร (4 unknowns)</p>
+        </Callout>
       </Sect>
 
       <Sect tag="4" title="Linearization · จัดรูปให้เป็น Linear Regression">
