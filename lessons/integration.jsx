@@ -296,6 +296,35 @@ print(f"\\nComp.Simpson n=2:  {simp(f, 0, 1, 2):.10f}")
 print(f"Comp.Simpson n=4:  {simp(f, 0, 1, 4):.10f}")`} height={280}/>
       </Sect>
 
+      <Sect tag="📟" title="fx-991CW · ใช้เครื่องคิดเลขกับ Integration">
+        <p>เครื่อง fx-991CW คำนวณ integral เชิงตัวเลขได้ในตัว (ใช้เช็คคำตอบ) และโหมด Table ช่วยหา <M>{`f(x_i)`}</M> ทุกจุดได้เร็วตอนทำมือ</p>
+
+        <Callout title="1. ปุ่ม ∫dx — หาค่า integral แม่น ๆ ทันที (ใช้ตรวจคำตอบ)">
+          <CalcSteps steps={[
+            <span><Key>HOME</Key> เลือกโหมด <Key>Calculate</Key></span>,
+            <span>กด <Key>∫dx</Key> (อยู่แถวฟังก์ชัน — บางรุ่นกด <Key>CATALOG</Key> → Integral)</span>,
+            <span>พิมพ์ฟังก์ชัน เช่น <code>e^x</code> แล้วใส่ขอบล่าง <M>a</M> ขอบบน <M>b</M></span>,
+            <span>กด <Key>=</Key> → ได้ค่าจริง (เครื่องใช้ Gauss-Kronrod ภายใน) ใช้เทียบกับ Trap/Simpson ที่ทำมือ</span>,
+          ]}/>
+          <p style={{margin:"6px 0 0", fontSize:13}}><b>ระวัง:</b> ข้อสอบมักให้ทำ Trapezoidal/Simpson <em>ทีละขั้น</em> — ปุ่ม ∫dx ใช้ <u>ตรวจ</u> ไม่ใช่เขียนเป็นคำตอบ</p>
+        </Callout>
+
+        <Callout title="2. โหมด Table — ดึง f(xᵢ) ทุกจุดในครั้งเดียว">
+          <CalcSteps steps={[
+            <span><Key>HOME</Key> → <Key>Table</Key></span>,
+            <span>พิมพ์ <code>f(x)</code> → <Key>OK</Key></span>,
+            <span>กรอก Start = <M>a</M>, End = <M>b</M>, Step = <M>{`h = (b-a)/n`}</M></span>,
+            <span>กด <Key>=</Key> → ได้คอลัมน์ <M>{`x_i, f(x_i)`}</M> ครบ — ลอกไปใส่สูตร Trap/Simpson</span>,
+            <span>คูณน้ำหนัก: ปลาย ×1, จุดใน Trap ×2, จุดใน Simpson สลับ ×4/×2 แล้วคูณ <M>{`h/2`}</M> หรือ <M>{`h/3`}</M></span>,
+          ]}/>
+        </Callout>
+
+        <Callout title="3. เก็บ h ใส่ตัวแปร แล้วรวมเป็น Σ">
+          เก็บ <M>h</M>: พิมพ์ค่า → <Key>STO</Key> → <Key>A</Key> · จากนั้นพิมพ์ผลรวมถ่วงน้ำหนัก <code>A/2*(f0 + f4 + 2(f1+f2+f3))</code> ลงไปครั้งเดียว กด <Key>=</Key> — เร็วและพลาดยาก
+          <br/><span style={{fontSize:13}}>หรือใช้โหมด <b>Spreadsheet</b> ทำคอลัมน์ <M>{`f(x_i)`}</M> × น้ำหนัก แล้ว Sum</span>
+        </Callout>
+      </Sect>
+
       <Sect tag="7" title="Interactive · Integration Solver">
         <IntegrationSolver/>
       </Sect>
@@ -448,8 +477,8 @@ function SimpsonViz() {
   );
 }
 
+// Animated: step through finer and finer n — แถบยิ่งแคบ พื้นที่ยิ่งเข้าใกล้ค่าจริง
 function CompositeViz({ kind }) {
-  const [n, setN] = React.useState(4);
   const f = x => Math.exp(x);
   const a = 0, b = 2;
   const W = 580, H = 280;
@@ -459,54 +488,60 @@ function CompositeViz({ kind }) {
   const sx = makeScale([xMin, xMax], [padding.l, W - padding.r]);
   const sy = makeScale([yMin, yMax], [H - padding.b, padding.t]);
   const fnPath = plotPath(f, xMin, xMax, sx, sy, 200);
-  const h = (b-a)/n;
   const trueI = Math.exp(2) - 1;
-  let I, shapes;
-  if (kind === "trap") {
-    I = compositeTrap(f, a, b, n);
-    shapes = [];
-    for (let i = 0; i < n; i++) {
-      const x1 = a + i*h, x2 = a + (i+1)*h;
-      shapes.push(<polygon key={i} points={`${sx(x1)},${sy(0)} ${sx(x1)},${sy(f(x1))} ${sx(x2)},${sy(f(x2))} ${sx(x2)},${sy(0)}`} fill="#58c4dd" opacity="0.16" stroke="#58c4dd" strokeWidth="1.5"/>);
-    }
-  } else {
-    I = compositeSimpson(f, a, b, n);
-    shapes = [];
-    for (let i = 0; i < n; i += 2) {
-      const x0 = a + i*h, x1 = a + (i+1)*h, x2 = a + (i+2)*h;
-      const y0 = f(x0), y1 = f(x1), y2 = f(x2);
-      const par = x => {
-        const L0 = (x-x1)*(x-x2)/((x0-x1)*(x0-x2));
-        const L1 = (x-x0)*(x-x2)/((x1-x0)*(x1-x2));
-        const L2 = (x-x0)*(x-x1)/((x2-x0)*(x2-x1));
-        return y0*L0 + y1*L1 + y2*L2;
-      };
-      let d = `M ${sx(x0)} ${sy(0)} `;
-      for (let k = 0; k <= 30; k++) {
-        const x = x0 + (x2-x0)*k/30;
-        d += `L ${sx(x)} ${sy(par(x))} `;
-      }
-      d += `L ${sx(x2)} ${sy(0)} Z`;
-      shapes.push(<path key={i} d={d} fill="#a87dbe" opacity="0.18" stroke="#a87dbe" strokeWidth="1.5"/>);
-    }
-  }
+  const nValues = [2, 4, 6, 8, 12, 20];
+  const accent = kind === "trap" ? "#58c4dd" : "#a87dbe";
   return (
-    <div>
-      <div className="chip-row">
-        <span className="muted">n = </span>
-        {[2, 4, 6, 8, 12, 20].map(v => (
-          <button key={v} className={"btn small " + (n === v ? "primary" : "")} onClick={() => setN(v)}>{v}</button>
-        ))}
-      </div>
-      <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
-        <Axes width={W} height={H} padding={padding} xDomain={[xMin, xMax]} yDomain={[yMin, yMax]}/>
-        {shapes}
-        <path d={fnPath} fill="none" stroke="#ffd66b" strokeWidth="2.5"/>
-        <text x={W-padding.r-10} y={padding.t+18} textAnchor="end" fontFamily="JetBrains Mono" fontSize="12" fill={kind === "trap" ? "#58c4dd" : "#a87dbe"}>
-          n={n} → I = {I.toFixed(6)} · err = {(Math.abs(trueI-I)/trueI*100).toFixed(4)}%
-        </text>
-      </svg>
-    </div>
+    <StepPlayer steps={nValues.length} stepDuration={1300} label={(s) => `n = ${nValues[s]}`}>
+      {({ step }) => {
+        const n = nValues[step];
+        const h = (b-a)/n;
+        let I, shapes;
+        if (kind === "trap") {
+          I = compositeTrap(f, a, b, n);
+          shapes = [];
+          for (let i = 0; i < n; i++) {
+            const x1 = a + i*h, x2 = a + (i+1)*h;
+            shapes.push(<polygon key={i} points={`${sx(x1)},${sy(0)} ${sx(x1)},${sy(f(x1))} ${sx(x2)},${sy(f(x2))} ${sx(x2)},${sy(0)}`} fill={accent} opacity="0.16" stroke={accent} strokeWidth="1.5"/>);
+          }
+        } else {
+          I = compositeSimpson(f, a, b, n);
+          shapes = [];
+          for (let i = 0; i < n; i += 2) {
+            const x0 = a + i*h, x1 = a + (i+1)*h, x2 = a + (i+2)*h;
+            const y0 = f(x0), y1 = f(x1), y2 = f(x2);
+            const par = x => {
+              const L0 = (x-x1)*(x-x2)/((x0-x1)*(x0-x2));
+              const L1 = (x-x0)*(x-x2)/((x1-x0)*(x1-x2));
+              const L2 = (x-x0)*(x-x1)/((x2-x0)*(x2-x1));
+              return y0*L0 + y1*L1 + y2*L2;
+            };
+            let d = `M ${sx(x0)} ${sy(0)} `;
+            for (let k = 0; k <= 30; k++) {
+              const x = x0 + (x2-x0)*k/30;
+              d += `L ${sx(x)} ${sy(par(x))} `;
+            }
+            d += `L ${sx(x2)} ${sy(0)} Z`;
+            shapes.push(<path key={i} d={d} fill={accent} opacity="0.18" stroke={accent} strokeWidth="1.5"/>);
+          }
+        }
+        return (
+          <div>
+            <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
+              <Axes width={W} height={H} padding={padding} xDomain={[xMin, xMax]} yDomain={[yMin, yMax]}/>
+              {shapes}
+              <path d={fnPath} fill="none" stroke="#ffd66b" strokeWidth="2.5"/>
+              <text x={W-padding.r-10} y={padding.t+18} textAnchor="end" fontFamily="JetBrains Mono" fontSize="12" fill={accent}>
+                n={n} → I = {I.toFixed(6)} · err = {(Math.abs(trueI-I)/trueI*100).toFixed(4)}%
+              </text>
+            </svg>
+            <p className="muted" style={{fontSize:13, marginTop:6}}>
+              ▶ กดเล่นเพื่อดู: ยิ่งแบ่งช่วงย่อยมาก (n ใหญ่ขึ้น) แถบยิ่งแคบ → พื้นที่รวมยิ่งเข้าใกล้ค่าจริง <b>{trueI.toFixed(4)}</b>
+            </p>
+          </div>
+        );
+      }}
+    </StepPlayer>
   );
 }
 
@@ -563,41 +598,44 @@ function RombergViz() {
   );
 }
 
+// Animated: step through N = 2 → 3 → 4 points, watch the estimate sharpen
 function GaussLegendreViz() {
   const f = x => Math.exp(x);
-  const [N, setN] = React.useState(2);
   const a = 0, b = 1;
-  const { value, rows } = gaussLegendre(f, a, b, N);
   const trueVal = Math.E - 1;
   const W = 580, H = 280, padding = { l: 38, r: 12, t: 14, b: 26 };
   const sx = makeScale([-0.1, 1.1], [padding.l, W - padding.r]);
   const sy = makeScale([0, 3.0], [H - padding.b, padding.t]);
+  const Nvalues = [2, 3, 4];
   return (
-    <div>
-      <div className="chip-row">
-        {[2, 3, 4].map(n => (
-          <button key={n} className={"btn small " + (N === n ? "primary" : "")} onClick={() => setN(n)}>N = {n} points</button>
-        ))}
-      </div>
-      <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
-        <Axes width={W} height={H} padding={padding} xDomain={[-0.1, 1.1]} yDomain={[0, 3.0]}/>
-        <path d={plotPath(f, -0.1, 1.1, sx, sy, 200)} fill="none" stroke="#58c4dd" strokeWidth="2"/>
-        {rows.map((r, i) => (
-          <g key={i}>
-            <line x1={sx(r.x)} y1={sy(0)} x2={sx(r.x)} y2={sy(r.fx)} stroke="#ffd66b" strokeWidth="1.5" strokeDasharray="2 3"/>
-            <circle cx={sx(r.x)} cy={sy(r.fx)} r="5" fill="#ffd66b" stroke="#0e1116" strokeWidth="1.5"/>
-            <text x={sx(r.x)+6} y={sy(r.fx)-6} fill="#ffd66b" fontFamily="JetBrains Mono" fontSize="10">w={r.w.toFixed(3)}</text>
-          </g>
-        ))}
-      </svg>
-      <NumTable
-        headers={["i","tᵢ","wᵢ","xᵢ = (a+b)/2 + (b-a)/2·tᵢ","f(xᵢ)","wᵢ·f(xᵢ)·(b-a)/2"]}
-        rows={rows.map(r => [r.i, r.t.toFixed(4), r.w.toFixed(4), r.x.toFixed(4), r.fx.toFixed(4), r.term.toFixed(6)])}
-      />
-      <Callout kind="good">
-        ∫ ≈ <b className="mono">{value.toFixed(10)}</b> · จริง = <b className="mono">{trueVal.toFixed(10)}</b> · error = {Math.abs(value - trueVal).toExponential(3)}
-      </Callout>
-    </div>
+    <StepPlayer steps={Nvalues.length} stepDuration={1500} label={(s) => `N = ${Nvalues[s]} points`}>
+      {({ step }) => {
+        const N = Nvalues[step];
+        const { value, rows } = gaussLegendre(f, a, b, N);
+        return (
+          <div>
+            <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
+              <Axes width={W} height={H} padding={padding} xDomain={[-0.1, 1.1]} yDomain={[0, 3.0]}/>
+              <path d={plotPath(f, -0.1, 1.1, sx, sy, 200)} fill="none" stroke="#58c4dd" strokeWidth="2"/>
+              {rows.map((r, i) => (
+                <g key={i}>
+                  <line x1={sx(r.x)} y1={sy(0)} x2={sx(r.x)} y2={sy(r.fx)} stroke="#ffd66b" strokeWidth="1.5" strokeDasharray="2 3"/>
+                  <circle cx={sx(r.x)} cy={sy(r.fx)} r="5" fill="#ffd66b" stroke="#0e1116" strokeWidth="1.5"/>
+                  <text x={sx(r.x)+6} y={sy(r.fx)-6} fill="#ffd66b" fontFamily="JetBrains Mono" fontSize="10">w={r.w.toFixed(3)}</text>
+                </g>
+              ))}
+            </svg>
+            <NumTable
+              headers={["i","tᵢ","wᵢ","xᵢ = (a+b)/2 + (b-a)/2·tᵢ","f(xᵢ)","wᵢ·f(xᵢ)·(b-a)/2"]}
+              rows={rows.map(r => [r.i, r.t.toFixed(4), r.w.toFixed(4), r.x.toFixed(4), r.fx.toFixed(4), r.term.toFixed(6)])}
+            />
+            <Callout kind="good">
+              N = {N} จุด → ∫ ≈ <b className="mono">{value.toFixed(10)}</b> · จริง = <b className="mono">{trueVal.toFixed(10)}</b> · error = {Math.abs(value - trueVal).toExponential(3)}
+            </Callout>
+          </div>
+        );
+      }}
+    </StepPlayer>
   );
 }
 
@@ -665,26 +703,33 @@ function ErrorVsNPlot() {
   const sx = makeScale(xDomain, [padding.l, W - padding.r]);
   const sy = makeScale(yDomain, [H - padding.b, padding.t]);
 
-  const trapPath = data.map((d, i) => `${i === 0 ? "M" : "L"}${sx(logN[i]).toFixed(1)},${sy(Math.log10(Math.max(d.trap, 1e-16))).toFixed(1)}`).join(" ");
-  const simpPath = data.map((d, i) => `${i === 0 ? "M" : "L"}${sx(logN[i]).toFixed(1)},${sy(Math.log10(Math.max(d.simp, 1e-16))).toFixed(1)}`).join(" ");
+  const mkPath = (arr, key) => arr.map((d, i) => `${i === 0 ? "M" : "L"}${sx(logN[i]).toFixed(1)},${sy(Math.log10(Math.max(d[key], 1e-16))).toFixed(1)}`).join(" ");
 
+  // Animated: trace the error curve as n doubles (2 → 128)
   return (
     <div className="error-plot">
-      <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
-        <Axes width={W} height={H} padding={padding} xDomain={xDomain} yDomain={yDomain}/>
-        <path d={trapPath} fill="none" stroke="#58c4dd" strokeWidth="2"/>
-        <path d={simpPath} fill="none" stroke="#ffd66b" strokeWidth="2"/>
-        {data.map((d, i) => (
-          <g key={i}>
-            <circle cx={sx(logN[i])} cy={sy(Math.log10(Math.max(d.trap, 1e-16)))} r="4" fill="#58c4dd"/>
-            <circle cx={sx(logN[i])} cy={sy(Math.log10(Math.max(d.simp, 1e-16)))} r="4" fill="#ffd66b"/>
-          </g>
-        ))}
-        <text x={padding.l+10} y={padding.t+18} fill="#58c4dd" fontFamily="JetBrains Mono" fontSize="12">— Trap (slope ≈ −2)</text>
-        <text x={padding.l+10} y={padding.t+36} fill="#ffd66b" fontFamily="JetBrains Mono" fontSize="12">— Simpson (slope ≈ −4)</text>
-        <text x={(W)/2} y={H-6} fill="#9aa4b2" fontSize="11" textAnchor="middle" fontFamily="JetBrains Mono">log₁₀ n →</text>
-        <text x={14} y={H/2} fill="#9aa4b2" fontSize="11" transform={`rotate(-90 14 ${H/2})`} textAnchor="middle" fontFamily="JetBrains Mono">log₁₀ |error|</text>
-      </svg>
+      <StepPlayer steps={data.length} stepDuration={650} label={(s) => `n = ${ns[s]}`}>
+        {({ step }) => {
+          const shown = data.slice(0, step+1);
+          return (
+            <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
+              <Axes width={W} height={H} padding={padding} xDomain={xDomain} yDomain={yDomain}/>
+              <path d={mkPath(shown, "trap")} fill="none" stroke="#58c4dd" strokeWidth="2"/>
+              <path d={mkPath(shown, "simp")} fill="none" stroke="#ffd66b" strokeWidth="2"/>
+              {shown.map((d, i) => (
+                <g key={i}>
+                  <circle cx={sx(logN[i])} cy={sy(Math.log10(Math.max(d.trap, 1e-16)))} r={i === step ? 6 : 4} fill="#58c4dd"/>
+                  <circle cx={sx(logN[i])} cy={sy(Math.log10(Math.max(d.simp, 1e-16)))} r={i === step ? 6 : 4} fill="#ffd66b"/>
+                </g>
+              ))}
+              <text x={padding.l+10} y={padding.t+18} fill="#58c4dd" fontFamily="JetBrains Mono" fontSize="12">— Trap (slope ≈ −2)</text>
+              <text x={padding.l+10} y={padding.t+36} fill="#ffd66b" fontFamily="JetBrains Mono" fontSize="12">— Simpson (slope ≈ −4)</text>
+              <text x={(W)/2} y={H-6} fill="#9aa4b2" fontSize="11" textAnchor="middle" fontFamily="JetBrains Mono">log₁₀ n →</text>
+              <text x={14} y={H/2} fill="#9aa4b2" fontSize="11" transform={`rotate(-90 14 ${H/2})`} textAnchor="middle" fontFamily="JetBrains Mono">log₁₀ |error|</text>
+            </svg>
+          );
+        }}
+      </StepPlayer>
       <p className="muted" style={{fontSize:12, margin:"6px 0 0"}}>
         slope = −2 → error ∝ n⁻² (O(h²)); slope = −4 → error ∝ n⁻⁴ (O(h⁴)) → Simpson แม่นกว่ามาก
       </p>

@@ -77,14 +77,38 @@ function IterativeSolver({ method = "jacobi" }) {
 
   const fn = method === "jacobi" ? jacobi : gaussSeidel;
   const { rows } = useMmL(() => fn(A2, b2, x0, 20), [method]);
+  const colors = ["#58c4dd", "#83c167", "#ffd66b"];
 
+  // Animated: reveal each iteration so you watch x → (1, 1, 1)
   return (
     <div>
       <p className="muted">ระบบสมการ: <M>{`5x_1+x_2+x_3=7,\\quad x_1+5x_2+x_3=7,\\quad x_1+x_2+5x_3=7`}</M> (คำตอบจริง = (1, 1, 1))</p>
-      <NumTable
-        headers={["k", "x₁", "x₂", "x₃", "‖Δx‖/‖x‖"]}
-        rows={rows.map(r => [r.iter, ...r.x, r.err === null ? "—" : r.err.toExponential(2)])}
-      />
+      <StepPlayer steps={rows.length} stepDuration={1100} label={(s) => `Iteration k = ${rows[s].iter}`}>
+        {({ step }) => {
+          const r = rows[step];
+          return (
+            <div>
+              <div className="grid-3" style={{marginBottom:12}}>
+                {r.x.map((xi, i) => (
+                  <div className="card tight" key={i}>
+                    <div className="kicker" style={{color:colors[i]}}>x{i+1}</div>
+                    <div className="mono" style={{fontSize:20, marginTop:2}}>{xi.toFixed(6)}</div>
+                    <div className="mono" style={{fontSize:11, color:"var(--text-faint)"}}>ห่างจาก 1 = {Math.abs(xi-1).toExponential(2)}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="mono" style={{fontSize:13, color:"var(--yellow)", marginBottom:8}}>
+                ‖Δx‖/‖x‖ = {r.err === null ? "—" : r.err.toExponential(3)}
+              </div>
+              <NumTable
+                headers={["k", "x₁", "x₂", "x₃", "‖Δx‖/‖x‖"]}
+                rows={rows.slice(0, step+1).map(rr => [rr.iter, ...rr.x, rr.err === null ? "—" : rr.err.toExponential(2)])}
+                highlight={step}
+              />
+            </div>
+          );
+        }}
+      </StepPlayer>
     </div>
   );
 }
@@ -1090,6 +1114,18 @@ print("\\nA·x =", np.round(A @ x, 6).tolist(), "  (เทียบกับ B =
 
         <h3>Demo · ทำซ้ำจนลู่เข้า</h3>
         <IterativeSolver method="jacobi"/>
+
+        <h3>fx-991CW · วน iteration ด้วยตัวแปร A, B, C</h3>
+        <Callout title="เก็บ x แต่ละตัวในตัวแปร แล้วกด = ซ้ำ ๆ">
+          <CalcSteps steps={[
+            <span>ตั้งค่าเริ่ม: <code>0</code> <Key>STO</Key> <Key>A</Key>, <code>0</code> <Key>STO</Key> <Key>B</Key>, <code>0</code> <Key>STO</Key> <Key>C</Key> (= x₁,x₂,x₃ เริ่มต้น)</span>,
+            <span>คำนวณ x₁ ใหม่: พิมพ์ <code>(7−B−C)÷5</code> → <Key>=</Key> → <Key>STO</Key> <Key>A</Key></span>,
+            <span>x₂ ใหม่: <code>(7−A−C)÷5</code> → <Key>=</Key> → <Key>STO</Key> <Key>B</Key></span>,
+            <span>x₃ ใหม่: <code>(7−A−B)÷5</code> → <Key>=</Key> → <Key>STO</Key> <Key>C</Key> — ครบ 1 รอบ</span>,
+            <span>กดลำดับ 3 บรรทัดนี้ซ้ำ → ค่า A, B, C ลู่เข้าหา (1, 1, 1)</span>,
+            <span><b>Jacobi vs Gauss-Seidel:</b> ถ้าใช้ A, B, C ที่ <em>เพิ่ง STO ในรอบนี้</em> = Gauss-Seidel (เร็วกว่า); ถ้าอยากเป๊ะแบบ Jacobi ต้องเก็บค่าเก่าไว้อีกชุด (D, E, F) ก่อนอัปเดต</span>,
+          ]}/>
+        </Callout>
 
         <Callout kind="danger" title="เงื่อนไขลู่เข้า — Diagonal Dominance">
           <p>Jacobi ลู่เข้าถ้า matrix เป็น <b>diagonally dominant</b>:</p>

@@ -2,56 +2,38 @@
 
 const { useState: useStR, useMemo: useMmR, useRef: useRfR, useEffect: useEfR } = React;
 
-// === Hand-calculation walkthrough — shows EVERY substitution like a professor's solution ===
+// === Hand-calculation walkthrough — reveals EVERY substitution one step at a time, like a professor writing on the board ===
 function HandWalkthrough({ steps }) {
+  const renderStep = (s, i, isCurrent) => (
+    <div key={i} style={{margin:"10px 0", paddingLeft:14,
+        borderLeft: isCurrent ? "3px solid var(--blue)" : "2px solid var(--green-dim)",
+        background: isCurrent ? "rgba(88,196,221,0.05)" : "transparent",
+        borderRadius: isCurrent ? 6 : 0,
+        opacity: isCurrent ? 1 : 0.72,
+        transition: "opacity .25s ease"}}>
+      <div style={{color:"var(--blue)", fontWeight:600, fontSize:13, marginBottom:4}}>ขั้น {i+1}: {s.title}</div>
+      <div style={{fontFamily:"var(--font-mono)", fontSize:13.5, lineHeight:1.85, whiteSpace:"pre-wrap"}}>{s.body}</div>
+      {s.calc && (
+        <div style={{marginTop:6, padding:"6px 10px", background:"var(--bg-soft)", border:"1px solid var(--blue-dim)", borderRadius:6, fontSize:12, fontFamily:"var(--font-mono)"}}>
+          <span style={{color:"var(--blue)"}}>📟 fx-991CW:</span> {s.calc}
+        </div>
+      )}
+    </div>
+  );
   return (
     <div style={{background:"linear-gradient(135deg, rgba(131,193,103,0.04), rgba(88,196,221,0.04))",
                  border:"1px solid var(--green-dim)", borderRadius:10, padding:"14px 18px", margin:"14px 0"}}>
-      <div className="kicker" style={{color:"var(--green)", marginBottom:8}}>✍️ เขียนมือทีละขั้น (สไตล์เฉลยอาจารย์)</div>
-      {steps.map((s, i) => (
-        <div key={i} style={{margin:"10px 0", paddingLeft:14, borderLeft:"2px solid var(--green-dim)"}}>
-          <div style={{color:"var(--blue)", fontWeight:600, fontSize:13, marginBottom:4}}>ขั้น {i+1}: {s.title}</div>
-          <div style={{fontFamily:"var(--font-mono)", fontSize:13.5, lineHeight:1.85, whiteSpace:"pre-wrap"}}>{s.body}</div>
-          {s.calc && (
-            <div style={{marginTop:6, padding:"6px 10px", background:"var(--bg-soft)", border:"1px solid var(--blue-dim)", borderRadius:6, fontSize:12, fontFamily:"var(--font-mono)"}}>
-              <span style={{color:"var(--blue)"}}>📟 fx-991CW:</span> {s.calc}
-            </div>
-          )}
-        </div>
-      ))}
+      <div className="kicker" style={{color:"var(--green)", marginBottom:8}}>✍️ เขียนมือทีละขั้น (สไตล์เฉลยอาจารย์) · กด ▶ ให้เฉลยค่อย ๆ ขึ้นทีละขั้น</div>
+      <StepPlayer steps={steps.length} stepDuration={1700} height={90} label={(s) => `ขั้น ${s+1}/${steps.length}`}>
+        {({ step }) => (
+          <div>{steps.slice(0, step+1).map((s, i) => renderStep(s, i, i === step))}</div>
+        )}
+      </StepPlayer>
     </div>
   );
 }
 
-// === Function plot with iteration markers ===
-function FnPlot({ fn, xDomain, yDomain, width = 640, height = 320, markers = [], extras = null }) {
-  const padding = { l: 38, r: 12, t: 14, b: 26 };
-  const sx = makeScale(xDomain, [padding.l, width - padding.r]);
-  const sy = makeScale(yDomain, [height - padding.b, padding.t]);
-  return (
-    <svg className="svg-stage" viewBox={`0 0 ${width} ${height}`}>
-      <Axes width={width} height={height} padding={padding} xDomain={xDomain} yDomain={yDomain}/>
-      <path d={plotPath(fn, xDomain[0], xDomain[1], sx, sy)} fill="none" stroke="#58c4dd" strokeWidth="2.2"/>
-      {extras}
-      {markers.map((m, i) => (
-        <g key={i}>
-          {m.kind === "vline" && <line x1={sx(m.x)} x2={sx(m.x)} y1={padding.t} y2={height-padding.b} stroke={m.color || "#ffd66b"} strokeWidth="1.5" strokeDasharray={m.dashed ? "3 3" : null}/>}
-          {m.kind === "point" && (
-            <>
-              <circle cx={sx(m.x)} cy={sy(m.y)} r="5" fill={m.color || "#ffd66b"} stroke="#0e1116" strokeWidth="1.5"/>
-              {m.label && <text x={sx(m.x)+9} y={sy(m.y)-6} fill={m.color || "#ffd66b"} fontFamily="JetBrains Mono" fontSize="11">{m.label}</text>}
-            </>
-          )}
-          {m.kind === "label" && <text x={sx(m.x)} y={sy(m.y)} fill={m.color || "#e6edf3"} fontFamily="JetBrains Mono" fontSize="11" textAnchor="middle">{m.text}</text>}
-          {m.kind === "line" && <line x1={sx(m.x1)} y1={sy(m.y1)} x2={sx(m.x2)} y2={sy(m.y2)} stroke={m.color || "#ffd66b"} strokeWidth={m.width||1.5} strokeDasharray={m.dashed ? "3 3" : null}/>}
-          {m.kind === "interval" && (
-            <rect x={sx(m.x1)} y={padding.t} width={sx(m.x2)-sx(m.x1)} height={height-padding.t-padding.b} fill={m.color || "#58c4dd"} opacity="0.08"/>
-          )}
-        </g>
-      ))}
-    </svg>
-  );
-}
+// FnPlot (function plot with iteration markers) is shared from lib/anim.jsx
 
 // === Bisection animated visualization ===
 function BisectionViz({ fn, a0, b0, exprText, root: trueRoot }) {
@@ -326,47 +308,44 @@ function CobwebViz({ g, x0, exprText }) {
 }
 
 // === Taylor Series visualization ===
+// Animated: step the Taylor order n = 0,1,2,… and watch Tₙ(x) hug f(x) over a wider range
 function TaylorViz({ f, derivs, x0, xRange, trueLabel }) {
-  const [n, setN] = useStR(2);
-  // Build T_n polynomial fn
-  const Tn = (x) => {
-    let s = 0, fact = 1, dx = 1;
-    for (let k = 0; k <= n; k++) {
-      if (k > 0) { fact *= k; dx *= (x - x0); }
-      s += derivs[k](x0) * dx / fact;
-    }
-    return s;
-  };
   const [xMin, xMax] = xRange;
+  // y-range fixed across all n (use the true function) so the curve doesn't jump while animating
   let yMin = Infinity, yMax = -Infinity;
   for (let i = 0; i <= 60; i++) {
-    const x = xMin + (xMax-xMin)*i/60;
-    [f(x), Tn(x)].forEach(y => {
-      if (isFinite(y)) { yMin = Math.min(yMin, y); yMax = Math.max(yMax, y); }
-    });
+    const y = f(xMin + (xMax-xMin)*i/60);
+    if (isFinite(y)) { yMin = Math.min(yMin, y); yMax = Math.max(yMax, y); }
   }
-  const pad = (yMax - yMin) * 0.18 || 1;
+  const pad = (yMax - yMin) * 0.4 || 1;
   const yDomain = [yMin - pad, yMax + pad];
   const sx = makeScale([xMin, xMax], [38, 638 - 12]);
   const sy = makeScale(yDomain, [320 - 26, 14]);
 
   return (
-    <div>
-      <div className="input-row" style={{marginBottom:8}}>
-        <label>Order n:</label>
-        <input type="range" min={0} max={derivs.length-1} value={n} onChange={e => setN(+e.target.value)} style={{flex:1, maxWidth:280}}/>
-        <span className="mono" style={{color:"var(--yellow)", fontWeight:600}}>n = {n}</span>
-      </div>
-      <svg className="svg-stage" viewBox="0 0 640 320">
-        <Axes width={640} height={320} padding={{l:38, r:12, t:14, b:26}} xDomain={[xMin,xMax]} yDomain={yDomain}/>
-        <path d={plotPath(f, xMin, xMax, sx, sy)} fill="none" stroke="#58c4dd" strokeWidth="2.2"/>
-        <path d={plotPath(Tn, xMin, xMax, sx, sy)} fill="none" stroke="#ffd66b" strokeWidth="2.2" strokeDasharray="4 3"/>
-        <circle cx={sx(x0)} cy={sy(f(x0))} r="5" fill="#83c167"/>
-        <text x={sx(x0)+8} y={sy(f(x0))-8} fontFamily="JetBrains Mono" fontSize="11" fill="#83c167">x₀ = {x0}</text>
-        <text x={10} y={28} fontFamily="JetBrains Mono" fontSize="12" fill="#58c4dd">{trueLabel || "f(x)"}</text>
-        <text x={10} y={46} fontFamily="JetBrains Mono" fontSize="12" fill="#ffd66b">Tₙ(x) order {n}</text>
-      </svg>
-    </div>
+    <StepPlayer steps={derivs.length} stepDuration={1300} label={(s) => `Order n = ${s}`}>
+      {({ step: n }) => {
+        const Tn = (x) => {
+          let s = 0, fact = 1, dx = 1;
+          for (let k = 0; k <= n; k++) {
+            if (k > 0) { fact *= k; dx *= (x - x0); }
+            s += derivs[k](x0) * dx / fact;
+          }
+          return s;
+        };
+        return (
+          <svg className="svg-stage" viewBox="0 0 640 320">
+            <Axes width={640} height={320} padding={{l:38, r:12, t:14, b:26}} xDomain={[xMin,xMax]} yDomain={yDomain}/>
+            <path d={plotPath(f, xMin, xMax, sx, sy)} fill="none" stroke="#58c4dd" strokeWidth="2.2"/>
+            <path d={plotPath(Tn, xMin, xMax, sx, sy)} fill="none" stroke="#ffd66b" strokeWidth="2.2" strokeDasharray="4 3"/>
+            <circle cx={sx(x0)} cy={sy(f(x0))} r="5" fill="#83c167"/>
+            <text x={sx(x0)+8} y={sy(f(x0))-8} fontFamily="JetBrains Mono" fontSize="11" fill="#83c167">x₀ = {x0}</text>
+            <text x={10} y={28} fontFamily="JetBrains Mono" fontSize="12" fill="#58c4dd">{trueLabel || "f(x)"}</text>
+            <text x={10} y={46} fontFamily="JetBrains Mono" fontSize="12" fill="#ffd66b">Tₙ(x) order {n}</text>
+          </svg>
+        );
+      }}
+    </StepPlayer>
   );
 }
 

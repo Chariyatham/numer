@@ -112,6 +112,17 @@ print(f"R² = {r2:.4f}")`} height={260}/>
           <p>เลยเป็น matrix สมมาตร + จัดแบบ "ขั้นบันได"</p>
         </Callout>
 
+        <h3>fx-991CW · Quadratic Regression ในตัว (degree 2)</h3>
+        <Callout title="โหมด Statistics ทำ y = a + bx + cx² ให้ทันที">
+          <CalcSteps steps={[
+            <span><Key>HOME</Key> → <Key>Statistics</Key></span>,
+            <span>เลือกโมเดล <code>y = a + bx + cx²</code> (Quadratic Regression)</span>,
+            <span>กรอกคอลัมน์ x และ y ให้ครบทุกจุด</span>,
+            <span><Key>OK</Key> → เมนู Regression Calc → อ่านค่า <code>a, b, c</code> = <M>{`a_0, a_1, a_2`}</M></span>,
+            <span><b>degree 3 ขึ้นไป:</b> เครื่องไม่มีให้ตรง ๆ → ต้องตั้ง Normal Equations เองแล้วใช้ <Key>Equation</Key> → <Key>Simul Equation</Key></span>,
+          ]}/>
+        </Callout>
+
         <PythonRunner code={`import numpy as np
 
 def poly_regression(xs, ys, m):
@@ -503,6 +514,7 @@ function RegressionSolver() {
 }
 function num(v, p = 4) { return (+v).toFixed(p).replace(/\.?0+$/, ""); }
 
+// Animated: line starts flat at mean(y), then rotates/shifts toward the least-squares fit (SSE ↓)
 function ScatterLineViz({ xs, ys }) {
   const { a0, a1 } = linearRegression(xs, ys);
   const W = 600, H = 320;
@@ -511,29 +523,48 @@ function ScatterLineViz({ xs, ys }) {
   const yMin = Math.min(...ys) - 1, yMax = Math.max(...ys) + 1;
   const sx = makeScale([xMin, xMax], [padding.l, W - padding.r]);
   const sy = makeScale([yMin, yMax], [H - padding.b, padding.t]);
-  const linePath = plotPath(x => a0 + a1*x, xMin, xMax, sx, sy, 30);
+  const meanY = ys.reduce((s, v) => s + v, 0) / ys.length;
+  const a0s = meanY, a1s = 0;     // naive start: flat line through the mean
+  const sse = (A0, A1) => xs.reduce((s, x, i) => s + (ys[i] - (A0 + A1*x))**2, 0);
+  const nSteps = 7;
   return (
-    <div>
-      <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
-        <Axes width={W} height={H} padding={padding} xDomain={[xMin, xMax]} yDomain={[yMin, yMax]}/>
-        {xs.map((x, i) => {
-          const yp = a0 + a1*x;
-          return <line key={i} x1={sx(x)} y1={sy(ys[i])} x2={sx(x)} y2={sy(yp)} stroke="#f47274" strokeWidth="1.5" strokeDasharray="2 3"/>;
-        })}
-        <path d={linePath} fill="none" stroke="#58c4dd" strokeWidth="2.5"/>
-        {xs.map((x, i) => (
-          <circle key={i} cx={sx(x)} cy={sy(ys[i])} r="5" fill="#ffd66b" stroke="#0e1116" strokeWidth="1.5"/>
-        ))}
-        <text x={W-padding.r-10} y={padding.t+18} textAnchor="end" fill="#58c4dd" fontFamily="JetBrains Mono" fontSize="12">
-          y = {a0.toFixed(3)} + {a1.toFixed(3)}x
-        </text>
-      </svg>
-      <p className="muted" style={{fontSize:13, marginTop:4}}>
-        <span style={{color:"var(--yellow)"}}>●</span> ข้อมูล &nbsp;·&nbsp;
-        <span style={{color:"var(--blue)"}}>—</span> เส้น regression &nbsp;·&nbsp;
-        <span style={{color:"var(--red)"}}>┊</span> error ของแต่ละจุด (residual)
-      </p>
-    </div>
+    <StepPlayer steps={nSteps} stepDuration={950} label={(s) => s === nSteps-1 ? "Least-squares ✓" : `ปรับเส้น ${s+1}/${nSteps}`}>
+      {({ step }) => {
+        const t = step / (nSteps - 1);
+        const A0 = a0s + (a0 - a0s) * t;
+        const A1 = a1s + (a1 - a1s) * t;
+        const isFinal = step === nSteps - 1;
+        const linePath = plotPath(x => A0 + A1*x, xMin, xMax, sx, sy, 30);
+        const E = sse(A0, A1);
+        const lineColor = isFinal ? "#58c4dd" : "#f6a85f";
+        return (
+          <div>
+            <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
+              <Axes width={W} height={H} padding={padding} xDomain={[xMin, xMax]} yDomain={[yMin, yMax]}/>
+              {xs.map((x, i) => {
+                const yp = A0 + A1*x;
+                return <line key={i} x1={sx(x)} y1={sy(ys[i])} x2={sx(x)} y2={sy(yp)} stroke="#f47274" strokeWidth="1.5" strokeDasharray="2 3"/>;
+              })}
+              <path d={linePath} fill="none" stroke={lineColor} strokeWidth="2.5" strokeDasharray={isFinal ? null : "6 4"}/>
+              {xs.map((x, i) => (
+                <circle key={i} cx={sx(x)} cy={sy(ys[i])} r="5" fill="#ffd66b" stroke="#0e1116" strokeWidth="1.5"/>
+              ))}
+              <text x={W-padding.r-10} y={padding.t+18} textAnchor="end" fill={lineColor} fontFamily="JetBrains Mono" fontSize="12">
+                y = {A0.toFixed(3)} + {A1.toFixed(3)}x
+              </text>
+              <text x={W-padding.r-10} y={padding.t+36} textAnchor="end" fill="#f47274" fontFamily="JetBrains Mono" fontSize="12">
+                SSE = {E.toFixed(3)}
+              </text>
+            </svg>
+            <p className="muted" style={{fontSize:13, marginTop:4}}>
+              ▶ เส้นเริ่มจากแนวราบที่ค่าเฉลี่ย แล้วค่อยปรับจน <b>SSE ต่ำสุด</b> &nbsp;·&nbsp;
+              <span style={{color:"var(--yellow)"}}>●</span> ข้อมูล &nbsp;
+              <span style={{color:"var(--red)"}}>┊</span> residual
+            </p>
+          </div>
+        );
+      }}
+    </StepPlayer>
   );
 }
 

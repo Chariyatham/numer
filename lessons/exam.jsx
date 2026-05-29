@@ -15,7 +15,7 @@ function ExamLesson() {
           <div>
             <p><b>1.1</b> ใช้ Graphical method scan ทีละ 1 จะพบว่า f(2) ≈ -1.71, f(3) ≈ 9.16 → ราก<b>อยู่ใน [2,3]</b></p>
             <p><b>1.2</b> Bisection 5 รอบ (เริ่ม [2,3]):</p>
-            <NumTable
+            <StepTable
               headers={["i","a","b","m","f(m)","decide"]}
               rows={[
                 [1, 2.0, 3.0, 2.5, 1.6815, "b←m"],
@@ -26,7 +26,7 @@ function ExamLesson() {
               ]}
             />
             <p><b>1.3</b> Newton-Raphson ที่ x₀ = 2.5, f'(x) = 2x − cos(x):</p>
-            <NumTable
+            <StepTable
               headers={["i", "x", "f(x)", "f'(x)", "x_new", "ε%"]}
               rows={[
                 [1, 2.5000, 1.6815, 5.8011, 2.2102, 13.13],
@@ -137,7 +137,7 @@ print(f"{power_root(x, n, xl, xr):.4f}")`} height={220}/>
           <div>
             <p>f(x) = x ln(x) → f'(x) = ln(x) + 1, f'(2) = ln(2) + 1 ≈ 1.693</p>
             <p>ที่ x = 2, h = 0.1:</p>
-            <NumTable
+            <StepTable
               headers={["Method", "ค่า", "error %"]}
               rows={[
                 ["Forward", "1.7374", "2.61"],
@@ -421,7 +421,7 @@ cubic_spline_natural([1,2,3,4], [2,5,10,17])`} height={200}/>
           </div>
         }>
           <p>วัดความเข้มข้นยา <M>C(t)</M> (mg/L) ที่เวลา <M>t</M> (ชั่วโมง) หลังให้ยา:</p>
-          <NumTable
+          <StepTable
             headers={["t (hr)", "0", "1", "2", "4", "6", "8", "10", "12"]}
             rows={[["C (mg/L)", "0", "12", "18", "22", "18", "12", "7", "4"]]}
           />
@@ -440,7 +440,7 @@ cubic_spline_natural([1,2,3,4], [2,5,10,17])`} height={200}/>
           </div>
         }>
           <p>วิศวกรวัด deflection (mm) ของสะพานที่ระยะต่าง ๆ จากปลายหนึ่ง (m):</p>
-          <NumTable
+          <StepTable
             headers={["x (m)", "0", "5", "10", "15", "20"]}
             rows={[["deflection (mm)", "0", "8", "18", "12", "0"]]}
           />
@@ -463,7 +463,7 @@ cubic_spline_natural([1,2,3,4], [2,5,10,17])`} height={200}/>
           </div>
         }>
           <p>วัดอุณหภูมิอากาศตามความสูง z:</p>
-          <NumTable
+          <StepTable
             headers={["z (m)", "0", "5000", "10000", "15000", "20000"]}
             rows={[["T (K)", "288", "256", "224", "192", "160"]]}
           />
@@ -482,7 +482,7 @@ cubic_spline_natural([1,2,3,4], [2,5,10,17])`} height={200}/>
           </div>
         }>
           <p>วัดมลพิษ PM2.5 (μg/m³) ในเมือง พร้อมตัวแปร x₁ = ความหนาแน่นจราจร, x₂ = อุณหภูมิ (°C), x₃ = ความเร็วลม (m/s):</p>
-          <NumTable
+          <StepTable
             headers={["i", "x₁", "x₂", "x₃", "PM2.5"]}
             rows={[
               [1, 200, 25, 2.0, 75],

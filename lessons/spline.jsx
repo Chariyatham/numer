@@ -410,17 +410,26 @@ function SplineViz({ xs, ys, kind }) {
   const paths = segments.map(seg => plotPath(seg.fn, seg.x0, seg.x1, sx, sy, 30));
   const colors = ["#58c4dd", "#83c167", "#ffd66b", "#e879bc", "#f6a85f"];
 
+  // Animated: reveal one segment at a time so you see the spline drawn piece by piece
   return (
-    <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
-      <Axes width={W} height={H} padding={padding} xDomain={[xMin, xMax]} yDomain={[yMin, yMax]}/>
-      {paths.map((p, i) => <path key={i} d={p} fill="none" stroke={colors[i % colors.length]} strokeWidth="2.5"/>)}
-      {xs.map((x, i) => (
-        <circle key={i} cx={sx(x)} cy={sy(ys[i])} r="5" fill="#ffd66b" stroke="#0e1116" strokeWidth="1.5"/>
-      ))}
-      {xs.map((x, i) => (
-        <text key={"t"+i} x={sx(x)+8} y={sy(ys[i])-8} fill="#ffd66b" fontFamily="JetBrains Mono" fontSize="11">({x}, {ys[i]})</text>
-      ))}
-    </svg>
+    <StepPlayer steps={segments.length} stepDuration={1100} label={(s) => `Segment ${s+1}/${segments.length} · [${xs[s]}, ${xs[s+1]}]`}>
+      {({ step }) => (
+        <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
+          <Axes width={W} height={H} padding={padding} xDomain={[xMin, xMax]} yDomain={[yMin, yMax]}/>
+          {paths.slice(0, step+1).map((p, i) => (
+            <path key={i} d={p} fill="none" stroke={colors[i % colors.length]}
+              strokeWidth={i === step ? 3.5 : 2.5} opacity={i === step ? 1 : 0.8}/>
+          ))}
+          {xs.map((x, i) => (
+            <circle key={i} cx={sx(x)} cy={sy(ys[i])} r={i === step+1 ? 6 : 5}
+              fill={i <= step+1 ? "#ffd66b" : "#3b4452"} stroke="#0e1116" strokeWidth="1.5"/>
+          ))}
+          {xs.map((x, i) => i <= step+1 && (
+            <text key={"t"+i} x={sx(x)+8} y={sy(ys[i])-8} fill="#ffd66b" fontFamily="JetBrains Mono" fontSize="11">({x}, {ys[i]})</text>
+          ))}
+        </svg>
+      )}
+    </StepPlayer>
   );
 }
 

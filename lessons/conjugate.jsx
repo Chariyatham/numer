@@ -387,18 +387,25 @@ function CGResidualPlot() {
   const yDomain = [Math.min(...ys) - 0.5, Math.max(...ys) + 0.5];
   const sx = makeScale(xDomain, [padding.l, W - padding.r]);
   const sy = makeScale(yDomain, [H - padding.b, padding.t]);
-  const path = ks.map((k, i) => `${i === 0 ? "M" : "L"}${sx(k).toFixed(1)},${sy(ys[i]).toFixed(1)}`).join(" ");
+  // Animated: trace ‖r‖ dropping iteration by iteration
   return (
     <div className="error-plot">
-      <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
-        <Axes width={W} height={H} padding={padding} xDomain={xDomain} yDomain={yDomain} xTicks={ks.length} yTicks={5}/>
-        <path d={path} fill="none" stroke="#83c167" strokeWidth="2"/>
-        {ks.map((k, i) => (
-          <circle key={i} cx={sx(k)} cy={sy(ys[i])} r="4" fill="#83c167"/>
-        ))}
-        <text x={W/2} y={H-4} fill="#9aa4b2" fontSize="11" textAnchor="middle" fontFamily="JetBrains Mono">iteration k</text>
-        <text x={14} y={H/2} fill="#9aa4b2" fontSize="11" transform={`rotate(-90 14 ${H/2})`} textAnchor="middle" fontFamily="JetBrains Mono">log₁₀ ‖r‖</text>
-      </svg>
+      <StepPlayer steps={ks.length} stepDuration={800} label={(s) => `iteration k = ${s} · ‖r‖ = ${data[s].toExponential(2)}`}>
+        {({ step }) => {
+          const path = ks.slice(0, step+1).map((k, i) => `${i === 0 ? "M" : "L"}${sx(k).toFixed(1)},${sy(ys[i]).toFixed(1)}`).join(" ");
+          return (
+            <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
+              <Axes width={W} height={H} padding={padding} xDomain={xDomain} yDomain={yDomain} xTicks={ks.length} yTicks={5}/>
+              <path d={path} fill="none" stroke="#83c167" strokeWidth="2"/>
+              {ks.slice(0, step+1).map((k, i) => (
+                <circle key={i} cx={sx(k)} cy={sy(ys[i])} r={i === step ? 6 : 4} fill="#83c167"/>
+              ))}
+              <text x={W/2} y={H-4} fill="#9aa4b2" fontSize="11" textAnchor="middle" fontFamily="JetBrains Mono">iteration k</text>
+              <text x={14} y={H/2} fill="#9aa4b2" fontSize="11" transform={`rotate(-90 14 ${H/2})`} textAnchor="middle" fontFamily="JetBrains Mono">log₁₀ ‖r‖</text>
+            </svg>
+          );
+        }}
+      </StepPlayer>
     </div>
   );
 }

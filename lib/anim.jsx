@@ -152,4 +152,70 @@ function niceStep(raw) {
   return nf * Math.pow(10, exp);
 }
 
-Object.assign(window, { StepPlayer, makeScale, plotPath, Axes, ease });
+// === Function plot with iteration markers (shared across lessons) ===
+// markers kinds: vline | point | label | line | interval | poly | curve
+//   poly  = { pts: [[x,y],…], fill, stroke, width }   filled area in data coords
+//   curve = { fn, x0, x1, color, width, dashed }       extra overlaid curve
+function FnPlot({ fn, xDomain, yDomain, width = 640, height = 320, markers = [], extras = null }) {
+  const padding = { l: 38, r: 12, t: 14, b: 26 };
+  const sx = makeScale(xDomain, [padding.l, width - padding.r]);
+  const sy = makeScale(yDomain, [height - padding.b, padding.t]);
+  return (
+    <svg className="svg-stage" viewBox={`0 0 ${width} ${height}`}>
+      <Axes width={width} height={height} padding={padding} xDomain={xDomain} yDomain={yDomain}/>
+      {fn && <path d={plotPath(fn, xDomain[0], xDomain[1], sx, sy)} fill="none" stroke="#58c4dd" strokeWidth="2.2"/>}
+      {extras}
+      {markers.map((m, i) => (
+        <g key={i}>
+          {m.kind === "poly" && (
+            <polygon points={m.pts.map(([x, y]) => `${sx(x).toFixed(1)},${sy(y).toFixed(1)}`).join(" ")}
+              fill={m.fill || "rgba(88,196,221,0.16)"} stroke={m.stroke || "#58c4dd"} strokeWidth={m.width || 1}/>
+          )}
+          {m.kind === "curve" && (
+            <path d={plotPath(m.fn, m.x0 != null ? m.x0 : xDomain[0], m.x1 != null ? m.x1 : xDomain[1], sx, sy)}
+              fill="none" stroke={m.color || "#a87dbe"} strokeWidth={m.width || 2} strokeDasharray={m.dashed ? "4 3" : null}/>
+          )}
+          {m.kind === "vline" && <line x1={sx(m.x)} x2={sx(m.x)} y1={padding.t} y2={height-padding.b} stroke={m.color || "#ffd66b"} strokeWidth="1.5" strokeDasharray={m.dashed ? "3 3" : null}/>}
+          {m.kind === "point" && (
+            <>
+              <circle cx={sx(m.x)} cy={sy(m.y)} r={m.r || 5} fill={m.color || "#ffd66b"} stroke="#0e1116" strokeWidth="1.5"/>
+              {m.label && <text x={sx(m.x)+9} y={sy(m.y)-6} fill={m.color || "#ffd66b"} fontFamily="JetBrains Mono" fontSize="11">{m.label}</text>}
+            </>
+          )}
+          {m.kind === "label" && <text x={sx(m.x)} y={sy(m.y)} fill={m.color || "#e6edf3"} fontFamily="JetBrains Mono" fontSize="11" textAnchor="middle">{m.text}</text>}
+          {m.kind === "line" && <line x1={sx(m.x1)} y1={sy(m.y1)} x2={sx(m.x2)} y2={sy(m.y2)} stroke={m.color || "#ffd66b"} strokeWidth={m.width||1.5} strokeDasharray={m.dashed ? "3 3" : null}/>}
+          {m.kind === "interval" && (
+            <rect x={sx(m.x1)} y={padding.t} width={sx(m.x2)-sx(m.x1)} height={height-padding.t-padding.b} fill={m.color || "#58c4dd"} opacity="0.08"/>
+          )}
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+// === StepTable — same data as NumTable, but reveals rows one at a time (animated worked solution) ===
+// Drop-in replacement for NumTable inside problem solutions: press ▶ to watch each iteration appear.
+function StepTable({ headers, rows, caption }) {
+  const fmtCell = (c) => typeof c === "number" ? (Number.isInteger(c) ? c : c.toFixed(4)) : c;
+  return (
+    <StepPlayer steps={rows.length} stepDuration={900} height={40} label={(s) => `แถว ${s+1}/${rows.length}`}>
+      {({ step }) => (
+        <div style={{overflowX:"auto"}}>
+          {caption && <div className="muted" style={{fontSize:12, marginBottom:4}}>{caption}</div>}
+          <table className="tbl">
+            <thead><tr>{headers.map((h, i) => <th key={i}>{h}</th>)}</tr></thead>
+            <tbody>
+              {rows.slice(0, step+1).map((r, i) => (
+                <tr key={i} className={i === step ? "hi" : ""}>
+                  {r.map((c, j) => <td key={j} className={typeof c === "number" ? "num" : ""}>{fmtCell(c)}</td>)}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </StepPlayer>
+  );
+}
+
+Object.assign(window, { StepPlayer, makeScale, plotPath, Axes, ease, FnPlot, StepTable });
