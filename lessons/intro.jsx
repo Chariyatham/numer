@@ -1,5 +1,116 @@
 // Intro lesson — welcome + roadmap + how-to-use + calculator basics
 
+// === กราฟ: f(x)=x²−7 ตัดแกน x ที่ราก √7 (โชว์ช่วง bracket [2,3]) ===
+function IntroRootViz() {
+  const f = x => x*x - 7;
+  const W = 580, H = 280;
+  const padding = { l: 42, r: 14, t: 16, b: 28 };
+  const xMin = 0, xMax = 3.4, yMin = -7.6, yMax = 4.2;
+  const sx = makeScale([xMin, xMax], [padding.l, W - padding.r]);
+  const sy = makeScale([yMin, yMax], [H - padding.b, padding.t]);
+  const fnPath = plotPath(f, xMin, xMax, sx, sy, 200);
+  const root = Math.sqrt(7);
+  return (
+    <div>
+      <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
+        <Axes width={W} height={H} padding={padding} xDomain={[xMin, xMax]} yDomain={[yMin, yMax]}/>
+        <rect x={sx(2)} y={padding.t} width={sx(3)-sx(2)} height={H-padding.t-padding.b} fill="#58c4dd" opacity="0.10"/>
+        <path d={fnPath} fill="none" stroke="#ffd66b" strokeWidth="2.5"/>
+        <circle cx={sx(2)} cy={sy(f(2))} r="4" fill="#e06c6c"/>
+        <circle cx={sx(3)} cy={sy(f(3))} r="4" fill="#83c167"/>
+        <line x1={sx(root)} x2={sx(root)} y1={padding.t} y2={H-padding.b} stroke="#a87dbe" strokeWidth="1.5" strokeDasharray="3 3"/>
+        <circle cx={sx(root)} cy={sy(0)} r="5" fill="#a87dbe" stroke="#0e1116" strokeWidth="1.5"/>
+        <text x={sx(2)} y={sy(f(2))+16} textAnchor="middle" fontFamily="JetBrains Mono" fontSize="11" fill="#e06c6c">f(2)=−3</text>
+        <text x={sx(3)} y={sy(f(3))-8} textAnchor="middle" fontFamily="JetBrains Mono" fontSize="11" fill="#83c167">f(3)=+2</text>
+        <text x={sx(root)+8} y={sy(0)-8} fontFamily="JetBrains Mono" fontSize="12" fill="#a87dbe">√7 ≈ 2.6458</text>
+      </svg>
+      <p className="muted" style={{fontSize:13, marginTop:6}}>
+        เครื่องหมายของ <M>f</M> เปลี่ยนจากลบ (ที่ x=2) เป็นบวก (ที่ x=3) → เส้นโค้งต้อง<b>ตัดแกน x</b> ที่ไหนสักจุดในช่วงนี้ นั่นคือราก
+      </p>
+    </div>
+  );
+}
+
+// === กราฟ: พื้นที่จริงใต้พาราโบลา y=x² บน [0,2] ===
+function IntroAreaViz() {
+  const f = x => x*x;
+  const a = 0, b = 2;
+  const W = 580, H = 300;
+  const padding = { l: 42, r: 14, t: 16, b: 28 };
+  const xMin = -0.4, xMax = 2.4, yMin = -0.5, yMax = 4.5;
+  const sx = makeScale([xMin, xMax], [padding.l, W - padding.r]);
+  const sy = makeScale([yMin, yMax], [H - padding.b, padding.t]);
+  const fnPath = plotPath(f, xMin, xMax, sx, sy, 200);
+  let areaD = `M ${sx(a)} ${sy(0)} `;
+  for (let i = 0; i <= 80; i++) { const x = a + (b-a)*i/80; areaD += `L ${sx(x)} ${sy(f(x))} `; }
+  areaD += `L ${sx(b)} ${sy(0)} Z`;
+  return (
+    <div>
+      <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
+        <Axes width={W} height={H} padding={padding} xDomain={[xMin, xMax]} yDomain={[yMin, yMax]}/>
+        <path d={areaD} fill="#83c167" opacity="0.22"/>
+        <path d={fnPath} fill="none" stroke="#ffd66b" strokeWidth="2.5"/>
+        <circle cx={sx(a)} cy={sy(f(a))} r="4" fill="#58c4dd"/>
+        <circle cx={sx(b)} cy={sy(f(b))} r="4" fill="#58c4dd"/>
+        <text x={sx(1.55)} y={sy(2.7)} fontFamily="JetBrains Mono" fontSize="13" fill="#ffd66b">y = x²</text>
+        <text x={sx(1.0)} y={sy(0.55)} textAnchor="middle" fontFamily="JetBrains Mono" fontSize="13" fill="#83c167">พื้นที่ = 8/3 ≈ 2.6667</text>
+      </svg>
+      <p className="muted" style={{fontSize:13, marginTop:6}}>
+        "อินทิเกรต" <M>{`\\int_0^2 x^2\\,dx`}</M> ก็คือการหา<b>พื้นที่สีเขียว</b>ใต้เส้นโค้ง <M>{`y=x^2`}</M> จาก <M>{`x=0`}</M> ถึง <M>{`x=2`}</M>
+      </p>
+    </div>
+  );
+}
+
+// === Animation: สี่เหลี่ยมคางหมูซอยถี่ขึ้นเรื่อย ๆ บน y=x² → เข้าใกล้ 8/3 ===
+function IntroTrapViz() {
+  const f = x => x*x;
+  const a = 0, b = 2;
+  const W = 580, H = 300;
+  const padding = { l: 42, r: 14, t: 16, b: 28 };
+  const xMin = -0.4, xMax = 2.4, yMin = -0.5, yMax = 4.5;
+  const sx = makeScale([xMin, xMax], [padding.l, W - padding.r]);
+  const sy = makeScale([yMin, yMax], [H - padding.b, padding.t]);
+  const fnPath = plotPath(f, xMin, xMax, sx, sy, 200);
+  const trueI = 8/3;
+  const comp = (n) => { const h=(b-a)/n; let s=(f(a)+f(b))/2; for(let i=1;i<n;i++) s+=f(a+i*h); return s*h; };
+  const nValues = [1, 2, 4, 8, 16];
+  const accent = "#58c4dd";
+  return (
+    <StepPlayer steps={nValues.length} stepDuration={1400} label={(s) => `n = ${nValues[s]} ช่วง`}>
+      {({ step }) => {
+        const n = nValues[step], h = (b-a)/n, I = comp(n);
+        const err = Math.abs(trueI - I) / trueI * 100;
+        const shapes = [];
+        for (let i = 0; i < n; i++) {
+          const x1 = a + i*h, x2 = a + (i+1)*h;
+          shapes.push(<polygon key={i}
+            points={`${sx(x1)},${sy(0)} ${sx(x1)},${sy(f(x1))} ${sx(x2)},${sy(f(x2))} ${sx(x2)},${sy(0)}`}
+            fill={accent} opacity="0.18" stroke={accent} strokeWidth="1.4"/>);
+        }
+        return (
+          <div>
+            <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
+              <Axes width={W} height={H} padding={padding} xDomain={[xMin, xMax]} yDomain={[yMin, yMax]}/>
+              {shapes}
+              <path d={fnPath} fill="none" stroke="#ffd66b" strokeWidth="2.5"/>
+              <text x={W-padding.r-8} y={padding.t+18} textAnchor="end" fontFamily="JetBrains Mono" fontSize="12" fill="#58c4dd">
+                n={n} · h={h.toFixed(3)} · พื้นที่≈{I.toFixed(5)}
+              </text>
+              <text x={W-padding.r-8} y={padding.t+36} textAnchor="end" fontFamily="JetBrains Mono" fontSize="12" fill="#83c167">
+                จริง=2.66667 · error={err.toFixed(3)}%
+              </text>
+            </svg>
+            <p className="muted" style={{fontSize:13, marginTop:6}}>
+              ยิ่งซอยช่วงให้ถี่ขึ้น (n มากขึ้น) สี่เหลี่ยมคางหมูยิ่งแนบเส้นโค้ง → พื้นที่รวมยิ่งเข้าใกล้ค่าจริง <b>8/3</b> · กด ▶ ดูทีละขั้น
+            </p>
+          </div>
+        );
+      }}
+    </StepPlayer>
+  );
+}
+
 function IntroLesson() {
   return (
     <div>
@@ -9,6 +120,116 @@ function IntroLesson() {
         lead="เว็บนี้สอนวิธีเชิงตัวเลขแบบครบทุกบท ตั้งแต่แนวคิด → ทำมือ → กดเครื่องคิดเลข fx-991CW → เขียนโค้ด Python → ทำข้อสอบจำลองยากระดับ Final"
         meta={["8 บทเรียน", "Animation ทุกบท", "Python รันได้ในเว็บ", "Mock exam"]}
       />
+
+      <Sect tag="💡" title="Numerical Methods มีไว้ทำไม? — เพราะคอมแก้สมการตรง ๆ ไม่ได้">
+        <p>คณิตที่เราเรียนมาเน้นหา <b>"สูตรปิด" (closed-form)</b> — แทนค่าแล้วได้คำตอบเป๊ะ เช่น สมการกำลังสอง <M>{`ax^2+bx+c=0`}</M> มีสูตร <M>{`x=\\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}`}</M> ตายตัว</p>
+        <p>แต่สมการ "จริง" ส่วนใหญ่ <b>ไม่มีสูตรให้แทนค่า</b> เช่น <M>{`x=\\cos x`}</M>, <M>{`x^5-x-1=0`}</M>, หรือ <M>{`\\int e^{-x^2}dx`}</M> — และที่สำคัญ <b>คอมพิวเตอร์ก็ "แก้สมการแบบหาสูตร" ไม่เป็น</b> มันทำได้แค่ บวก ลบ คูณ หาร เปรียบเทียบ ซ้ำ ๆ เร็ว ๆ เท่านั้น</p>
+
+        <Callout kind="good" title="หัวใจของ Numerical Methods">
+          <p style={{margin:0}}>ใช้การ <b>บวกลบคูณหารซ้ำ ๆ (iteration)</b> ค่อย ๆ <b>เดาให้ใกล้คำตอบขึ้นเรื่อย ๆ</b> จนกระทั่ง error เล็กพอที่จะยอมรับได้ — แลกความ "เป๊ะ" กับความ "ทำได้จริงด้วยคอม"</p>
+        </Callout>
+
+        <h3 style={{marginTop:22}}>ลองจริง: หา <M>{`\\sqrt{7}`}</M> โดยแก้สมการ <M>{`x^2-7=0`}</M></h3>
+        <p>เครื่องหมาย √7 เขียนได้สวย แต่ถ้าอยากรู้ "ตัวเลขทศนิยม" จริง ๆ ของมัน เราต้องไปแก้สมการ <M>{`f(x)=x^2-7=0`}</M> นี่คืองานของ Numerical Methods</p>
+
+        <IntroRootViz/>
+
+        <h4>วิธีทำมือ — Bisection (แบ่งครึ่งช่วง)</h4>
+        <p>เรารู้ว่า <M>{`f(2)=4-7=-3`}</M> (ลบ) และ <M>{`f(3)=9-7=+2`}</M> (บวก) → รากต้องอยู่ระหว่าง 2 กับ 3. ไอเดียคือ <b>เล็งจุดกึ่งกลาง แล้วเลือกครึ่งที่ยังคร่อมราก ทำซ้ำให้ช่วงแคบลงเรื่อย ๆ</b></p>
+        <NumTable
+          headers={["รอบ", "a", "b", "c = (a+b)/2", "f(c) = c²−7", "รากอยู่ฝั่ง"]}
+          rows={[
+            [1, "2", "3",        2.5,      -0.75,    "[2.5, 3]"],
+            [2, "2.5", "3",      2.75,      0.5625,  "[2.5, 2.75]"],
+            [3, "2.5", "2.75",   2.625,    -0.1094,  "[2.625, 2.75]"],
+            [4, "2.625", "2.75", 2.6875,    0.2227,  "[2.625, 2.6875]"],
+            [5, "2.625", "2.6875", 2.65625, 0.0557,  "[2.625, 2.65625]"],
+            [6, "2.625", "2.65625", 2.640625, -0.0271, "[2.6406, 2.6563]"],
+          ]}
+        />
+        <p style={{fontSize:13}}>ทำต่อไปอีกไม่กี่รอบ ช่วงจะแคบจน <M>{`c \\to 2.6457513\\ldots = \\sqrt{7}`}</M> — แต่ละรอบช่วงแคบลงครึ่งหนึ่ง นี่แหละ "เดาให้ใกล้ขึ้นเรื่อย ๆ"</p>
+
+        <h4>วิธีให้คอมแก้ — โค้ดเดียวกับที่ทำมือ</h4>
+        <p>กด <b>▸ Run</b> เพื่อรันจริงในเว็บ หรือ <b>▸ ทีละบรรทัด</b> เพื่อดูค่าตัวแปรเปลี่ยนทีละ step:</p>
+        <PythonRunner code={`def f(x):
+    return x*x - 7              # หาราก f(x)=0  →  x = √7
+
+a, b = 2, 3                    # f(2)=-3 (ลบ), f(3)=+2 (บวก) → มีรากคั่นอยู่
+for i in range(1, 21):
+    c = (a + b) / 2            # จุดกึ่งกลาง
+    if f(a) * f(c) < 0:
+        b = c                  # รากอยู่ครึ่งซ้าย → ย้ายขอบขวาเข้ามา
+    else:
+        a = c                  # รากอยู่ครึ่งขวา → ย้ายขอบซ้ายเข้ามา
+    print(f"รอบ {i:2d}:  c = {c:.7f}   f(c) = {f(c): .7f}")
+
+print("\\nคำตอบ ≈", (a + b) / 2)
+print("√7 จริง  =", 7 ** 0.5)`} height={260}/>
+
+        <Callout kind="tip" title="นี่แหละ Numerical Method">
+          <p style={{margin:0}}>คอมไม่ได้ "รู้" ว่า √7 คืออะไร — มันแค่ทำลูปบวกลบหารง่าย ๆ ที่เราออกแบบไว้ ซ้ำ 20 รอบ จนได้เลขที่ใกล้พอ. ทุกบทในเว็บนี้คือ "สูตรลูป" แบบนี้สำหรับโจทย์คนละแบบ (ดูเต็ม ๆ ที่บท <a href="#root">Root Finding</a>)</p>
+        </Callout>
+      </Sect>
+
+      <Sect tag="📐" title="ตัวอย่างจากห้องเรียน: อินทิเกรต x² = พื้นที่ใต้กราฟ">
+        <p>อาจารย์ยกตัวอย่างคลาสสิก: การ <b>อินทิเกรต</b> ฟังก์ชันกำลังสอง <M>{`\\int_0^2 x^2\\,dx`}</M> ความหมายของมันคือ "หา<b>พื้นที่ใต้กราฟ</b>" ของเส้นโค้ง <M>{`y=x^2`}</M> ตั้งแต่ <M>{`x=0`}</M> ถึง <M>{`x=2`}</M></p>
+
+        <IntroAreaViz/>
+
+        <h3 style={{marginTop:22}}>วิธีที่ 1 · ทำมือแบบ exact (มีสูตร)</h3>
+        <p>ฟังก์ชันนี้โชคดีที่ integrate ได้ตรง ๆ ด้วย power rule <M>{`\\int x^n dx=\\frac{x^{n+1}}{n+1}`}</M>:</p>
+        <Formula label="Fundamental Theorem of Calculus">
+          <MB>{`\\int_0^2 x^2\\,dx = \\left[\\frac{x^3}{3}\\right]_0^2 = \\frac{2^3}{3}-\\frac{0^3}{3} = \\frac{8}{3} \\approx 2.66667`}</MB>
+        </Formula>
+        <Callout kind="warn" title="แต่ถ้าโชคไม่ดีล่ะ?">
+          <p style={{margin:0}}>ฟังก์ชันอย่าง <M>{`e^{-x^2}`}</M> (โค้งระฆังในวิชาสถิติ) <b>หา antiderivative ไม่ได้เลย</b> → ต้องพึ่งวิธีเชิงตัวเลขสถานเดียว นั่นคือเหตุผลที่ต้องเรียน Trapezoidal / Simpson</p>
+        </Callout>
+
+        <h3 style={{marginTop:22}}>วิธีที่ 2 · นิวเมอริคอลแบบสี่เหลี่ยมคางหมู (ซอยเป็นชิ้น ๆ)</h3>
+        <p>ไอเดีย: เส้นโค้งหาพื้นที่ยาก แต่ <b>สี่เหลี่ยมคางหมูหาพื้นที่ง่าย</b> (พื้นที่ = ผลบวกด้านขนาน × สูง ÷ 2). เราเลยเอาคางหมูมา "แปะ" ใต้เส้นโค้ง — ยิ่งซอยถี่ ยิ่งแนบ ยิ่งแม่น:</p>
+
+        <IntroTrapViz/>
+
+        <h4>ทำมือทีละ n (แบ่งช่วง [0,2] ออกเป็น n ชิ้น, h = 2/n)</h4>
+        <p>สูตร composite trapezoidal: <M>{`\\;I \\approx h\\left[\\tfrac{f_0+f_n}{2}+f_1+f_2+\\cdots+f_{n-1}\\right]`}</M></p>
+        <NumTable
+          headers={["n", "h", "การแทนค่า", "พื้นที่ ≈", "error"]}
+          rows={[
+            [1, "2",    "(0+4)/2 · 2",                          "4.00000", "50.0 %"],
+            [2, "1",    "1·[(0+4)/2 + 1]",                      "3.00000", "12.5 %"],
+            [4, "0.5",  "0.5·[(0+4)/2 + 0.25+1+2.25]",          "2.75000", "3.13 %"],
+            [8, "0.25", "0.25·[(0+4)/2 + Σ จุดใน]",             "2.68750", "0.78 %"],
+            [16, "0.125", "0.125·[(0+4)/2 + Σ จุดใน]",          "2.67188", "0.20 %"],
+          ]}
+        />
+        <Callout kind="good" title="สังเกตแพตเทิร์น — error ลดเป็น 4 เท่า">
+          <p style={{margin:"0 0 4px"}}>ทุกครั้งที่ <b>เพิ่ม n เป็น 2 เท่า</b> (h ลดครึ่งหนึ่ง) error ลดลงประมาณ <b>4 เท่า</b> (50 → 12.5 → 3.13 → 0.78 → 0.20)</p>
+          <p style={{margin:0}}>นี่คือลำดับ <M>{`O(h^2)`}</M> ของ Trapezoidal — จำได้ว่า "h ครึ่ง error เหลือ 1/4" จะใช้ตอบข้อสอบได้</p>
+        </Callout>
+
+        <h4>ให้คอมคำนวณ — ดูค่าลู่เข้าหา 8/3</h4>
+        <PythonRunner code={`def f(x):
+    return x**2                       # ฟังก์ชันที่จะหาพื้นที่ใต้กราฟ
+
+def trapz(f, a, b, n):
+    h = (b - a) / n                   # ความกว้างแต่ละชิ้น
+    s = (f(a) + f(b)) / 2             # หัว+ท้าย หารสอง
+    for i in range(1, n):
+        s += f(a + i*h)               # จุดในระหว่าง นับเต็ม
+    return s * h
+
+exact = 8/3                            # ค่าจริง = ∫₀² x² dx = 8/3
+print(f"ค่าจริง (exact) = {exact:.6f}\\n")
+for n in [1, 2, 4, 8, 16, 32, 64]:
+    approx = trapz(f, 0, 2, n)
+    err = abs(exact - approx) / exact * 100
+    print(f"n={n:3d}  →  พื้นที่ ≈ {approx:.6f}   error = {err:6.3f}%")`} height={260}/>
+
+        <Callout kind="tip" title="สรุปบทเรียนนี้ → เชื่อมกับทั้งเว็บ">
+          <p style={{margin:"0 0 6px"}}>สองตัวอย่างข้างบนคือ "หน้าตา" ของทั้งวิชา: (1) <b>แก้สมการ</b> ที่ไม่มีสูตร → เดาวนซ้ำ (บท Root Finding) · (2) <b>หาพื้นที่/อินทิเกรต</b> ที่ integrate ตรง ๆ ไม่ได้ → ซอยเป็นชิ้นแล้วรวม (บท Integration)</p>
+          <p style={{margin:0}}>ทุกบทจะเล่า 3 อย่างเสมอ: <b>ทำยังไงให้ใกล้คำตอบ</b> · <b>error เล็กแค่ไหน</b> · <b>เร็วแค่ไหน</b></p>
+        </Callout>
+      </Sect>
 
       <Sect tag="00" title="โรดแมป — เริ่มจากไหนดี?">
         <p>เรียงตามลำดับจากซ้ายไปขวา ถ้าใหม่จริง ๆ แนะนำให้เริ่มจาก <b>Root Finding</b> เลยครับ บทแรกจะปูแนวคิด "iteration" และ "error" ที่ใช้ซ้ำในทุกบทถัดไป</p>
