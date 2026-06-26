@@ -170,6 +170,17 @@ ys = [14.4, 28.7, 36.2, 43.1, 51.4]
 ans = lagrange(xs, ys, 4.5)
 print(f"\\nf(4.5) = {ans:.6f}")`} height={220}/>
 
+        <h3>fx-991CW · กด Lagrange ทีละ Lᵢ</h3>
+        <Callout title="เก็บ x ในตัวแปร แล้วประกอบทีละพจน์">
+          <CalcSteps steps={[
+            <span>เก็บค่า x ที่จะหา (เช่น 4.5) ใน <Key>STO</Key> <Key>x</Key> — ใช้ซ้ำได้ทุกพจน์</span>,
+            <span>คำนวณ <M>{`L_0`}</M>: พิมพ์ <code>(x−x₁)(x−x₂)…÷((x₀−x₁)(x₀−x₂)…)</code> → <Key>=</Key> → <Key>STO</Key> <Key>A</Key></span>,
+            <span>ทำซ้ำได้ <M>{`L_1, L_2, \\ldots`}</M> เก็บใน B, C, …</span>,
+            <span>รวมคำตอบ: <code>A·y₀ + B·y₁ + C·y₂ + …</code> → <Key>=</Key></span>,
+            <span><b>ตรวจเร็ว:</b> <M>{`L_0 + L_1 + \\cdots = 1`}</M> เสมอ — ถ้าบวกกันไม่ได้ 1 แปลว่ากดผิด</span>,
+          ]}/>
+        </Callout>
+
         <h3>Animation · ดู Lᵢ(x) หน้าตาเป็นยังไง</h3>
         <p>แต่ละ <M>{`L_i`}</M> เป็น "ภูเขา" ที่ <M>=1</M> ที่ <M>{`x_i`}</M> และ <M>=0</M> ที่จุดอื่น ๆ → ผลรวม <M>{`\\sum L_i y_i`}</M> จึงผ่านทุกจุดเป๊ะ</p>
         <LagrangeBasisViz xs={[1, 2, 3, 4, 5]}/>
@@ -199,6 +210,17 @@ print(f"\\nf(4.5) = {ans:.6f}")`} height={220}/>
               ["x₃ = 3", "12", "", "", ""],
             ]}
           />
+        </Callout>
+
+        <Callout title="fx-991CW · สร้างตาราง Δ ด้วยโหมด Spreadsheet">
+          <CalcSteps steps={[
+            <span><Key>HOME</Key> → <Key>Spreadsheet</Key></span>,
+            <span>คอลัมน์ A = ค่า <M>{`f_i`}</M> (พิมพ์ลงทีละแถว)</span>,
+            <span>คอลัมน์ B = <M>{`\\Delta f`}</M>: ที่ B1 พิมพ์สูตร <code>=A2−A1</code> แล้ว Fill ลงล่าง</span>,
+            <span>คอลัมน์ C = <M>{`\\Delta^2 f`}</M>: <code>=B2−B1</code> Fill ลง · ทำ D, E ต่อสำหรับ <M>{`\\Delta^3, \\Delta^4`}</M></span>,
+            <span>อ่าน <b>แถวบนสุด</b>ของแต่ละคอลัมน์ = <M>{`\\Delta f_0, \\Delta^2 f_0, \\ldots`}</M> ที่ใช้ในสูตร Forward</span>,
+            <span>หา s = <code>(x−x₀)÷h</code> เก็บใน <Key>STO</Key> <Key>A</Key> แล้วแทนในสูตร Newton Forward</span>,
+          ]}/>
         </Callout>
 
         <h3>ตัวอย่าง · ประมาณค่า f(0.5) จาก จุด (0,1), (1,2), (2,5), (3,12)</h3>
@@ -381,20 +403,33 @@ function LagrangeBasisViz({ xs }) {
     for (let j = 0; j < n; j++) if (j !== i) L *= (x - xs[j]) / (xs[i] - xs[j]);
     return L;
   };
+  // Animated: highlight one basis Lᵢ at a time — เห็นว่าแต่ละตัว = 1 ที่ node ตัวเอง, = 0 ที่ node อื่น
   return (
-    <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
-      <Axes width={W} height={H} padding={padding} xDomain={[xMin, xMax]} yDomain={yDomain}/>
-      {xs.map((x, i) => (
-        <path key={i} d={plotPath(Li(i), xMin, xMax, sx, sy, 240)} fill="none" stroke={colors[i % colors.length]} strokeWidth="1.8" opacity="0.9"/>
-      ))}
-      {xs.map((x, i) => (
-        <circle key={"d"+i} cx={sx(x)} cy={sy(0)} r="4" fill={colors[i % colors.length]}/>
-      ))}
-      {xs.map((x, i) => (
-        <text key={"t"+i} x={sx(x)} y={sy(1)-6} fill={colors[i % colors.length]} fontFamily="JetBrains Mono" fontSize="11" textAnchor="middle">L{i}</text>
-      ))}
-      <line x1={padding.l} y1={sy(1)} x2={W-padding.r} y2={sy(1)} stroke="#3b4452" strokeDasharray="3 3"/>
-    </svg>
+    <StepPlayer steps={n} stepDuration={1300} label={(s) => `L${s}(x) · = 1 ที่ x${s}, = 0 ที่จุดอื่น`}>
+      {({ step }) => (
+        <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
+          <Axes width={W} height={H} padding={padding} xDomain={[xMin, xMax]} yDomain={yDomain}/>
+          {xs.map((x, i) => (
+            <path key={i} d={plotPath(Li(i), xMin, xMax, sx, sy, 240)} fill="none"
+              stroke={colors[i % colors.length]} strokeWidth={i === step ? 3 : 1.5}
+              opacity={i === step ? 1 : 0.18}/>
+          ))}
+          {/* mark where the highlighted Lᵢ equals 1 (its own node) and 0 (other nodes) */}
+          {xs.map((x, i) => (
+            <circle key={"d"+i} cx={sx(x)} cy={sy(i === step ? 1 : 0)} r={i === step ? 6 : 4}
+              fill={colors[step % colors.length]} opacity={i === step ? 1 : 0.5}
+              stroke="#0e1116" strokeWidth="1.2"/>
+          ))}
+          {xs.map((x, i) => (
+            <text key={"t"+i} x={sx(x)} y={sy(1)-6} fill={colors[i % colors.length]}
+              fontFamily="JetBrains Mono" fontSize="11" textAnchor="middle"
+              opacity={i === step ? 1 : 0.3} fontWeight={i === step ? 700 : 400}>L{i}</text>
+          ))}
+          <line x1={padding.l} y1={sy(1)} x2={W-padding.r} y2={sy(1)} stroke="#3b4452" strokeDasharray="3 3"/>
+          <line x1={padding.l} y1={sy(0)} x2={W-padding.r} y2={sy(0)} stroke="#3b4452" strokeDasharray="3 3"/>
+        </svg>
+      )}
+    </StepPlayer>
   );
 }
 
@@ -489,45 +524,44 @@ function DDTable({ xs, ys }) {
   );
 }
 
+// Animated: degree builds up 1 → n, polynomial bends to follow more data points
 function NewtonProgression({ xs, ys, xTest }) {
-  const [degree, setDegree] = React.useState(1);
   const W = 640, H = 320;
   const padding = { l: 40, r: 12, t: 14, b: 26 };
-
-  const subX = xs.slice(0, degree+1);
-  const subY = ys.slice(0, degree+1);
-  const { coeffs, eval: ev } = dividedDifferences(subX, subY);
-  const fAtTest = ev(xTest);
-
+  const maxDeg = Math.min(4, xs.length - 1);
   const xMin = Math.min(...xs) - 0.5, xMax = Math.max(...xs) + 0.5;
   const yMin = Math.min(...ys) - 5, yMax = Math.max(...ys) + 5;
   const sx = makeScale([xMin, xMax], [padding.l, W - padding.r]);
   const sy = makeScale([yMin, yMax], [H - padding.b, padding.t]);
-  const fnPath = plotPath(ev, xMin, xMax, sx, sy, 200);
 
   return (
-    <div>
-      <div className="chip-row">
-        {[1,2,3,4].map(d => (
-          <button key={d} className={"btn small " + (degree === d ? "primary" : "")} onClick={() => setDegree(d)}>
-            Degree {d} ({d+1} จุด)
-          </button>
-        ))}
-      </div>
-      <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
-        <Axes width={W} height={H} padding={padding} xDomain={[xMin, xMax]} yDomain={[yMin, yMax]}/>
-        <path d={fnPath} fill="none" stroke="#58c4dd" strokeWidth="2"/>
-        {xs.map((x, i) => (
-          <circle key={i} cx={sx(x)} cy={sy(ys[i])} r="5"
-            fill={i <= degree ? "#ffd66b" : "#3b4452"}
-            stroke="#0e1116" strokeWidth="1.5"/>
-        ))}
-        <line x1={sx(xTest)} x2={sx(xTest)} y1={padding.t} y2={H-padding.b} stroke="#83c167" strokeDasharray="3 3" opacity="0.6"/>
-        <circle cx={sx(xTest)} cy={sy(fAtTest)} r="6" fill="#83c167" stroke="#0e1116" strokeWidth="2"/>
-        <text x={sx(xTest)+8} y={sy(fAtTest)-8} fill="#83c167" fontFamily="JetBrains Mono" fontSize="11">f({xTest}) = {fAtTest.toFixed(4)}</text>
-      </svg>
-      <p className="muted" style={{fontSize:13}}>เพิ่มจุดเรื่อย ๆ → polynomial โค้งตามรูปข้อมูลมากขึ้น</p>
-    </div>
+    <StepPlayer steps={maxDeg} stepDuration={1500} label={(s) => `Degree ${s+1} (${s+2} จุด)`}>
+      {({ step }) => {
+        const degree = step + 1;
+        const subX = xs.slice(0, degree+1);
+        const subY = ys.slice(0, degree+1);
+        const { eval: ev } = dividedDifferences(subX, subY);
+        const fAtTest = ev(xTest);
+        const fnPath = plotPath(ev, xMin, xMax, sx, sy, 200);
+        return (
+          <div>
+            <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
+              <Axes width={W} height={H} padding={padding} xDomain={[xMin, xMax]} yDomain={[yMin, yMax]}/>
+              <path d={fnPath} fill="none" stroke="#58c4dd" strokeWidth="2"/>
+              {xs.map((x, i) => (
+                <circle key={i} cx={sx(x)} cy={sy(ys[i])} r={i === degree ? 6 : 5}
+                  fill={i < degree ? "#83c167" : (i === degree ? "#ffd66b" : "#3b4452")}
+                  stroke="#0e1116" strokeWidth="1.5"/>
+              ))}
+              <line x1={sx(xTest)} x2={sx(xTest)} y1={padding.t} y2={H-padding.b} stroke="#83c167" strokeDasharray="3 3" opacity="0.6"/>
+              <circle cx={sx(xTest)} cy={sy(fAtTest)} r="6" fill="#83c167" stroke="#0e1116" strokeWidth="2"/>
+              <text x={sx(xTest)+8} y={sy(fAtTest)-8} fill="#83c167" fontFamily="JetBrains Mono" fontSize="11">f({xTest}) = {fAtTest.toFixed(4)}</text>
+            </svg>
+            <p className="muted" style={{fontSize:13}}>▶ กดเล่น: เพิ่มจุดทีละจุด (จุดล่าสุด=เหลือง) → polynomial โค้งตามรูปข้อมูลมากขึ้น เส้นฟ้าลากผ่านทุกจุดที่ใช้</p>
+          </div>
+        );
+      }}
+    </StepPlayer>
   );
 }
 

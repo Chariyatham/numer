@@ -5,7 +5,7 @@ const PROBLEMS = [
   { id: "R01", topic: "root", diff: "easy", title: "Bisection พื้นฐาน",
     q: <p>ใช้ Bisection หาราก <M>{`f(x) = x^2 - 3 = 0`}</M> ในช่วง <M>{`[1, 2]`}</M> 4 iterations พร้อม error %</p>,
     a: <div>
-      <NumTable headers={["i","a","b","m","f(m)","ε%"]} rows={[
+      <StepTable headers={["i","a","b","m","f(m)","ε%"]} rows={[
         [1,1.0000,2.0000,1.5000,-0.7500,"—"],
         [2,1.5000,2.0000,1.7500,0.0625,14.29],
         [3,1.5000,1.7500,1.6250,-0.3594,7.69],
@@ -17,7 +17,7 @@ const PROBLEMS = [
   { id: "R02", topic: "root", diff: "easy", title: "False Position",
     q: <p>ใช้ False Position หา <M>{`f(x) = x^3 - 5 = 0`}</M> ในช่วง <M>{`[1, 2]`}</M> 3 iterations</p>,
     a: <div>
-      <NumTable headers={["i","a","b","m","f(m)","ε%"]} rows={[
+      <StepTable headers={["i","a","b","m","f(m)","ε%"]} rows={[
         [1,1.0000,2.0000,1.5714,-1.1226,"—"],
         [2,1.5714,2.0000,1.6964,-0.1180,7.37],
         [3,1.6964,2.0000,1.7079,-0.0103,0.67],
@@ -29,7 +29,7 @@ const PROBLEMS = [
     q: <p>หา <M>{`x`}</M> ที่ทำให้ <M>{`e^{-x} - x = 0`}</M> โดย Newton-Raphson, <M>x_0 = 0.5</M>, 4 iterations</p>,
     a: <div>
       <p><M>{`f(x) = e^{-x} - x,\\quad f'(x) = -e^{-x} - 1`}</M></p>
-      <NumTable headers={["i","x","f(x)","f'(x)","x_new","ε%"]} rows={[
+      <StepTable headers={["i","x","f(x)","f'(x)","x_new","ε%"]} rows={[
         [1,0.5000,0.1065,-1.6065,0.5663,11.71],
         [2,0.5663,0.0013,-1.5676,0.5671,0.146],
         [3,0.5671,0.0000,-1.5671,0.5671,0.0000],
@@ -40,7 +40,7 @@ const PROBLEMS = [
   { id: "R04", topic: "root", diff: "medium", title: "Secant",
     q: <p>ใช้ Secant หา <M>{`f(x) = x \\cos x - 1 = 0`}</M> โดย <M>{`x_0 = 0, x_1 = 1`}</M>, 4 iterations</p>,
     a: <div>
-      <NumTable headers={["i","x₀","x₁","f(x₀)","f(x₁)","x₂"]} rows={[
+      <StepTable headers={["i","x₀","x₁","f(x₀)","f(x₁)","x₂"]} rows={[
         [1,0.0000,1.0000,-1.0000,-0.4597,1.8508],
         [2,1.0000,1.8508,-0.4597,-1.5436,0.5901],
         [3,1.8508,0.5901,-1.5436,-0.5097,1.2120],
@@ -84,7 +84,7 @@ print(f"ราก ≈ {best[1]:.6f}")`}/>
     a: <div>
       <p>ที่ <M>x_0 = 1</M>: <M>{`f(x_0) = e^1 \\approx 2.7183,\\; f^{(n)}(x_0) = e^1`}</M> ทุก n</p>
       <p>ค่าจริง <M>{`e^{1.5} \\approx 4.4817`}</M></p>
-      <NumTable headers={["n","T_n(1.5)","error %"]} rows={[
+      <StepTable headers={["n","T_n(1.5)","error %"]} rows={[
         [0,2.7183,39.35],
         [1,4.0775,9.02],
         [2,4.4173,1.44],
@@ -145,11 +145,11 @@ print(f"ราก ≈ {best[1]:.6f}")`}/>
     q: <p>เริ่ม <M>{`x^{(0)} = (0,0,0)`}</M>, ระบบ <M>{`4x_1 + x_2 + x_3 = 6,\\; x_1 + 4x_2 + x_3 = 6,\\; x_1 + x_2 + 4x_3 = 6`}</M> ทำ Jacobi 3 รอบ + Gauss-Seidel 3 รอบ เทียบกัน</p>,
     a: <div>
       <p><b>Jacobi (ใช้ค่าเก่าทั้งหมด):</b></p>
-      <NumTable headers={["k","x₁","x₂","x₃"]} rows={[
+      <StepTable headers={["k","x₁","x₂","x₃"]} rows={[
         [0,0,0,0],[1,1.5,1.5,1.5],[2,0.75,0.75,0.75],[3,1.125,1.125,1.125]
       ]}/>
       <p><b>Gauss-Seidel (ใช้ค่าใหม่ทันที):</b></p>
-      <NumTable headers={["k","x₁","x₂","x₃"]} rows={[
+      <StepTable headers={["k","x₁","x₂","x₃"]} rows={[
         [0,0,0,0],[1,1.5,1.125,0.84375],[2,1.0078,1.0371,0.9888],[3,0.9935,1.0044,1.0005]
       ]}/>
       <p>คำตอบจริง = (1, 1, 1) — Gauss-Seidel ใกล้ขึ้น 4 เท่า</p>
@@ -309,7 +309,7 @@ gauss_seidel(A, b, [0,0,0])`} height={220}/>
     q: <p>ข้อมูล (1, 0.5), (2, 1.7), (3, 3.4), (4, 5.7), (5, 8.4) สงสัยเป็น <M>{`y = a x^b`}</M> — หา a, b</p>,
     a: <div>
       <p>Take log: <M>{`\\ln y = \\ln a + b \\ln x`}</M> → linear ใน ln x, ln y</p>
-      <NumTable headers={["x","y","ln x","ln y"]} rows={[
+      <StepTable headers={["x","y","ln x","ln y"]} rows={[
         [1,0.5,0.000,-0.693],
         [2,1.7,0.693,0.531],
         [3,3.4,1.099,1.224],
@@ -357,7 +357,7 @@ print(f"I ≈ {I:.6f}  (จริง ≈ 0.882081)")`} height={130}/>
     q: <p>เปรียบเทียบ error % ของ Trap vs Simpson สำหรับ <M>{`\\int_0^1 e^x dx`}</M> เมื่อ n = 2, 4, 8, 16</p>,
     a: <div>
       <p>ค่าจริง = e - 1 ≈ 1.71828</p>
-      <NumTable headers={["n","Trap","Trap err%","Simpson","Simp err%"]} rows={[
+      <StepTable headers={["n","Trap","Trap err%","Simpson","Simp err%"]} rows={[
         [2,1.7539,2.07,1.71886,0.034],
         [4,1.7272,0.52,1.71831,0.0021],
         [8,1.72051,0.130,1.71828,0.00013],
@@ -512,7 +512,7 @@ print(f"R² = {R2:.4f}")`} height={300}/>
     q: <p>ประมาณค่า sin(1) โดย Taylor series รอบ <M>{`x_0 = 0`}</M> สำหรับ n = 1, 3, 5, 7 พร้อม error vs ค่าจริง sin(1) ≈ 0.8414710</p>,
     a: <div>
       <p>sin(x) ≈ x − x³/6 + x⁵/120 − x⁷/5040</p>
-      <NumTable headers={["n","Tₙ(1)","|error|"]} rows={[
+      <StepTable headers={["n","Tₙ(1)","|error|"]} rows={[
         [1, 1.0, 0.1585290],
         [3, 0.833333, 0.008138],
         [5, 0.841667, 0.000196],
@@ -529,7 +529,7 @@ print(f"R² = {R2:.4f}")`} height={300}/>
   { id: "I04", topic: "interp", diff: "easy", title: "Newton Forward Difference",
     q: <p>สร้างตาราง Δ จากข้อมูล x = [0,1,2,3], y = [1,3,9,27]; หา P(0.5) ด้วย Newton Forward formula</p>,
     a: <div>
-      <NumTable headers={["x","y","Δy","Δ²y","Δ³y"]} rows={[
+      <StepTable headers={["x","y","Δy","Δ²y","Δ³y"]} rows={[
         [0, 1, 2, 4, 8],
         [1, 3, 6, 12, ""],
         [2, 9, 18, "", ""],
@@ -633,7 +633,7 @@ print(f"x ≈ {ans:.6f} → F(x) = {F(ans):.6f}")`} height={200}/>,
     </div>,
     a: <div>
       <p><M>{`f'(x) = 1 + \\sin x`}</M></p>
-      <NumTable headers={["i","x","f(x)","f'(x)","x_new","true err","approx %"]} rows={[
+      <StepTable headers={["i","x","f(x)","f'(x)","x_new","true err","approx %"]} rows={[
         [1, 0.5000000, -0.3775826, 1.4794255, 0.7552224, 0.0161372, "33.79"],
         [2, 0.7552224, 0.0271033, 1.6854230, 0.7391412, 0.0000561, "2.18"],
         [3, 0.7391412, 0.0000946, 1.6736322, 0.7390851, 0.0000001, "0.0076"],

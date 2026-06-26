@@ -100,15 +100,108 @@ function loadPyodide() {
   return pyodidePromise;
 }
 
+// Python harness: run the user's code under sys.settrace and capture (lineno, simple locals) per line.
+// USER_CODE is injected from JS via py.globals.set. Result is JSON in _trace_json.
+const PY_TRACE_HARNESS = `
+import sys as _sys, json as _json, math as _math
+_events = []
+_g = {}
+_co = compile(USER_CODE, '<user>', 'exec')
+def _snap(fr):
+    d = {}
+    for k, v in list(fr.f_locals.items()):
+        if k.startswith('_'):
+            continue
+        try:
+            if v is None or isinstance(v, bool) or isinstance(v, str):
+                d[k] = v
+            elif isinstance(v, int):
+                d[k] = v
+            elif isinstance(v, float):
+                d[k] = round(v, 6) if _math.isfinite(v) else str(v)
+            elif isinstance(v, (list, tuple)) and len(v) <= 12 and all(isinstance(e, (bool, int, float, str)) for e in v):
+                d[k] = [round(e, 6) if (isinstance(e, float) and _math.isfinite(e)) else e for e in v]
+        except Exception:
+            pass
+    return d
+def _tr(frame, event, arg):
+    if len(_events) >= 400:
+        return None
+    if event == 'line' and frame.f_code.co_filename == '<user>':
+        _events.append([frame.f_lineno, _snap(frame)])
+    return _tr
+_sys.settrace(_tr)
+try:
+    exec(_co, _g)
+except Exception as _e:
+    _events.append([0, {'error': str(_e)}])
+finally:
+    _sys.settrace(None)
+_trace_json = _json.dumps({'events': _events})
+`;
+
+// Step through a captured execution trace: highlight the running line + show variable values.
+function CodeStepView({ code, events, onClose }) {
+  const lines = code.split("\n");
+  const fmt = (v) => Array.isArray(v) ? "[" + v.join(", ") + "]" : String(v);
+  return (
+    <div className="py-trace" style={{marginTop:8, border:"1px solid var(--blue-dim)", borderRadius:8, padding:"8px 10px"}}>
+      <div className="py-toolbar" style={{marginBottom:4}}>
+        <span style={{color:"var(--blue)"}}>▸ เดินโค้ดทีละบรรทัด (รันจริงด้วย Pyodide)</span>
+        <div style={{flex:1}}/>
+        <button className="btn small ghost" onClick={onClose}>✕ ปิด</button>
+      </div>
+      <StepPlayer steps={events.length} stepDuration={650} height={40} label={(s) => `บรรทัด ${events[s][0]} · step ${s+1}/${events.length}`}>
+        {({ step }) => {
+          const [lineNo, vars] = events[step];
+          const prev = step > 0 ? events[step-1][1] : {};
+          return (
+            <div style={{display:"flex", gap:12, alignItems:"flex-start", flexWrap:"wrap"}}>
+              <pre className="code-block" style={{flex:"1 1 320px", margin:0, lineHeight:1.65}}>
+                {lines.map((ln, i) => (
+                  <div key={i} style={{
+                    background: (i+1) === lineNo ? "rgba(255,214,107,0.16)" : "transparent",
+                    borderLeft: (i+1) === lineNo ? "3px solid #ffd66b" : "3px solid transparent",
+                    paddingLeft: 6, whiteSpace: "pre",
+                  }}>
+                    <span style={{color:"#5b6472"}}>{String(i+1).padStart(2, " ")}</span>  {ln || " "}
+                  </div>
+                ))}
+              </pre>
+              <div className="card tight" style={{flex:"0 0 190px", minWidth:160}}>
+                <div className="kicker">ค่าตัวแปรตอนนี้</div>
+                <div style={{fontFamily:"var(--font-mono)", fontSize:13, lineHeight:1.8}}>
+                  {Object.keys(vars).length === 0
+                    ? <span className="muted">— ยังไม่มีตัวแปร</span>
+                    : Object.entries(vars).map(([k, v]) => {
+                        const changed = JSON.stringify(prev[k]) !== JSON.stringify(v);
+                        return (
+                          <div key={k} style={{color: changed ? "#ffd66b" : "var(--text)"}}>
+                            {k} = {fmt(v)}{changed && <span style={{color:"var(--text-faint)", fontSize:11}}> ←</span>}
+                          </div>
+                        );
+                      })}
+                </div>
+              </div>
+            </div>
+          );
+        }}
+      </StepPlayer>
+    </div>
+  );
+}
+
 function PythonRunner({ code: initialCode, autoRun = false, height = 160 }) {
   const [code, setCode] = useState(initialCode || "");
   const [output, setOutput] = useState("");
   const [status, setStatus] = useState("idle");
   const [pyReady, setPyReady] = useState(false);
+  const [trace, setTrace] = useState(null);
 
   const run = async () => {
     setStatus("loading");
     setOutput("");
+    setTrace(null);
     let py;
     try {
       py = await loadPyodide();
@@ -133,9 +226,44 @@ function PythonRunner({ code: initialCode, autoRun = false, height = 160 }) {
     }
   };
 
+  // Run under a tracer and capture per-line execution for the step-through animation.
+  const animate = async () => {
+    setStatus("loading");
+    setOutput("");
+    setTrace(null);
+    let py;
+    try {
+      py = await loadPyodide();
+      setPyReady(true);
+    } catch (e) {
+      setStatus("error");
+      setOutput("โหลด Pyodide ไม่สำเร็จ: " + e.message);
+      return;
+    }
+    setStatus("running");
+    try {
+      try { await py.loadPackagesFromImports(code); } catch (e) { /* package autoload best-effort */ }
+      py.globals.set("USER_CODE", code);
+      await py.runPythonAsync(PY_TRACE_HARNESS);
+      const raw = py.globals.get("_trace_json");
+      const parsed = JSON.parse(raw);
+      try { py.globals.delete("USER_CODE"); py.globals.delete("_trace_json"); } catch (e) {}
+      if (!parsed.events || !parsed.events.length) {
+        setStatus("error");
+        setOutput("ไม่มีบรรทัดให้เดิน — โค้ดนี้อาจเป็นการนิยามฟังก์ชันล้วน ๆ ลองเพิ่มบรรทัดเรียกใช้หรือ print");
+        return;
+      }
+      setTrace(parsed.events);
+      setStatus("done");
+    } catch (e) {
+      setStatus("error");
+      setOutput(e.toString());
+    }
+  };
+
   useEffect(() => {
     if (autoRun) run();
-     
+
   }, []);
 
   return (
@@ -153,7 +281,10 @@ function PythonRunner({ code: initialCode, autoRun = false, height = 160 }) {
         <button className="btn small primary" onClick={run} disabled={status === "running" || status === "loading"}>
           ▸ Run
         </button>
-        <button className="btn small ghost" onClick={() => { setCode(initialCode); setOutput(""); setStatus("idle"); }}>↺ รีเซ็ต</button>
+        <button className="btn small" onClick={animate} disabled={status === "running" || status === "loading"} title="รันจริงแล้วเดินทีละบรรทัด">
+          ▸ ทีละบรรทัด
+        </button>
+        <button className="btn small ghost" onClick={() => { setCode(initialCode); setOutput(""); setStatus("idle"); setTrace(null); }}>↺ รีเซ็ต</button>
       </div>
       <textarea
         value={code}
@@ -161,6 +292,7 @@ function PythonRunner({ code: initialCode, autoRun = false, height = 160 }) {
         style={{ minHeight: height }}
         spellCheck={false}
       />
+      {trace && <CodeStepView code={code} events={trace} onClose={() => setTrace(null)} />}
       {output && <pre className={"py-output " + (status === "error" ? "error" : "")}>{output}</pre>}
     </div>
   );

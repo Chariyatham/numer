@@ -41,6 +41,9 @@ function DifferentiationLesson() {
         </Formula>
         <p>สังเกตว่า term ที่มี <M>h^2</M> (จาก <M>f''</M>) หายไปเอง — ทำให้ <b>Central แม่นกว่ามาก</b></p>
 
+        <h3>Animation — secant ค่อย ๆ กลายเป็น tangent เมื่อ h เล็กลง</h3>
+        <SecantTangentViz/>
+
         <h3>เห็นภาพ — error ของ 3 สูตร</h3>
         <DiffComparison/>
 
@@ -257,6 +260,62 @@ for h in [0.4, 0.2, 0.1, 0.05, 0.025]:
   );
 }
 
+// Animated: central secant line rotates toward the true tangent as h → 0
+function SecantTangentViz() {
+  const f = Math.exp;
+  const x0 = 2;
+  const trueSlope = Math.exp(2);   // f'(2) = e²
+  const fx0 = f(x0);
+  const hValues = [0.7, 0.5, 0.35, 0.2, 0.1, 0.05];
+  const xDomain = [1.2, 2.8];
+  const yDomain = [2, 16];
+  return (
+    <StepPlayer steps={hValues.length} stepDuration={1400} label={(s) => `h = ${hValues[s]}`}>
+      {({ step }) => {
+        const h = hValues[step];
+        const xl = x0 - h, xr = x0 + h;
+        const fl = f(xl), fr = f(xr);
+        const m = (fr - fl) / (2 * h);   // central difference slope
+        // secant through the two sample points, extended across the domain
+        const secY = (X) => fl + m * (X - xl);
+        // true tangent through (x0, f(x0))
+        const tanY = (X) => fx0 + trueSlope * (X - x0);
+        const markers = [
+          { kind: "line", x1: xDomain[0], y1: tanY(xDomain[0]), x2: xDomain[1], y2: tanY(xDomain[1]), color: "#83c167", dashed: true, width: 1.3 },
+          { kind: "line", x1: xDomain[0], y1: secY(xDomain[0]), x2: xDomain[1], y2: secY(xDomain[1]), color: "#ffd66b", width: 2 },
+          { kind: "point", x: xl, y: fl, color: "#58c4dd", label: "x−h" },
+          { kind: "point", x: xr, y: fr, color: "#f47274", label: "x+h" },
+          { kind: "point", x: x0, y: fx0, color: "#ffd66b" },
+        ];
+        const errPct = Math.abs(trueSlope - m) / trueSlope * 100;
+        return (
+          <div>
+            <FnPlot fn={f} xDomain={xDomain} yDomain={yDomain} markers={markers} height={300}/>
+            <div className="grid-2" style={{marginTop:10}}>
+              <div className="card tight">
+                <div className="kicker">central difference</div>
+                <div style={{fontFamily:"var(--font-mono)", fontSize:13, lineHeight:1.7}}>
+                  <div>h = {h}</div>
+                  <div>slope = (f(x+h)−f(x−h)) / 2h</div>
+                  <div>= <b style={{color:"#ffd66b"}}>{m.toFixed(6)}</b></div>
+                </div>
+              </div>
+              <div className="card tight">
+                <div className="kicker">เทียบ tangent จริง</div>
+                <div style={{fontFamily:"var(--font-mono)", fontSize:13, lineHeight:1.7}}>
+                  <div><span style={{color:"#83c167"}}>f′(2) = e²</span> = {trueSlope.toFixed(6)}</div>
+                  <div>error = {errPct.toFixed(4)}%</div>
+                  <div style={{color:"var(--text-faint)", fontSize:12, marginTop:4}}>เส้นเหลือง (secant) เข้าหาเส้นเขียว (tangent) เมื่อ h เล็กลง</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }}
+    </StepPlayer>
+  );
+}
+
 function DiffComparison() {
   const [logh, setLogh] = React.useState(-1);   // h = 10^logh
   const h = Math.pow(10, logh);
@@ -337,21 +396,35 @@ function DiffErrorPlot() {
   const sx = makeScale(xDomain, [padding.l, W - padding.r]);
   const sy = makeScale(yDomain, [H - padding.b, padding.t]);
 
-  const makePath = (key) => data.map((d, i) => `${i === 0 ? "M" : "L"}${sx(logH[i]).toFixed(1)},${sy(Math.log10(d[key])).toFixed(1)}`).join(" ");
-
+  // Animated: trace the error curves as h sweeps — เห็น error ลดแล้ว "กลับเพิ่ม" (U-shape) จาก round-off
   return (
     <div className="error-plot">
-      <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
-        <Axes width={W} height={H} padding={padding} xDomain={xDomain} yDomain={yDomain}/>
-        <path d={makePath("fwd")} fill="none" stroke="#f47274" strokeWidth="2"/>
-        <path d={makePath("ctr")} fill="none" stroke="#58c4dd" strokeWidth="2"/>
-        <path d={makePath("rich")} fill="none" stroke="#83c167" strokeWidth="2"/>
-        <text x={padding.l+10} y={padding.t+18} fill="#f47274" fontFamily="JetBrains Mono" fontSize="12">— Forward O(h)</text>
-        <text x={padding.l+10} y={padding.t+36} fill="#58c4dd" fontFamily="JetBrains Mono" fontSize="12">— Central O(h²)</text>
-        <text x={padding.l+10} y={padding.t+54} fill="#83c167" fontFamily="JetBrains Mono" fontSize="12">— Richardson O(h⁴)</text>
-        <text x={W/2} y={H-6} fill="#9aa4b2" fontSize="11" textAnchor="middle" fontFamily="JetBrains Mono">log₁₀ h →</text>
-        <text x={14} y={H/2} fill="#9aa4b2" fontSize="11" transform={`rotate(-90 14 ${H/2})`} textAnchor="middle" fontFamily="JetBrains Mono">log₁₀ |error|</text>
-      </svg>
+      <StepPlayer steps={data.length} stepDuration={450} label={(s) => `h = ${data[s].h.toExponential(1)}`}>
+        {({ step }) => {
+          const shown = data.slice(0, step+1);
+          const makePath = (key) => shown.map((d, i) => `${i === 0 ? "M" : "L"}${sx(logH[i]).toFixed(1)},${sy(Math.log10(d[key])).toFixed(1)}`).join(" ");
+          return (
+            <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
+              <Axes width={W} height={H} padding={padding} xDomain={xDomain} yDomain={yDomain}/>
+              <path d={makePath("fwd")} fill="none" stroke="#f47274" strokeWidth="2"/>
+              <path d={makePath("ctr")} fill="none" stroke="#58c4dd" strokeWidth="2"/>
+              <path d={makePath("rich")} fill="none" stroke="#83c167" strokeWidth="2"/>
+              {(() => { const d = data[step]; return (
+                <g>
+                  <circle cx={sx(logH[step])} cy={sy(Math.log10(d.fwd))} r="5" fill="#f47274"/>
+                  <circle cx={sx(logH[step])} cy={sy(Math.log10(d.ctr))} r="5" fill="#58c4dd"/>
+                  <circle cx={sx(logH[step])} cy={sy(Math.log10(d.rich))} r="5" fill="#83c167"/>
+                </g>
+              ); })()}
+              <text x={padding.l+10} y={padding.t+18} fill="#f47274" fontFamily="JetBrains Mono" fontSize="12">— Forward O(h)</text>
+              <text x={padding.l+10} y={padding.t+36} fill="#58c4dd" fontFamily="JetBrains Mono" fontSize="12">— Central O(h²)</text>
+              <text x={padding.l+10} y={padding.t+54} fill="#83c167" fontFamily="JetBrains Mono" fontSize="12">— Richardson O(h⁴)</text>
+              <text x={W/2} y={H-6} fill="#9aa4b2" fontSize="11" textAnchor="middle" fontFamily="JetBrains Mono">log₁₀ h →</text>
+              <text x={14} y={H/2} fill="#9aa4b2" fontSize="11" transform={`rotate(-90 14 ${H/2})`} textAnchor="middle" fontFamily="JetBrains Mono">log₁₀ |error|</text>
+            </svg>
+          );
+        }}
+      </StepPlayer>
       <p className="muted" style={{fontSize:12, margin:"6px 0 0"}}>เห็นชัดว่า error ลดลงเรื่อย ๆ ตอน h ใหญ่ — แต่<b>กลับเพิ่ม</b>ตอน h เล็กมาก เพราะ floating-point round-off</p>
     </div>
   );
