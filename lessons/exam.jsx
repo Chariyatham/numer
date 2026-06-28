@@ -405,7 +405,7 @@ cubic_spline_natural([1,2,3,4], [2,5,10,17])`} height={200}/>
       <Sect tag="Set K" title="ชุดที่ 11 — Mega Problems (โจทย์ผสมหลายบท ระดับ Project)">
         <Callout kind="warn" title="โจทย์ระดับ Final Project — ใช้ 2–4 บทใน 1 ข้อ">
           <p>แต่ละข้อใช้เวลา 30–45 นาทีในห้องสอบ — อาจารย์ชอบออกแนวนี้เพื่อแยกคนที่ <em>เข้าใจ</em> ออกจากคนที่ <em>ท่องสูตร</em></p>
-          <p style={{margin:0, fontSize:13}}>กลยุทธ์: ทำแต่ละ sub-part เป็น "ข้อย่อย" — ถ้าทำ (a) ไม่ออก ข้าม (b) ไม่ได้ ก็ทำต่อด้วยค่า assume ที่สมเหตุสมผล</p>
+          <p style={{margin:0, fontSize:'0.778rem'}}>กลยุทธ์: ทำแต่ละ sub-part เป็น "ข้อย่อย" — ถ้าทำ (a) ไม่ออก ข้าม (b) ไม่ได้ ก็ทำต่อด้วยค่า assume ที่สมเหตุสมผล</p>
         </Callout>
 
         <Problem label="Mega 1 (40 คะแนน) · เภสัชจลศาสตร์ — Regression × Integration × Differentiation" solution={
@@ -534,12 +534,12 @@ cubic_spline_natural([1,2,3,4], [2,5,10,17])`} height={200}/>
       </Sect>
 
       <Sect tag="🏁" title="พร้อมแล้ว!">
-        <p style={{fontSize:18, lineHeight:1.7}}>
+        <p style={{fontSize:'1rem', lineHeight:1.7}}>
           เรียนจบครบทั้ง 8 บทแล้ว — Root Finding, Linear Systems, Conjugate Gradient, Interpolation, Spline, Regression, Integration, Differentiation
         </p>
         <p>ถ้ายังไม่มั่นใจส่วนไหน <a href="#intro">กลับไปอ่านปฐมนิเทศ</a>หรือดูที่บทนั้น ๆ — แล้วลองทำข้อสอบจำลองนี้แบบจับเวลา</p>
         <Callout kind="good">
-          <p style={{margin:0, fontSize:16}}>ขอให้สอบผ่านนะครับ! 📐✨</p>
+          <p style={{margin:0, fontSize:'0.889rem'}}>ขอให้สอบผ่านนะครับ! 📐✨</p>
         </Callout>
       </Sect>
     </div>
@@ -623,7 +623,7 @@ function MethodQuiz() {
         <div className="kicker">ข้อ {idx+1} / {METHOD_QUIZ.length}</div>
         <div className="timer-pill">คะแนน {score.correct} / {score.total}</div>
       </div>
-      <div style={{fontSize:15, lineHeight:1.6}}>{q.q}</div>
+      <div style={{fontSize:'0.833rem', lineHeight:1.6}}>{q.q}</div>
       <div className="opts">
         {q.opts.map((opt, i) => (
           <button key={i}

@@ -14,7 +14,7 @@ function MatrixView({ M, highlight, label, vector = null }) {
   return (
     <div className="card tight" style={{display:"inline-block", padding:"10px 16px"}}>
       {label && <div className="kicker" style={{marginBottom:6}}>{label}</div>}
-      <table style={{borderCollapse:"collapse", fontFamily:"var(--font-mono)", fontSize:13}}>
+      <table style={{borderCollapse:"collapse", fontFamily:"var(--font-mono)", fontSize:'0.778rem'}}>
         <tbody>
           {M.map((row, i) => (
             <tr key={i}>
@@ -54,7 +54,7 @@ function GaussViz({ A0, b0 }) {
           return (
             <div style={{display:"flex", flexDirection:"column", alignItems:"center", gap:14}}>
               <MatrixView M={s.M} label={`[A | b]`} />
-              <div style={{fontFamily:"var(--font-mono)", fontSize:13, color:"var(--yellow)"}}>{s.msg}</div>
+              <div style={{fontFamily:"var(--font-mono)", fontSize:'0.778rem', color:"var(--yellow)"}}>{s.msg}</div>
             </div>
           );
         }}
@@ -92,12 +92,12 @@ function IterativeSolver({ method = "jacobi" }) {
                 {r.x.map((xi, i) => (
                   <div className="card tight" key={i}>
                     <div className="kicker" style={{color:colors[i]}}>x{i+1}</div>
-                    <div className="mono" style={{fontSize:20, marginTop:2}}>{xi.toFixed(6)}</div>
-                    <div className="mono" style={{fontSize:11, color:"var(--text-faint)"}}>ห่างจาก 1 = {Math.abs(xi-1).toExponential(2)}</div>
+                    <div className="mono" style={{fontSize:'1.111rem', marginTop:2}}>{xi.toFixed(6)}</div>
+                    <div className="mono" style={{fontSize:'0.722rem', color:"var(--text-faint)"}}>ห่างจาก 1 = {Math.abs(xi-1).toExponential(2)}</div>
                   </div>
                 ))}
               </div>
-              <div className="mono" style={{fontSize:13, color:"var(--yellow)", marginBottom:8}}>
+              <div className="mono" style={{fontSize:'0.778rem', color:"var(--yellow)", marginBottom:8}}>
                 ‖Δx‖/‖x‖ = {r.err === null ? "—" : r.err.toExponential(3)}
               </div>
               <NumTable
@@ -125,7 +125,7 @@ function GaussJordanViz({ A0, b0 }) {
           return (
             <div style={{display:"flex", flexDirection:"column", alignItems:"center", gap:12}}>
               <MatrixView M={s.M} label={`[A | b] → กำลังแปลงเป็น [I | x]`}/>
-              <div style={{fontFamily:"var(--font-mono)", fontSize:13, color:"var(--yellow)"}}>{s.msg}</div>
+              <div style={{fontFamily:"var(--font-mono)", fontSize:'0.778rem', color:"var(--yellow)"}}>{s.msg}</div>
             </div>
           );
         }}
@@ -177,7 +177,7 @@ function LUViz({ A0, b0 }) {
         <div className="card tight">
           <div className="kicker">Step 1 · Forward — Ly = b</div>
           {result.steps.forward.map((r, i) => (
-            <div key={i} style={{fontFamily:"var(--font-mono)", fontSize:12, padding:"2px 0"}}>
+            <div key={i} style={{fontFamily:"var(--font-mono)", fontSize:'0.75rem', padding:"2px 0"}}>
               y{i+1} = <b style={{color:"var(--yellow)"}}>{num(r.val, 6)}</b>
             </div>
           ))}
@@ -185,7 +185,7 @@ function LUViz({ A0, b0 }) {
         <div className="card tight" style={{borderColor:"var(--green-dim)"}}>
           <div className="kicker" style={{color:"var(--green)"}}>Step 2 · Backward — Ux = y</div>
           {result.steps.backward.map((r, i) => (
-            <div key={i} style={{fontFamily:"var(--font-mono)", fontSize:12, padding:"2px 0"}}>
+            <div key={i} style={{fontFamily:"var(--font-mono)", fontSize:'0.75rem', padding:"2px 0"}}>
               x{r.i+1} = <b style={{color:"var(--green)"}}>{num(r.val, 6)}</b>
             </div>
           ))}
@@ -209,7 +209,7 @@ function CholeskyViz({ A0, b0 }) {
           return (
             <div style={{display:"flex", flexDirection:"column", alignItems:"center", gap:8}}>
               <MatrixView M={s.L} label={`L กำลังสร้าง (i=${s.i+1}, j=${s.j+1})`} highlight={{r: s.i, c: s.j}} vector={false}/>
-              <div style={{fontFamily:"var(--font-mono)", fontSize:12, color:"var(--yellow)"}}>{s.expr}</div>
+              <div style={{fontFamily:"var(--font-mono)", fontSize:'0.75rem', color:"var(--yellow)"}}>{s.expr}</div>
             </div>
           );
         }}
@@ -237,7 +237,7 @@ function InverseViz({ A0 }) {
           return (
             <div style={{display:"flex", flexDirection:"column", alignItems:"center", gap:8}}>
               <MatrixView M={s.M} label="[A | I] → [I | A⁻¹]" vector={false}/>
-              <div style={{fontFamily:"var(--font-mono)", fontSize:13, color:"var(--yellow)"}}>{s.msg}</div>
+              <div style={{fontFamily:"var(--font-mono)", fontSize:'0.778rem', color:"var(--yellow)"}}>{s.msg}</div>
             </div>
           );
         }}
@@ -278,8 +278,8 @@ function DirectSolverShell({ method = "gauss", title }) {
       title={title}
       inputs={
         <div className="input-row">
-          <div><div style={{fontSize:11, color:"var(--text-faint)", marginBottom:4}}>A</div><MatrixInput value={A} onChange={setA} rows={3} cols={3} prefix="a"/></div>
-          <div><div style={{fontSize:11, color:"var(--text-faint)", marginBottom:4}}>b</div><MatrixInput value={b.map(x=>[x])} onChange={(M) => setB(M.map(r=>r[0]))} rows={3} cols={1} prefix="b"/></div>
+          <div><div style={{fontSize:'0.722rem', color:"var(--text-faint)", marginBottom:4}}>A</div><MatrixInput value={A} onChange={setA} rows={3} cols={3} prefix="a"/></div>
+          <div><div style={{fontSize:'0.722rem', color:"var(--text-faint)", marginBottom:4}}>b</div><MatrixInput value={b.map(x=>[x])} onChange={(M) => setB(M.map(r=>r[0]))} rows={3} cols={1} prefix="b"/></div>
         </div>
       }
       onRun={run}
@@ -287,8 +287,8 @@ function DirectSolverShell({ method = "gauss", title }) {
       output={result && (result.x
         ? <div className="callout good">
             <b>x =</b> {result.x.map((v,i) => <span key={i} style={{marginRight:14, fontFamily:"var(--font-mono)"}}>x{i+1} = {num(v, 8)}</span>)}
-            {method === "cramer" && <div style={{fontSize:12, color:"var(--text-dim)", marginTop:4}}>det(A) = {num(result.D, 6)}</div>}
-            {method === "lu" && <div style={{fontSize:12, color:"var(--text-dim)", marginTop:4}}>y (intermediate) = {result.y.map(v=>num(v,4)).join(", ")}</div>}
+            {method === "cramer" && <div style={{fontSize:'0.75rem', color:"var(--text-dim)", marginTop:4}}>det(A) = {num(result.D, 6)}</div>}
+            {method === "lu" && <div style={{fontSize:'0.75rem', color:"var(--text-dim)", marginTop:4}}>y (intermediate) = {result.y.map(v=>num(v,4)).join(", ")}</div>}
           </div>
         : <Callout kind="danger">{result.error || "no solution"}</Callout>)
       }
@@ -329,11 +329,11 @@ function LinearSystemsLesson() {
         <div className="grid-2">
           <Callout kind="good" title="Direct methods (กำจัดตรง ๆ)">
             <p>Gauss Elimination, Gauss-Jordan, LU — <b>คำนวณจบในขั้นตอนตายตัว</b> เช่น <M>{`n^3/3`}</M> operations</p>
-            <p className="muted" style={{fontSize:13, marginBottom:0}}>เหมาะกับ matrix เล็ก ๆ (n &lt; 1000) — แม่นยำเป๊ะ</p>
+            <p className="muted" style={{fontSize:'0.778rem', marginBottom:0}}>เหมาะกับ matrix เล็ก ๆ (n &lt; 1000) — แม่นยำเป๊ะ</p>
           </Callout>
           <Callout kind="tip" title="Iterative methods (ทำซ้ำ)">
             <p>Jacobi, Gauss-Seidel, Conjugate Gradient — <b>เดาคำตอบ + ปรับเข้าใกล้</b>เรื่อย ๆ</p>
-            <p className="muted" style={{fontSize:13, marginBottom:0}}>เหมาะ matrix ใหญ่ + sparse (มีศูนย์เยอะ) — ประหยัด memory</p>
+            <p className="muted" style={{fontSize:'0.778rem', marginBottom:0}}>เหมาะ matrix ใหญ่ + sparse (มีศูนย์เยอะ) — ประหยัด memory</p>
           </Callout>
         </div>
       </Sect>
@@ -514,7 +514,7 @@ print("x =", [round(v,6) for v in gauss_jordan(A, b)])`} height={220}/>
         <p>ถ้า <M>{`\\det(A) \\neq 0`}</M> ระบบ <M>Ax=b</M> มีคำตอบเดียว และ:</p>
         <Formula label="Cramer's Rule">
           <MB>{`x_i = \\frac{\\det(A_i)}{\\det(A)}`}</MB>
-          <p style={{fontSize:13, color:"var(--text-dim)", margin:"6px 0 0"}}>โดย <M>A_i</M> คือ matrix A ที่<b>แทนคอลัมน์ที่ i ด้วย b</b></p>
+          <p style={{fontSize:'0.778rem', color:"var(--text-dim)", margin:"6px 0 0"}}>โดย <M>A_i</M> คือ matrix A ที่<b>แทนคอลัมน์ที่ i ด้วย b</b></p>
         </Formula>
 
         <Callout kind="warn" title="ข้อจำกัด — ทำได้แต่ matrix เล็ก ๆ">
@@ -973,7 +973,7 @@ print("x =", [round(v,6) for v in solve_cholesky(L, b)])`} height={260}/>
           <p>Cholesky ใช้ได้แค่ <b>symmetric positive-definite</b>. ถ้า A ไม่สมมาตรแต่ <b>square invertible</b> — คูณ <M>A^T</M> ทั้งสองข้าง:</p>
           <Formula><MB>{`A^T A \\, x = A^T B`}</MB></Formula>
           <p>เพราะ <M>{`(A^T A)^T = A^T A`}</M> เสมอ และเป็น positive-definite ถ้า A invertible — ใช้ Cholesky ได้ทันที</p>
-          <p style={{margin:"6px 0 0", fontSize:12, color:"var(--text-faint)"}}>⚠ อาจารย์เขียนในชีทว่า "ดัก matrix ที่ไม่สมมาตรใช้ได้" — โจทย์ที่อาจารย์ออกใน Final มักให้ A ไม่สมมาตร แล้วบังคับว่า "ทำด้วย Cholesky"</p>
+          <p style={{margin:"6px 0 0", fontSize:'0.75rem', color:"var(--text-faint)"}}>⚠ อาจารย์เขียนในชีทว่า "ดัก matrix ที่ไม่สมมาตรใช้ได้" — โจทย์ที่อาจารย์ออกใน Final มักให้ A ไม่สมมาตร แล้วบังคับว่า "ทำด้วย Cholesky"</p>
         </Callout>
 
         <window.HandWalkthrough steps={[
@@ -1184,7 +1184,7 @@ print(f"\\nคำตอบ ≈ {[round(v,4) for v in ans]}")`} height={260}/>
         <div className="grid-2">
           <div className="card tight">
             <div className="kicker">Jacobi (ใช้ค่าเก่า)</div>
-            <div className="mono" style={{fontSize:13, lineHeight:1.7}}>
+            <div className="mono" style={{fontSize:'0.778rem', lineHeight:1.7}}>
               x₁ = (12+0)/5 = 2.40<br/>
               x₂ = (17+0+0)/5 = 3.40<br/>
               x₃ = (14+0+0)/5 = 2.80<br/>
@@ -1193,7 +1193,7 @@ print(f"\\nคำตอบ ≈ {[round(v,4) for v in ans]}")`} height={260}/>
           </div>
           <div className="card tight" style={{borderColor:"var(--green-dim)"}}>
             <div className="kicker" style={{color:"var(--green)"}}>Gauss-Seidel (ใช้ค่าใหม่ทันที)</div>
-            <div className="mono" style={{fontSize:13, lineHeight:1.7}}>
+            <div className="mono" style={{fontSize:'0.778rem', lineHeight:1.7}}>
               x₁ = (12+0)/5 = 2.40 <em>← x₁ ใหม่</em><br/>
               x₂ = (17+<b>2.40</b>+0)/5 = 3.88 <em>← x₂ ใหม่</em><br/>
               x₃ = (14+<b>3.88</b>+0)/5 = 3.576<br/>

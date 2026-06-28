@@ -24,7 +24,7 @@ function IntroRootViz() {
         <text x={sx(3)} y={sy(f(3))-8} textAnchor="middle" fontFamily="JetBrains Mono" fontSize="11" fill="#83c167">f(3)=+2</text>
         <text x={sx(root)+8} y={sy(0)-8} fontFamily="JetBrains Mono" fontSize="12" fill="#a87dbe">√7 ≈ 2.6458</text>
       </svg>
-      <p className="muted" style={{fontSize:13, marginTop:6}}>
+      <p className="muted" style={{fontSize:'0.778rem', marginTop:6}}>
         เครื่องหมายของ <M>f</M> เปลี่ยนจากลบ (ที่ x=2) เป็นบวก (ที่ x=3) → เส้นโค้งต้อง<b>ตัดแกน x</b> ที่ไหนสักจุดในช่วงนี้ นั่นคือราก
       </p>
     </div>
@@ -55,7 +55,7 @@ function IntroAreaViz() {
         <text x={sx(1.55)} y={sy(2.7)} fontFamily="JetBrains Mono" fontSize="13" fill="#ffd66b">y = x²</text>
         <text x={sx(1.0)} y={sy(0.55)} textAnchor="middle" fontFamily="JetBrains Mono" fontSize="13" fill="#83c167">พื้นที่ = 8/3 ≈ 2.6667</text>
       </svg>
-      <p className="muted" style={{fontSize:13, marginTop:6}}>
+      <p className="muted" style={{fontSize:'0.778rem', marginTop:6}}>
         "อินทิเกรต" <M>{`\\int_0^2 x^2\\,dx`}</M> ก็คือการหา<b>พื้นที่สีเขียว</b>ใต้เส้นโค้ง <M>{`y=x^2`}</M> จาก <M>{`x=0`}</M> ถึง <M>{`x=2`}</M>
       </p>
     </div>
@@ -101,7 +101,7 @@ function IntroTrapViz() {
                 จริง=2.66667 · error={err.toFixed(3)}%
               </text>
             </svg>
-            <p className="muted" style={{fontSize:13, marginTop:6}}>
+            <p className="muted" style={{fontSize:'0.778rem', marginTop:6}}>
               ยิ่งซอยช่วงให้ถี่ขึ้น (n มากขึ้น) สี่เหลี่ยมคางหมูยิ่งแนบเส้นโค้ง → พื้นที่รวมยิ่งเข้าใกล้ค่าจริง <b>8/3</b> · กด ▶ ดูทีละขั้น
             </p>
           </div>
@@ -158,7 +158,7 @@ function IntroLesson() {
             [6, "2.625", "2.65625", 2.640625, -0.0271, "[2.6406, 2.6563]"],
           ]}
         />
-        <p style={{fontSize:13}}>ทำต่อไปอีกไม่กี่รอบ ช่วงจะแคบจน <M>{`c \\to 2.6457513\\ldots = \\sqrt{7}`}</M> — แต่ละรอบช่วงแคบลงครึ่งหนึ่ง นี่แหละ "เดาให้ใกล้ขึ้นเรื่อย ๆ"</p>
+        <p style={{fontSize:'0.778rem'}}>ทำต่อไปอีกไม่กี่รอบ ช่วงจะแคบจน <M>{`c \\to 2.6457513\\ldots = \\sqrt{7}`}</M> — แต่ละรอบช่วงแคบลงครึ่งหนึ่ง นี่แหละ "เดาให้ใกล้ขึ้นเรื่อย ๆ"</p>
 
         <h4>วิธีให้คอมแก้ — โค้ดเดียวกับที่ทำมือ</h4>
         <p>กด <b>▸ Run</b> เพื่อรันจริงในเว็บ หรือ <b>▸ ทีละบรรทัด</b> เพื่อดูค่าตัวแปรเปลี่ยนทีละ step:</p>
@@ -248,32 +248,32 @@ for n in [1, 2, 4, 8, 16, 32, 64]:
           <div className="card tight">
             <div className="kicker" style={{color:"var(--green)"}}>Foundation</div>
             <h4 style={{marginTop:2}}>Root Finding</h4>
-            <p className="muted" style={{fontSize:13, margin:0}}>Bisection, Newton, Secant, False Position — หาราก f(x)=0</p>
+            <p className="muted" style={{fontSize:'0.778rem', margin:0}}>Bisection, Newton, Secant, False Position — หาราก f(x)=0</p>
           </div>
           <div className="card tight">
             <div className="kicker" style={{color:"var(--yellow)"}}>Core</div>
             <h4 style={{marginTop:2}}>Linear Systems</h4>
-            <p className="muted" style={{fontSize:13, margin:0}}>Gauss · Jacobi · Gauss-Seidel · Conjugate Gradient</p>
+            <p className="muted" style={{fontSize:'0.778rem', margin:0}}>Gauss · Jacobi · Gauss-Seidel · Conjugate Gradient</p>
           </div>
           <div className="card tight">
             <div className="kicker" style={{color:"var(--purple)"}}>Curve Fitting</div>
             <h4 style={{marginTop:2}}>Interp · Spline · Regression</h4>
-            <p className="muted" style={{fontSize:13, margin:0}}>วาดเส้นโค้งผ่าน/ใกล้จุดข้อมูล</p>
+            <p className="muted" style={{fontSize:'0.778rem', margin:0}}>วาดเส้นโค้งผ่าน/ใกล้จุดข้อมูล</p>
           </div>
           <div className="card tight">
             <div className="kicker" style={{color:"var(--pink)"}}>Calculus</div>
             <h4 style={{marginTop:2}}>Integration</h4>
-            <p className="muted" style={{fontSize:13, margin:0}}>Trapezoidal · Simpson · Composite</p>
+            <p className="muted" style={{fontSize:'0.778rem', margin:0}}>Trapezoidal · Simpson · Composite</p>
           </div>
           <div className="card tight">
             <div className="kicker" style={{color:"var(--orange)"}}>Calculus</div>
             <h4 style={{marginTop:2}}>Differentiation</h4>
-            <p className="muted" style={{fontSize:13, margin:0}}>Forward · Backward · Central</p>
+            <p className="muted" style={{fontSize:'0.778rem', margin:0}}>Forward · Backward · Central</p>
           </div>
           <div className="card tight">
             <div className="kicker" style={{color:"var(--red)"}}>Boss Fight</div>
             <h4 style={{marginTop:2}}>Mock Final</h4>
-            <p className="muted" style={{fontSize:13, margin:0}}>ข้อสอบจำลองสไตล์อาจารย์ออก (ยากกว่าแบบฝึก)</p>
+            <p className="muted" style={{fontSize:'0.778rem', margin:0}}>ข้อสอบจำลองสไตล์อาจารย์ออก (ยากกว่าแบบฝึก)</p>
           </div>
         </div>
       </Sect>
@@ -302,7 +302,7 @@ for n in [1, 2, 4, 8, 16, 32, 64]:
             <li>คูณ matrix 2×2 กับ vector 2×1 ได้ (ใช้ใน Linear Systems)</li>
             <li>เข้าใจ <M>{`\\sum_{i=1}^{n} x_i^2`}</M> ว่าหมายถึงอะไร (ใช้ใน Regression)</li>
           </ul>
-          <p style={{margin:"6px 0 0", fontSize:13}}>ถ้าทั้ง 4 ข้อทำได้สบาย → ข้ามไปอ่าน Error (Sect 02) ได้เลย</p>
+          <p style={{margin:"6px 0 0", fontSize:'0.778rem'}}>ถ้าทั้ง 4 ข้อทำได้สบาย → ข้ามไปอ่าน Error (Sect 02) ได้เลย</p>
         </Callout>
 
         <h3>🔹 1. Derivative · อนุพันธ์ (slope ของฟังก์ชัน)</h3>
@@ -332,7 +332,7 @@ for n in [1, 2, 4, 8, 16, 32, 64]:
           <p>• <M>{`f(x) = x^3 - 5`}</M> → <M>{`f'(x) = 3x^2`}</M></p>
           <p>• <M>{`f(x) = \\ln x`}</M> → <M>{`f'(x) = 1/x`}</M>, <M>{`f''(x) = -1/x^2`}</M> (ใช้ Taylor series)</p>
           <p>• <M>{`f(x) = e^x`}</M> → <M>{`f'(x) = e^x`}</M> (เป็นตัวเอง — ใช้ใน Differentiation)</p>
-          <p style={{margin:"6px 0 0", fontSize:13, color:"var(--text-faint)"}}>⚡ fx-991CW มีปุ่ม <code>d/dx</code> คำนวณ <M>{`f'(x)`}</M> ที่ค่า x ที่ระบุได้เลย — แต่ต้องเขียนสูตร analytic เป็น</p>
+          <p style={{margin:"6px 0 0", fontSize:'0.778rem', color:"var(--text-faint)"}}>⚡ fx-991CW มีปุ่ม <code>d/dx</code> คำนวณ <M>{`f'(x)`}</M> ที่ค่า x ที่ระบุได้เลย — แต่ต้องเขียนสูตร analytic เป็น</p>
         </Callout>
 
         <h3 style={{marginTop:24}}>🔹 2. Integral · อินทิเกรต (พื้นที่ใต้กราฟ)</h3>
@@ -362,7 +362,7 @@ for n in [1, 2, 4, 8, 16, 32, 64]:
           <p>หา antiderivative ทีละ term:</p>
           <MB>{`F(x) = \\tfrac{4x^6}{6} - \\tfrac{3x^5}{5} + \\tfrac{x^4}{4} - 3x^2 + 2x`}</MB>
           <p>คำตอบ exact: <M>{`F(8) - F(2) \\approx 155{,}930.4`}</M></p>
-          <p style={{margin:"6px 0 0", fontSize:13}}>ใน Numerical Methods เราใช้ Trap/Simpson <em>ประมาณ</em> ค่านี้โดยไม่ต้องหา antiderivative — เหมาะกับฟังก์ชันที่ integrate analytical ยาก เช่น <M>{`e^{-x^2}`}</M></p>
+          <p style={{margin:"6px 0 0", fontSize:'0.778rem'}}>ใน Numerical Methods เราใช้ Trap/Simpson <em>ประมาณ</em> ค่านี้โดยไม่ต้องหา antiderivative — เหมาะกับฟังก์ชันที่ integrate analytical ยาก เช่น <M>{`e^{-x^2}`}</M></p>
         </Callout>
 
         <h3 style={{marginTop:24}}>🔹 3. Σ summation (สัญลักษณ์รวมเลข)</h3>
@@ -393,7 +393,7 @@ for n in [1, 2, 4, 8, 16, 32, 64]:
 
         <Callout title="ตัวอย่างง่าย — คูณ matrix-vector 2×2 กับ 2×1">
           <MB>{`\\begin{pmatrix} 2 & 3 \\\\ 1 & 4 \\end{pmatrix} \\begin{pmatrix} 5 \\\\ 6 \\end{pmatrix} = \\begin{pmatrix} 2(5) + 3(6) \\\\ 1(5) + 4(6) \\end{pmatrix} = \\begin{pmatrix} 28 \\\\ 29 \\end{pmatrix}`}</MB>
-          <p style={{margin:"6px 0 0", fontSize:13}}>คำว่า "ระบบสมการเชิงเส้น <M>{`Ax = b`}</M>" คือเขียนหลายสมการในรูป matrix นี่เอง</p>
+          <p style={{margin:"6px 0 0", fontSize:'0.778rem'}}>คำว่า "ระบบสมการเชิงเส้น <M>{`Ax = b`}</M>" คือเขียนหลายสมการในรูป matrix นี่เอง</p>
         </Callout>
 
         <h4>Transpose (Aᵀ) · สลับแถว ↔ คอลัมน์</h4>
@@ -418,7 +418,7 @@ for n in [1, 2, 4, 8, 16, 32, 64]:
         <p>คอมพิวเตอร์เก็บเลขทศนิยมเป็น <b>binary approximation</b> 64-bit (IEEE 754) — บางเลขเก็บไม่ลงตัว</p>
         <Callout kind="warn" title="ตัวอย่างคลาสสิก">
           <p>ใน Python:</p>
-          <pre style={{margin:"6px 0", padding:"8px 12px", background:"var(--bg-card)", borderRadius:6, fontFamily:"var(--font-mono)", fontSize:14}}>{`>>> 0.1 + 0.2
+          <pre style={{margin:"6px 0", padding:"8px 12px", background:"var(--bg-card)", borderRadius:6, fontFamily:"var(--font-mono)", fontSize:'0.833rem'}}>{`>>> 0.1 + 0.2
 0.30000000000000004
 >>> 0.1 + 0.2 == 0.3
 False`}</pre>
@@ -529,19 +529,19 @@ False`}</pre>
           <div className="card tight">
             <div className="kicker" style={{color:"var(--green)"}}>🟢 เริ่มจาก 0</div>
             <h4 style={{marginTop:2}}>เรียนตามลำดับ</h4>
-            <p className="muted" style={{fontSize:13, margin:0}}>เริ่ม Root Finding → ทุกบทตามลำดับ</p>
+            <p className="muted" style={{fontSize:'0.778rem', margin:0}}>เริ่ม Root Finding → ทุกบทตามลำดับ</p>
             <p style={{margin:"8px 0 0"}}><a href="#root" className="btn small primary">เริ่มเรียน →</a></p>
           </div>
           <div className="card tight">
             <div className="kicker" style={{color:"var(--yellow)"}}>⚡ ก่อนสอบ</div>
             <h4 style={{marginTop:2}}>Cheat Sheet</h4>
-            <p className="muted" style={{fontSize:13, margin:0}}>สรุปทุกสูตร + Decision tree</p>
+            <p className="muted" style={{fontSize:'0.778rem', margin:0}}>สรุปทุกสูตร + Decision tree</p>
             <p style={{margin:"8px 0 0"}}><a href="#cheat" className="btn small">เปิดดู →</a></p>
           </div>
           <div className="card tight">
             <div className="kicker" style={{color:"var(--pink)"}}>📚 ฝึกโจทย์</div>
             <h4 style={{marginTop:2}}>Problem Bank</h4>
-            <p className="muted" style={{fontSize:13, margin:0}}>40+ ข้อ พร้อมเฉลย</p>
+            <p className="muted" style={{fontSize:'0.778rem', margin:0}}>40+ ข้อ พร้อมเฉลย</p>
             <p style={{margin:"8px 0 0"}}><a href="#problems" className="btn small">ลองทำ →</a></p>
           </div>
         </div>

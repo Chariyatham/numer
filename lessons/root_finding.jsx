@@ -11,10 +11,10 @@ function HandWalkthrough({ steps }) {
         borderRadius: isCurrent ? 6 : 0,
         opacity: isCurrent ? 1 : 0.72,
         transition: "opacity .25s ease"}}>
-      <div style={{color:"var(--blue)", fontWeight:600, fontSize:13, marginBottom:4}}>ขั้น {i+1}: {s.title}</div>
-      <div style={{fontFamily:"var(--font-mono)", fontSize:13.5, lineHeight:1.85, whiteSpace:"pre-wrap"}}>{s.body}</div>
+      <div style={{color:"var(--blue)", fontWeight:600, fontSize:'0.778rem', marginBottom:4}}>ขั้น {i+1}: {s.title}</div>
+      <div style={{fontFamily:"var(--font-mono)", fontSize:'0.806rem', lineHeight:1.85, whiteSpace:"pre-wrap"}}>{s.body}</div>
       {s.calc && (
-        <div style={{marginTop:6, padding:"6px 10px", background:"var(--bg-soft)", border:"1px solid var(--blue-dim)", borderRadius:6, fontSize:12, fontFamily:"var(--font-mono)"}}>
+        <div style={{marginTop:6, padding:"6px 10px", background:"var(--bg-soft)", border:"1px solid var(--blue-dim)", borderRadius:6, fontSize:'0.75rem', fontFamily:"var(--font-mono)"}}>
           <span style={{color:"var(--blue)"}}>📟 fx-991CW:</span> {s.calc}
         </div>
       )}
@@ -71,7 +71,7 @@ function BisectionViz({ fn, a0, b0, exprText, root: trueRoot }) {
             <div className="grid-2" style={{marginTop:10}}>
               <div className="card tight">
                 <div className="kicker">Iteration {r.iter}</div>
-                <div style={{fontFamily:"var(--font-mono)", fontSize:13, lineHeight:1.7, color:"var(--text)"}}>
+                <div style={{fontFamily:"var(--font-mono)", fontSize:'0.778rem', lineHeight:1.7, color:"var(--text)"}}>
                   <div><span style={{color:"#83c167"}}>a</span> = {r.xl.toFixed(6)} &nbsp;<span style={{color:"var(--text-faint)"}}>f(a) = {r.fl.toFixed(4)}</span></div>
                   <div><span style={{color:"#f47274"}}>b</span> = {r.xr.toFixed(6)} &nbsp;<span style={{color:"var(--text-faint)"}}>f(b) = {r.fr.toFixed(4)}</span></div>
                   <div><span style={{color:"#ffd66b"}}>m</span> = (a+b)/2 = <b>{r.xm.toFixed(6)}</b></div>
@@ -81,13 +81,13 @@ function BisectionViz({ fn, a0, b0, exprText, root: trueRoot }) {
               </div>
               <div className="card tight">
                 <div className="kicker">การตัดสินใจ</div>
-                <div style={{fontFamily:"var(--font-mono)", fontSize:13, lineHeight:1.7}}>
+                <div style={{fontFamily:"var(--font-mono)", fontSize:'0.778rem', lineHeight:1.7}}>
                   f(a)·f(m) = {(r.fl*r.fm).toFixed(4)}
                   {r.fl*r.fm < 0
                     ? <div style={{color:"var(--green)"}}>&lt; 0 → ราก<b>อยู่ซ้าย</b> → ตั้ง b ← m</div>
                     : <div style={{color:"var(--green)"}}>&gt; 0 → ราก<b>อยู่ขวา</b> → ตั้ง a ← m</div>}
                 </div>
-                {trueRoot && <div style={{marginTop:8, color:"var(--text-faint)", fontSize:12}}>
+                {trueRoot && <div style={{marginTop:8, color:"var(--text-faint)", fontSize:'0.75rem'}}>
                   คำตอบจริง ≈ {trueRoot.toFixed(6)} · ความผิดพลาดจาก m = {Math.abs(r.xm - trueRoot).toFixed(6)}
                 </div>}
               </div>
@@ -137,7 +137,7 @@ function NewtonViz({ fn, fprime, x0, exprText }) {
             <FnPlot fn={fn} xDomain={xDomain} yDomain={yDomain} markers={markers} height={320}/>
             <div className="card tight" style={{marginTop:10}}>
               <div className="kicker">Iteration {r.iter}</div>
-              <div style={{fontFamily:"var(--font-mono)", fontSize:13, lineHeight:1.7}}>
+              <div style={{fontFamily:"var(--font-mono)", fontSize:'0.778rem', lineHeight:1.7}}>
                 <span style={{color:"#58c4dd"}}>xᵢ</span> = {r.x.toFixed(6)} &nbsp;
                 f(xᵢ) = {r.fx.toFixed(6)} &nbsp; f'(xᵢ) = {r.fpx.toFixed(6)}
                 <div><span style={{color:"#83c167"}}>xᵢ₊₁</span> = xᵢ − f(xᵢ)/f'(xᵢ) = <b>{r.xnew.toFixed(6)}</b></div>
@@ -188,7 +188,7 @@ function SecantViz({ fn, x0, x1 }) {
             <FnPlot fn={fn} xDomain={xDomain} yDomain={yDomain} markers={markers} height={320}/>
             <div className="card tight" style={{marginTop:10}}>
               <div className="kicker">Iteration {r.iter}</div>
-              <div style={{fontFamily:"var(--font-mono)", fontSize:13, lineHeight:1.7}}>
+              <div style={{fontFamily:"var(--font-mono)", fontSize:'0.778rem', lineHeight:1.7}}>
                 x₀ = {r.xa.toFixed(6)}, f(x₀) = {r.fa.toFixed(4)}<br/>
                 x₁ = {r.xb.toFixed(6)}, f(x₁) = {r.fb.toFixed(4)}<br/>
                 <span style={{color:"#83c167"}}>x₂</span> = x₁ − f(x₁)(x₀−x₁)/(f(x₀)−f(x₁)) = <b>{r.xnew.toFixed(6)}</b><br/>
@@ -233,7 +233,7 @@ function FalsePosViz({ fn, a0, b0 }) {
             <FnPlot fn={fn} xDomain={xDomain} yDomain={yDomain} markers={markers} height={320}/>
             <div className="card tight" style={{marginTop:10}}>
               <div className="kicker">Iteration {r.iter}</div>
-              <div style={{fontFamily:"var(--font-mono)", fontSize:13, lineHeight:1.7}}>
+              <div style={{fontFamily:"var(--font-mono)", fontSize:'0.778rem', lineHeight:1.7}}>
                 <span style={{color:"#83c167"}}>xₗ</span> = {r.xl.toFixed(6)}, f = {r.fl.toFixed(4)}<br/>
                 <span style={{color:"#f47274"}}>xᵣ</span> = {r.xr.toFixed(6)}, f = {r.fr.toFixed(4)}<br/>
                 <span style={{color:"#ffd66b"}}>xₘ</span> = xᵣ − f(xᵣ)(xₗ−xᵣ)/(f(xₗ)−f(xᵣ)) = <b>{r.xm.toFixed(6)}</b><br/>
@@ -294,7 +294,7 @@ function CobwebViz({ g, x0, exprText }) {
             </svg>
             <div className="card tight" style={{marginTop:10}}>
               <div className="kicker">Iteration {r.iter}</div>
-              <div style={{fontFamily:"var(--font-mono)", fontSize:13, lineHeight:1.7}}>
+              <div style={{fontFamily:"var(--font-mono)", fontSize:'0.778rem', lineHeight:1.7}}>
                 xₙ = {r.x.toFixed(8)}<br/>
                 xₙ₊₁ = g(xₙ) = <b>{r.xnew.toFixed(8)}</b><br/>
                 εₐ = {(r.err*100).toFixed(5)}%
@@ -519,7 +519,7 @@ function RootFindingLesson() {
             { kind: "point", x: 1.5214, y: 0, color: "#ffd66b", label: "ราก ≈ 1.5214" },
           ]}
         />
-        <p className="muted" style={{fontSize:13}}>กราฟของ <M>{`f(x) = x^3 - x - 2`}</M> จุดที่กราฟตัดแกน x คือ "ราก" ที่เราหา</p>
+        <p className="muted" style={{fontSize:'0.778rem'}}>กราฟของ <M>{`f(x) = x^3 - x - 2`}</M> จุดที่กราฟตัดแกน x คือ "ราก" ที่เราหา</p>
       </Sect>
 
       {/* ============= METHOD 1: GRAPHICAL ============= */}
@@ -580,7 +580,7 @@ print(f"f(root) = {f(best[1]):.6f}")`} height={220}/>
             <li><b>Phase 2:</b> scan ทีละ 0.000001 ในช่วงนั้น → หา x ที่ <M>{`|f(x)|`}</M> น้อยที่สุด</li>
             <li>คำตอบที่ควรได้: <M>{`x = 180/43 \\approx 4.186047`}</M></li>
           </ul>
-          <p style={{margin:"6px 0 0", fontSize:12, color:"var(--text-faint)"}}>⚠ เป็นโจทย์ที่ <b>ชีท root1.pdf บังคับ</b> — Phase 2 จะวน ~186,000 รอบ (รอ ~2 วินาที)</p>
+          <p style={{margin:"6px 0 0", fontSize:'0.75rem', color:"var(--text-faint)"}}>⚠ เป็นโจทย์ที่ <b>ชีท root1.pdf บังคับ</b> — Phase 2 จะวน ~186,000 รอบ (รอ ~2 วินาที)</p>
         </Callout>
         <PythonRunner code={`# โจทย์ root1.pdf ข้อ 1 — Modified Graphical Method
 # สมการ: 43x - 180 = 0  →  root จริง = 180/43 ≈ 4.186047
@@ -763,7 +763,7 @@ print(f"\\n4√13 ≈ {root:.6f}")`} height={280}/>
             <li>Output: t ที่ <b>ทศนิยม 4 ตำแหน่ง</b></li>
             <li>เทส: <code>38 2</code> → <code>6.1644</code> &nbsp;·&nbsp; <code>1265256 12</code> → <code>3.2249</code></li>
           </ul>
-          <p style={{margin:"8px 0 0", fontSize:12, color:"var(--text-faint)"}}>⚠ โจทย์โปรแกรมที่ <b>ชีท root1.pdf บังคับ</b> — แนวสอบยอดนิยม</p>
+          <p style={{margin:"8px 0 0", fontSize:'0.75rem', color:"var(--text-faint)"}}>⚠ โจทย์โปรแกรมที่ <b>ชีท root1.pdf บังคับ</b> — แนวสอบยอดนิยม</p>
         </Callout>
         <PythonRunner code={`# โจทย์ root1.pdf ข้อ 3 — ถอดรากที่ n ด้วย Bisection
 # Input: บรรทัดที่ 1 = "x n", บรรทัดที่ 2 = "xl xr"
@@ -802,7 +802,7 @@ print(f"{m:.4f}    (Bisection · {iters} iterations)")`} height={300}/>
 
         <Formula label="สูตร False Position">
           <MB>{`x_m = x_r - \\frac{f(x_r)\\cdot(x_l - x_r)}{f(x_l) - f(x_r)}`}</MB>
-          <p className="muted" style={{margin:"6px 0 0", fontSize:12}}>มาจากการเขียนสมการเส้นตรงผ่าน 2 จุด แล้วให้ y = 0</p>
+          <p className="muted" style={{margin:"6px 0 0", fontSize:'0.75rem'}}>มาจากการเขียนสมการเส้นตรงผ่าน 2 จุด แล้วให้ y = 0</p>
         </Formula>
 
         <Callout title="พิสูจน์สูตร (ที่ออกในข้อสอบจริง)">
@@ -858,7 +858,7 @@ print(f"\\n4√13 ≈ {ans:.6f}")`} height={240}/>
             <li>Output: t ที่ <b>ทศนิยม 4 ตำแหน่ง</b></li>
             <li>เทส: <code>38 2</code> → <code>6.1644</code> &nbsp;·&nbsp; <code>1265256 12</code> → <code>3.2249</code></li>
           </ul>
-          <p style={{margin:"8px 0 0", fontSize:12, color:"var(--text-faint)"}}>⚠ โจทย์โปรแกรมที่ <b>ชีท root1.pdf บังคับ</b> — แนวสอบยอดนิยม (คู่กับ Bisection)</p>
+          <p style={{margin:"8px 0 0", fontSize:'0.75rem', color:"var(--text-faint)"}}>⚠ โจทย์โปรแกรมที่ <b>ชีท root1.pdf บังคับ</b> — แนวสอบยอดนิยม (คู่กับ Bisection)</p>
         </Callout>
         <PythonRunner code={`# โจทย์ root1.pdf ข้อ 6 — ถอดรากที่ n ด้วย False Position
 # Input: บรรทัดที่ 1 = "x n", บรรทัดที่ 2 = "xl xr"
@@ -930,7 +930,7 @@ print(f"{m:.4f}    (False Position · {iters} iterations)")`} height={300}/>
           <p style={{margin:"0 0 8px"}}><M>{`g(x) = 7/x \\Rightarrow g'(x) = -7/x^2`}</M>. ที่จุดราก <M>{`x^* = \\sqrt{7} \\approx 2.6458`}</M>:</p>
           <MB>{`|g'(\\sqrt{7})| = |-7/7| = 1 \\;\\;\\not<\\; 1 \\quad \\Rightarrow \\quad \\text{ไม่ลู่เข้า}`}</MB>
           <p style={{margin:"8px 0 0"}}>เนื่องจาก <M>{`|g'(x^*)| = 1`}</M> พอดี — มัน <b>oscillate</b> (สลับค่าไปกลับ) ไม่ลู่และไม่ระเบิด</p>
-          <p style={{margin:"8px 0 0", fontSize:13, color:"var(--text-faint)"}}>ทางออก: เลือก g(x) ใหม่ที่ <M>{`|g'(x^*)| < 1`}</M> เช่นรูป C: <M>{`g(x) = (x + 7/x)/2`}</M> มี <M>{`g'(\\sqrt{7}) = 0`}</M> → ลู่เข้าเร็วมาก (quadratic — เพราะนี่คือ Newton-Raphson นั่นเอง)</p>
+          <p style={{margin:"8px 0 0", fontSize:'0.778rem', color:"var(--text-faint)"}}>ทางออก: เลือก g(x) ใหม่ที่ <M>{`|g'(x^*)| < 1`}</M> เช่นรูป C: <M>{`g(x) = (x + 7/x)/2`}</M> มี <M>{`g'(\\sqrt{7}) = 0`}</M> → ลู่เข้าเร็วมาก (quadratic — เพราะนี่คือ Newton-Raphson นั่นเอง)</p>
         </Callout>
         <PythonRunner code={`# One-point Iteration · เปรียบเทียบ g(x) ที่ดีกับที่ลู่ออก
 # จากชีท Mid p.4 — เลือก g(x) ผิดทำให้คำตอบวนไม่หยุด
@@ -1073,7 +1073,7 @@ Newton ใช้ 4 iter ได้ความแม่น 6 ทศนิยม �
               ]}
             />
             <p>4 iterations → <M>{`\\sqrt{7} \\approx 2.6457513`}</M> ตรงกับค่าจริง <M>{`2.6457513110...`}</M> แล้ว ✓</p>
-            <p className="muted" style={{fontSize:13}}>สังเกตว่า error <em>quadratic convergence</em> — ลดลงประมาณ "ยกกำลังสอง" ทุกรอบ: 27% → 4% → 0.07% → 0.00003%</p>
+            <p className="muted" style={{fontSize:'0.778rem'}}>สังเกตว่า error <em>quadratic convergence</em> — ลดลงประมาณ "ยกกำลังสอง" ทุกรอบ: 27% → 4% → 0.07% → 0.00003%</p>
           </div>
         }>
           ใช้วิธี Newton-Raphson หา <M>{`\\sqrt{7}`}</M> โดย <M>{`x_0 = 2.0`}</M> 4 iterations พร้อม error
@@ -1281,8 +1281,8 @@ for n in range(0, 6):
           />
           <p style={{margin:"8px 0 0"}}>ที่ <M>x = 4</M>, <M>{`(x - x_0) = 2`}</M>:</p>
           <MB>{`T_3(4) = 0.6931 + 0.5(2) + \\tfrac{-0.25}{2}(4) + \\tfrac{0.25}{6}(8) = 0.6931 + 1 - 0.5 + 0.3333 \\approx 1.5264`}</MB>
-          <p style={{margin:"4px 0 0", fontSize:13}}>(เทียบ <M>{`\\ln 4 \\approx 1.3863`}</M> — error ~10% เพราะ <M>{`|x-x_0|=2`}</M> ใหญ่ ใกล้รัศมีลู่เข้า)</p>
-          <p style={{margin:"6px 0 0", fontSize:12, color:"var(--text-faint)"}}>⚠ เครื่องคิดเลข fx-991CW ทำ d/dx ได้ลำดับเดียว (Central diff) — สำหรับ <M>f''</M> ขึ้นไปต้องคำนวณสูตรเอง หรือใช้ <code>d/dx(d/dx(f(x))|x=x₀)|x=x₀</code> ซ้อนกัน (ช้ากว่า แต่ทำได้)</p>
+          <p style={{margin:"4px 0 0", fontSize:'0.778rem'}}>(เทียบ <M>{`\\ln 4 \\approx 1.3863`}</M> — error ~10% เพราะ <M>{`|x-x_0|=2`}</M> ใหญ่ ใกล้รัศมีลู่เข้า)</p>
+          <p style={{margin:"6px 0 0", fontSize:'0.75rem', color:"var(--text-faint)"}}>⚠ เครื่องคิดเลข fx-991CW ทำ d/dx ได้ลำดับเดียว (Central diff) — สำหรับ <M>f''</M> ขึ้นไปต้องคำนวณสูตรเอง หรือใช้ <code>d/dx(d/dx(f(x))|x=x₀)|x=x₀</code> ซ้อนกัน (ช้ากว่า แต่ทำได้)</p>
         </Callout>
       </Sect>
 

@@ -122,8 +122,8 @@ function DifferentiationLesson() {
             <span>ประกอบสูตร: <code>(−E + 8D − 8B + A) ÷ (12h)</code> → กด <Key>=</Key> ได้ <M>f'(x_i)</M> แม่นยำ O(h⁴)</span>,
             <span>สำหรับ <M>f''</M>: <code>(−E + 16D − 30C + 16B − A) ÷ (12h²)</code></span>,
           ]}/>
-          <p style={{margin:"6px 0 0", fontSize:13}}>ทริค: ถ้า h เป็น decimal คงที่ → คำนวณ <code>1/(12h)</code> ก่อน → <Key>STO</Key> <Key>F</Key> → ใช้ <code>(−E+8D−8B+A)×F</code></p>
-          <p style={{margin:"4px 0 0", fontSize:12, color:"var(--text-faint)"}}>คนสอบเร็วใช้เทคนิคนี้คำนวณ 5-point ได้ใน 30 วินาที — เร็วกว่าคำนวณทีละสูตรด้วยมือ 3 เท่า</p>
+          <p style={{margin:"6px 0 0", fontSize:'0.778rem'}}>ทริค: ถ้า h เป็น decimal คงที่ → คำนวณ <code>1/(12h)</code> ก่อน → <Key>STO</Key> <Key>F</Key> → ใช้ <code>(−E+8D−8B+A)×F</code></p>
+          <p style={{margin:"4px 0 0", fontSize:'0.75rem', color:"var(--text-faint)"}}>คนสอบเร็วใช้เทคนิคนี้คำนวณ 5-point ได้ใน 30 วินาที — เร็วกว่าคำนวณทีละสูตรด้วยมือ 3 เท่า</p>
         </Callout>
       </Sect>
 
@@ -177,7 +177,7 @@ print(f"{'Central O(h⁴)':<20} {fpp4(f, x, h):>12.6f} {abs(true_val-fpp4(f,x,h)
 
         <Formula label="Richardson formula">
           <MB>{`D_{\\text{refined}} = \\frac{4\\,D(h/2) - D(h)}{3} = D(h/2) + \\frac{D(h/2) - D(h)}{3}`}</MB>
-          <p style={{fontSize:13, color:"var(--text-dim)", margin:"4px 0 0"}}>O(h²) + O(h²) → O(h⁴)</p>
+          <p style={{fontSize:'0.778rem', color:"var(--text-dim)", margin:"4px 0 0"}}>O(h²) + O(h²) → O(h⁴)</p>
         </Formula>
 
         <Callout kind="good" title="ที่มา">
@@ -304,7 +304,7 @@ function SecantTangentViz() {
             <div className="grid-2" style={{marginTop:10}}>
               <div className="card tight">
                 <div className="kicker">central difference</div>
-                <div style={{fontFamily:"var(--font-mono)", fontSize:13, lineHeight:1.7}}>
+                <div style={{fontFamily:"var(--font-mono)", fontSize:'0.778rem', lineHeight:1.7}}>
                   <div>h = {h}</div>
                   <div>slope = (f(x+h)−f(x−h)) / 2h</div>
                   <div>= <b style={{color:"#ffd66b"}}>{m.toFixed(6)}</b></div>
@@ -312,10 +312,10 @@ function SecantTangentViz() {
               </div>
               <div className="card tight">
                 <div className="kicker">เทียบ tangent จริง</div>
-                <div style={{fontFamily:"var(--font-mono)", fontSize:13, lineHeight:1.7}}>
+                <div style={{fontFamily:"var(--font-mono)", fontSize:'0.778rem', lineHeight:1.7}}>
                   <div><span style={{color:"#83c167"}}>f′(2) = e²</span> = {trueSlope.toFixed(6)}</div>
                   <div>error = {errPct.toFixed(4)}%</div>
-                  <div style={{color:"var(--text-faint)", fontSize:12, marginTop:4}}>เส้นเหลือง (secant) เข้าหาเส้นเขียว (tangent) เมื่อ h เล็กลง</div>
+                  <div style={{color:"var(--text-faint)", fontSize:'0.75rem', marginTop:4}}>เส้นเหลือง (secant) เข้าหาเส้นเขียว (tangent) เมื่อ h เล็กลง</div>
                 </div>
               </div>
             </div>
@@ -354,16 +354,16 @@ function DiffComparison() {
           return (
             <div className="card tight" key={i}>
               <div className="kicker" style={{color:m.color}}>{m.name}</div>
-              <div className="mono" style={{fontSize:13, marginTop:4}}>{m.val.toFixed(8)}</div>
-              <div className="mono" style={{fontSize:11, color:"var(--text-faint)"}}>err = {err.toExponential(3)}%</div>
+              <div className="mono" style={{fontSize:'0.778rem', marginTop:4}}>{m.val.toFixed(8)}</div>
+              <div className="mono" style={{fontSize:'0.722rem', color:"var(--text-faint)"}}>err = {err.toExponential(3)}%</div>
             </div>
           );
         })}
       </div>
-      <div className="mono" style={{fontSize:12, marginTop:10, color:"var(--text-dim)"}}>
+      <div className="mono" style={{fontSize:'0.75rem', marginTop:10, color:"var(--text-dim)"}}>
         คำตอบจริง f'(2) = e² = {trueVal.toFixed(10)}
       </div>
-      <p className="muted" style={{fontSize:13, marginTop:8}}>ลดค่า h ดู error ของแต่ละสูตร — Central error ลดเร็วกว่า แต่ถ้า h เล็กเกินไป (10⁻⁸) จะเริ่มเจอ <em>round-off error</em> ของ floating point!</p>
+      <p className="muted" style={{fontSize:'0.778rem', marginTop:8}}>ลดค่า h ดู error ของแต่ละสูตร — Central error ลดเร็วกว่า แต่ถ้า h เล็กเกินไป (10⁻⁸) จะเริ่มเจอ <em>round-off error</em> ของ floating point!</p>
     </div>
   );
 }
@@ -435,7 +435,7 @@ function DiffErrorPlot() {
           );
         }}
       </StepPlayer>
-      <p className="muted" style={{fontSize:12, margin:"6px 0 0"}}>เห็นชัดว่า error ลดลงเรื่อย ๆ ตอน h ใหญ่ — แต่<b>กลับเพิ่ม</b>ตอน h เล็กมาก เพราะ floating-point round-off</p>
+      <p className="muted" style={{fontSize:'0.75rem', margin:"6px 0 0"}}>เห็นชัดว่า error ลดลงเรื่อย ๆ ตอน h ใหญ่ — แต่<b>กลับเพิ่ม</b>ตอน h เล็กมาก เพราะ floating-point round-off</p>
     </div>
   );
 }

@@ -49,7 +49,7 @@ function App() {
   const [current, setCurrent] = useStA(getCurrentId());
   const [fs, setFs] = useStA(() => {
     const saved = localStorage.getItem("numer-fs-v2");
-    return saved ? +saved : 18;
+    return saved ? +saved : 19;
   });
   const [sidebarOpen, setSidebarOpen] = useStA(false);
   const [doneMap, setDoneMap] = useStA(() => window.getLessonDoneMap ? window.getLessonDoneMap() : {});
@@ -145,9 +145,9 @@ function App() {
           </div>
         ))}
 
-        <div style={{marginTop: 30, padding: "12px 10px", color: "var(--text-faint)", fontSize: 12, lineHeight: 1.5}}>
+        <div style={{marginTop: 30, padding: "12px 10px", color: "var(--text-faint)", fontSize: '0.75rem', lineHeight: 1.5}}>
           <code>⌘K</code> ค้นหา · <code>[</code> <code>]</code> เลื่อนบท · <code>Tweaks</code> ปรับฟอนต์
-          <div style={{marginTop:8, fontSize:11}}>
+          <div style={{marginTop:8, fontSize:'0.722rem'}}>
             ความคืบหน้า: <b style={{color:"var(--green)"}}>
               {Object.values(doneMap).filter(Boolean).length} / {ALL_ITEMS.length}
             </b> บท

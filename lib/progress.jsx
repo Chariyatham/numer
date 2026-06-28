@@ -51,7 +51,7 @@ function ProblemDoneToggle({ id }) {
   const [done, toggle] = useProblemDone(id);
   return (
     <button className={"lesson-done-toggle " + (done ? "done" : "")}
-      style={{marginLeft:0, fontSize:11, padding:"2px 8px"}} onClick={toggle}>
+      style={{marginLeft:0, fontSize:'0.722rem', padding:"2px 8px"}} onClick={toggle}>
       {done ? "✓ ทำแล้ว" : "○ ยังไม่ทำ"}
     </button>
   );

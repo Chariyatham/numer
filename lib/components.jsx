@@ -170,14 +170,14 @@ function CodeStepView({ code, events, onClose }) {
               </pre>
               <div className="card tight" style={{flex:"0 0 190px", minWidth:160}}>
                 <div className="kicker">ค่าตัวแปรตอนนี้</div>
-                <div style={{fontFamily:"var(--font-mono)", fontSize:13, lineHeight:1.8}}>
+                <div style={{fontFamily:"var(--font-mono)", fontSize:'0.778rem', lineHeight:1.8}}>
                   {Object.keys(vars).length === 0
                     ? <span className="muted">— ยังไม่มีตัวแปร</span>
                     : Object.entries(vars).map(([k, v]) => {
                         const changed = JSON.stringify(prev[k]) !== JSON.stringify(v);
                         return (
                           <div key={k} style={{color: changed ? "#ffd66b" : "var(--text)"}}>
-                            {k} = {fmt(v)}{changed && <span style={{color:"var(--text-faint)", fontSize:11}}> ←</span>}
+                            {k} = {fmt(v)}{changed && <span style={{color:"var(--text-faint)", fontSize:'0.722rem'}}> ←</span>}
                           </div>
                         );
                       })}
@@ -440,7 +440,7 @@ function Formula({ children, label }) {
       padding: "16px 20px",
       margin: "16px 0"
     }}>
-      {label && <div style={{fontFamily:"var(--font-mono)", fontSize:11, color:"var(--signal)", textTransform:"uppercase", letterSpacing:1.2, marginBottom:8}}>{label}</div>}
+      {label && <div style={{fontFamily:"var(--font-mono)", fontSize:'0.722rem', color:"var(--signal)", textTransform:"uppercase", letterSpacing:1.2, marginBottom:8}}>{label}</div>}
       {children}
     </div>
   );

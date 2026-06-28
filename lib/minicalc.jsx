@@ -230,7 +230,7 @@ function MiniCalc({ onClose }) {
               <b>{k}</b> = {typeof v === "number" ? Number(v.toFixed(6)).toString() : v}
             </span>
           ))}
-          {Object.keys(vars).length === 0 && <span className="muted" style={{fontSize:11}}>ว่างเปล่า — STO เก็บค่าได้</span>}
+          {Object.keys(vars).length === 0 && <span className="muted" style={{fontSize:'0.722rem'}}>ว่างเปล่า — STO เก็บค่าได้</span>}
         </div>
       </div>
     </div>
@@ -248,7 +248,7 @@ function CalcToggle() {
           onClick={() => setOpen(true)}
           title="เปิดเครื่องคิดเลข fx-991CW"
         >
-          <span style={{fontSize:18}}>🖩</span>
+          <span style={{fontSize:'1rem'}}>🖩</span>
           <span className="mc-launcher-label">Calc</span>
         </button>
       )}

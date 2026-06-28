@@ -29,11 +29,11 @@ function InterpolationLesson() {
         <div className="grid-2">
           <Callout kind="good" title="Interpolation">
             <p>เส้นโค้ง <b>ผ่านทุกจุด</b> ของข้อมูล — ใช้เมื่อข้อมูล "เป๊ะ" (ไม่มี noise)</p>
-            <p className="mono" style={{fontSize:12, margin:0}}>data 5 จุด → polynomial degree 4</p>
+            <p className="mono" style={{fontSize:'0.75rem', margin:0}}>data 5 จุด → polynomial degree 4</p>
           </Callout>
           <Callout kind="tip" title="Regression (บท 06)">
             <p>เส้นโค้ง <b>ใกล้</b> ทุกจุด — ใช้เมื่อข้อมูลมี noise</p>
-            <p className="mono" style={{fontSize:12, margin:0}}>data 100 จุด → fit linear/quadratic</p>
+            <p className="mono" style={{fontSize:'0.75rem', margin:0}}>data 100 จุด → fit linear/quadratic</p>
           </Callout>
         </div>
       </Sect>
@@ -201,12 +201,12 @@ print(f"\\nf(4.5) = {ans:.6f}")`} height={220}/>
 
         <Formula label="Newton Forward (ใช้เมื่อ x อยู่ใกล้ x₀)">
           <MB>{`P_n(x) = f_0 + s\\,\\Delta f_0 + \\frac{s(s-1)}{2!}\\,\\Delta^2 f_0 + \\frac{s(s-1)(s-2)}{3!}\\,\\Delta^3 f_0 + \\ldots`}</MB>
-          <p style={{fontSize:13, color:"var(--text-dim)", margin:"4px 0 0"}}>โดย <M>{`s = (x - x_0)/h`}</M> และ <M>{`\\Delta f_i = f_{i+1} - f_i`}</M></p>
+          <p style={{fontSize:'0.778rem', color:"var(--text-dim)", margin:"4px 0 0"}}>โดย <M>{`s = (x - x_0)/h`}</M> และ <M>{`\\Delta f_i = f_{i+1} - f_i`}</M></p>
         </Formula>
 
         <Formula label="Newton Backward (ใช้เมื่อ x อยู่ใกล้ xₙ — ปลายตาราง)">
           <MB>{`P_n(x) = f_n + s\\,\\nabla f_n + \\frac{s(s+1)}{2!}\\,\\nabla^2 f_n + \\ldots`}</MB>
-          <p style={{fontSize:13, color:"var(--text-dim)", margin:"4px 0 0"}}>โดย <M>{`s = (x - x_n)/h`}</M> และ <M>{`\\nabla f_i = f_i - f_{i-1}`}</M></p>
+          <p style={{fontSize:'0.778rem', color:"var(--text-dim)", margin:"4px 0 0"}}>โดย <M>{`s = (x - x_n)/h`}</M> และ <M>{`\\nabla f_i = f_i - f_{i-1}`}</M></p>
         </Formula>
 
         <Callout kind="tip" title="วิธีสร้างตาราง Δ (forward differences)">
@@ -246,12 +246,12 @@ print(f"\\nf(4.5) = {ans:.6f}")`} height={220}/>
             <MB>{`\\Delta^n f_0 = \\sum_{k=0}^{n} (-1)^k \\binom{n}{k}\\, f_{n-k}`}</MB>
           </Formula>
           <p>ถ้าเอาเครื่องหมายออก ก็คือ Pascal Triangle พื้นฐาน:</p>
-          <pre style={{margin:"6px 0", padding:"10px 14px", background:"var(--bg-card)", borderRadius:8, fontFamily:"var(--font-mono)", lineHeight:1.5, fontSize:14, textAlign:"center"}}>{`         1            ← Δ⁰f  (ก็คือ f เอง)
+          <pre style={{margin:"6px 0", padding:"10px 14px", background:"var(--bg-card)", borderRadius:8, fontFamily:"var(--font-mono)", lineHeight:1.5, fontSize:'0.833rem', textAlign:"center"}}>{`         1            ← Δ⁰f  (ก็คือ f เอง)
         1 1           ← Δ¹: f₁ − f₀         coefs (1, -1)
        1 2 1          ← Δ²: f₂ − 2f₁ + f₀   coefs (1, -2, 1)
       1 3 3 1         ← Δ³: f₃ − 3f₂ + 3f₁ − f₀
      1 4 6 4 1        ← Δ⁴: f₄ − 4f₃ + 6f₂ − 4f₁ + f₀`}</pre>
-          <p style={{margin:0, fontSize:13}}>ใช้ตรวจตาราง Δ ตัวเองได้ — ถ้า Δ⁴f₀ ≠ f₄ − 4f₃ + 6f₂ − 4f₁ + f₀ แปลว่ามี Δ ใดสักช่องคำนวณผิด</p>
+          <p style={{margin:0, fontSize:'0.778rem'}}>ใช้ตรวจตาราง Δ ตัวเองได้ — ถ้า Δ⁴f₀ ≠ f₄ − 4f₃ + 6f₂ − 4f₁ + f₀ แปลว่ามี Δ ใดสักช่องคำนวณผิด</p>
         </Callout>
 
         <h3>ตัวอย่างเต็ม · ตามชีท INTERPOLATION_I.pdf · 5 จุด</h3>
@@ -506,7 +506,7 @@ function DDTable({ xs, ys }) {
   }
   return (
     <div style={{overflowX:"auto"}}>
-      <table className="tbl" style={{fontFamily:"var(--font-mono)", fontSize:13}}>
+      <table className="tbl" style={{fontFamily:"var(--font-mono)", fontSize:'0.778rem'}}>
         <thead>
           <tr>
             <th>i</th>
@@ -529,7 +529,7 @@ function DDTable({ xs, ys }) {
           ))}
         </tbody>
       </table>
-      <p className="muted" style={{fontSize:12, marginTop:4}}>แถวบนสุด (สีเหลือง) คือสัมประสิทธิ์ c₀, c₁, c₂, c₃, c₄ ที่ใช้ใส่สูตร Newton</p>
+      <p className="muted" style={{fontSize:'0.75rem', marginTop:4}}>แถวบนสุด (สีเหลือง) คือสัมประสิทธิ์ c₀, c₁, c₂, c₃, c₄ ที่ใช้ใส่สูตร Newton</p>
     </div>
   );
 }
@@ -567,7 +567,7 @@ function NewtonProgression({ xs, ys, xTest }) {
               <circle cx={sx(xTest)} cy={sy(fAtTest)} r="6" fill="#83c167" stroke="#0e1116" strokeWidth="2"/>
               <text x={sx(xTest)+8} y={sy(fAtTest)-8} fill="#83c167" fontFamily="JetBrains Mono" fontSize="11">f({xTest}) = {fAtTest.toFixed(4)}</text>
             </svg>
-            <p className="muted" style={{fontSize:13}}>▶ กดเล่น: เพิ่มจุดทีละจุด (จุดล่าสุด=เหลือง) → polynomial โค้งตามรูปข้อมูลมากขึ้น เส้นฟ้าลากผ่านทุกจุดที่ใช้</p>
+            <p className="muted" style={{fontSize:'0.778rem'}}>▶ กดเล่น: เพิ่มจุดทีละจุด (จุดล่าสุด=เหลือง) → polynomial โค้งตามรูปข้อมูลมากขึ้น เส้นฟ้าลากผ่านทุกจุดที่ใช้</p>
           </div>
         );
       }}

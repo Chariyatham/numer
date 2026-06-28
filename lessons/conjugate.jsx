@@ -79,7 +79,7 @@ function ConjugateLesson() {
         <p>ระบบ <M>{`\\begin{pmatrix} 4 & 1 \\\\ 1 & 3 \\end{pmatrix} x = \\begin{pmatrix} 1 \\\\ 2 \\end{pmatrix}`}</M>, เริ่มที่ <M>{`x^{(0)} = (2, 1)`}</M></p>
 
         <CGPath2D rows={cgRows} A={A} b={b}/>
-        <p className="muted" style={{fontSize:13}}>เส้นโค้งสีฟ้าคือ "level sets" ของ <M>\phi(x)</M> เส้นเหลืองคือเส้นทางที่ CG เดิน — สังเกตว่าเดิน 2 ครั้งก็ถึงคำตอบเป๊ะ (n=2 dimensions, 2 steps)</p>
+        <p className="muted" style={{fontSize:'0.778rem'}}>เส้นโค้งสีฟ้าคือ "level sets" ของ <M>\phi(x)</M> เส้นเหลืองคือเส้นทางที่ CG เดิน — สังเกตว่าเดิน 2 ครั้งก็ถึงคำตอบเป๊ะ (n=2 dimensions, 2 steps)</p>
       </Sect>
 
       <Sect tag="3" title="ทำมือ — ตัวอย่างจากสไลด์">
@@ -149,8 +149,8 @@ print(f"\\nคำตอบ x = {x.round(6)}")`} height={300}/>
             <span>พิมพ์ <code>Trn(MatB) × MatC</code> → ได้ scalar DᵀR → ตัวเศษ λₖ</span>,
             <span>กดสูตร <M>{`\\lambda_k = -D^T R / D^T A D`}</M> ใน Calculate mode ทันที</span>,
           ]}/>
-          <p style={{margin:"6px 0 0", fontSize:13}}>การวน iteration ใช้เวลา ~30s ต่อรอบเมื่อคล่อง — เร็วกว่าคูณ matrix-vector ทีละช่องด้วยมือ</p>
-          <p style={{margin:"4px 0 0", fontSize:12, color:"var(--text-faint)"}}>ระวัง: fx-991CW เก็บ matrix ได้สูงสุด <b>4×4</b> ต่อตัว — โจทย์ CG ในชีท (4×4) พอดี</p>
+          <p style={{margin:"6px 0 0", fontSize:'0.778rem'}}>การวน iteration ใช้เวลา ~30s ต่อรอบเมื่อคล่อง — เร็วกว่าคูณ matrix-vector ทีละช่องด้วยมือ</p>
+          <p style={{margin:"4px 0 0", fontSize:'0.75rem', color:"var(--text-faint)"}}>ระวัง: fx-991CW เก็บ matrix ได้สูงสุด <b>4×4</b> ต่อตัว — โจทย์ CG ในชีท (4×4) พอดี</p>
         </Callout>
       </Sect>
 
@@ -182,7 +182,7 @@ print(f"\\nคำตอบ x = {x.round(6)}")`} height={300}/>
               ["Mixing factor (ผสมทิศเก่า)", "αₖ", "βₖ"],
             ]}
           />
-          <p style={{margin:"6px 0 0", fontSize:12}}>เพื่อให้พิสูจน์ตรงกับข้อสอบ ใน Sect 7 นี้ใช้ <b>สัญลักษณ์ชีท</b> (λₖ, αₖ)</p>
+          <p style={{margin:"6px 0 0", fontSize:'0.75rem'}}>เพื่อให้พิสูจน์ตรงกับข้อสอบ ใน Sect 7 นี้ใช้ <b>สัญลักษณ์ชีท</b> (λₖ, αₖ)</p>
         </Callout>
 
         <h3>พิสูจน์ที่ 1 · สูตร λₖ จาก <M>∂f/∂λ = 0</M></h3>
@@ -438,8 +438,8 @@ function CGSolver() {
     <div className="solver-shell">
       <h4>CG Solver (4×4 SPD)</h4>
       <div className="input-row">
-        <div><div style={{fontSize:11, color:"var(--text-faint)", marginBottom:4}}>A</div><MatrixInput value={A} onChange={setA} rows={4} cols={4}/></div>
-        <div><div style={{fontSize:11, color:"var(--text-faint)", marginBottom:4}}>b</div><MatrixInput value={b.map(x=>[x])} onChange={M => setB(M.map(r=>r[0]))} rows={4} cols={1}/></div>
+        <div><div style={{fontSize:'0.722rem', color:"var(--text-faint)", marginBottom:4}}>A</div><MatrixInput value={A} onChange={setA} rows={4} cols={4}/></div>
+        <div><div style={{fontSize:'0.722rem', color:"var(--text-faint)", marginBottom:4}}>b</div><MatrixInput value={b.map(x=>[x])} onChange={M => setB(M.map(r=>r[0]))} rows={4} cols={1}/></div>
       </div>
       <button className="btn primary" onClick={run}>▸ คำนวณ</button>
       {err && <Callout kind="danger">{err}</Callout>}

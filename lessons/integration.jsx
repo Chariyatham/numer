@@ -45,7 +45,7 @@ function IntegrationLesson() {
           <MB>{`I \\approx \\frac{h}{2}\\left[f(a) + f(b)\\right], \\quad h = b - a`}</MB>
         </Formula>
 
-        <p className="muted" style={{fontSize:13}}>มาจากสูตรพื้นที่คางหมู = (ผลบวกของด้านขนาน × สูง) / 2 — ด้านขนานคือ f(a) กับ f(b), สูงคือ h</p>
+        <p className="muted" style={{fontSize:'0.778rem'}}>มาจากสูตรพื้นที่คางหมู = (ผลบวกของด้านขนาน × สูง) / 2 — ด้านขนานคือ f(a) กับ f(b), สูงคือ h</p>
 
         <TrapezoidViz/>
 
@@ -216,7 +216,7 @@ for method, name, *args in [
 
         <Formula label="Richardson formula">
           <MB>{`R_{k,j} = \\frac{4^j R_{k,j-1} - R_{k-1,j-1}}{4^j - 1}`}</MB>
-          <p style={{fontSize:13, color:"var(--text-dim)", margin:"4px 0 0"}}>คอลัมน์แรก <M>{`R_{k,0}`}</M> = Composite Trap ที่ <M>{`n = 2^k`}</M> ช่วง</p>
+          <p style={{fontSize:'0.778rem', color:"var(--text-dim)", margin:"4px 0 0"}}>คอลัมน์แรก <M>{`R_{k,0}`}</M> = Composite Trap ที่ <M>{`n = 2^k`}</M> ช่วง</p>
         </Formula>
 
         <Callout kind="good" title="พลังของ Romberg">
@@ -256,7 +256,7 @@ print(f"\\nคำตอบ ≈ {T[-1][-1]:.10f}  (จริง = 1)")`} height={
 
         <Formula label="Gauss-Legendre บน [a, b]">
           <MB>{`\\int_a^b f(x)\\,dx \\approx \\frac{b-a}{2}\\sum_{i=1}^{N} w_i\\, f\\!\\left(\\frac{a+b}{2} + \\frac{b-a}{2}\\,t_i\\right)`}</MB>
-          <p style={{fontSize:13, color:"var(--text-dim)", margin:"4px 0 0"}}>จุด <M>{`t_i`}</M> และน้ำหนัก <M>{`w_i`}</M> เป็นค่าคงตัวมาตรฐาน (ตามตาราง)</p>
+          <p style={{fontSize:'0.778rem', color:"var(--text-dim)", margin:"4px 0 0"}}>จุด <M>{`t_i`}</M> และน้ำหนัก <M>{`w_i`}</M> เป็นค่าคงตัวมาตรฐาน (ตามตาราง)</p>
         </Formula>
 
         <NumTable
@@ -317,7 +317,7 @@ print(f"Comp.Simpson n=4:  {simp(f, 0, 1, 4):.10f}")`} height={280}/>
             <span>พิมพ์ฟังก์ชัน เช่น <code>e^x</code> แล้วใส่ขอบล่าง <M>a</M> ขอบบน <M>b</M></span>,
             <span>กด <Key>=</Key> → ได้ค่าจริง (เครื่องใช้ Gauss-Kronrod ภายใน) ใช้เทียบกับ Trap/Simpson ที่ทำมือ</span>,
           ]}/>
-          <p style={{margin:"6px 0 0", fontSize:13}}><b>ระวัง:</b> ข้อสอบมักให้ทำ Trapezoidal/Simpson <em>ทีละขั้น</em> — ปุ่ม ∫dx ใช้ <u>ตรวจ</u> ไม่ใช่เขียนเป็นคำตอบ</p>
+          <p style={{margin:"6px 0 0", fontSize:'0.778rem'}}><b>ระวัง:</b> ข้อสอบมักให้ทำ Trapezoidal/Simpson <em>ทีละขั้น</em> — ปุ่ม ∫dx ใช้ <u>ตรวจ</u> ไม่ใช่เขียนเป็นคำตอบ</p>
         </Callout>
 
         <Callout title="2. โหมด Table — ดึง f(xᵢ) ทุกจุดในครั้งเดียว">
@@ -332,7 +332,7 @@ print(f"Comp.Simpson n=4:  {simp(f, 0, 1, 4):.10f}")`} height={280}/>
 
         <Callout title="3. เก็บ h ใส่ตัวแปร แล้วรวมเป็น Σ">
           เก็บ <M>h</M>: พิมพ์ค่า → <Key>STO</Key> → <Key>A</Key> · จากนั้นพิมพ์ผลรวมถ่วงน้ำหนัก <code>A/2*(f0 + f4 + 2(f1+f2+f3))</code> ลงไปครั้งเดียว กด <Key>=</Key> — เร็วและพลาดยาก
-          <br/><span style={{fontSize:13}}>หรือใช้โหมด <b>Spreadsheet</b> ทำคอลัมน์ <M>{`f(x_i)`}</M> × น้ำหนัก แล้ว Sum</span>
+          <br/><span style={{fontSize:'0.778rem'}}>หรือใช้โหมด <b>Spreadsheet</b> ทำคอลัมน์ <M>{`f(x_i)`}</M> × น้ำหนัก แล้ว Sum</span>
         </Callout>
       </Sect>
 
@@ -432,7 +432,7 @@ function TrapezoidViz() {
           Trap: {I.toFixed(4)} · จริง: {trueI.toFixed(4)} · err: {(Math.abs(trueI-I)/trueI*100).toFixed(2)}%
         </text>
       </svg>
-      <p className="muted" style={{fontSize:13, marginTop:6}}>
+      <p className="muted" style={{fontSize:'0.778rem', marginTop:6}}>
         <M>{`\\int_0^2 e^x dx`}</M> — เส้นเหลืองคือฟังก์ชันจริง, สีฟ้าคือคางหมูที่ประมาณ (เห็นว่าใหญ่กว่าพื้นที่จริงเพราะ <M>{`e^x`}</M> นูนขึ้น)
       </p>
     </div>
@@ -481,7 +481,7 @@ function SimpsonViz() {
           Simp: {I.toFixed(4)} · จริง: {trueI.toFixed(4)} · err: {(Math.abs(trueI-I)/trueI*100).toFixed(3)}%
         </text>
       </svg>
-      <p className="muted" style={{fontSize:13, marginTop:6}}>
+      <p className="muted" style={{fontSize:'0.778rem', marginTop:6}}>
         เส้นม่วงคือพาราโบลาผ่าน 3 จุด — แม่นยำกว่าเส้นตรงเยอะ
       </p>
     </div>
@@ -546,7 +546,7 @@ function CompositeViz({ kind }) {
                 n={n} → I = {I.toFixed(6)} · err = {(Math.abs(trueI-I)/trueI*100).toFixed(4)}%
               </text>
             </svg>
-            <p className="muted" style={{fontSize:13, marginTop:6}}>
+            <p className="muted" style={{fontSize:'0.778rem', marginTop:6}}>
               ▶ กดเล่นเพื่อดู: ยิ่งแบ่งช่วงย่อยมาก (n ใหญ่ขึ้น) แถบยิ่งแคบ → พื้นที่รวมยิ่งเข้าใกล้ค่าจริง <b>{trueI.toFixed(4)}</b>
             </p>
           </div>
@@ -584,7 +584,7 @@ function RombergViz() {
         <span className="mono" style={{color:"var(--yellow)"}}>k = {levels}</span>
       </div>
       <div style={{overflowX:"auto"}}>
-        <table className="tbl" style={{fontFamily:"var(--font-mono)", fontSize:12}}>
+        <table className="tbl" style={{fontFamily:"var(--font-mono)", fontSize:'0.75rem'}}>
           <thead><tr>
             <th>k\\j</th>
             {Array.from({length: levels}, (_, j) => <th key={j}>R[k,{j}]</th>)}
@@ -741,7 +741,7 @@ function ErrorVsNPlot() {
           );
         }}
       </StepPlayer>
-      <p className="muted" style={{fontSize:12, margin:"6px 0 0"}}>
+      <p className="muted" style={{fontSize:'0.75rem', margin:"6px 0 0"}}>
         slope = −2 → error ∝ n⁻² (O(h²)); slope = −4 → error ∝ n⁻⁴ (O(h⁴)) → Simpson แม่นกว่ามาก
       </p>
     </div>
