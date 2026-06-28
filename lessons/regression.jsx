@@ -11,6 +11,16 @@ function RegressionLesson() {
         kicker="06 · Regression"
         title="Least-Squares Regression"
         lead="วาดเส้นโค้งให้ 'ใกล้' ทุกจุดที่สุด แทนที่จะผ่านทุกจุด — เพราะข้อมูลจริงมี noise"
+        readout={{
+          label: "Least-squares · Σ(error)² ของเส้นที่ลอง",
+          steps: [
+            { x: "9.1", w: 72 },
+            { x: "2.4", w: 30 },
+            { x: "0.41", w: 11 },
+          ],
+          result: "0.30 ต่ำสุด",
+          note: "เส้นที่ดีที่สุด = เส้นที่ผลรวมของ error² น้อยที่สุด",
+        }}
         meta={["Linear", "Polynomial", "Multiple Linear", "Normal Equations"]}
       />
 

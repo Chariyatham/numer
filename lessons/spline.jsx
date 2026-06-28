@@ -11,6 +11,16 @@ function SplineLesson() {
         kicker="05 · Spline Interpolation"
         title="Spline — เส้นโค้งต่อเส้น"
         lead="แทนที่จะใช้ polynomial ใหญ่ ๆ ผ่านทุกจุด เราใช้ polynomial เล็ก ๆ ต่อกันเป็นช่วง ๆ — แม่นยำกว่า, ไม่มี oscillation"
+        readout={{
+          label: "Cubic spline · max error ของ 1/(1+x²) บน [−5,5]",
+          steps: [
+            { x: "0.42", w: 72 },
+            { x: "0.022", w: 20 },
+            { x: "1e−3", w: 6 },
+          ],
+          result: "→ 0",
+          note: "เพิ่มจุด (h เล็กลง) → spline ลู่เข้าฟังก์ชันจริง ต่างจาก polynomial ที่ยิ่งเด้ง (Runge)",
+        }}
         meta={["Linear / Quadratic / Cubic", "Piecewise", "Function + Slope ต่อเนื่อง"]}
       />
 

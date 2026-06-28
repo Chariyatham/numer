@@ -492,6 +492,16 @@ function RootFindingLesson() {
         kicker="01 · Root Finding"
         title="หาราก f(x) = 0"
         lead="วิธีเชิงตัวเลขสำหรับสมการที่แก้แบบ analytical ไม่ได้ — ตั้งแต่ Graphical, Bisection จนถึง Newton-Raphson"
+        readout={{
+          label: "Newton–Raphson · x³−x−2 = 0",
+          steps: [
+            { x: "1.500", w: 72 },
+            { x: "1.5217", w: 24 },
+            { x: "1.52138", w: 7 },
+          ],
+          result: "1.521380",
+          note: "แต่ละรอบจำนวนหลักที่ถูกต้องเพิ่มเป็นเท่าตัว — ลู่เข้าเร็วมาก (quadratic)",
+        }}
         meta={["6 methods", "Animation ทุก method", "fx-991CW SOLVE", "Python complete"]}
       />
 

@@ -7,6 +7,16 @@ function DifferentiationLesson() {
         kicker="08 · Differentiation"
         title="Numerical Differentiation"
         lead="ประมาณค่า f'(x), f''(x), ... จากข้อมูลที่จุด ๆ — ใช้ Taylor series ในการพิสูจน์ + 3 สาย: Forward, Backward, Central"
+        readout={{
+          label: "Central difference · f′ ของ eˣ ที่ x=0  (จริง = 1)",
+          steps: [
+            { x: "1.0269", w: 72 },
+            { x: "1.00668", w: 18 },
+            { x: "1.00167", w: 5 },
+          ],
+          result: "1.00000",
+          note: "h เล็กลงครึ่งหนึ่ง → error เหลือ ~¼ (แม่นระดับ h²)",
+        }}
         meta={["O(h), O(h²), O(h⁴)", "First & Higher", "Taylor proof", "fx-991CW d/dx"]}
       />
 

@@ -13,6 +13,17 @@ function IntegrationLesson() {
         kicker="07 · Integration"
         title="Numerical Integration"
         lead="ประมาณค่า ∫ f(x) dx โดยการหาพื้นที่ใต้กราฟด้วยรูปทรงที่คำนวณง่าย — Trapezoidal และ Simpson"
+        readout={{
+          label: "Trapezoidal · ∫₀² x² dx  (ค่าจริง = 8/3)",
+          steps: [
+            { x: "4.000", w: 72 },
+            { x: "3.000", w: 44 },
+            { x: "2.750", w: 24 },
+            { x: "2.6875", w: 11 },
+          ],
+          result: "2.6667",
+          note: "ซอยให้ถี่ขึ้น (n เพิ่ม) → พื้นที่รวมลู่เข้าค่าจริง",
+        }}
         meta={["Trapezoidal", "Composite Trap", "Simpson 1/3", "Composite Simpson"]}
       />
 

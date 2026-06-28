@@ -12,6 +12,16 @@ function InterpolationLesson() {
         kicker="04 · Interpolation"
         title="Newton & Lagrange Interpolation"
         lead="วาดเส้นโค้งให้ผ่านจุดข้อมูลทุกจุด — เพื่อประมาณค่า y ที่ x ใด ๆ ระหว่างจุด"
+        readout={{
+          label: "Newton · บวกพจน์ทีละขั้น → ค่าประมาณนิ่ง",
+          steps: [
+            { x: "1.95", w: 60 },
+            { x: "2.012", w: 24 },
+            { x: "2.001", w: 8 },
+          ],
+          result: "2.000",
+          note: "ยิ่งใช้จุดมาก (degree สูงขึ้น) พจน์แก้ยิ่งเล็ก → ค่าประมาณยิ่งแม่น",
+        }}
         meta={["Linear / Quadratic / Polynomial", "Newton Divided Diff", "Lagrange", "n+1 จุด → degree n"]}
       />
 
