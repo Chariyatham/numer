@@ -357,13 +357,55 @@ function Callout({ kind = "info", title, children }) {
 }
 
 // ===== HERO =====
-function Hero({ kicker, title, lead, meta }) {
+function Hero({ kicker, title, lead, meta, readout }) {
   return (
     <div className="hero">
       {kicker && <div className="kicker">{kicker}</div>}
       <h1>{title}</h1>
       {lead && <p className="lead">{lead}</p>}
+      {readout && <ConvergenceStrip {...readout} />}
       {meta && <div className="meta">{meta.map((m,i) => <span key={i}>{m}</span>)}</div>}
+    </div>
+  );
+}
+
+// ===== Signature: convergence readout =====
+// Shows a method's iterates homing in on the answer, with a shrinking error bar.
+// steps: [{ x: "2.500", w: 70 }, ...]  (w = error-bar width in px, optional)
+function ConvergenceStrip({ label, steps = [], result, note }) {
+  const hasBars = steps.some(s => s.w != null);
+  const ref = useRef(null);
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce || !ref.current) { setShown(true); return; }
+    const o = new IntersectionObserver((es) => {
+      es.forEach(e => { if (e.isIntersecting) { setShown(true); o.disconnect(); } });
+    }, { threshold: 0.35 });
+    o.observe(ref.current);
+    return () => o.disconnect();
+  }, []);
+  return (
+    <div className="cstrip" ref={ref}>
+      {label && <div className="cstrip-label">{label}</div>}
+      <div className="cstrip-vals">
+        {steps.map((s, i) => (
+          <span className="cstrip-val" key={i}>{s.x}<em>→</em></span>
+        ))}
+        {result != null && (
+          <span className="cstrip-val result">{result}<span className="cstrip-check">✓</span></span>
+        )}
+      </div>
+      {hasBars && (
+        <div className="cstrip-bars">
+          <span className="cstrip-barlabel">error</span>
+          {steps.map((s, i) => (
+            <i className="cstrip-bar" key={i}
+               style={{ width: shown ? (s.w || 8) : 0, transitionDelay: (i * 90) + "ms" }} />
+          ))}
+        </div>
+      )}
+      {note && <div className="cstrip-note">{note}</div>}
     </div>
   );
 }
@@ -398,7 +440,7 @@ function Formula({ children, label }) {
       padding: "16px 20px",
       margin: "16px 0"
     }}>
-      {label && <div style={{fontFamily:"var(--font-mono)", fontSize:11, color:"var(--blue)", textTransform:"uppercase", letterSpacing:1.2, marginBottom:8}}>{label}</div>}
+      {label && <div style={{fontFamily:"var(--font-mono)", fontSize:11, color:"var(--signal)", textTransform:"uppercase", letterSpacing:1.2, marginBottom:8}}>{label}</div>}
       {children}
     </div>
   );
@@ -407,6 +449,6 @@ function Formula({ children, label }) {
 Object.assign(window, {
   TeX, M, MB, useKaTeXReady,
   CodeBlock, PythonRunner, loadPyodide,
-  Problem, Sect, Callout, Hero, NumTable, Formula,
+  Problem, Sect, Callout, Hero, ConvergenceStrip, NumTable, Formula,
   Key, CalcSteps,
 });

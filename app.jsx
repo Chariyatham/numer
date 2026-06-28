@@ -1,6 +1,12 @@
 // Main app — sidebar + content router based on location.hash
 
-const { useState: useStA, useEffect: useEfA } = React;
+const { useState: useStA, useEffect: useEfA, useRef: useRefA } = React;
+
+const prefersReduced = () =>
+  window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const smoothScrollTo = (el) => {
+  if (el) el.scrollIntoView({ behavior: prefersReduced() ? "auto" : "smooth", block: "start" });
+};
 
 const CHAPTERS = [
   { group: "เริ่มต้น", items: [
@@ -97,6 +103,8 @@ function App() {
 
   return (
     <div className="app">
+      <ScrollProgress />
+      <CommandPalette items={ALL_ITEMS} onGo={go} />
       <aside className="sidebar" style={{ display: sidebarOpen || window.innerWidth > 900 ? "block" : "none" }}>
         <div className="sidebar-brand">
           <div className="logo">N</div>
@@ -106,6 +114,15 @@ function App() {
           </div>
         </div>
 
+        <button
+          className="sidebar-search"
+          onClick={() => window.dispatchEvent(new CustomEvent("open-cmdk"))}
+          aria-label="ค้นหาบทหรือหัวข้อ"
+        >
+          <span className="ss-label">ค้นหาบท / หัวข้อ…</span>
+          <kbd className="ss-kbd">⌘K</kbd>
+        </button>
+
         {CHAPTERS.map((grp) => (
           <div className="sidebar-section" key={grp.group}>
             <div className="sidebar-section-title">{grp.group}</div>
@@ -114,6 +131,10 @@ function App() {
                 key={it.id}
                 className={"sidebar-item " + (current === it.id ? "active" : "")}
                 onClick={() => go(it.id)}
+                role="button"
+                tabIndex={0}
+                aria-current={current === it.id ? "page" : undefined}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(it.id); } }}
               >
                 <span className="dot"/>
                 <span>{it.title}</span>
@@ -125,7 +146,7 @@ function App() {
         ))}
 
         <div style={{marginTop: 30, padding: "12px 10px", color: "var(--text-faint)", fontSize: 12, lineHeight: 1.5}}>
-          กด <code>Tweaks</code> ปรับขนาดตัวอักษร · <code>[</code> <code>]</code> เลื่อนบท
+          <code>⌘K</code> ค้นหา · <code>[</code> <code>]</code> เลื่อนบท · <code>Tweaks</code> ปรับฟอนต์
           <div style={{marginTop:8, fontSize:11}}>
             ความคืบหน้า: <b style={{color:"var(--green)"}}>
               {Object.values(doneMap).filter(Boolean).length} / {ALL_ITEMS.length}
@@ -135,14 +156,177 @@ function App() {
       </aside>
 
       <main className="main">
-        <div style={{display:"flex", justifyContent:"flex-end", marginBottom:6}}>
-          {window.LessonDoneToggle && <window.LessonDoneToggle id={current}/>}
+        <div className="main-col">
+          <div style={{display:"flex", justifyContent:"flex-end", marginBottom:6}}>
+            {window.LessonDoneToggle && <window.LessonDoneToggle id={current}/>}
+          </div>
+          <Comp />
         </div>
-        <Comp />
+        <LessonNav current={current} />
       </main>
 
       <FontTweaks fs={fs} setFs={setFs} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       {window.CalcToggle && <window.CalcToggle />}
+    </div>
+  );
+}
+
+// Per-lesson section navigator. Scans the rendered DOM for `.sect` blocks
+// (no per-lesson wiring needed), tracks the visible one, and scroll-jumps.
+function LessonNav({ current }) {
+  const [secs, setSecs] = useStA([]);
+  const [active, setActive] = useStA(0);
+
+  useEfA(() => {
+    let obs = null;
+    const wire = () => {
+      const nodes = Array.from(document.querySelectorAll(".main-col .sect"));
+      nodes.forEach((n, i) => { if (!n.id) n.id = "sec-" + i; });
+      setSecs(nodes.map((n, i) => {
+        const h2 = n.querySelector(".sect-head h2");
+        return { id: n.id, title: (h2 ? h2.textContent : "ส่วนที่ " + (i + 1)).trim() };
+      }));
+      if (obs) obs.disconnect();
+      obs = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            const idx = nodes.indexOf(e.target);
+            if (idx >= 0) setActive(idx);
+          }
+        });
+      }, { rootMargin: "-12% 0px -80% 0px", threshold: 0 });
+      nodes.forEach((n) => obs.observe(n));
+    };
+    // content is transpiled/rendered async (Babel + KaTeX) — wire now and re-wire after it settles
+    wire();
+    const t1 = setTimeout(wire, 350);
+    const t2 = setTimeout(wire, 900);
+    return () => { clearTimeout(t1); clearTimeout(t2); if (obs) obs.disconnect(); };
+  }, [current]);
+
+  if (secs.length < 2) return null;
+
+  const go = (id) => smoothScrollTo(document.getElementById(id));
+  return (
+    <nav className="lesson-nav" aria-label="หัวข้อในบทนี้">
+      <div className="lesson-nav-title">ในบทนี้</div>
+      <ol className="lesson-nav-list">
+        {secs.map((s, i) => (
+          <li
+            key={s.id}
+            className={"lesson-nav-item " + (active === i ? "active" : "")}
+            onClick={() => go(s.id)}
+            role="link"
+            tabIndex={0}
+            aria-current={active === i ? "true" : undefined}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(s.id); } }}
+            title={s.title}
+          >
+            {s.title}
+          </li>
+        ))}
+      </ol>
+      <button className="ln-top" onClick={() => window.scrollTo({ top: 0, behavior: prefersReduced() ? "auto" : "smooth" })}>↑ กลับบนสุด</button>
+    </nav>
+  );
+}
+
+// Thin reading-progress bar across the top of the page.
+function ScrollProgress() {
+  const [p, setP] = useStA(0);
+  useEfA(() => {
+    const onScroll = () => {
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      setP(max > 0 ? Math.min(100, (h.scrollTop / max) * 100) : 0);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return <div className="scroll-progress" style={{ width: p + "%" }} aria-hidden="true" />;
+}
+
+// ⌘K / "/" quick search — jump to any lesson, or any section in the current lesson.
+function CommandPalette({ items, onGo }) {
+  const [open, setOpen] = useStA(false);
+  const [q, setQ] = useStA("");
+  const [active, setActive] = useStA(0);
+  const inputRef = useRefA(null);
+
+  useEfA(() => {
+    const onKey = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setOpen((o) => !o); }
+      else if (e.key === "/" && !open) {
+        const t = e.target;
+        if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+        e.preventDefault(); setOpen(true);
+      } else if (e.key === "Escape") setOpen(false);
+    };
+    const onOpen = () => setOpen(true);
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("open-cmdk", onOpen);
+    return () => { window.removeEventListener("keydown", onKey); window.removeEventListener("open-cmdk", onOpen); };
+  }, [open]);
+
+  useEfA(() => {
+    if (open) { setQ(""); setActive(0); const t = setTimeout(() => inputRef.current && inputRef.current.focus(), 30); return () => clearTimeout(t); }
+  }, [open]);
+
+  if (!open) return null;
+
+  const sections = Array.from(document.querySelectorAll(".main-col .sect")).map((n, i) => {
+    if (!n.id) n.id = "sec-" + i;
+    const h = n.querySelector(".sect-head h2");
+    return { type: "section", id: n.id, title: (h ? h.textContent : "").trim() };
+  }).filter((s) => s.title);
+
+  const lessons = items.map((it) => ({ type: "lesson", id: it.id, title: it.title, sub: it.group, num: it.num }));
+  const ql = q.trim().toLowerCase();
+  const match = (s) => !ql || s.title.toLowerCase().includes(ql) || (s.sub && s.sub.toLowerCase().includes(ql));
+  const results = [...lessons.filter(match), ...sections.filter(match)];
+  const act = Math.min(active, Math.max(0, results.length - 1));
+
+  const select = (r) => {
+    setOpen(false);
+    if (!r) return;
+    if (r.type === "lesson") onGo(r.id);
+    else smoothScrollTo(document.getElementById(r.id));
+  };
+  const onInputKey = (e) => {
+    if (e.key === "ArrowDown") { e.preventDefault(); setActive((a) => Math.min(a + 1, results.length - 1)); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); setActive((a) => Math.max(a - 1, 0)); }
+    else if (e.key === "Enter") { e.preventDefault(); select(results[act]); }
+  };
+
+  return (
+    <div className="cmdk-overlay" onMouseDown={() => setOpen(false)} role="dialog" aria-modal="true" aria-label="ค้นหา">
+      <div className="cmdk" onMouseDown={(e) => e.stopPropagation()}>
+        <input
+          ref={inputRef}
+          className="cmdk-input"
+          placeholder="ค้นหาบท หรือหัวข้อในบทนี้…"
+          value={q}
+          onChange={(e) => { setQ(e.target.value); setActive(0); }}
+          onKeyDown={onInputKey}
+        />
+        <ul className="cmdk-list">
+          {results.length === 0 && <li className="cmdk-empty">ไม่พบ “{q}”</li>}
+          {results.map((r, i) => (
+            <li
+              key={r.type + r.id + i}
+              className={"cmdk-item " + (i === act ? "active" : "")}
+              onMouseEnter={() => setActive(i)}
+              onMouseDown={(e) => { e.preventDefault(); select(r); }}
+            >
+              <span className={"cmdk-kind " + r.type}>{r.type === "lesson" ? (r.num || "บท") : "§"}</span>
+              <span className="cmdk-title">{r.title}</span>
+              {r.sub && r.type === "lesson" && <span className="cmdk-sub">{r.sub}</span>}
+            </li>
+          ))}
+        </ul>
+        <div className="cmdk-foot"><span><kbd>↑</kbd><kbd>↓</kbd> เลือก</span><span><kbd>↵</kbd> ไป</span><span><kbd>esc</kbd> ปิด</span></div>
+      </div>
     </div>
   );
 }

@@ -26,6 +26,17 @@ function ConjugateLesson() {
         kicker="03 · Conjugate Gradient"
         title="Conjugate Gradient Method"
         lead="วิธี iterative ที่ฉลาดที่สุดสำหรับ symmetric positive-definite matrix — รับประกันลู่เข้าใน n iterations"
+        readout={{
+          label: "Conjugate Gradient · ‖rₖ‖ (residual) ต่อรอบ",
+          steps: [
+            { x: "1.0", w: 72 },
+            { x: "0.31", w: 24 },
+            { x: "0.04", w: 9 },
+            { x: "1e−6", w: 3 },
+          ],
+          result: "→ 0",
+          note: "SPD ขนาด n × n → รับประกันลู่เข้าใน ≤ n รอบ (จริงมักเร็วกว่านั้น)",
+        }}
         meta={["Symmetric PD", "n-step convergence", "Quadratic form", "Krylov subspace"]}
       />
 

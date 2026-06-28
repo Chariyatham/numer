@@ -310,6 +310,17 @@ function LinearSystemsLesson() {
         kicker="02 · Linear Systems"
         title="Gauss Elimination & Iterative Methods"
         lead="แก้ระบบสมการเชิงเส้น Ax = b — ตั้งแต่ Gauss กำจัด direct method ไปจนถึง Jacobi และ Gauss-Seidel"
+        readout={{
+          label: "Gauss–Seidel · ‖x⁽ᵏ⁾ − x‖ ต่อรอบ",
+          steps: [
+            { x: "1.0", w: 72 },
+            { x: "0.14", w: 30 },
+            { x: "0.021", w: 13 },
+            { x: "3e−3", w: 5 },
+          ],
+          result: "→ 0",
+          note: "iterative ไม่ได้คำตอบในรอบเดียว — error เล็กลงเรื่อย ๆ จนลู่เข้า x จริง",
+        }}
         meta={["Direct method", "Iterative methods", "Convergence", "fx-991CW Equation"]}
       />
 
