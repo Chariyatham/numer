@@ -8,7 +8,7 @@ function SplineLesson() {
   return (
     <div>
       <Hero
-        kicker="05 · Spline Interpolation"
+        kicker="07 · Spline Interpolation"
         title="Spline — เส้นโค้งต่อเส้น"
         lead="แทนที่จะใช้ polynomial ใหญ่ ๆ ผ่านทุกจุด เราใช้ polynomial เล็ก ๆ ต่อกันเป็นช่วง ๆ — แม่นยำกว่า, ไม่มี oscillation"
         readout={{

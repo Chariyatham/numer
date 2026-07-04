@@ -8,7 +8,7 @@ function RegressionLesson() {
   return (
     <div>
       <Hero
-        kicker="06 · Regression"
+        kicker="08 · Regression"
         title="Least-Squares Regression"
         lead="วาดเส้นโค้งให้ 'ใกล้' ทุกจุดที่สุด แทนที่จะผ่านทุกจุด — เพราะข้อมูลจริงมี noise"
         readout={{

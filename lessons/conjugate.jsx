@@ -23,7 +23,7 @@ function ConjugateLesson() {
   return (
     <div>
       <Hero
-        kicker="03 · Conjugate Gradient"
+        kicker="05 · Conjugate Gradient"
         title="Conjugate Gradient Method"
         lead="วิธี iterative ที่ฉลาดที่สุดสำหรับ symmetric positive-definite matrix — รับประกันลู่เข้าใน n iterations"
         readout={{

@@ -9,7 +9,7 @@ function InterpolationLesson() {
   return (
     <div>
       <Hero
-        kicker="04 · Interpolation"
+        kicker="06 · Interpolation"
         title="Newton & Lagrange Interpolation"
         lead="วาดเส้นโค้งให้ผ่านจุดข้อมูลทุกจุด — เพื่อประมาณค่า y ที่ x ใด ๆ ระหว่างจุด"
         readout={{

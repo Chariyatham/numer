@@ -307,7 +307,7 @@ function LinearSystemsLesson() {
   return (
     <div>
       <Hero
-        kicker="02 · Linear Systems"
+        kicker="04 · Linear Systems"
         title="Gauss Elimination & Iterative Methods"
         lead="แก้ระบบสมการเชิงเส้น Ax = b — ตั้งแต่ Gauss กำจัด direct method ไปจนถึง Jacobi และ Gauss-Seidel"
         readout={{

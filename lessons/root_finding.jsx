@@ -489,7 +489,7 @@ function RootFindingLesson() {
   return (
     <div>
       <Hero
-        kicker="01 · Root Finding"
+        kicker="03 · Root Finding"
         title="หาราก f(x) = 0"
         lead="วิธีเชิงตัวเลขสำหรับสมการที่แก้แบบ analytical ไม่ได้ — ตั้งแต่ Graphical, Bisection จนถึง Newton-Raphson"
         readout={{

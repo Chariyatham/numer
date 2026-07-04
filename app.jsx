@@ -13,21 +13,21 @@ const CHAPTERS = [
     { id: "intro", num: "00", title: "ปฐมนิเทศ · How to use", comp: "IntroLesson" },
     { id: "map", num: "🗺", title: "แผนที่คอนเซปต์ทั้งคอร์ส", comp: "ConceptMapLesson" },
   ]},
-  { group: "Part 1 · สมการไม่เชิงเส้น", items: [
-    { id: "root", num: "01", title: "Root Finding", comp: "RootFindingLesson" },
+  { group: "Part 1 · แคลคูลัส (บทแรกปีนี้)", items: [
+    { id: "integ", num: "01", title: "Integration", comp: "IntegrationLesson" },
+    { id: "diff", num: "02", title: "Differentiation", comp: "DifferentiationLesson" },
   ]},
-  { group: "Part 2 · ระบบสมการเชิงเส้น", items: [
-    { id: "linear", num: "02", title: "Gauss & Iteration", comp: "LinearSystemsLesson" },
-    { id: "conjugate", num: "03", title: "Conjugate Gradient", comp: "ConjugateLesson" },
+  { group: "Part 2 · สมการไม่เชิงเส้น", items: [
+    { id: "root", num: "03", title: "Root Finding", comp: "RootFindingLesson" },
   ]},
-  { group: "Part 3 · การประมาณค่า", items: [
-    { id: "interp", num: "04", title: "Interpolation", comp: "InterpolationLesson" },
-    { id: "spline", num: "05", title: "Spline Interpolation", comp: "SplineLesson" },
-    { id: "regression", num: "06", title: "Least-Squares Regression", comp: "RegressionLesson" },
+  { group: "Part 3 · ระบบสมการเชิงเส้น", items: [
+    { id: "linear", num: "04", title: "Gauss & Iteration", comp: "LinearSystemsLesson" },
+    { id: "conjugate", num: "05", title: "Conjugate Gradient", comp: "ConjugateLesson" },
   ]},
-  { group: "Part 4 · แคลคูลัส", items: [
-    { id: "integ", num: "07", title: "Integration", comp: "IntegrationLesson" },
-    { id: "diff", num: "08", title: "Differentiation", comp: "DifferentiationLesson" },
+  { group: "Part 4 · การประมาณค่า", items: [
+    { id: "interp", num: "06", title: "Interpolation", comp: "InterpolationLesson" },
+    { id: "spline", num: "07", title: "Spline Interpolation", comp: "SplineLesson" },
+    { id: "regression", num: "08", title: "Least-Squares Regression", comp: "RegressionLesson" },
   ]},
   { group: "เครื่องมือ", items: [
     { id: "calc", num: "★", title: "Calculator Master · fx-991CW", comp: "CalculatorLesson" },

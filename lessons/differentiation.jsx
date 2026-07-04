@@ -4,7 +4,7 @@ function DifferentiationLesson() {
   return (
     <div>
       <Hero
-        kicker="08 · Differentiation"
+        kicker="02 · Differentiation"
         title="Numerical Differentiation"
         lead="ประมาณค่า f'(x), f''(x), ... จากข้อมูลที่จุด ๆ — ใช้ Taylor series ในการพิสูจน์ + 3 สาย: Forward, Backward, Central"
         readout={{
