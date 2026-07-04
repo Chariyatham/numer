@@ -64,3 +64,11 @@ The app uses `localStorage` heavily — font size (`numer-fs`), per-chapter scro
 ## Behavioral guideline
 
 `SKILL.md` (Karpathy guidelines) applies to changes here: surgical edits, no speculative abstractions, match existing style. The codebase deliberately has no build step and no framework beyond React+Babel-in-browser — don't introduce one without being asked.
+
+## Lecture transcription (added 2026-07-04)
+
+`tools/transcribe_groq.py` transcribes Thai lecture audio via the Groq API (free tier, whisper-large-v3 with automatic -turbo fallback): `python3 tools/transcribe_groq.py <audio files>` → `transcripts/<stem>.txt` + `.segments.txt`. It needs `ffmpeg`/`ffprobe`/`curl` and reads the API key from `GROQ_API_KEY` or `~/.config/groq.key` — **the key must never be committed** (repo is public; run `grep -rn "gsk_"` before committing). Pipeline details and lessons learned live in the script's docstring.
+
+## Teaching standard (kim's explicit requirement)
+
+When writing or revising lesson content: professor/sheet-level detail is the *minimum* — never summarize away topics, always explain the "why" behind each formula, and prefer animations/interactive widgets over static text. kim wants to understand deeply enough to teach others. Transcribed lectures (when available) reveal what the professor emphasizes beyond the sheets — weave that in and mark it as lecture-sourced.
