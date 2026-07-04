@@ -11,22 +11,23 @@ const smoothScrollTo = (el) => {
 const CHAPTERS = [
   { group: "เริ่มต้น", items: [
     { id: "intro", num: "00", title: "ปฐมนิเทศ · How to use", comp: "IntroLesson" },
+    { id: "map", num: "🗺", title: "แผนที่คอนเซปต์ทั้งคอร์ส", comp: "ConceptMapLesson" },
   ]},
-  { group: "Part 1 · สมการไม่เชิงเส้น", items: [
-    { id: "root", num: "01", title: "Root Finding", comp: "RootFindingLesson" },
+  { group: "Part 1 · แคลคูลัส (บทแรกปีนี้)", items: [
+    { id: "integ", num: "01", title: "Integration", comp: "IntegrationLesson" },
+    { id: "diff", num: "02", title: "Differentiation", comp: "DifferentiationLesson" },
   ]},
-  { group: "Part 2 · ระบบสมการเชิงเส้น", items: [
-    { id: "linear", num: "02", title: "Gauss & Iteration", comp: "LinearSystemsLesson" },
-    { id: "conjugate", num: "03", title: "Conjugate Gradient", comp: "ConjugateLesson" },
+  { group: "Part 2 · สมการไม่เชิงเส้น", items: [
+    { id: "root", num: "03", title: "Root Finding", comp: "RootFindingLesson" },
   ]},
-  { group: "Part 3 · การประมาณค่า", items: [
-    { id: "interp", num: "04", title: "Interpolation", comp: "InterpolationLesson" },
-    { id: "spline", num: "05", title: "Spline Interpolation", comp: "SplineLesson" },
-    { id: "regression", num: "06", title: "Least-Squares Regression", comp: "RegressionLesson" },
+  { group: "Part 3 · ระบบสมการเชิงเส้น", items: [
+    { id: "linear", num: "04", title: "Gauss & Iteration", comp: "LinearSystemsLesson" },
+    { id: "conjugate", num: "05", title: "Conjugate Gradient", comp: "ConjugateLesson" },
   ]},
-  { group: "Part 4 · แคลคูลัส", items: [
-    { id: "integ", num: "07", title: "Integration", comp: "IntegrationLesson" },
-    { id: "diff", num: "08", title: "Differentiation", comp: "DifferentiationLesson" },
+  { group: "Part 4 · การประมาณค่า", items: [
+    { id: "interp", num: "06", title: "Interpolation", comp: "InterpolationLesson" },
+    { id: "spline", num: "07", title: "Spline Interpolation", comp: "SplineLesson" },
+    { id: "regression", num: "08", title: "Least-Squares Regression", comp: "RegressionLesson" },
   ]},
   { group: "เครื่องมือ", items: [
     { id: "calc", num: "★", title: "Calculator Master · fx-991CW", comp: "CalculatorLesson" },
@@ -49,7 +50,7 @@ function App() {
   const [current, setCurrent] = useStA(getCurrentId());
   const [fs, setFs] = useStA(() => {
     const saved = localStorage.getItem("numer-fs-v2");
-    return saved ? +saved : 18;
+    return saved ? +saved : 19;
   });
   const [sidebarOpen, setSidebarOpen] = useStA(false);
   const [doneMap, setDoneMap] = useStA(() => window.getLessonDoneMap ? window.getLessonDoneMap() : {});
@@ -145,9 +146,9 @@ function App() {
           </div>
         ))}
 
-        <div style={{marginTop: 30, padding: "12px 10px", color: "var(--text-faint)", fontSize: 12, lineHeight: 1.5}}>
+        <div style={{marginTop: 30, padding: "12px 10px", color: "var(--text-faint)", fontSize: '0.75rem', lineHeight: 1.5}}>
           <code>⌘K</code> ค้นหา · <code>[</code> <code>]</code> เลื่อนบท · <code>Tweaks</code> ปรับฟอนต์
-          <div style={{marginTop:8, fontSize:11}}>
+          <div style={{marginTop:8, fontSize:'0.722rem'}}>
             ความคืบหน้า: <b style={{color:"var(--green)"}}>
               {Object.values(doneMap).filter(Boolean).length} / {ALL_ITEMS.length}
             </b> บท

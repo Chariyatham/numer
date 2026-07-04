@@ -1049,7 +1049,7 @@ print(f"    ทำนาย T(25): {T_inf + (T0-T_inf)*math.exp(-b*25):.2f} (vs 
       <p><b>ขั้นที่ 5</b> · ประกอบ L ของ A:</p>
       <MB>{`L = \\begin{pmatrix} l_{11} & 0 \\\\ l_{21} & L' \\end{pmatrix}`}</MB>
       <p>ตรวจ <M>{`L L^T = A`}</M> โดยการคูณ block — ตรงทุก block ✓ <M>{`\\blacksquare`}</M></p>
-      <p style={{fontSize:13, color:"var(--text-faint)", margin:"6px 0 0"}}>ข้อสังเกต: diagonal ของ L (คือ <M>{`l_{11}, l_{22}, \\ldots`}</M>) เป็นบวกทุกตัว เพราะแต่ละตัวเท่ากับ √(positive number)</p>
+      <p style={{fontSize:'0.778rem', color:"var(--text-faint)", margin:"6px 0 0"}}>ข้อสังเกต: diagonal ของ L (คือ <M>{`l_{11}, l_{22}, \\ldots`}</M>) เป็นบวกทุกตัว เพราะแต่ละตัวเท่ากับ √(positive number)</p>
     </div>
   },
 ];
@@ -1115,7 +1115,7 @@ function ProblemsLesson() {
               </div>
             </div>
           </div>
-          <p className="muted" style={{fontSize:13, margin:"10px 0 0"}}>แสดง <b style={{color:"var(--blue)"}}>{filtered.length}</b> จาก {PROBLEMS.length} ข้อ</p>
+          <p className="muted" style={{fontSize:'0.778rem', margin:"10px 0 0"}}>แสดง <b style={{color:"var(--blue)"}}>{filtered.length}</b> จาก {PROBLEMS.length} ข้อ</p>
         </div>
       </Sect>
 

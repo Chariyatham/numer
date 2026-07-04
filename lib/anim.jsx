@@ -201,7 +201,7 @@ function StepTable({ headers, rows, caption }) {
     <StepPlayer steps={rows.length} stepDuration={900} height={40} label={(s) => `แถว ${s+1}/${rows.length}`}>
       {({ step }) => (
         <div style={{overflowX:"auto"}}>
-          {caption && <div className="muted" style={{fontSize:12, marginBottom:4}}>{caption}</div>}
+          {caption && <div className="muted" style={{fontSize:'0.75rem', marginBottom:4}}>{caption}</div>}
           <table className="tbl">
             <thead><tr>{headers.map((h, i) => <th key={i}>{h}</th>)}</tr></thead>
             <tbody>

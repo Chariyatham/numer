@@ -70,7 +70,7 @@ function VectorInput({ value, onChange, n, label }) {
   };
   return (
     <div className="matrix-input" style={{display:"inline-block"}}>
-      {label && <div style={{fontSize:11, color:"var(--text-faint)", marginBottom:4}}>{label}</div>}
+      {label && <div style={{fontSize:'0.722rem', color:"var(--text-faint)", marginBottom:4}}>{label}</div>}
       <table>
         <tbody>
           <tr>
@@ -94,15 +94,15 @@ function PointsInput({ xs, ys, onChange, label = "จุดข้อมูล" }
   const delPoint = (i) => onChange(xs.filter((_,k) => k !== i), ys.filter((_,k) => k !== i));
   return (
     <div style={{margin:"8px 0"}}>
-      <div style={{fontSize:11, color:"var(--text-faint)", marginBottom:4}}>{label} (n = {xs.length})</div>
+      <div style={{fontSize:'0.722rem', color:"var(--text-faint)", marginBottom:4}}>{label} (n = {xs.length})</div>
       <div className="matrix-input">
         <table>
           <thead>
-            <tr><td style={{fontSize:11, color:"var(--text-faint)"}}>x</td>
+            <tr><td style={{fontSize:'0.722rem', color:"var(--text-faint)"}}>x</td>
               {xs.map((_, i) => <td key={i}><input type="text" value={xs[i]} onChange={(e) => setX(i, e.target.value)}/></td>)}
               <td></td>
             </tr>
-            <tr><td style={{fontSize:11, color:"var(--text-faint)"}}>y</td>
+            <tr><td style={{fontSize:'0.722rem', color:"var(--text-faint)"}}>y</td>
               {ys.map((_, i) => <td key={i}>
                 <input type="text" value={ys[i]} onChange={(e) => setY(i, e.target.value)}/>
               </td>)}

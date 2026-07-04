@@ -298,7 +298,7 @@ function CheatLesson() {
       {/* FINAL ENCOURAGEMENT */}
       <Sect tag="🏆" title="ก่อนเข้าห้องสอบ">
         <Callout kind="good">
-          <p style={{fontSize:16, marginTop:0}}>เช็คลิสต์สุดท้าย:</p>
+          <p style={{fontSize:'0.889rem', marginTop:0}}>เช็คลิสต์สุดท้าย:</p>
           <ul>
             <li>เครื่องคิดเลข <b>fx-991CW</b> เปิดเครื่องดู battery + Reset Memory</li>
             <li>ตั้ง <code>Angle Unit = Radian</code> และ <code>Fix 6</code> ทศนิยม</li>
@@ -306,7 +306,7 @@ function CheatLesson() {
             <li>ทบทวน Decision Tree + Top 20 mistakes ในใจ</li>
             <li>นอนเต็มที่คืนก่อนสอบ — สมอง<em>คิดได้</em>ตอนเช้า</li>
           </ul>
-          <p style={{fontSize:16, marginBottom:0}}>ขอให้สอบผ่านสบายเลยครับ 🎓✨</p>
+          <p style={{fontSize:'0.889rem', marginBottom:0}}>ขอให้สอบผ่านสบายเลยครับ 🎓✨</p>
         </Callout>
       </Sect>
 

@@ -8,7 +8,7 @@ function RegressionLesson() {
   return (
     <div>
       <Hero
-        kicker="06 · Regression"
+        kicker="08 · Regression"
         title="Least-Squares Regression"
         lead="วาดเส้นโค้งให้ 'ใกล้' ทุกจุดที่สุด แทนที่จะผ่านทุกจุด — เพราะข้อมูลจริงมี noise"
         readout={{
@@ -318,11 +318,11 @@ print(f"RMSE = {rmse:.4f}")`} height={300}/>
           <p style={{margin:"8px 0 4px"}}><b>วิธีในห้องสอบ — ใช้ 2 mode ผสมกัน:</b></p>
           <ol style={{margin:0, paddingLeft:18}}>
             <li>คำนวณ Σx_k, Σx_k², Σx_ix_j, Σx_ky <b>ทีละคู่</b> ใน <Key>Stat</Key> mode (เลือก 1-var หรือ 2-var)
-              <br/><span style={{fontSize:12, color:"var(--text-faint)"}}>เช่น ใส่ list x₁ กับ x₂ → ได้ Σx₁, Σx₂, Σx₁², Σx₂², Σx₁x₂</span></li>
+              <br/><span style={{fontSize:'0.75rem', color:"var(--text-faint)"}}>เช่น ใส่ list x₁ กับ x₂ → ได้ Σx₁, Σx₂, Σx₁², Σx₂², Σx₁x₂</span></li>
             <li>ประกอบ matrix 4×4 ในกระดาษ (ใช้ค่าที่ออกมาทุกตัว)</li>
             <li>ไปที่ <Key>HOME</Key> → <Key>Equation</Key> → <Key>Simul Equation</Key> → เลือก <b>4 unknowns</b> → ใส่ matrix 4×4 + RHS → กด <Key>=</Key> ได้ <M>{`a_0, a_1, a_2, a_3`}</M> ทันที</li>
           </ol>
-          <p style={{margin:"6px 0 0", fontSize:13}}>fx-991CW รองรับ Simul Equation สูงสุด <b>4×4</b> — พอดีกับ Multiple Linear 3 ตัวแปร (4 unknowns)</p>
+          <p style={{margin:"6px 0 0", fontSize:'0.778rem'}}>fx-991CW รองรับ Simul Equation สูงสุด <b>4×4</b> — พอดีกับ Multiple Linear 3 ตัวแปร (4 unknowns)</p>
         </Callout>
       </Sect>
 
@@ -334,21 +334,21 @@ print(f"RMSE = {rmse:.4f}")`} height={300}/>
             <p>take ln ทั้ง 2 ข้าง:</p>
             <MB>{`\\ln y = \\ln a + b x`}</MB>
             <p>ตั้ง <M>{`Y = \\ln y, A_0 = \\ln a, A_1 = b`}</M> → Linear regression บน (x, Y)</p>
-            <p style={{margin:0, fontSize:12, color:"var(--text-dim)"}}>เสร็จแล้วถอด <M>{`a = e^{A_0}, b = A_1`}</M></p>
+            <p style={{margin:0, fontSize:'0.75rem', color:"var(--text-dim)"}}>เสร็จแล้วถอด <M>{`a = e^{A_0}, b = A_1`}</M></p>
           </Callout>
 
           <Callout kind="good" title="โมเดล Power · y = a · xᵇ">
             <p>take log (หรือ ln) ทั้ง 2 ข้าง:</p>
             <MB>{`\\log y = \\log a + b \\log x`}</MB>
             <p>ตั้ง <M>{`X = \\log x, Y = \\log y, A_0 = \\log a, A_1 = b`}</M> → Linear (X, Y)</p>
-            <p style={{margin:0, fontSize:12, color:"var(--text-dim)"}}>ใช้ตอน scaling laws / physics</p>
+            <p style={{margin:0, fontSize:'0.75rem', color:"var(--text-dim)"}}>ใช้ตอน scaling laws / physics</p>
           </Callout>
 
           <Callout kind="good" title="โมเดล Saturation · y = a·x / (b+x)">
             <p>กลับด้าน:</p>
             <MB>{`\\frac{1}{y} = \\frac{1}{a} + \\frac{b}{a}\\cdot\\frac{1}{x}`}</MB>
             <p>ตั้ง <M>{`X = 1/x, Y = 1/y`}</M> → Linear (X, Y) — slope = b/a, intercept = 1/a</p>
-            <p style={{margin:0, fontSize:12, color:"var(--text-dim)"}}>ใช้ใน biochemistry (Michaelis-Menten)</p>
+            <p style={{margin:0, fontSize:'0.75rem', color:"var(--text-dim)"}}>ใช้ใน biochemistry (Michaelis-Menten)</p>
           </Callout>
 
           <Callout kind="good" title="โมเดล Logarithmic · y = a + b·ln x">
@@ -566,7 +566,7 @@ function ScatterLineViz({ xs, ys }) {
                 SSE = {E.toFixed(3)}
               </text>
             </svg>
-            <p className="muted" style={{fontSize:13, marginTop:4}}>
+            <p className="muted" style={{fontSize:'0.778rem', marginTop:4}}>
               ▶ เส้นเริ่มจากแนวราบที่ค่าเฉลี่ย แล้วค่อยปรับจน <b>SSE ต่ำสุด</b> &nbsp;·&nbsp;
               <span style={{color:"var(--yellow)"}}>●</span> ข้อมูล &nbsp;
               <span style={{color:"var(--red)"}}>┊</span> residual

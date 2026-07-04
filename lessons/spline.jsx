@@ -8,7 +8,7 @@ function SplineLesson() {
   return (
     <div>
       <Hero
-        kicker="05 · Spline Interpolation"
+        kicker="07 · Spline Interpolation"
         title="Spline — เส้นโค้งต่อเส้น"
         lead="แทนที่จะใช้ polynomial ใหญ่ ๆ ผ่านทุกจุด เราใช้ polynomial เล็ก ๆ ต่อกันเป็นช่วง ๆ — แม่นยำกว่า, ไม่มี oscillation"
         readout={{
@@ -56,7 +56,7 @@ function SplineLesson() {
 
         <h3>ทำมือเต็ม · matrix 9×9 (4 จุด, ตามชีท Final p.16)</h3>
         <p>ข้อมูลตัวอย่างชีท: <code>x = [1, 1.5, 2, 2.5]</code>, <code>y = [45, 75, 160, 245]</code> → 4 จุด, 3 ช่วง, <b>9 ตัวแปร</b> <M>{`(a_1,b_1,c_1,\\;a_2,b_2,c_2,\\;a_3,b_3,c_3)`}</M></p>
-        <p style={{fontSize:13, color:"var(--text-faint)", margin:"-6px 0 12px"}}>📌 ข้อมูล 5 จุดในชีท SPLINE_regression.pdf (<code>x=[2,4,6,8,10]</code>) ใช้ pattern เดียวกัน — matrix ขยายเป็น 12×12</p>
+        <p style={{fontSize:'0.778rem', color:"var(--text-faint)", margin:"-6px 0 12px"}}>📌 ข้อมูล 5 จุดในชีท SPLINE_regression.pdf (<code>x=[2,4,6,8,10]</code>) ใช้ pattern เดียวกัน — matrix ขยายเป็น 12×12</p>
 
         <window.HandWalkthrough steps={[
           { title: "Step 1 · นับสมการที่ต้องการ (3n = 9)",
@@ -181,7 +181,7 @@ print(f"\\nf(1.75) = {eval_quad_spline(coef, xs, 1.75):.4f}")`} height={320}/>
 
         <h3>ทำมือเต็ม · matrix 12×12 (4 จุด, Natural Cubic Spline)</h3>
         <p>ข้อมูลเดียวกับ Sect 2: <code>x = [1, 1.5, 2, 2.5]</code>, <code>y = [45, 75, 160, 245]</code> → 4 จุด, 3 ช่วง, <b>12 ตัวแปร</b> <M>{`(a_i, b_i, c_i, d_i)`}</M> × 3 segments</p>
-        <p style={{fontSize:13, color:"var(--text-faint)", margin:"-6px 0 12px"}}>📌 5 จุดของชีท SPLINE_regression.pdf ขยายเป็น matrix 16×16 ใน pattern เดียวกัน</p>
+        <p style={{fontSize:'0.778rem', color:"var(--text-faint)", margin:"-6px 0 12px"}}>📌 5 จุดของชีท SPLINE_regression.pdf ขยายเป็น matrix 16×16 ใน pattern เดียวกัน</p>
 
         <window.HandWalkthrough steps={[
           { title: "Step 1 · นับสมการที่ต้องการ (4n = 12)",
@@ -307,7 +307,7 @@ for i in range(len(xs)-1):
             <span>กำหนด Start = ขอบซ้ายของ segment, End = ขอบขวา, Step = ช่วงย่อย</span>,
             <span>scroll หาค่า X ที่ต้องการ → ดู f(X) ในคอลัมน์</span>,
           ]}/>
-          <p style={{margin:"6px 0 0", fontSize:13, color:"var(--text-faint)"}}>⚠ ระวัง: ต้องเปลี่ยน coefficient ทุกครั้งที่ข้าม segment เพราะ spline เป็น piecewise</p>
+          <p style={{margin:"6px 0 0", fontSize:'0.778rem', color:"var(--text-faint)"}}>⚠ ระวัง: ต้องเปลี่ยน coefficient ทุกครั้งที่ข้าม segment เพราะ spline เป็น piecewise</p>
         </Callout>
       </Sect>
 
@@ -475,7 +475,7 @@ function CubicContinuityViz({ xs, ys }) {
       {renderPanel(cs.eval, "#58c4dd", "S(x) — ค่าฟังก์ชัน (C⁰ ต่อเนื่อง)", sampler(cs.eval))}
       {renderPanel(cs.deriv1, "#83c167", "S'(x) — slope (C¹ ต่อเนื่อง)", sampler(cs.deriv1))}
       {renderPanel(cs.deriv2, "#ffd66b", "S''(x) — curvature (C² ต่อเนื่อง, ขอบ = 0)", sampler(cs.deriv2))}
-      <p className="muted" style={{fontSize:12, marginTop:6}}>เส้นแนวตั้งคือจุดต่อระหว่าง segment — ทุก panel ผ่านจุดต่อแบบเรียบ (ไม่กระโดด, ไม่หัก)</p>
+      <p className="muted" style={{fontSize:'0.75rem', marginTop:6}}>เส้นแนวตั้งคือจุดต่อระหว่าง segment — ทุก panel ผ่านจุดต่อแบบเรียบ (ไม่กระโดด, ไม่หัก)</p>
     </div>
   );
 }
@@ -501,7 +501,7 @@ function SplineSolver() {
         <>
           <Callout kind="good">
             <div className="mono">S({fmt(x,4)}) ≈ <b>{fmt(cs.eval(x), 8)}</b></div>
-            <div className="mono" style={{fontSize:12}}>S'({fmt(x,4)}) ≈ {fmt(cs.deriv1(x), 6)} ; S''({fmt(x,4)}) ≈ {fmt(cs.deriv2(x), 6)}</div>
+            <div className="mono" style={{fontSize:'0.75rem'}}>S'({fmt(x,4)}) ≈ {fmt(cs.deriv1(x), 6)} ; S''({fmt(x,4)}) ≈ {fmt(cs.deriv2(x), 6)}</div>
           </Callout>
           <NumTable
             headers={["seg", "x range", "a", "b", "c", "d"]}

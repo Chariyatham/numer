@@ -77,7 +77,7 @@ function CalculatorLesson() {
             <span>เช่น <code>d/dx( x² ln(x) , x=2 )</code> → <Key>=</Key></span>,
             <span>ได้ <code>1.693147...</code> = ln 2 + 1</span>,
           ]}/>
-          <p className="muted" style={{fontSize:12}}>เครื่องใช้ Central difference อัตโนมัติ — แม่นยำมาก ใช้เช็คคำตอบ Numerical Diff ได้</p>
+          <p className="muted" style={{fontSize:'0.75rem'}}>เครื่องใช้ Central difference อัตโนมัติ — แม่นยำมาก ใช้เช็คคำตอบ Numerical Diff ได้</p>
         </Callout>
 
         <h3>1.4 ∫ — Integration ในเครื่อง</h3>
@@ -88,7 +88,7 @@ function CalculatorLesson() {
             <span>เช่น <code>∫ ( e^x , 0 , 2 )</code> → <Key>=</Key></span>,
             <span>ได้ <code>6.389056...</code> (= e² − 1)</span>,
           ]}/>
-          <p className="muted" style={{fontSize:12}}>ใช้เช็คคำตอบ Trapezoidal / Simpson ในการบ้าน</p>
+          <p className="muted" style={{fontSize:'0.75rem'}}>ใช้เช็คคำตอบ Trapezoidal / Simpson ในการบ้าน</p>
         </Callout>
 
         <h3>1.5 SOLVE — หาคำตอบสมการ</h3>
@@ -207,7 +207,7 @@ function CalculatorLesson() {
             <span className="mono">| 3   −0.1   −0.2  | 7.85  |<br/>| 0.1   7    −0.3  | −19.3 |<br/>| 0.3  −0.2   10   | 71.4  |</span>,
             <span>กด <Key>=</Key> → เครื่องแสดง <code>x₁ = 3, x₂ = −2.5, x₃ = 7</code> ทันที</span>,
           ]}/>
-          <p className="muted" style={{fontSize:12}}>เครื่องใช้ Cramer's rule ในเชิงคำนวณ — แม่นกว่า Gauss ที่ทำมือ (กลิ้ง round-off ไม่ขึ้น)</p>
+          <p className="muted" style={{fontSize:'0.75rem'}}>เครื่องใช้ Cramer's rule ในเชิงคำนวณ — แม่นกว่า Gauss ที่ทำมือ (กลิ้ง round-off ไม่ขึ้น)</p>
         </Callout>
 
         <Callout kind="warn" title="ระวัง! ข้อสอบมักให้แสดงขั้นตอน">
