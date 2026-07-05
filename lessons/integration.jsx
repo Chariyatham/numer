@@ -343,33 +343,88 @@ f(x₁)=f(2) = 2(8)−5(4)+3(2)+1 = 16−20+6+1 = 3`,
       {/* ═══════════════ ✸ · ข้อสอบจำลอง ═══════════════ */}
       <Sect tag="✸" title="ข้อสอบจำลอง">
         <Problem label="ข้อ 1 · เลือกวิธีให้ถูก" solution={
-          <p><M>n=5</M> → เป็นเลข<b>คี่</b> → ใช้ Simpson 1/3 ล้วน<b>ไม่ได้</b>! ต้องใช้ Composite Trapezoidal หรือผสม (Simpson 1/3 กับ 4 ช่องแรก + Trapezoidal ช่องที่ 5 หรือใช้ Simpson 3/8 กับ 3 ช่อง)</p>
+          <div>
+            <p style={{marginTop:0}}><b>นับก่อน:</b> 6 จุด → ช่องย่อย <M>{`n = 6-1 = 5`}</M> ช่อง (<M>h = 0.5</M>)</p>
+            <p><b>กฎเหล็กของ Simpson 1/3:</b> พาราโบลา 1 อันครอบ “2 ช่อง” (3 จุด) เสมอ ⇒ ต้องจับช่องเป็นคู่ ⇒ <M>n</M> ต้อง<b>เป็นเลขคู่</b> (จำนวนจุดต้อง<b>คี่</b>: 3, 5, 7, 9…)</p>
+            <p><M>n = 5</M> เป็น<b>เลขคี่</b> → เหลือ 1 ช่องจับคู่ไม่ได้ → ใช้ Simpson 1/3 ล้วน <b>ไม่ได้</b> ✗</p>
+            <p style={{marginBottom:4}}><b>ทางแก้ (เลือกทำได้):</b></p>
+            <ul style={{marginTop:0}}>
+              <li><b>A · Composite Trapezoidal</b> — ใช้ได้ทุก <M>n</M> ไม่สนคู่/คี่ (ง่ายสุด แต่แม่นน้อยกว่า)</li>
+              <li><b>B · ผสม Simpson 1/3 + Trapezoidal</b> — Simpson 1/3 กับ 4 ช่องแรก (<M>{`x_0\\ldots x_4`}</M>) แล้วต่อ Trapezoidal ช่องสุดท้าย (<M>{`x_4\\ldots x_5`}</M>)</li>
+              <li><b>C · ผสม Simpson 1/3 + Simpson 3/8</b> — Simpson 1/3 กับ 2 ช่องแรก + Simpson 3/8 กับ 3 ช่องหลัง (แม่นสุด)</li>
+            </ul>
+            <Formula label="วิธี C (แม่นสุด)">
+              <MB>{`I=\\underbrace{\\tfrac{h}{3}(f_0+4f_1+f_2)}_{\\text{Simpson 1/3}}+\\underbrace{\\tfrac{3h}{8}(f_2+3f_3+3f_4+f_5)}_{\\text{Simpson 3/8}}`}</MB>
+            </Formula>
+            <Callout kind="tip" title="กับดักที่อาจารย์ชอบออก">
+              จำสั้น ๆ: <b>Simpson 1/3 ชอบ “จำนวนจุดคี่”</b> (3, 5, 7, 9 จุด). เจอจำนวนจุดคู่เมื่อไหร่ (เช่น 6 จุดข้อนี้) ให้เอะใจทันทีว่าใช้ล้วนไม่ได้
+            </Callout>
+          </div>
         }>
           คุณมี <M>f(x)</M> ที่ <M>{`x=0,0.5,1,1.5,2,2.5`}</M> (6 จุด) จะหา <M>{`\\int_0^{2.5} f(x)\\,dx`}</M> ด้วย Simpson 1/3 ได้ไหม? เพราะอะไร?
         </Problem>
 
         <Problem label="ข้อ 2 · Simpson เป๊ะเมื่อไหร่" solution={
-          <p>Simpson 1/3 แม่น<b>เป๊ะ</b>สำหรับพหุนามดีกรี ≤ <b>3</b> (เพราะ error ขึ้นกับ <M>{`f^{(4)}`}</M> ซึ่งเป็น 0). ดังนั้น (ก) <M>{`3x^2+1`}</M> ดีกรี 2 → เป๊ะ · (ข) <M>{`x^3`}</M> ดีกรี 3 → เป๊ะ · (ค) <M>{`x^4`}</M> ดีกรี 4 → ไม่เป๊ะ</p>
+          <div>
+            <p style={{marginTop:0}}><b>หลักการ:</b> ค่าคลาดเคลื่อนของ Simpson 1/3 (single) คือ</p>
+            <Formula label="Error term ของ Simpson 1/3">
+              <MB>{`E=-\\frac{h^5}{90}\\,f^{(4)}(\\xi)`}</MB>
+            </Formula>
+            <p>error ขึ้นกับ <M>{`f^{(4)}`}</M> ⇒ ถ้า <M>{`f^{(4)}=0`}</M> ทุกที่ (พหุนามดีกรี <M>{`\\le 3`}</M>) คำตอบจะ<b>เป๊ะ</b></p>
+            <p><b>เกร็ด “แถมฟรี 1 ดีกรี”:</b> Simpson ออกแบบให้เป๊ะแค่ดีกรี 2 (พาราโบลา) แต่ดันเป๊ะถึง<b>ดีกรี 3</b> เพราะพจน์ error ดีกรี 3 หักล้างกันด้วยความสมมาตร</p>
+            <ul>
+              <li>(ก) <M>{`3x^2+1`}</M> → ดีกรี 2 <M>{`\\le 3`}</M> → <b style={{color:'var(--green)'}}>เป๊ะ ✓</b></li>
+              <li>(ข) <M>{`x^3`}</M> → ดีกรี 3 <M>{`\\le 3`}</M> → <b style={{color:'var(--green)'}}>เป๊ะ ✓</b> (เซอร์ไพรส์!)</li>
+              <li>(ค) <M>{`x^4`}</M> → ดีกรี 4, <M>{`f^{(4)}=24\\ne 0`}</M> → <b style={{color:'var(--red, #e06c75)'}}>ไม่เป๊ะ ✗</b></li>
+            </ul>
+            <p style={{margin:'6px 0 4px'}}>พิสูจน์ด้วยโปรแกรม (<M>{`\\int_0^2`}</M> — x⁴ ค่าจริง = 6.4 แต่ Simpson ได้ 6.667):</p>
+            <PythonRunner code={`def simpson_single(f, a, b):
+    h = (b - a) / 2
+    m = a + h
+    return h/3 * (f(a) + 4*f(m) + f(b))
+
+tests = [
+    ("3x^2+1", lambda x: 3*x**2 + 1, 10.0),
+    ("x^3",    lambda x: x**3,       4.0),
+    ("x^4",    lambda x: x**4,       6.4),
+]
+print(f"{'f(x)':<9}{'Simpson':>10}{'exact':>9}{'diff':>10}")
+for name, f, exact in tests:
+    s = simpson_single(f, 0, 2)
+    mark = "exact" if abs(s - exact) < 1e-9 else "OFF"
+    print(f"{name:<9}{s:>10.4f}{exact:>9.4f}{s-exact:>+10.4f}   {mark}")`} height={220}/>
+          </div>
         }>
           ข้อใดที่ Simpson 1/3 (single) ให้คำตอบ<b>เป๊ะ</b>? (ก) <M>{`\\int 3x^2+1`}</M> (ข) <M>{`\\int x^3`}</M> (ค) <M>{`\\int x^4`}</M>
         </Problem>
 
         <Problem label="ข้อ 3 · โปรแกรมเทียบ 3 วิธี" solution={
-          <PythonRunner code={`import math
-f = lambda x: math.sin(x)/x if x != 0 else 1.0
-true_val = 0.9460830704   # Si(1)
+          <div>
+            <p style={{marginTop:0}}><M>{`\\frac{\\sin x}{x}`}</M> <b>ไม่มี antiderivative แบบฟังก์ชันพื้นฐาน</b> (มันคือฟังก์ชันพิเศษ <M>{`\\mathrm{Si}(x)`}</M>) → หาแบบ analytic ไม่ได้ ต้องใช้วิธีเชิงตัวเลขเท่านั้น. ที่ <M>{`x=0`}</M> ใช้ลิมิต <M>{`\\lim_{x\\to0}\\frac{\\sin x}{x}=1`}</M> กันหารศูนย์</p>
+            <PythonRunner code={`import math
+f = lambda x: math.sin(x)/x if x != 0 else 1.0   # ลิมิตที่ x=0 → 1
+true_val = 0.9460830704   # = Si(1) ค่าจริง
 
-def trap(f,a,b,n):
-    h=(b-a)/n
-    return h/2*(f(a)+f(b)+2*sum(f(a+i*h) for i in range(1,n)))
-def simp(f,a,b,n):
-    h=(b-a)/n
-    return h/3*(f(a)+f(b)+sum((4 if i%2 else 2)*f(a+i*h) for i in range(1,n)))
+def trap(f, a, b, n):
+    h = (b - a) / n
+    return h/2 * (f(a) + f(b) + 2*sum(f(a+i*h) for i in range(1, n)))
+def simp(f, a, b, n):
+    h = (b - a) / n
+    return h/3 * (f(a) + f(b) + sum((4 if i%2 else 2)*f(a+i*h) for i in range(1, n)))
 
 print(f"{'n':>3} | {'Comp.Trap':>11} {'err%':>8} | {'Comp.Simp':>11} {'err%':>8}")
-for n in [4,8,16]:
-    t=trap(f,1e-9,1,n); s=simp(f,1e-9,1,n)
-    print(f"{n:3d} | {t:11.7f} {abs(true_val-t)/true_val*100:7.4f}% | {s:11.7f} {abs(true_val-s)/true_val*100:7.4f}%")`} height={200}/>
+for n in [4, 8, 16]:
+    t = trap(f, 0, 1, n)
+    s = simp(f, 0, 1, n)
+    print(f"{n:3d} | {t:11.7f} {abs(true_val-t)/true_val*100:7.4f}% | {s:11.7f} {abs(true_val-s)/true_val*100:7.4f}%")`} height={230}/>
+            <Callout kind="good" title="อ่านผลลัพธ์">
+              <ul style={{margin:0}}>
+                <li><b>Trapezoidal</b> (<M>{`O(h^2)`}</M>): <M>n</M> เพิ่มเท่าตัว error ลดราว <b>4 เท่า</b> (0.166% → 0.041% → 0.010%)</li>
+                <li><b>Simpson</b> (<M>{`O(h^4)`}</M>): <M>n</M> เพิ่มเท่าตัว error ลดราว <b>16 เท่า</b> — ที่ <M>n=16</M> ตรง 7 ตำแหน่งทศนิยมแล้ว</li>
+                <li>สรุป: จำนวนจุดเท่ากัน <b>Simpson แม่นกว่ามหาศาล</b> สำหรับฟังก์ชันเรียบ</li>
+              </ul>
+            </Callout>
+          </div>
         }>
           หา <M>{`\\int_0^1 \\frac{\\sin x}{x}\\,dx`}</M> (อินทิเกรตตรงไม่ได้!) ด้วย Composite Trap และ Composite Simpson (<M>{`n=4,8,16`}</M>) เทียบค่าจริง <M>{`\\approx 0.9460831`}</M>
         </Problem>
@@ -669,18 +724,52 @@ for (const n of [1, 2, 4, 6]){
     let ans = Trapezoidal(2, 8, n);
     console.log("n="+n, ans, Error(ans, exact).toFixed(4)+"%");
 }`}/>
-      <p style={{margin:"8px 0 6px", fontSize:'0.82rem'}}>เวอร์ชัน Python (กด ▸ Run ดูผลจริง — ตรงกับที่คิดมือ):</p>
-      <PythonRunner code={`def f(x): return 4*x**5 - 3*x**4 + x**3 - 6*x + 2
-def trapezoid(a, b, n):
-    h = (b-a)/n if n != 1 else (b-a)
-    s = sum(f(a + i*h) for i in range(1, n))   # xi = a + i*h
-    return h/2 * (f(a) + f(b) + 2*s)
+      <p style={{margin:"8px 0 6px", fontSize:'0.82rem'}}>เวอร์ชัน Python — <b>แยกเป็น 2 โปรแกรมตามที่อาจารย์ให้จริง</b> (กด ▸ Run ดูผล ตรงกับที่คิดมือ):</p>
+      <p style={{margin:"0 0 4px", fontWeight:600, color:"var(--blue)"}}>▸ 1.1 Single Trapezoidal Rule</p>
+      <PythonRunner code={`def f(x):
+    return 4*(x**5) - 3*(x**4) + (x**3) - 6*x + 2
 
-exact = 155930.4
-print(f"{'method':<16}{'value':>14}{'error %':>12}")
-for name, n in [("single", 1), ("n=2", 2), ("n=4", 4), ("n=6", 6)]:
-    v = trapezoid(2, 8, n)
-    print(f"{name:<16}{v:>14.4f}{abs(exact-v)/exact*100:>11.4f}%")`} height={200}/>
+a = 2
+b = 8
+exact_value = 155930.4
+
+h = b - a
+f_a = f(a)
+f_b = f(b)
+
+approx_I = (h / 2) * (f_a + f_b)
+error = abs(exact_value - approx_I) / exact_value * 100
+
+print(f"h = {h}")
+print(f"f({a}) = {f_a}")
+print(f"f({b}) = {f_b}")
+print(f"I = {approx_I}")
+print(f"Error = {error:.2f}%")`} height={230}/>
+      <p style={{margin:"12px 0 4px", fontWeight:600, color:"var(--blue)"}}>▸ 1.2 Composite Trapezoidal Rule (n = 2, 4, 6)</p>
+      <PythonRunner code={`def f(x):
+    return 4*(x**5) - 3*(x**4) + (x**3) - 6*x + 2
+
+def composite_trapezoidal(a, b, n):
+    h = (b - a) / n
+    s = f(a) + f(b)
+    for i in range(1, n):
+        s += 2 * f(a + i*h)
+    return (h / 2) * s
+
+a = 2
+b = 8
+exact_value = 155930.4
+
+for n in [2, 4, 6]:
+    h = (b - a) / n
+    approx_I = composite_trapezoidal(a, b, n)
+    error = abs(exact_value - approx_I) / exact_value * 100
+
+    print(f"n = {n}")
+    print(f"h = {h}")
+    print(f"I = {approx_I}")
+    print(f"Error = {error:.2f}%")
+    print()`} height={280}/>
     </div>
   );
 }
@@ -760,20 +849,58 @@ for (const n of [2, 4, 6]){
     let ans = Simpson(-1, 2, n);
     console.log("n="+n, ans, Error(ans, exact).toFixed(4)+"%");
 }`}/>
-      <p style={{margin:"8px 0 6px", fontSize:'0.82rem'}}>เวอร์ชัน Python (รันได้):</p>
-      <PythonRunner code={`def f(x): return x**7 + 2*x**3 - 1
-def simpson(a, b, n):
-    h = (b-a)/n
+      <p style={{margin:"8px 0 6px", fontSize:'0.82rem'}}>เวอร์ชัน Python — <b>แยก 2 โปรแกรมตามที่อาจารย์ให้จริง</b> (รันได้):</p>
+      <p style={{margin:"0 0 4px", fontWeight:600, color:"var(--purple, #a87dbe)"}}>▸ 2.1 Single Simpson 1/3 Rule</p>
+      <PythonRunner code={`def f(x):
+    return (x**7) + 2*(x**3) - 1
+
+a = -1
+b = 2
+exact_value = 36.375
+
+h = (b - a) / 2
+m = a + h
+f_a = f(a)
+f_m = f(m)
+f_b = f(b)
+
+approx_I = (h / 3) * (f_a + 4*f_m + f_b)
+error = abs(exact_value - approx_I) / exact_value * 100
+
+print(f"h = {h}")
+print(f"f({a}) = {f_a}")
+print(f"f({m}) = {f_m}")
+print(f"f({b}) = {f_b}")
+print(f"I = {approx_I}")
+print(f"Error = {error:.2f}%")`} height={250}/>
+      <p style={{margin:"12px 0 4px", fontWeight:600, color:"var(--purple, #a87dbe)"}}>▸ 2.2 Composite Simpson Rule (n = 2, 4, 6)</p>
+      <PythonRunner code={`def f(x):
+    return (x**7) + 2*(x**3) - 1
+
+def composite_simpson(a, b, n):
+    h = (b - a) / n
     s = f(a) + f(b)
     for i in range(1, n):
-        s += (4 if i % 2 else 2) * f(a + i*h)
-    return h/3 * s
+        if i % 2 == 1:
+            s += 4 * f(a + i*h)
+        else:
+            s += 2 * f(a + i*h)
+    return (h / 3) * s
 
-exact = 36.375
-print(f"{'n':<8}{'value':>14}{'error %':>12}")
+a = -1
+b = 2
+exact_value = 36.375
+
 for n in [2, 4, 6]:
-    v = simpson(-1, 2, n)
-    print(f"n={n:<6}{v:>14.6f}{abs(exact-v)/exact*100:>11.4f}%")`} height={180}/>
+    h = (b - a) / n
+    approx_I = composite_simpson(a, b, n)
+    error = abs(exact_value - approx_I) / exact_value * 100
+
+    print(f"n = {n}")
+    print(f"h = {h}")
+    print(f"I = {approx_I}")
+    print(f"Error = {error:.2f}%")
+    print()`} height={310}/>
     </div>
   );
 }
@@ -827,24 +954,64 @@ function ExerciseThree() {
         <b>สังเกต:</b> <M>{`\\ln x`}</M> เรียบ (smooth) มาก ทั้งสองวิธีจึงแม่นเร็ว — Simpson n=6 error แค่ ~0.002% ส่วน Trapezoidal n=6 ~0.30% (Simpson แม่นกว่าที่ n เดียวกันเสมอสำหรับฟังก์ชันเรียบ)
       </Callout>
 
-      <h4>โปรแกรม (รวมทั้ง 2 วิธี)</h4>
+      <h4>โปรแกรม — แยก 2 โปรแกรมตามที่อาจารย์ให้จริง</h4>
+      <p style={{margin:"0 0 4px", fontWeight:600, color:"var(--green)"}}>▸ 3.1 Composite Trapezoidal Rule</p>
       <PythonRunner code={`import math
-f = lambda x: math.log(x)
-a, b = 1, 2
-exact = 2*math.log(2) - 1
 
-def comp_trap(n):
-    h = (b-a)/n
-    return h/2 * (f(a)+f(b) + 2*sum(f(a+i*h) for i in range(1,n)))
-def comp_simp(n):
-    h = (b-a)/n
-    return h/3 * (f(a)+f(b) + sum((4 if i%2 else 2)*f(a+i*h) for i in range(1,n)))
+def f(x):
+    return math.log(x)
 
-print(f"exact = {exact:.6f}\\n")
-print(f"{'n':>3} | {'Trap':>10} {'err%':>8} | {'Simpson':>10} {'err%':>8}")
-for n in [2,4,6]:
-    t, s = comp_trap(n), comp_simp(n)
-    print(f"{n:3d} | {t:10.6f} {abs(exact-t)/exact*100:7.4f}% | {s:10.6f} {abs(exact-s)/exact*100:7.4f}%")`} height={200}/>
+def composite_trapezoidal(a, b, n):
+    h = (b - a) / n
+    s = f(a) + f(b)
+    for i in range(1, n):
+        s += 2 * f(a + i*h)
+    return (h / 2) * s
+
+a = 1
+b = 2
+exact_value = 0.3862943611
+
+for n in [2, 4, 6]:
+    h = (b - a) / n
+    approx_I = composite_trapezoidal(a, b, n)
+    error = abs(exact_value - approx_I) / exact_value * 100
+
+    print(f"n = {n}")
+    print(f"h = {h}")
+    print(f"I = {approx_I}")
+    print(f"Error = {error:.4f}%")
+    print()`} height={290}/>
+      <p style={{margin:"12px 0 4px", fontWeight:600, color:"var(--purple, #a87dbe)"}}>▸ 3.2 Composite Simpson Rule</p>
+      <PythonRunner code={`import math
+
+def f(x):
+    return math.log(x)
+
+def composite_simpson(a, b, n):
+    h = (b - a) / n
+    s = f(a) + f(b)
+    for i in range(1, n):
+        if i % 2 == 1:
+            s += 4 * f(a + i*h)
+        else:
+            s += 2 * f(a + i*h)
+    return (h / 3) * s
+
+a = 1
+b = 2
+exact_value = 0.3862943611
+
+for n in [2, 4, 6]:
+    h = (b - a) / n
+    approx_I = composite_simpson(a, b, n)
+    error = abs(exact_value - approx_I) / exact_value * 100
+
+    print(f"n = {n}")
+    print(f"h = {h}")
+    print(f"I = {approx_I}")
+    print(f"Error = {error:.4f}%")
+    print()`} height={310}/>
     </div>
   );
 }
