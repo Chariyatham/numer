@@ -121,7 +121,7 @@ print(f"{power_root(x, n, xl, xr):.4f}")`} height={220}/>
             <p><b>6.2</b> Composite Trap n=6, h=0.5:</p>
             <MB>{`I = \\frac{0.5}{2}[f(0)+f(3) + 2(f(0.5)+f(1)+f(1.5)+f(2)+f(2.5))]`}</MB>
             <p>= 0.25 × [1 + 13.5 + 2(1.5 + 3 + 5.5 + 9 + 13.5)] = 0.25 × 79.5 = 19.875</p>
-            <p><b>6.3</b> Composite Simpson n=6:</p>
+            <p><b>6.3</b> Composite Simpson n=3 พาราโบลา (6 ช่องย่อย, h=0.5):</p>
             <MB>{`I = \\frac{0.5}{3}[1 + 13.5 + 4(1.5+5.5+13.5) + 2(3+9)] \\approx 19.5`}</MB>
             <p>ค่าจริง <M>{`\\int_0^3 (x^3+1) dx = 3^4/4 + 3 = 20.25 + 3 = 23.25`}</M> — มีคำผิด สมมติว่า f = x² + 1 → จริง = 9+3 = 12</p>
           </div>
@@ -129,7 +129,7 @@ print(f"{power_root(x, n, xl, xr):.4f}")`} height={220}/>
           <p>คำนวณ <M>{`I = \\int_0^3 (x^3 + 1) dx`}</M></p>
           <p><b>6.1</b> Single Trapezoidal — error เทียบค่าจริง?</p>
           <p><b>6.2</b> Composite Trapezoidal n=6</p>
-          <p><b>6.3</b> Composite Simpson 1/3 n=6</p>
+          <p><b>6.3</b> Composite Simpson 1/3 (n=3 พาราโบลา = 6 ช่องย่อย)</p>
           <p><b>6.4</b> เปรียบเทียบ error % ของทั้ง 3 method</p>
         </Problem>
 
@@ -265,7 +265,7 @@ print("LU x =", lu_solve((lu_f, piv), b))`} height={180}/>
 
         <Problem label="ข้อ 13 (10 คะแนน) · Gauss-Legendre"
           solution={<p>map [−1,1] → [1,5]: x = 3 + 2t, dx = 2dt. ใช้ 3-pt → I ≈ 2·[5/9 f(3−1.5491) + 8/9 f(3) + 5/9 f(3+1.5491)] ≈ ค่าจริง</p>}>
-          <p>คำนวณ <MB>{`\\int_1^5 \\frac{1}{x} dx = \\ln 5 \\approx 1.6094`}</MB> ด้วย Gauss-Legendre 2 และ 3 จุด เทียบ Composite Simpson n=4</p>
+          <p>คำนวณ <MB>{`\\int_1^5 \\frac{1}{x} dx = \\ln 5 \\approx 1.6094`}</MB> ด้วย Gauss-Legendre 2 และ 3 จุด เทียบ Composite Simpson (n=2 พาราโบลา = 4 ช่องย่อย)</p>
         </Problem>
 
         <Problem label="ข้อ 14 (8 คะแนน) · Richardson Extrapolation"
@@ -345,7 +345,7 @@ print(f"y(x)=5 ที่ x ≈ {x:.6f}")`} height={320}/>
           <p>โจทย์ผสม 3 ส่วน — ใช้หลายวิธีในข้อเดียว</p>
           <p>ข้อมูล (x, y) = (0, 1.0), (0.5, 1.65), (1.0, 2.72), (1.5, 4.48), (2.0, 7.39)</p>
           <p><b>18.1</b> สังเกตว่า y ดูเป็น exponential → Linearize ด้วย ln(y) → linear regression หา a, b ใน <M>{`y = a e^{bx}`}</M></p>
-          <p><b>18.2</b> ใช้สูตรที่ได้คำนวณ <M>{`\\int_0^2 y(x) dx`}</M> ด้วย Gauss-Legendre 3 จุด — เทียบ Simpson n=4</p>
+          <p><b>18.2</b> ใช้สูตรที่ได้คำนวณ <M>{`\\int_0^2 y(x) dx`}</M> ด้วย Gauss-Legendre 3 จุด — เทียบ Simpson (n=2 พาราโบลา = 4 ช่องย่อย)</p>
           <p><b>18.3</b> ใช้ Newton-Raphson หา x ที่ y(x) = 5</p>
           <p><b>18.4</b> เขียนโปรแกรม Python ทำทุกข้อ + ตรวจคำตอบเทียบกัน</p>
         </Problem>
@@ -368,7 +368,7 @@ print(f"y(x)=5 ที่ x ≈ {x:.6f}")`} height={320}/>
           <p>ข้อมูล x = [1, 2, 3, 4, 5], y = [0.98, 4.02, 9.0, 16.1, 25.0] — fit <M>{`y = a x^b`}</M> ด้วย Linearization + ทำนาย y(6)</p>
         </Problem>
         <Problem label="ข้อ 5 (15 คะแนน)" solution={<p>Romberg ระดับ 3 → I ≈ 1.71828 ตรง e−1; Gauss-Leg 2-pt → 1.7176 (err 0.04%)</p>}>
-          <p>คำนวณ <M>{`\\int_0^1 e^x dx = e - 1 ≈ 1.71828`}</M> 3 วิธี: Romberg ระดับ 3, Gauss-Legendre 2-pt, Composite Simpson n=4 → เทียบ error</p>
+          <p>คำนวณ <M>{`\\int_0^1 e^x dx = e - 1 ≈ 1.71828`}</M> 3 วิธี: Romberg ระดับ 3, Gauss-Legendre 2-pt, Composite Simpson (n=2 พาราโบลา = 4 ช่องย่อย) → เทียบ error</p>
         </Problem>
         <Problem label="ข้อ 6 (10 คะแนน)" solution={<p>Central O(h²) ที่ h=0.1: f'(1) ≈ 1.0017; Richardson: 1.00000 (err 10⁻⁶)</p>}>
           <p>คำนวณ <M>{`f'(1)`}</M> ของ <M>{`f(x) = \\ln(1+x)`}</M> (true = 0.5) ด้วย Central O(h²) ที่ h = 0.2, 0.1 และ Richardson</p>
@@ -412,7 +412,7 @@ cubic_spline_natural([1,2,3,4], [2,5,10,17])`} height={200}/>
           <div>
             <p><b>(a) Polynomial Regression order 2:</b> ใช้สูตร normal eqs 3×3 (ใน regression.jsx Sect 2) — ได้ <M>{`a_0 \\approx 5.605,\\; a_1 \\approx 4.900,\\; a_2 \\approx -0.445`}</M></p>
             <MB>{`C(t) \\approx 5.605 + 4.900\\,t - 0.445\\,t^2`}</MB>
-            <p><b>(b) AUC = ∫₀¹² C(t) dt:</b> ใช้ Composite Simpson n=6 (h=2)</p>
+            <p><b>(b) AUC = ∫₀¹² C(t) dt:</b> ใช้ Composite Simpson n=3 พาราโบลา (6 ช่องย่อย, h=2)</p>
             <MB>{`\\text{AUC} = \\tfrac{2}{3}\\left[ C(0)+C(12) + 4(C(2)+C(6)+C(10)) + 2(C(4)+C(8)) \\right] \\approx 163.56\\ \\text{mg·hr/L}`}</MB>
             <p><b>(c) เวลาที่ C สูงสุด:</b> <M>{`\\frac{dC}{dt} = a_1 + 2 a_2 t = 0`}</M></p>
             <MB>{`t^* = -\\frac{a_1}{2 a_2} = -\\frac{4.900}{2(-0.445)} \\approx 5.50\\ \\text{hr}`}</MB>
@@ -426,7 +426,7 @@ cubic_spline_natural([1,2,3,4], [2,5,10,17])`} height={200}/>
             rows={[["C (mg/L)", "0", "12", "18", "22", "18", "12", "7", "4"]]}
           />
           <p style={{marginTop:8}}>(a) สร้าง Polynomial Regression order 2 — เขียน normal equations 3×3 และ solve ด้วย Gauss</p>
-          <p>(b) ใช้สมการที่ได้จาก (a) คำนวณ <b>area under curve (AUC)</b> จาก <M>t=0</M> ถึง <M>t=12</M> ด้วย Composite Simpson 1/3 Rule <M>n=6</M></p>
+          <p>(b) ใช้สมการที่ได้จาก (a) คำนวณ <b>area under curve (AUC)</b> จาก <M>t=0</M> ถึง <M>t=12</M> ด้วย Composite Simpson 1/3 Rule (<M>n=3</M> พาราโบลา = 6 ช่องย่อย)</p>
           <p>(c) หาเวลา <M>t^*</M> ที่ <M>C(t)</M> สูงสุด — ใช้ analytical diff <M>{`dC/dt = 0`}</M></p>
           <p>(d) ใช้ Newton-Raphson บน <M>{`f(t) = dC/dt`}</M> เริ่มที่ <M>{`t_0 = 4`}</M> → เปรียบเทียบกับคำตอบ (c)</p>
         </Problem>
@@ -514,7 +514,7 @@ cubic_spline_natural([1,2,3,4], [2,5,10,17])`} height={200}/>
 
         <Callout kind="warn" title="พลาดบ่อย — อย่าทำ">
           <ul>
-            <li><b>Composite Simpson n=คี่:</b> ใช้ไม่ได้! ต้องเปลี่ยน method หรือ n</li>
+            <li><b>Composite Simpson ช่องย่อยเป็นคี่:</b> ใช้ไม่ได้! (จับพาราโบลาไม่ลงตัว) ต้องเปลี่ยน method</li>
             <li><b>Gauss-Seidel:</b> ลืมใช้ค่า x ใหม่ในรอบเดียวกัน (เผลอใช้แบบ Jacobi)</li>
             <li><b>error formula:</b> ใช้ <M>{`(x_{\\text{new}} - x_{\\text{old}})/x_{\\text{new}}`}</M> เท่านั้น (ไม่ใช่ /old)</li>
             <li><b>Newton:</b> ลืม diff ใส่สูตร x − f(x)/f'(x) เป็น x − f(x)·f'(x)</li>

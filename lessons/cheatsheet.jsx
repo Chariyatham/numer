@@ -155,9 +155,9 @@ function CheatLesson() {
           <h4>Simpson 1/3 (single, 3 จุด)</h4>
           <MB>{`I = \\frac{h}{3}[f(a) + 4f(m) + f(b)], \\quad h = \\frac{b-a}{2}`}</MB>
 
-          <h4>Composite Simpson 1/3 (n ช่วง, n ต้องเป็น<em>คู่</em>!)</h4>
-          <MB>{`I = \\frac{h}{3}\\left[f(x_0) + f(x_n) + 4\\sum_{i \\text{ คี่}} f(x_i) + 2\\sum_{i \\text{ คู่}} f(x_i)\\right]`}</MB>
-          <p>Pattern น้ำหนัก: <b>1, 4, 2, 4, 2, 4, ..., 4, 1</b></p>
+          <h4>Composite Simpson 1/3 (n พาราโบลา → 2n ช่วง)</h4>
+          <MB>{`I = \\frac{h}{3}\\left[f(x_0) + f(x_{2n}) + 4\\sum_{i \\text{ คี่}} f(x_i) + 2\\sum_{i \\text{ คู่}} f(x_i)\\right], \\quad h = \\frac{b-a}{2n}`}</MB>
+          <p>Pattern น้ำหนัก: <b>1, 4, 2, 4, 2, 4, ..., 4, 1</b> · <M>n</M> = จำนวนพาราโบลา (ช่องย่อย = 2n เป็นคู่เสมอ)</p>
 
           <Callout title="Error">
             <ul>
@@ -231,7 +231,7 @@ function CheatLesson() {
           </Callout>
           <Callout kind="danger" title="Integration">
             <ol start={16}>
-              <li>Composite Simpson n = <em>คี่</em> → ใช้ไม่ได้!</li>
+              <li>Composite Simpson: จำนวน<em>ช่องย่อยเป็นคี่</em> → ใช้ไม่ได้! (จับพาราโบลาไม่ลงตัว — ต้องจุดข้อมูลเป็นเลขคี่)</li>
               <li>Simpson น้ำหนักผิด pattern (1, 4, 2, 4, ..., 4, 1)</li>
               <li>คำนวณ h ผิด — สำหรับ Simpson single, h = (b−a)/2</li>
             </ol>
@@ -407,8 +407,8 @@ function DecisionTree() {
 
       {/* Integ/Diff */}
       {[
-        { x: 700, y: 230, label: "∫ + n คี่", method: "Composite Trap" },
-        { x: 700, y: 300, label: "∫ + n คู่", method: "Composite Simpson 1/3" },
+        { x: 700, y: 230, label: "∫ + ช่องย่อยคี่", method: "Composite Trap" },
+        { x: 700, y: 300, label: "∫ + ช่องย่อยคู่", method: "Composite Simpson 1/3" },
         { x: 700, y: 370, label: "d/dx มีจุดทั้ง 2 ด้าน", method: "Central O(h²) หรือ O(h⁴)" },
         { x: 700, y: 440, label: "d/dx มีปลายข้างเดียว", method: "Forward / Backward O(h)" },
       ].map((c, i) => (

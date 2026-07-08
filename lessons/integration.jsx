@@ -452,7 +452,7 @@ for n in [4, 8, 16]:
             </Callout>
           </div>
         }>
-          หา <M>{`\\int_0^1 \\frac{\\sin x}{x}\\,dx`}</M> (อินทิเกรตตรงไม่ได้!) ด้วย Composite Trap และ Composite Simpson (<M>{`n=4,8,16`}</M>) เทียบค่าจริง <M>{`\\approx 0.9460831`}</M>
+          หา <M>{`\\int_0^1 \\frac{\\sin x}{x}\\,dx`}</M> (อินทิเกรตตรงไม่ได้!) ด้วย Composite Trap และ Composite Simpson (<M>{`n=4,8,16`}</M> <b>ช่องย่อย</b> — เทียบ convergence ที่จำนวนจุดเท่ากัน) เทียบค่าจริง <M>{`\\approx 0.9460831`}</M>
         </Problem>
       </Sect>
     </div>
