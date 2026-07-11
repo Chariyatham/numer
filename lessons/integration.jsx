@@ -220,14 +220,18 @@ T4:  h/2(                f3 + f4 )
 
       {/* ═══════════════ 5 · Composite Simpson ═══════════════ */}
       <Sect tag="5" title="④ Composite Simpson’s Rule — พาราโบลาหลายอัน">
-        <p>ซอยเป็น <M>n</M> ช่อง (<b><M>n</M> ต้องเป็นเลขคู่!</b>) แล้วจับทีละ 2 ช่องเป็น 1 พาราโบลา ต่อ ๆ กันไป</p>
+        <p>วางพาราโบลา <M>n</M> อันต่อกัน — พาราโบลา 1 อันกิน <b>2 ช่องย่อย</b> เสมอ → ซอยช่วง <M>[a,b]</M> เป็น <M>{`2n`}</M> ช่องย่อย (<b><M>n</M> = จำนวนพาราโบลา</b>, จะกี่อันก็ได้ ไม่ต้องคูณ/หารเช็กคู่-คี่)</p>
+
+        <Callout title="🎙️ สูตรอาจารย์: h = (b−a)/2n (ตัวหาร 2n ไม่ใช่ n!)">
+          <p style={{margin:0}}>เพราะช่วงถูกซอยเป็น <M>{`2n`}</M> ช่องย่อยเท่า ๆ กัน ระยะห่างต่อช่องจึงเป็น <M>{`h=\\frac{b-a}{2n}`}</M> จุดคือ <M>{`x_0, x_1, \\dots, x_{2n}`}</M> (รวม <M>{`2n+1`}</M> จุด) — เลข <b>2</b> ในตัวหารมาจาก “2 ช่องต่อ 1 พาราโบลา”</p>
+        </Callout>
 
         <Formula>
-          <MB>{`I \\approx \\frac{h}{3}\\Big[f(x_0)+f(x_n) + 4\\!\\!\\sum_{i=1,3,5,\\dots}\\!\\! f(x_i) + 2\\!\\!\\sum_{i=2,4,6,\\dots}\\!\\! f(x_i)\\Big], \\quad h=\\frac{b-a}{n}`}</MB>
+          <MB>{`I \\approx \\frac{h}{3}\\Big[f(x_0)+f(x_{2n}) + 4\\!\\!\\sum_{i=1,3,5,\\dots}^{2n-1}\\!\\! f(x_i) + 2\\!\\!\\sum_{i=2,4,6,\\dots}^{2n-2}\\!\\! f(x_i)\\Big], \\quad h=\\frac{b-a}{2n}`}</MB>
         </Formula>
 
         <Callout title="🎙️ ที่มาของ 1·4·2·4·1 — “จุดกลาง ×4, จุดต่อ ×2” (เหตุผลเดียวกับคางหมู)">
-          <p style={{margin:"0 0 4px"}}>พาราโบลา 1 อันใช้สูตรเดี่ยว <b>1·4·1</b> (กิน 2 ช่อง). <M>n=4</M> มี 2 พาราโบลา เขียนทีละอันแล้ววางให้จุดเดียวกันตรงคอลัมน์กัน:</p>
+          <p style={{margin:"0 0 4px"}}>พาราโบลา 1 อันใช้สูตรเดี่ยว <b>1·4·1</b> (กิน 2 ช่อง). ลอง <M>n=2</M> พาราโบลา (= 4 ช่องย่อย: <M>{`x_0\\ldots x_4`}</M>) เขียนทีละอันแล้ววางให้จุดเดียวกันตรงคอลัมน์กัน:</p>
           <div style={{fontFamily:"var(--font-mono)", fontSize:'0.8rem', lineHeight:1.6, margin:"0 0 6px", whiteSpace:"pre", overflowX:"auto"}}>{`P1 (x0,x1,x2):  h/3( f0 + 4f1 + f2 )
 P2 (x2,x3,x4):  h/3(            f2 + 4f3 + f4 )
 ────────────────────────────────────────────
@@ -237,28 +241,29 @@ P2 (x2,x3,x4):  h/3(            f2 + 4f3 + f4 )
           <ul style={{margin:"4px 0 0"}}>
             <li><b>จุดกลางพาราโบลา</b> (<M>{`f_1, f_3`}</M> = ดัชนี<b>คี่</b>) เป็นยอดของพาราโบลาแต่ละอัน ไม่แชร์กับใคร → ได้ <b>×4</b> เต็ม ๆ (เดาว่า “จุดยอด” ถูกต้อง!)</li>
             <li><b>จุดต่อ</b>ที่พาราโบลา 2 อันมาชนกัน (<M>{`f_2`}</M> = ดัชนี<b>คู่</b>) เป็นปลายขวาของ P1 (นับ 1) และปลายซ้ายของ P2 (นับ 1) → รวม <b>×2</b></li>
-            <li><b>ปลายสุด</b> (<M>{`f_0, f_n`}</M>) อยู่พาราโบลาเดียว → <b>×1</b></li>
+            <li><b>ปลายสุด</b> (<M>{`f_0, f_{2n}`}</M>) อยู่พาราโบลาเดียว → <b>×1</b></li>
           </ul>
           <p style={{margin:"6px 0 0", fontSize:'0.82rem'}}>ส่วนตัวเลข <b>4</b> เองไม่ได้มามั่ว — มาจากการ<b>อินทิเกรตพาราโบลา</b>ที่ลากผ่าน 3 จุดห่างเท่ากัน ได้สัมประสิทธิ์ <M>{`\\tfrac13,\\tfrac43,\\tfrac13`}</M> (จุดกลาง “อ้วน” สุดเลยหนักสุด) จุดต่อจึงเป็น <M>{`\\tfrac13+\\tfrac13=\\tfrac23`}</M> → รวมกันได้แพตเทิร์น <b>1·4·2·4·…·4·1</b></p>
         </Callout>
 
         <Callout kind="warn" title="กฎน้ำหนัก 1 · 4 · 2 · 4 · 2 · … · 4 · 1">
           <ul style={{margin:0}}>
-            <li>ปลาย <M>{`x_0, x_n`}</M> → <b>×1</b></li>
-            <li>จุด<b>คี่</b> (<M>{`i=1,3,5,\\dots`}</M> = จุดยอดพาราโบลา) → <b>×4</b></li>
-            <li>จุด<b>คู่</b>ที่อยู่ข้างใน (<M>{`i=2,4,\\dots,n-2`}</M> = รอยต่อพาราโบลา) → <b>×2</b></li>
-            <li><b><M>n</M> ต้องเป็นเลขคู่</b> ไม่งั้นจับคู่พาราโบลาไม่ลงตัว</li>
+            <li>ปลาย <M>{`x_0, x_{2n}`}</M> → <b>×1</b></li>
+            <li>จุด<b>คี่</b> (<M>{`i=1,3,5,\\dots,2n-1`}</M> = จุดยอดพาราโบลา) → <b>×4</b></li>
+            <li>จุด<b>คู่</b>ที่อยู่ข้างใน (<M>{`i=2,4,\\dots,2n-2`}</M> = รอยต่อพาราโบลา) → <b>×2</b></li>
+            <li>นับเป็น <b>พาราโบลา <M>n</M> อัน</b> → ช่องย่อย <M>{`2n`}</M> เป็นเลขคู่<b>อัตโนมัติ</b> ไม่ต้องคอยเช็ก</li>
           </ul>
         </Callout>
 
         <CompositeViz kind="simpson"/>
 
-        <Callout kind="warn" title="⚠︎ เรื่อง “n” ที่ทำคนสับสน (ผมเช็คกับโปรแกรมอาจารย์แล้ว)">
-          <p style={{margin:"0 0 4px"}}>ในชีทเขียนมือ อาจารย์บางจุดเขียน <M>{`h=(b-a)/2n`}</M> (นับ <M>n</M> เป็น “จำนวนพาราโบลา”) แต่<b>โปรแกรมจริง</b>ของอาจารย์ (ไฟล์ที่รันจริง) ใช้ <code>h=(b-a)/n</code> โดย <b><M>n</M> = จำนวนช่องย่อย</b></p>
-          <p style={{margin:0}}>บทนี้ผมยึด<b>ตามโปรแกรม</b> (authoritative): <M>n</M> = จำนวนช่องย่อย (ต้องคู่). เช่น <b><M>n=4</M> = 4 ช่อง = 2 พาราโบลา</b>. แบบฝึกหัด “n=2,4,6” จึงหมายถึง 2/4/6 ช่องย่อย — ตรงกับผลลัพธ์ที่โปรแกรมอาจารย์ปรินต์ออกมา</p>
+        <Callout kind="warn" title="⚠︎ “n” ในบทนี้ = จำนวนพาราโบลา (ตามอาจารย์)">
+          <p style={{margin:"0 0 4px"}}>บทนี้ยึด<b>สูตรอาจารย์</b>: <M>{`h=\\frac{b-a}{2n}`}</M> โดย <b><M>n</M> = จำนวนพาราโบลา</b> (จำนวนครั้งที่ใช้ Simpson 1/3). ช่วงจึงถูกซอยเป็น <M>{`2n`}</M> ช่องย่อยเสมอ. เช่น <b><M>n=2</M> = 2 พาราโบลา = 4 ช่องย่อย</b> → แบบฝึกหัด “n=2,4,6” หมายถึง 2/4/6 <b>พาราโบลา</b> (= 4/8/12 ช่องย่อย)</p>
+          <p style={{margin:0}}>ตอนเขียนโปรแกรม ลูปวิ่งตาม<b>ช่องย่อย</b> <M>{`2n`}</M> (จาก <M>{`i=0`}</M> ถึง <M>{`2n`}</M>) — ในโค้ดจึงเห็น <code>m = 2*n</code> แล้ว <code>h=(b-a)/m</code> ก่อนเข้าลูป. อย่าสับสนระหว่าง <M>n</M>(พาราโบลา ในสูตร) กับ <M>{`2n`}</M>(ช่องย่อย ในลูป)</p>
         </Callout>
 
-        <h3>เทียบ Trap vs Simpson ที่ n เดียวกัน (ตัวอย่างเดิม)</h3>
+        <h3>เทียบ Trap vs Simpson ที่<b>จำนวนช่องย่อยเท่ากัน</b> (ตัวอย่างเดิม)</h3>
+        <p style={{margin:"0 0 6px", fontSize:'0.82rem', color:"var(--text-dim)"}}>เทียบแบบยุติธรรม (จำนวนจุดเท่ากัน) → คอลัมน์ซ้ายคือ<b>ช่องย่อย</b> <M>{`2n`}</M>; ฝั่ง Simpson จึงเท่ากับ <M>n</M> = ช่องย่อย/2 พาราโบลา</p>
         <CompareTrapSimpson/>
       </Sect>
 
@@ -270,7 +275,7 @@ P2 (x2,x3,x4):  h/3(            f2 + 4f3 + f4 )
           <CalcSteps steps={[
             <span><Key>HOME</Key> → เลือก <Key>Table</Key></span>,
             <span>พิมพ์ <code>f(x)</code> เช่น <code>4x⁵−3x⁴+x³−6x+2</code> → <Key>=</Key> / <Key>OK</Key></span>,
-            <span>กรอก <b>Start</b> = <M>a</M>, <b>End</b> = <M>b</M>, <b>Step</b> = <M>{`h=(b-a)/n`}</M></span>,
+            <span>กรอก <b>Start</b> = <M>a</M>, <b>End</b> = <M>b</M>, <b>Step</b> = <M>h</M> (Trap: <M>{`(b-a)/n`}</M> · Simpson: <M>{`(b-a)/2n`}</M>)</span>,
             <span>กด <Key>=</Key> → ได้คอลัมน์ <M>{`x`}</M> กับ <M>{`f(x)`}</M> ครบทุกจุด — ลอกมาใส่สูตรได้เลย</span>,
             <span>ใส่น้ำหนัก: Trap → ปลาย ×1 ในกลาง ×2 ; Simpson → 1·4·2·4·…·1 แล้วคูณ <M>{`h/2`}</M> หรือ <M>{`h/3`}</M></span>,
           ]}/>
@@ -319,14 +324,14 @@ P2 (x2,x3,x4):  h/3(            f2 + 4f3 + f4 )
             ["① Trapezoidal", "(h/2)(f₀+f₁)", "b−a", "2 จุด", "O(h³)"],
             ["② Composite Trap", "(h/2)(f₀+fₙ+2Σใน)", "(b−a)/n", "n ≥ 1", "O(h²)"],
             ["③ Simpson 1/3", "(h/3)(f₀+4f₁+f₂)", "(b−a)/2", "3 จุด", "O(h⁵)"],
-            ["④ Composite Simp", "(h/3)(f₀+fₙ+4Σคี่+2Σคู่)", "(b−a)/n", "n เป็นคู่!", "O(h⁴)"],
+            ["④ Composite Simp", "(h/3)(f₀+f₂ₙ+4Σคี่+2Σคู่)", "(b−a)/2n", "n = พาราโบลา", "O(h⁴)"],
           ]}
         />
         <Callout kind="tip" title="เลือกวิธียังไง">
           <ul style={{margin:0}}>
             <li>โจทย์บอกให้ใช้วิธีไหน ก็ใช้วิธีนั้น (แบบฝึกหัดกำหนดมาชัด)</li>
-            <li>จุดข้อมูล<b>คู่</b> (5, 9 จุด → <M>n=4,8</M>) → Simpson ได้ แม่นกว่า</li>
-            <li>จุด<b>คี่</b> (<M>n</M> คี่) → Simpson 1/3 ล้วนไม่ได้ ต้องใช้ Trapezoidal หรือผสม Simpson 3/8</li>
+            <li>จำนวนจุดข้อมูลเป็น<b>เลขคี่</b> (5, 9 จุด → ช่องย่อย 4, 8 = พาราโบลา <M>n=2,4</M>) → ใช้ Simpson ได้ แม่นกว่า</li>
+            <li>จำนวนจุดเป็น<b>เลขคู่</b> (ช่องย่อยเป็นเลขคี่ จับพาราโบลาไม่ลงตัว) → Simpson 1/3 ล้วนไม่ได้ ต้องใช้ Trapezoidal หรือผสม Simpson 3/8</li>
           </ul>
         </Callout>
       </Sect>
@@ -363,14 +368,15 @@ P2 (x2,x3,x4):  h/3(            f2 + 4f3 + f4 )
 
       {/* ═══════════════ ✸ · ข้อสอบจำลอง ═══════════════ */}
       <Sect tag="✸" title="ข้อสอบจำลอง">
+        <TimedExam presets={[10, 16, 24]} label="ครบชุด 3 ข้อ · เวลาแนะนำรวม 24 นาที (6+8+10) — โหมดกดดันลอง 16 หรือ 10">
         <Problem label="ข้อ 1 · เลือกวิธีให้ถูก" solution={
           <div>
-            <p style={{marginTop:0}}><b>นับก่อน:</b> 6 จุด → ช่องย่อย <M>{`n = 6-1 = 5`}</M> ช่อง (<M>h = 0.5</M>)</p>
-            <p><b>กฎเหล็กของ Simpson 1/3:</b> พาราโบลา 1 อันครอบ “2 ช่อง” (3 จุด) เสมอ ⇒ ต้องจับช่องเป็นคู่ ⇒ <M>n</M> ต้อง<b>เป็นเลขคู่</b> (จำนวนจุดต้อง<b>คี่</b>: 3, 5, 7, 9…)</p>
-            <p><M>n = 5</M> เป็น<b>เลขคี่</b> → เหลือ 1 ช่องจับคู่ไม่ได้ → ใช้ Simpson 1/3 ล้วน <b>ไม่ได้</b> ✗</p>
+            <p style={{marginTop:0}}><b>นับก่อน:</b> 6 จุด → <b>ช่องย่อย = 6−1 = 5</b> ช่อง (<M>h = 0.5</M>)</p>
+            <p><b>กฎเหล็กของ Simpson 1/3:</b> พาราโบลา 1 อันครอบ “2 ช่อง” (3 จุด) เสมอ ⇒ ต้องจับช่องเป็นคู่ ⇒ <b>จำนวนช่องย่อยต้องเป็นเลขคู่</b> (จำนวนจุดต้อง<b>คี่</b>: 3, 5, 7, 9…)</p>
+            <p><b>ช่องย่อย = 5</b> เป็น<b>เลขคี่</b> → เหลือ 1 ช่องจับคู่ไม่ได้ → ใช้ Simpson 1/3 ล้วน <b>ไม่ได้</b> ✗</p>
             <p style={{marginBottom:4}}><b>ทางแก้ (เลือกทำได้):</b></p>
             <ul style={{marginTop:0}}>
-              <li><b>A · Composite Trapezoidal</b> — ใช้ได้ทุก <M>n</M> ไม่สนคู่/คี่ (ง่ายสุด แต่แม่นน้อยกว่า)</li>
+              <li><b>A · Composite Trapezoidal</b> — ใช้ได้ทุกจำนวนช่อง ไม่สนคู่/คี่ (ง่ายสุด แต่แม่นน้อยกว่า)</li>
               <li><b>B · ผสม Simpson 1/3 + Trapezoidal</b> — Simpson 1/3 กับ 4 ช่องแรก (<M>{`x_0\\ldots x_4`}</M>) แล้วต่อ Trapezoidal ช่องสุดท้าย (<M>{`x_4\\ldots x_5`}</M>)</li>
               <li><b>C · ผสม Simpson 1/3 + Simpson 3/8</b> — Simpson 1/3 กับ 2 ช่องแรก + Simpson 3/8 กับ 3 ช่องหลัง (แม่นสุด)</li>
             </ul>
@@ -447,8 +453,9 @@ for n in [4, 8, 16]:
             </Callout>
           </div>
         }>
-          หา <M>{`\\int_0^1 \\frac{\\sin x}{x}\\,dx`}</M> (อินทิเกรตตรงไม่ได้!) ด้วย Composite Trap และ Composite Simpson (<M>{`n=4,8,16`}</M>) เทียบค่าจริง <M>{`\\approx 0.9460831`}</M>
+          หา <M>{`\\int_0^1 \\frac{\\sin x}{x}\\,dx`}</M> (อินทิเกรตตรงไม่ได้!) ด้วย Composite Trap และ Composite Simpson (<M>{`n=4,8,16`}</M> <b>ช่องย่อย</b> — เทียบ convergence ที่จำนวนจุดเท่ากัน) เทียบค่าจริง <M>{`\\approx 0.9460831`}</M>
         </Problem>
+        </TimedExam>
       </Sect>
     </div>
   );
@@ -588,22 +595,24 @@ function CompositeViz({ kind }) {
   const sx = makeScale([xMin, xMax], [padding.l, W - padding.r]);
   const sy = makeScale([yMin, yMax], [H - padding.b, padding.t]);
   const fnPath = plotPath(f, xMin, xMax, sx, sy, 200);
-  const nValues = kind === "trap" ? [1, 2, 4, 6, 8, 12] : [2, 4, 6, 8, 10, 12];
+  const nValues = kind === "trap" ? [1, 2, 4, 6, 8, 12] : [1, 2, 3, 4, 5, 6];
   const accent = kind === "trap" ? "#58c4dd" : "#a87dbe";
   return (
     <StepPlayer steps={nValues.length} stepDuration={1300} label={(s) => `n = ${nValues[s]}`}>
       {({ step }) => {
-        const n = nValues[step], h = (b-a)/n;
+        const n = nValues[step];
         let I, shapes = [];
         if (kind === "trap") {
+          const h = (b-a)/n;
           I = n === 1 ? trapezoid(f,a,b) : compositeTrap(f, a, b, n);
           for (let i = 0; i < n; i++) {
             const x1 = a + i*h, x2 = a + (i+1)*h;
             shapes.push(<polygon key={i} points={`${sx(x1)},${sy(0)} ${sx(x1)},${sy(f(x1))} ${sx(x2)},${sy(f(x2))} ${sx(x2)},${sy(0)}`} fill={accent} opacity="0.16" stroke={accent} strokeWidth="1.5"/>);
           }
         } else {
-          I = compositeSimpson(f, a, b, n);
-          for (let i = 0; i < n; i += 2) {
+          const m = 2*n, h = (b-a)/m;   // n พาราโบลา → 2n ช่องย่อย
+          I = compositeSimpson(f, a, b, m);
+          for (let i = 0; i < m; i += 2) {
             const x0 = a+i*h, x1 = a+(i+1)*h, x2 = a+(i+2)*h, y0=f(x0), y1=f(x1), y2=f(x2);
             const par = x => {
               const L0 = (x-x1)*(x-x2)/((x0-x1)*(x0-x2));
@@ -624,7 +633,7 @@ function CompositeViz({ kind }) {
               {shapes}
               <path d={fnPath} fill="none" stroke="#ffd66b" strokeWidth="2.5"/>
               <text x={W-padding.r-10} y={padding.t+18} textAnchor="end" fontFamily="JetBrains Mono" fontSize="12" fill={accent}>
-                n={n} → I = {I.toFixed(6)} · err = {(Math.abs(PROF_TRUE-I)/PROF_TRUE*100).toFixed(4)}%
+                {kind==="trap" ? `n=${n}` : `n=${n} (${2*n} ช่อง)`} → I = {I.toFixed(6)} · err = {(Math.abs(PROF_TRUE-I)/PROF_TRUE*100).toFixed(4)}%
               </text>
             </svg>
             <p className="muted" style={{fontSize:'0.8rem', marginTop:6}}>
@@ -640,11 +649,11 @@ function CompositeViz({ kind }) {
 function CompareTrapSimpson() {
   return (
     <NumTable
-      headers={["n", "Comp. Trap", "Trap err %", "Comp. Simpson", "Simp err %"]}
-      rows={[2,4,6,8,12].map(n => {
-        const t = compositeTrap(PROF_G, PROF_A, PROF_B, n);
-        const s = compositeSimpson(PROF_G, PROF_A, PROF_B, n);
-        return [n, t.toFixed(6), (Math.abs(PROF_TRUE-t)/PROF_TRUE*100).toFixed(4), s.toFixed(6), (Math.abs(PROF_TRUE-s)/PROF_TRUE*100).toFixed(6)];
+      headers={["ช่องย่อย (2n)", "Comp. Trap", "Trap err %", "Comp. Simpson", "Simp err %"]}
+      rows={[2,4,6,8,12].map(m => {
+        const t = compositeTrap(PROF_G, PROF_A, PROF_B, m);
+        const s = compositeSimpson(PROF_G, PROF_A, PROF_B, m);
+        return [`${m}  (n=${m/2})`, t.toFixed(6), (Math.abs(PROF_TRUE-t)/PROF_TRUE*100).toFixed(4), s.toFixed(6), (Math.abs(PROF_TRUE-s)/PROF_TRUE*100).toFixed(6)];
       })}
     />
   );
@@ -826,16 +835,17 @@ f(2)  = 2⁷ + 2(2³) − 1 = 128 + 16 − 1 = 143`,
 เหตุผล error เยอะ: x⁷ โค้งชันมาก พาราโบลาอันเดียวตามไม่ทัน` },
       ]}/>
 
-      <h4>2.2 Composite Simpson · n = 2, 4, 6</h4>
-      <p style={{margin:"0 0 8px", fontSize:'0.85rem'}}>สูตร: <M>{`I=\\frac{h}{3}\\big[f_0+f_n+4\\sum_{คี่}f_i+2\\sum_{คู่}f_i\\big],\\ h=\\frac{b-a}{n}`}</M> · <M>n</M> = ช่องย่อย (ต้องคู่)</p>
+      <h4>2.2 Composite Simpson · n = 2, 4, 6 <span style={{fontWeight:400, fontSize:'0.8rem', color:"var(--text-dim)"}}>(n = จำนวนพาราโบลา → ช่องย่อย 4/8/12)</span></h4>
+      <p style={{margin:"0 0 8px", fontSize:'0.85rem'}}>สูตร: <M>{`I=\\frac{h}{3}\\big[f_0+f_{2n}+4\\sum_{คี่}f_i+2\\sum_{คู่}f_i\\big],\\ h=\\frac{b-a}{2n}`}</M> · <M>n</M> = จำนวนพาราโบลา</p>
 
       {[2,4,6].map(n => {
-        const xs = nodes(a,b,n), fs = xs.map(f), w = simpWeights(n);
-        const val = compositeSimpson(f,a,b,n), h=(b-a)/n;
+        const m = 2*n;
+        const xs = nodes(a,b,m), fs = xs.map(f), w = simpWeights(m);
+        const val = compositeSimpson(f,a,b,m), h=(b-a)/m;
         const wsum = fs.reduce((s,v,i)=>s+w[i]*v,0);
         return (
           <div key={n} style={{margin:"10px 0"}}>
-            <p style={{margin:"0 0 4px", fontWeight:600, color:"var(--purple, #a87dbe)"}}>▸ n = {n} &nbsp;(h = {h}){n===2 && " — เท่ากับ Simpson single ข้อ 2.1"}</p>
+            <p style={{margin:"0 0 4px", fontWeight:600, color:"var(--purple, #a87dbe)"}}>▸ n = {n} พาราโบลา &nbsp;({m} ช่องย่อย, h = {h})</p>
             <WeightTable xs={xs} fs={fs} weights={w}/>
             <div style={{fontFamily:"var(--font-mono)", fontSize:'0.8rem', lineHeight:1.7, margin:"4px 0 0", padding:"6px 10px", background:"var(--bg-soft)", borderRadius:6}}>
               I = (h/3) × Σ(น้ำหนัก×f) = ({h}/3) × {wsum.toFixed(5)} = <b style={{color:"var(--green)"}}>{val.toFixed(6)}</b><br/>
@@ -846,17 +856,18 @@ f(2)  = 2⁷ + 2(2³) − 1 = 128 + 16 − 1 = 143`,
       })}
 
       <Callout kind="warn" style={{marginTop:8}}>
-        <b>⚠︎ ระวังชีท:</b> ชีทเขียนมือข้อ 2.2 (n ที่ให้ h=0.75) พิมพ์ผลเป็น 33.72 ซึ่ง<b>ผิด</b> — ค่าถูกของ 4 ช่องย่อยคือ <b>41.022217</b> (err 12.78%) ตรงกับที่โปรแกรมอาจารย์ปรินต์ (“Simpson N=4”). สรุป: n=2 → 68.02 (86.98%) → n=4 → 41.02 (12.78%) → n=6 → 37.39 (2.79%)
+        <b>⚠︎ ระวังชีท:</b> ชีทเขียนมือ (กรณี h=0.75 = <b>n=2 พาราโบลา / 4 ช่องย่อย</b>) พิมพ์ผลเป็น 33.72 ซึ่ง<b>ผิด</b> — ค่าถูกคือ <b>41.022217</b> (err 12.78%) ตรงกับที่โปรแกรมอาจารย์ปรินต์ (“Simpson 4 ช่องย่อย”). สรุปนับตามพาราโบลา: single (1 พาราโบลา) → 68.02 (86.98%) · n=2 → 41.02 (12.78%) · n=4 → 36.71 (0.91%) · n=6 → 36.44 (0.18%)
       </Callout>
 
       <h4>โปรแกรม</h4>
-      <p style={{margin:"0 0 6px", fontSize:'0.82rem'}}>🎙️ โค้ด JavaScript จริงของอาจารย์:</p>
+      <p style={{margin:"0 0 6px", fontSize:'0.82rem'}}>🎙️ โค้ด JavaScript สไตล์อาจารย์ (<b>n = พาราโบลา</b>, ลูปวิ่งตามช่องย่อย <code>m = 2n</code>):</p>
       <CodeBlock code={`// ─── Simpson 1/3 (JavaScript สไตล์อาจารย์) ───
 function f(x){ return Math.pow(x,7) + 2*Math.pow(x,3) - 1; }
-function Simpson(a, b, n){          // n = จำนวนช่องย่อย (ต้องคู่)
-    let h = (b - a) / n;
+function Simpson(a, b, n){          // n = จำนวนพาราโบลา → ช่องย่อย = 2n
+    let m = 2 * n;                  // จำนวนช่องย่อย
+    let h = (b - a) / m;
     let sumOdd = 0, sumEven = 0;
-    for (let i = 1; i < n; i++){
+    for (let i = 1; i < m; i++){
         let xi = a + i*h;
         if (i % 2 == 0) sumEven += f(xi);   // จุดคู่ → ×2
         else            sumOdd  += f(xi);   // จุดคี่ → ×4
@@ -865,7 +876,7 @@ function Simpson(a, b, n){          // n = จำนวนช่องย่อ�
 }
 function Error(I, exact){ return Math.abs((exact - I) / exact) * 100; }
 
-let exact = Simpson(-1, 2, 10000);
+let exact = Simpson(-1, 2, 5000);   // 5000 พาราโบลา ≈ ค่าจริง
 for (const n of [2, 4, 6]){
     let ans = Simpson(-1, 2, n);
     console.log("n="+n, ans, Error(ans, exact).toFixed(4)+"%");
@@ -898,10 +909,11 @@ print(f"Error = {error:.2f}%")`} height={250}/>
       <PythonRunner code={`def f(x):
     return (x**7) + 2*(x**3) - 1
 
-def composite_simpson(a, b, n):
-    h = (b - a) / n
+def composite_simpson(a, b, n):   # n = จำนวนพาราโบลา
+    m = 2 * n                      # ช่องย่อย = 2n
+    h = (b - a) / m
     s = f(a) + f(b)
-    for i in range(1, n):
+    for i in range(1, m):
         if i % 2 == 1:
             s += 4 * f(a + i*h)
         else:
@@ -913,15 +925,15 @@ b = 2
 exact_value = 36.375
 
 for n in [2, 4, 6]:
-    h = (b - a) / n
+    h = (b - a) / (2 * n)
     approx_I = composite_simpson(a, b, n)
     error = abs(exact_value - approx_I) / exact_value * 100
 
-    print(f"n = {n}")
+    print(f"n = {n} พาราโบลา ({2*n} ช่องย่อย)")
     print(f"h = {h}")
     print(f"I = {approx_I}")
     print(f"Error = {error:.2f}%")
-    print()`} height={310}/>
+    print()`} height={330}/>
     </div>
   );
 }
@@ -955,14 +967,18 @@ function ExerciseThree() {
         );
       })}
 
-      <h4>3.2 Composite Simpson · n = 2, 4, 6</h4>
+      <h4>3.2 Composite Simpson · n = 2, 4, 6 <span style={{fontWeight:400, fontSize:'0.8rem', color:"var(--text-dim)"}}>(n = จำนวนพาราโบลา → ช่องย่อย 4/8/12)</span></h4>
+      <Callout kind="tip" style={{margin:"0 0 8px"}}>
+        <b>สังเกตความต่าง:</b> ข้อ 3.1 Trapezoidal นับ <M>n</M> = <b>ช่องย่อย</b> (h=(b−a)/n) แต่ข้อ 3.2 Simpson นับ <M>n</M> = <b>พาราโบลา</b> (h=(b−a)/2n) ตามอาจารย์ — “n=2” ของ Simpson จึงละเอียดกว่า (4 ช่องย่อย vs 2 ช่องย่อย)
+      </Callout>
       {[2,4,6].map(n => {
-        const xs = nodes(a,b,n), fs = xs.map(f), w = simpWeights(n);
-        const val = compositeSimpson(f,a,b,n), h=(b-a)/n;
+        const m = 2*n;
+        const xs = nodes(a,b,m), fs = xs.map(f), w = simpWeights(m);
+        const val = compositeSimpson(f,a,b,m), h=(b-a)/m;
         const wsum = fs.reduce((s,v,i)=>s+w[i]*v,0);
         return (
           <div key={n} style={{margin:"10px 0"}}>
-            <p style={{margin:"0 0 4px", fontWeight:600, color:"var(--purple, #a87dbe)"}}>▸ n = {n} &nbsp;(h = {h.toFixed(5)})</p>
+            <p style={{margin:"0 0 4px", fontWeight:600, color:"var(--purple, #a87dbe)"}}>▸ n = {n} พาราโบลา &nbsp;({m} ช่องย่อย, h = {h.toFixed(5)})</p>
             <WeightTable xs={xs} fs={fs} weights={w}/>
             <div style={{fontFamily:"var(--font-mono)", fontSize:'0.8rem', lineHeight:1.7, margin:"4px 0 0", padding:"6px 10px", background:"var(--bg-soft)", borderRadius:6}}>
               I = (h/3) × {wsum.toFixed(5)} = <b style={{color:"var(--green)"}}>{val.toFixed(6)}</b> · ε = <b style={{color:"var(--yellow)"}}>{err(val).toFixed(4)}%</b>
@@ -972,7 +988,7 @@ function ExerciseThree() {
       })}
 
       <Callout kind="good" style={{marginTop:8}}>
-        <b>สังเกต:</b> <M>{`\\ln x`}</M> เรียบ (smooth) มาก ทั้งสองวิธีจึงแม่นเร็ว — Simpson n=6 error แค่ ~0.002% ส่วน Trapezoidal n=6 ~0.30% (Simpson แม่นกว่าที่ n เดียวกันเสมอสำหรับฟังก์ชันเรียบ)
+        <b>สังเกต:</b> <M>{`\\ln x`}</M> เรียบ (smooth) มาก ทั้งสองวิธีจึงแม่นเร็ว — Composite Simpson (n=6 พาราโบลา = 12 ช่องย่อย) error แค่ ~0.0001% ส่วน Composite Trapezoidal (n=6 ช่องย่อย) ~0.30% (Simpson แม่นกว่ามากสำหรับฟังก์ชันเรียบ)
       </Callout>
 
       <h4>โปรแกรม — แยก 2 โปรแกรมตามที่อาจารย์ให้จริง</h4>
@@ -1009,10 +1025,11 @@ for n in [2, 4, 6]:
 def f(x):
     return math.log(x)
 
-def composite_simpson(a, b, n):
-    h = (b - a) / n
+def composite_simpson(a, b, n):   # n = จำนวนพาราโบลา
+    m = 2 * n                      # ช่องย่อย = 2n
+    h = (b - a) / m
     s = f(a) + f(b)
-    for i in range(1, n):
+    for i in range(1, m):
         if i % 2 == 1:
             s += 4 * f(a + i*h)
         else:
@@ -1024,15 +1041,15 @@ b = 2
 exact_value = 0.3862943611
 
 for n in [2, 4, 6]:
-    h = (b - a) / n
+    h = (b - a) / (2 * n)
     approx_I = composite_simpson(a, b, n)
     error = abs(exact_value - approx_I) / exact_value * 100
 
-    print(f"n = {n}")
+    print(f"n = {n} พาราโบลา ({2*n} ช่องย่อย)")
     print(f"h = {h}")
     print(f"I = {approx_I}")
     print(f"Error = {error:.4f}%")
-    print()`} height={310}/>
+    print()`} height={330}/>
     </div>
   );
 }
@@ -1055,7 +1072,7 @@ function IntegrationSolver() {
       const av = +a, bv = +b, nv = +n;
       let val;
       if (method === "trap") val = compositeTrap(f, av, bv, nv);
-      else if (method === "simpson") val = compositeSimpson(f, av, bv, nv);
+      else if (method === "simpson") val = compositeSimpson(f, av, bv, 2*nv);   // n = พาราโบลา → 2n ช่องย่อย
       else if (method === "romberg") val = romberg(f, av, bv, Math.min(7, nv)).value;
       else if (method === "gauss2") val = gaussLegendre(f, av, bv, 2).value;
       else if (method === "gauss3") val = gaussLegendre(f, av, bv, 3).value;
@@ -1071,6 +1088,7 @@ function IntegrationSolver() {
         <label>b =</label><input type="text" value={b} onChange={e => setB(e.target.value)} style={{width:80}}/>
         <label>n =</label><input type="number" value={n} onChange={e => setN(e.target.value)} style={{width:60}}/>
       </div>
+      <p className="muted" style={{fontSize:'0.78rem', margin:"0 0 6px"}}>Comp.Simp: <M>n</M> = จำนวน<b>พาราโบลา</b> (ช่องย่อย = 2n) · Comp.Trap: <M>n</M> = จำนวน<b>ช่องย่อย</b> · Romberg: <M>n</M> = ระดับ</p>
       <div className="chip-row">
         {[["trap","Comp.Trap"],["simpson","Comp.Simp"],["romberg","Romberg"],["gauss2","Gauss 2-pt"],["gauss3","Gauss 3-pt"]].map(([k, l]) => (
           <button key={k} className={"btn small " + (method === k ? "primary" : "")} onClick={() => setMethod(k)}>{l}</button>

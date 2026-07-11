@@ -299,21 +299,94 @@ function PythonRunner({ code: initialCode, autoRun = false, height = 160 }) {
 }
 
 // ===== PROBLEM BOX with toggleable solution =====
+// ถ้าอยู่ใน <TimedExam> ที่กำลังจับเวลา เฉลยจะถูกล็อกจนหมดเวลา/ยอมแพ้
+const ExamLockCtx = React.createContext(null);
+
 function Problem({ label = "ข้อสอบจำลอง", children, solution }) {
   const [show, setShow] = useState(false);
+  const lock = React.useContext(ExamLockCtx);
+  const locked = !!(lock && lock.locked);
+  useEffect(() => { if (locked) setShow(false); }, [locked]);
   return (
     <div className="problem">
       <div className="label">{label}</div>
       <div>{children}</div>
-      {solution && (
-        <>
-          <span className="solution-toggle" onClick={() => setShow(s => !s)}>
-            {show ? "▼ ซ่อนเฉลย" : "▶ แสดงเฉลย"}
+      {solution && (locked
+        ? <span className="solution-toggle" style={{opacity:0.55, cursor:"not-allowed"}}>
+            🔒 เฉลยล็อกระหว่างจับเวลา (เหลือ {lock.mmss})
           </span>
-          {show && <div className="solution">{solution}</div>}
-        </>
+        : <>
+            <span className="solution-toggle" onClick={() => setShow(s => !s)}>
+              {show ? "▼ ซ่อนเฉลย" : "▶ แสดงเฉลย"}
+            </span>
+            {show && <div className="solution">{solution}</div>}
+          </>
       )}
     </div>
+  );
+}
+
+// ===== TIMED EXAM — จับเวลาข้อสอบจำลอง + ล็อกเฉลยจนหมดเวลา =====
+function fmtMMSS(sec) {
+  const m = Math.floor(sec / 60), s = sec % 60;
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
+function TimedExam({ presets = [15, 25, 36], label, children }) {
+  const [total, setTotal] = useState(presets[presets.length - 1] * 60);
+  const [remaining, setRemaining] = useState(0);
+  const [status, setStatus] = useState("idle");   // idle | running | done | surrendered
+  useEffect(() => {
+    if (status !== "running") return;
+    const id = setInterval(() => {
+      setRemaining(r => {
+        if (r <= 1) { setStatus("done"); return 0; }
+        return r - 1;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [status]);
+  const start = (min) => { setTotal(min * 60); setRemaining(min * 60); setStatus("running"); };
+  const mmss = fmtMMSS(remaining);
+  const running = status === "running";
+  const lowTime = running && remaining <= 60;
+  const ctx = { locked: running, mmss };
+  return (
+    <ExamLockCtx.Provider value={ctx}>
+      <div className="card" style={{
+        margin: "0 0 14px",
+        borderLeft: `3px solid ${lowTime ? "var(--red, #e06c75)" : running ? "var(--yellow)" : status === "done" ? "var(--green)" : "var(--blue)"}`,
+      }}>
+        <div style={{display:"flex", alignItems:"center", gap:14, flexWrap:"wrap"}}>
+          <div style={{fontFamily:"var(--font-mono)", fontSize:"1.9rem", fontWeight:700, letterSpacing:2,
+            color: lowTime ? "var(--red, #e06c75)" : running ? "var(--yellow)" : "var(--text-dim)"}}>
+            ⏱ {running || status === "done" ? mmss : fmtMMSS(total)}
+          </div>
+          <div style={{flex:1, minWidth:180}}>
+            {status === "idle" && <span className="muted" style={{fontSize:"0.82rem"}}>{label || "เลือกเวลาแล้วกดเริ่ม — ระหว่างจับเวลา เฉลยทุกข้อจะถูกล็อก"}</span>}
+            {running && <span style={{fontSize:"0.82rem", color:"var(--yellow)"}}>กำลังจับเวลา — เฉลยล็อกอยู่ ทำเหมือนสอบจริง ✍️</span>}
+            {status === "done" && <span style={{fontSize:"0.82rem", color:"var(--green)"}}>⏰ หมดเวลา! เฉลยเปิดแล้ว — ตรวจคำตอบเลย</span>}
+            {status === "surrendered" && <span className="muted" style={{fontSize:"0.82rem"}}>เปิดเฉลยก่อนหมดเวลา — รอบหน้าลองอึดอีกนิด 💪</span>}
+            {(running || status === "done") && (
+              <div style={{height:6, background:"var(--bg-soft)", borderRadius:3, marginTop:6, overflow:"hidden"}}>
+                <div style={{height:"100%", width:`${total ? (remaining/total)*100 : 0}%`, borderRadius:3,
+                  background: lowTime ? "var(--red, #e06c75)" : "var(--yellow)", transition:"width 1s linear"}}/>
+              </div>
+            )}
+          </div>
+          <div className="chip-row" style={{margin:0}}>
+            {!running && presets.map(min => (
+              <button key={min} className="btn small" onClick={() => start(min)}>▸ {min} นาที</button>
+            ))}
+            {running && <button className="btn small" onClick={() => setStatus("surrendered")}>ยอมแพ้ · เปิดเฉลย</button>}
+            {(status === "done" || status === "surrendered") && (
+              <button className="btn small" onClick={() => setStatus("idle")}>↺ จับเวลาใหม่</button>
+            )}
+          </div>
+        </div>
+      </div>
+      {children}
+    </ExamLockCtx.Provider>
   );
 }
 
@@ -449,6 +522,6 @@ function Formula({ children, label }) {
 Object.assign(window, {
   TeX, M, MB, useKaTeXReady,
   CodeBlock, PythonRunner, loadPyodide,
-  Problem, Sect, Callout, Hero, ConvergenceStrip, NumTable, Formula,
+  Problem, TimedExam, Sect, Callout, Hero, ConvergenceStrip, NumTable, Formula,
   Key, CalcSteps,
 });

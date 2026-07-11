@@ -155,9 +155,9 @@ function CheatLesson() {
           <h4>Simpson 1/3 (single, 3 จุด)</h4>
           <MB>{`I = \\frac{h}{3}[f(a) + 4f(m) + f(b)], \\quad h = \\frac{b-a}{2}`}</MB>
 
-          <h4>Composite Simpson 1/3 (n ช่วง, n ต้องเป็น<em>คู่</em>!)</h4>
-          <MB>{`I = \\frac{h}{3}\\left[f(x_0) + f(x_n) + 4\\sum_{i \\text{ คี่}} f(x_i) + 2\\sum_{i \\text{ คู่}} f(x_i)\\right]`}</MB>
-          <p>Pattern น้ำหนัก: <b>1, 4, 2, 4, 2, 4, ..., 4, 1</b></p>
+          <h4>Composite Simpson 1/3 (n พาราโบลา → 2n ช่วง)</h4>
+          <MB>{`I = \\frac{h}{3}\\left[f(x_0) + f(x_{2n}) + 4\\sum_{i \\text{ คี่}} f(x_i) + 2\\sum_{i \\text{ คู่}} f(x_i)\\right], \\quad h = \\frac{b-a}{2n}`}</MB>
+          <p>Pattern น้ำหนัก: <b>1, 4, 2, 4, 2, 4, ..., 4, 1</b> · <M>n</M> = จำนวนพาราโบลา (ช่องย่อย = 2n เป็นคู่เสมอ)</p>
 
           <Callout title="Error">
             <ul>
@@ -171,14 +171,23 @@ function CheatLesson() {
       {/* CHEAT SHEET 8 — DIFF */}
       <Sect tag="08" title="Differentiation · Cheat Sheet">
         <div className="cheat-card">
-          <h4>First Derivative</h4>
+          <h4>First Derivative · ชุดธรรมดา</h4>
           <table className="tbl mono">
             <thead><tr><th>Method</th><th>สูตร</th><th>Error</th></tr></thead>
             <tbody>
               <tr><td>Forward</td><td>[f(x+h) − f(x)]/h</td><td>O(h)</td></tr>
               <tr><td>Backward</td><td>[f(x) − f(x−h)]/h</td><td>O(h)</td></tr>
               <tr><td>Central</td><td>[f(x+h) − f(x−h)]/(2h)</td><td>O(h²)</td></tr>
-              <tr><td>5-point Central</td><td>[−f(x+2h) + 8f(x+h) − 8f(x−h) + f(x−2h)]/(12h)</td><td>O(h⁴)</td></tr>
+            </tbody>
+          </table>
+
+          <h4>First Derivative · ชุดละเอียด (โจทย์ระบุ Big-O สูง)</h4>
+          <table className="tbl mono">
+            <thead><tr><th>Method</th><th>สูตร</th><th>Error</th></tr></thead>
+            <tbody>
+              <tr><td>Forward</td><td>[−f(x+2h) + 4f(x+h) − 3f(x)]/(2h)</td><td>O(h²)</td></tr>
+              <tr><td>Backward</td><td>[3f(x) − 4f(x−h) + f(x−2h)]/(2h)</td><td>O(h²)</td></tr>
+              <tr><td>Central 5-point</td><td>[−f(x+2h) + 8f(x+h) − 8f(x−h) + f(x−2h)]/(12h)</td><td>O(h⁴)</td></tr>
             </tbody>
           </table>
 
@@ -186,17 +195,24 @@ function CheatLesson() {
           <table className="tbl mono">
             <thead><tr><th>Method</th><th>สูตร</th><th>Error</th></tr></thead>
             <tbody>
+              <tr><td>Forward</td><td>[f(x+2h) − 2f(x+h) + f(x)]/h²</td><td>O(h)</td></tr>
+              <tr><td>Backward</td><td>[f(x) − 2f(x−h) + f(x−2h)]/h²</td><td>O(h)</td></tr>
               <tr><td>Central</td><td>[f(x+h) − 2f(x) + f(x−h)]/h²</td><td>O(h²)</td></tr>
-              <tr><td>5-point Central</td><td>[−f(x+2h) + 16f(x+h) − 30f(x) + 16f(x−h) − f(x−2h)]/(12h²)</td><td>O(h⁴)</td></tr>
+              <tr><td>Forward ละเอียด</td><td>[−f(x+3h) + 4f(x+2h) − 5f(x+h) + 2f(x)]/h²</td><td>O(h²)</td></tr>
+              <tr><td>Backward ละเอียด</td><td>[2f(x) − 5f(x−h) + 4f(x−2h) − f(x−3h)]/h²</td><td>O(h²)</td></tr>
+              <tr><td>Central 5-point</td><td>[−f(x+2h) + 16f(x+h) − 30f(x) + 16f(x−h) − f(x−2h)]/(12h²)</td><td>O(h⁴)</td></tr>
             </tbody>
           </table>
 
-          <Callout kind="tip">เลือก central เมื่อมีข้อมูลทั้งสองข้าง — แม่นกว่า ~10×</Callout>
+          <Callout kind="warn" title="Big-O ในโจทย์ = คำสั่งเลือกชุดสูตร">
+            โจทย์เขียน “forward O(h)” → ชุดธรรมดา · “forward O(h²)” → ชุดละเอียด (ใช้ชุดธรรมดาแล้วอ้าง O(h²) = ผิดทั้งข้อ) · <b>เช็กเร็ว:</b> ผลรวมสัมประสิทธิ์ทุกสูตรต้องเป็น 0 (เช่น −1+4−3 = 0 ✓)
+          </Callout>
+          <Callout kind="tip">เลือก central เมื่อมีข้อมูลทั้งสองข้าง — แม่นกว่า ~10× · ต้น/ท้ายตารางเท่านั้นที่จำเป็นต้องใช้ forward/backward</Callout>
         </div>
       </Sect>
 
       {/* COMMON MISTAKES */}
-      <Sect tag="❌" title="Top 20 พลาดบ่อย — อย่าทำซ้ำ!">
+      <Sect tag="❌" title="Top 22 พลาดบ่อย — อย่าทำซ้ำ!">
         <div className="grid-2">
           <Callout kind="danger" title="Root Finding">
             <ol>
@@ -231,7 +247,7 @@ function CheatLesson() {
           </Callout>
           <Callout kind="danger" title="Integration">
             <ol start={16}>
-              <li>Composite Simpson n = <em>คี่</em> → ใช้ไม่ได้!</li>
+              <li>Composite Simpson: จำนวน<em>ช่องย่อยเป็นคี่</em> → ใช้ไม่ได้! (จับพาราโบลาไม่ลงตัว — ต้องจุดข้อมูลเป็นเลขคี่)</li>
               <li>Simpson น้ำหนักผิด pattern (1, 4, 2, 4, ..., 4, 1)</li>
               <li>คำนวณ h ผิด — สำหรับ Simpson single, h = (b−a)/2</li>
             </ol>
@@ -240,6 +256,8 @@ function CheatLesson() {
             <ol start={19}>
               <li>Central สูตรลืมหารด้วย <em>2h</em> (เผลอหารด้วย h)</li>
               <li>h เล็กไป (10⁻¹⁰) → round-off error ใหญ่กว่า truncation</li>
+              <li>โจทย์สั่ง O(h²) แต่ใช้สูตรชุดธรรมดา O(h) → ผิดทั้งข้อ (ดู Big-O ในโจทย์!)</li>
+              <li>สูตร error สลับตัวหาร — “เทียบค่าจริง” ต้องหารด้วย<em>ค่าจริง</em> ไม่ใช่ค่าที่หาได้</li>
             </ol>
           </Callout>
         </div>
@@ -407,8 +425,8 @@ function DecisionTree() {
 
       {/* Integ/Diff */}
       {[
-        { x: 700, y: 230, label: "∫ + n คี่", method: "Composite Trap" },
-        { x: 700, y: 300, label: "∫ + n คู่", method: "Composite Simpson 1/3" },
+        { x: 700, y: 230, label: "∫ + ช่องย่อยคี่", method: "Composite Trap" },
+        { x: 700, y: 300, label: "∫ + ช่องย่อยคู่", method: "Composite Simpson 1/3" },
         { x: 700, y: 370, label: "d/dx มีจุดทั้ง 2 ด้าน", method: "Central O(h²) หรือ O(h⁴)" },
         { x: 700, y: 440, label: "d/dx มีปลายข้างเดียว", method: "Forward / Backward O(h)" },
       ].map((c, i) => (

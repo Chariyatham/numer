@@ -1,4 +1,10 @@
-// Differentiation — Forward, Backward, Central + high-accuracy versions
+// Differentiation — บทที่ 2 ของคอร์สปีนี้ (สัปดาห์ 2 ต่อจาก Integration)
+// เนื้อหาสร้างจาก: เลคเชอร์จริง (ถอดเสียง w2_1, w2_3, w2_4) + สรุป Final หน้า 22–24 + แบบฝึกหัด 2
+// โครงเรื่องตามอาจารย์: ความชัน (เดินขึ้นเขา) → slope เฉลี่ย vs ชั่วขณะ (3x²) → Taylor series ("Netflix")
+//   → ย้ายข้าง Taylor ได้ Forward/Backward/Central + O(h) → Higher derivatives → More accurate O(h²)/O(h⁴)
+// ตัวเลขทุกตัวคำนวณยืนยันด้วยโปรแกรม แล้วเทียบกับสรุปเขียนมือ + โปรแกรม JS ของอาจารย์ (ตรงกันหมด)
+
+const DIFF_TRUE_E2 = Math.exp(2);   // ค่าจริง f'(2) ของ e^x = 7.389056099
 
 function DifferentiationLesson() {
   return (
@@ -6,275 +12,791 @@ function DifferentiationLesson() {
       <Hero
         kicker="02 · Differentiation"
         title="Numerical Differentiation"
-        lead="ประมาณค่า f'(x), f''(x), ... จากข้อมูลที่จุด ๆ — ใช้ Taylor series ในการพิสูจน์ + 3 สาย: Forward, Backward, Central"
+        lead="หา f′(x), f″(x), … โดยไม่ต้องดิฟจริง — ใช้แค่ “ค่าของฟังก์ชันที่จุดรอบ ๆ” มาลบกันหารกัน ที่มาทั้งหมดคือ Taylor series ตัวเดียว"
         readout={{
-          label: "Central difference · f′ ของ eˣ ที่ x=0  (จริง = 1)",
+          label: "f′(2) ของ eˣ, h = 0.25  (ค่าจริง = e² ≈ 7.3891)",
           steps: [
-            { x: "1.0269", w: 72 },
-            { x: "1.00668", w: 18 },
-            { x: "1.00167", w: 5 },
+            { x: "8.3947", w: 72 },
+            { x: "6.5378", w: 62 },
+            { x: "7.4663", w: 6 },
           ],
-          result: "1.00000",
-          note: "h เล็กลงครึ่งหนึ่ง → error เหลือ ~¼ (แม่นระดับ h²)",
+          result: "7.3891",
+          note: "Forward / Backward พลาด ~12–13% แต่ Central พลาดแค่ ~1% ที่ h เดียวกัน",
         }}
-        meta={["O(h), O(h²), O(h⁴)", "First & Higher", "Taylor proof", "fx-991CW d/dx"]}
+        meta={["Forward O(h)", "Backward O(h)", "Central O(h²)", "More accurate O(h²)/O(h⁴)"]}
       />
 
-      <Sect tag="0" title="ที่มาจาก Taylor Series">
-        <p>ทุกสูตรในบทนี้เริ่มจาก Taylor expansion:</p>
-        <Formula>
-          <MB>{`f(x_{i+1}) = f(x_i) + h\\,f'(x_i) + \\frac{h^2}{2!}f''(x_i) + \\frac{h^3}{3!}f'''(x_i) + \\cdots`}</MB>
-          <MB>{`f(x_{i-1}) = f(x_i) - h\\,f'(x_i) + \\frac{h^2}{2!}f''(x_i) - \\frac{h^3}{3!}f'''(x_i) + \\cdots`}</MB>
-        </Formula>
-        <p>โดยที่ <M>h = x_{`i+1`} - x_i</M></p>
+      <Callout kind="tip" title="🎙️ บทนี้มาจากเลคเชอร์จริงของอาจารย์ (สัปดาห์ 2)">
+        <p style={{margin:"0 0 6px"}}>อาจารย์เปิดคาบด้วยการโยงกับสัปดาห์ที่แล้ว: <i>“อาทิตย์ที่แล้ว integrate ง่าย ๆ ได้ แต่ integrate ยาก ๆ ไม่ได้ → เราเลยมีวิธีเชิงตัวเลข. วันนี้เหมือนกัน: <b>diff ง่าย ๆ ได้ แต่ diff ยาก ๆ (หรือไม่มีสมการเลย) ก็ต้องมีตัวช่วย</b>”</i></p>
+        <p style={{margin:"0 0 6px"}}>และแซวไว้ว่า: <i>“จดนะ บทนี้มีทั้งหมด <b>24 สูตร</b> แล้วคุณเข้าห้องสอบโดยไม่มีกระดาษ…”</i> — ฟังดูโหด แต่จริง ๆ คือ <b>4 อันดับอนุพันธ์ × 3 ทิศ × 2 ระดับความละเอียด = 24</b> ซึ่ง<b>ทุกสูตรงอกจาก Taylor series ตัวเดียว</b> เข้าใจที่มา + จำแพตเทิร์น ก็ไม่ต้องท่องทีละสูตร</p>
+        <p style={{margin:0, fontSize:'0.82rem'}}>การบ้านชุดนี้อาจารย์ให้ <b>6 คะแนน</b> (“ใครทำได้ครบก็ 6 ใครไม่ได้ก็ 1 เป็นคะแนนหวังใจ”) — หัวข้อแบบฝึกหัดด้านล่างทำเฉลยเต็มทุกข้อ ทุกตัวเลข<b>ยืนยันด้วยโปรแกรม</b>แล้ว</p>
+      </Callout>
+
+      {/* ═══════════════ 0 · ความชันคืออะไร ═══════════════ */}
+      <Sect tag="0" title="ความชันคืออะไร? — อุปมา “เดินขึ้นเขา”">
+        <p>ก่อนจะ diff ต้องตอบให้ได้ก่อนว่า <b>ความชัน (slope)</b> คืออะไร — อาจารย์ใช้เวลาเกือบครึ่งคาบกับคำถามนี้ เพราะทั้งบทเหลือแค่ “หาความชันให้เก่ง”</p>
+        <Callout kind="good" title="🎙️ อุปมาของอาจารย์: เดินขึ้นเขา 2 ลูก อันไหน “ชัน” กว่า?">
+          <ul style={{margin:"0 0 6px 18px"}}>
+            <li>เดินขึ้นเขา 2 ลูก ลูกหนึ่งเหนื่อยกว่า → “ชันกว่า” — แต่<b>วัดเป็นตัวเลข</b>ยังไง?</li>
+            <li>ฟิสิกส์ ม.ปลาย: น้ำหนักที่ดึงเราถอยหลังคือ <M>{`mg\\sin\\theta`}</M> — มุม <M>\theta</M> ยิ่งใหญ่ยิ่งเหนื่อย</li>
+            <li>สร้างสามเหลี่ยมมุมฉาก: เดินหน้าไป <M>A</M> (ระยะราบ) สูงขึ้น <M>B</M> (ระยะดิ่ง) → <M>{`\\tan\\theta = \\dfrac{\\text{ข้าม}}{\\text{ชิด}} = \\dfrac{B}{A}`}</M></li>
+            <li><b>B มาก A น้อย</b> (เช่น 8/2 = 4) → ชันมาก · <b>B น้อย A มาก</b> → ชันน้อย</li>
+          </ul>
+          <p style={{margin:0}}>สรุปนิยามที่ใช้ทั้งบท: <b>ความชัน = slope = <M>{`\\tan\\theta`}</M> = ระยะดิ่ง ÷ ระยะราบ = <M>{`\\Delta y / \\Delta x`}</M></b></p>
+        </Callout>
+        <MountainSlopeViz/>
+        <Callout kind="tip" title="ทำไมภูเขา = ฟังก์ชัน">
+          <p style={{margin:0}}>🎙️ <i>“ภูเขาก็คือกราฟของฟังก์ชัน <M>f(x)</M> ดี ๆ นี่เอง”</i> — แต่ละจุดบนเขา ความชัน<b>ไม่เท่ากัน</b> (ตีนเขาชันน้อย กลางเขาชันมาก) → ความชัน “ที่จุดหนึ่ง ๆ” เรียกว่า <b>ความชันชั่วขณะ</b> ซึ่งก็คือ <M>{`f'(x)`}</M> ที่เรากำลังจะหา</p>
+        </Callout>
       </Sect>
 
-      <Sect tag="1" title="First Derivative · 3 สาย">
-        <h3>1.1 Forward Divided Difference — มองข้างหน้า</h3>
-        <p>จาก Taylor ของ <M>f(x_{`i+1`})</M> ตัดทุกอันที่มี <M>h^2</M> ขึ้นไป:</p>
-        <MB>{`f(x_{i+1}) \\approx f(x_i) + h\\,f'(x_i)`}</MB>
-        <Formula>
-          <MB>{`f'(x_i) \\approx \\frac{f(x_{i+1}) - f(x_i)}{h} \\quad + O(h)`}</MB>
+      {/* ═══════════════ 1 · slope เฉลี่ย vs ชั่วขณะ ═══════════════ */}
+      <Sect tag="1" title="Slope เฉลี่ย vs ชั่วขณะ — ตัวอย่างเดินหลัก f(x) = 3x²">
+        <p>อาจารย์ตั้งโจทย์: หา <M>{`f'(3)`}</M> ของ <M>{`f(x)=3x^2`}</M>. วิธีแคลคูลัส: <M>{`f'(x)=6x`}</M> → <M>{`f'(3)=18`}</M> ← <b>ค่าจริง</b>. แต่สมมุติเรา<b>ดิฟไม่เป็น</b> — ใช้ slope ช่วย:</p>
+        <Formula label="Slope เฉลี่ยระหว่าง 2 จุด (secant)">
+          <MB>{`\\text{slope} = \\frac{y_2 - y_1}{x_2 - x_1} = \\frac{f(x_2)-f(x_1)}{x_2-x_1}`}</MB>
+          <p style={{fontSize:'0.8rem', color:"var(--text-dim)", margin:"6px 0 0"}}>ทุกตัวหาได้หมด: จิ้ม <M>{`x_2`}</M> เอง แล้วแทนในฟังก์ชันได้ <M>{`y_2`}</M> — ไม่ต้องดิฟเลย</p>
         </Formula>
+        <window.HandWalkthrough steps={[
+          { title: "เลือกจุดที่สอง x₂ = 5 (ห่างตั้ง 2 หน่วย)",
+            body: `f(3) = 3(3²) = 27,   f(5) = 3(5²) = 75
+slope = (75 − 27)/(5 − 3) = 48/2 = 24
+ค่าจริง 18 → พลาดไป 6  (นี่คือ slope "เฉลี่ย" ของช่วง 3→5
+ไม่ใช่ความชัน "ที่จุด 3")` },
+          { title: "🎙️ “ยอมรับไม่ได้ทำไงครับ?” — “ซอย!”",
+            body: `ขยับ x₂ เข้ามาใกล้ขึ้น: x₂ = 4
+f(4) = 3(16) = 48
+slope = (48 − 27)/(4 − 3) = 21/1 = 21
+ใกล้ 18 ขึ้นแล้ว! (เหมือนบท Integration:
+error เยอะ → ซอยให้ถี่ขึ้น)` },
+          { title: "ซอยเข้าไปอีกเรื่อย ๆ",
+            body: `x₂ = 3.5  → slope = 19.5
+x₂ = 3.25 → slope = 18.75
+x₂ = 3.1  → slope = 18.3
+x₂ = 3.01 → slope = 18.03  → ลู่เข้า 18` },
+          { title: "ซอยจน Δx → 0 = นิยามของ diff",
+            body: `นิยาม Δx = x₂ − x₁  (ระยะห่าง)
+Δx เล็กลงเรื่อย ๆ จน "ลมหายใจรดต้นคอ"
+→ take limit:  dy/dx = lim(Δx→0) Δy/Δx
+นี่แหละที่มาของ diff ที่ใช้ในวิชา Math` },
+        ]}/>
+        <SecantShrinkViz/>
+        <Callout kind="warn" title="หัวใจของบทนี้ (กลับด้านกับแคลคูลัส)">
+          <p style={{margin:0}}>แคลคูลัสให้ <M>{`\\Delta x \\to 0`}</M> เพื่อได้ค่า<b>เป๊ะ</b> — ทำได้เมื่อรู้สูตรฟังก์ชันและดิฟเป็น. Numerical diff ทำ<b>ย้อนกลับ</b>: ใช้ <M>{`\\Delta x`}</M> <b>จำกัด</b> (เรียกว่า <M>h</M>) กับ<b>ค่าที่จุดจริง ๆ</b> → ได้ค่า<b>ประมาณ</b> + error ที่ควบคุมได้ด้วยขนาด <M>h</M></p>
+        </Callout>
+      </Sect>
 
-        <h3>1.2 Backward Divided Difference — มองข้างหลัง</h3>
-        <p>จาก Taylor ของ <M>f(x_{`i-1`})</M> จัดรูปคล้ายเดิม:</p>
-        <Formula>
-          <MB>{`f'(x_i) \\approx \\frac{f(x_i) - f(x_{i-1})}{h} \\quad + O(h)`}</MB>
+      {/* ═══════════════ 2 · Taylor series ═══════════════ */}
+      <Sect tag="2" title="Taylor Series — “ซีรีส์ของนาย Taylor เข้าฉาย Netflix คืนนี้”">
+        <p>🎙️ อาจารย์ให้<b>หลับตาท่อง</b>สูตรนี้ทั้งห้อง (ท่องดัง ๆ 3 รอบ) เพราะ<b>ทุกสูตรของบทนี้จะงอกออกจากมัน</b>:</p>
+        <Formula label="Taylor series (ท่องให้ขึ้นใจ)">
+          <MB>{`f(x) = f(x_0) + (x-x_0)f'(x_0) + \\frac{(x-x_0)^2}{2!}f''(x_0) + \\frac{(x-x_0)^3}{3!}f'''(x_0) + \\cdots`}</MB>
+          <p style={{fontSize:'0.8rem', color:"var(--text-dim)", margin:"6px 0 0"}}>เทอม 1 · เทอม 2 · เทอม 3 · … ไปเรื่อย ๆ ถึงอนันต์ — นาย Taylor เคลมว่า <b>“ฟังก์ชันใด ๆ บนโลกนี้ แทนที่ได้ด้วยซีรีส์นี้”</b></p>
         </Formula>
+        <Callout kind="warn" title="🎙️ เงื่อนไขการใช้ (อาจารย์ย้ำหนักมาก)">
+          <p style={{margin:0}}>ต้องรู้ <b>ค่า <M>{`f(x_0)`}</M> และอนุพันธ์ทุกอันดับที่จุด <M>{`x_0`}</M></b> (<M>{`f'(x_0), f''(x_0), \\dots`}</M> — “all of the derivatives ต้องรู้”) — ไม่ต้องรู้สูตรฟังก์ชัน แต่ต้องรู้ค่าพวกนี้ที่จุดเดียว แล้วจะ “เดา” ค่าฟังก์ชันที่จุดอื่นได้ทั้งโลก</p>
+        </Callout>
 
-        <h3>1.3 Central Divided Difference — มองทั้งสองข้าง</h3>
-        <p>เอา <M>f(x_{`i+1`})</M> − <M>f(x_{`i-1`})</M> จาก Taylor series:</p>
-        <MB>{`f(x_{i+1}) - f(x_{i-1}) = 2h\\,f'(x_i) + \\frac{2h^3}{3!}f'''(x_i) + \\cdots`}</MB>
-        <Formula>
-          <MB>{`f'(x_i) \\approx \\frac{f(x_{i+1}) - f(x_{i-1})}{2h} \\quad + O(h^2)`}</MB>
+        <h3>🎙️ ตัวอย่างจากเลคเชอร์ — เติมทีละเทอม เข้าใกล้คำตอบทีละก้าว</h3>
+        <p>ฟังก์ชัน <M>{`f(x)=3x^2+5x+8`}</M> อยากรู้ <M>{`f(3)`}</M> (ค่าจริง = 27+15+8 = <b>50</b>) โดย<b>ยืนอยู่ที่ <M>{`x_0=0`}</M></b> และรู้แค่ <M>{`f(0)=8,\\ f'(0)=5,\\ f''(0)=6`}</M>:</p>
+        <NumTable
+          headers={["ใช้กี่เทอม", "คำนวณ", "ค่าประมาณ f(3)", "ห่างจาก 50"]}
+          rows={[
+            ["1 เทอม", "f(0) = 8", "8", "42  (ไกลมาก)"],
+            ["2 เทอม", "8 + (3−0)(5) = 8 + 15", "23", "27  (ใกล้ขึ้น)"],
+            ["3 เทอม", "23 + (3−0)²/2! × 6 = 23 + 27", "50", "0  (เป๊ะ!)"],
+          ]}
+        />
+        <Callout kind="good" title="ทำไม 3 เทอมแล้วเป๊ะเลย?">
+          <p style={{margin:0}}>เพราะ <M>{`3x^2+5x+8`}</M> เป็นพหุนาม<b>ดีกรี 2</b> → อนุพันธ์อันดับ 3 ขึ้นไปเป็น 0 หมด เทอมที่เหลือของ Taylor ตายเรียบ. ฟังก์ชันทั่วไป (เช่น <M>{`e^x`}</M>) เทอมไม่มีวันหมด — ยิ่งเก็บเทอมเยอะยิ่งแม่น แต่<b>เป๊ะไม่มีวันถึง</b> — ตรงนี้แหละที่ “error” จะโผล่มา</p>
+        </Callout>
+        <TaylorBuildViz/>
+
+        <Callout kind="tip" title="🎙️ แล้วในโลกจริง จะรู้ f(x₀), f′(x₀), f″(x₀) จากไหน? — อุปมา “ขับรถ”">
+          <p style={{margin:"0 0 6px"}}>นักศึกษาถาม: ถ้าไม่รู้ฟังก์ชัน จะเอาค่าพวกนี้มาจากไหน? อาจารย์ตอบ: <b>เครื่องมือวัด</b></p>
+          <ul style={{margin:"0 0 6px 18px"}}>
+            <li>ระยะทางสะสม <M>{`S(t)`}</M> → อ่านจาก<b>เลขไมล์</b> (ตลับเมตรของรถ)</li>
+            <li>ความเร็ว <M>{`v = S'(t)`}</M> → อ่านจาก<b>หน้าปัดความเร็ว</b> — ไม่ต้องดิฟเอง เครื่องวัดให้</li>
+            <li>ความเร่ง <M>{`a = S''(t)`}</M> → อ่านจาก<b>เครื่องวัดความเร่ง</b> (accelerometer)</li>
+          </ul>
+          <p style={{margin:0}}>ดิฟหนึ่งที = อนุพันธ์อันดับถัดไป และ<b>ทุกอันดับวัดได้ด้วยเซนเซอร์</b>โดยไม่รู้สูตร <M>S(t)</M> เลย — วิศวกรทำแบบนี้จริง ๆ (ข้อสอบจำลองข้อ 5 ท้ายบท ใช้ไอเดียนี้ตรง ๆ)</p>
+        </Callout>
+      </Sect>
+
+      {/* ═══════════════ 3 · จาก Taylor → Forward + O(h) ═══════════════ */}
+      <Sect tag="3" title="ย้ายข้าง Taylor → สูตรแรก (Forward) + ความหมายของ O(h)">
+        <p>ทีนี้เปลี่ยนตัวแปรให้เข้ากับ “ตารางข้อมูล”: ยืนที่ <M>{`x_i`}</M> จุดถัดไปคือ <M>{`x_{i+1}`}</M> ห่างกัน <M>{`h = x_{i+1}-x_i`}</M>. เขียน Taylor ใหม่ (แทน <M>{`x = x_{i+1}, x_0 = x_i`}</M>):</p>
+        <Formula label="Taylor รอบ xᵢ ไปข้างหน้า 1 ก้าว">
+          <MB>{`f(x_{i+1}) = f(x_i) + h\\,f'(x_i) + \\frac{h^2}{2!}f''(x_i) + \\frac{h^3}{3!}f'''(x_i) + \\cdots`}</MB>
         </Formula>
-        <p>สังเกตว่า term ที่มี <M>h^2</M> (จาก <M>f''</M>) หายไปเอง — ทำให้ <b>Central แม่นกว่ามาก</b></p>
-
-        <h3>Animation — secant ค่อย ๆ กลายเป็น tangent เมื่อ h เล็กลง</h3>
-        <SecantTangentViz/>
-
-        <h3>เห็นภาพ — error ของ 3 สูตร</h3>
-        <DiffComparison/>
-
-        <h3>ตัวอย่างจากสไลด์ — <M>f(x) = e^x</M> ที่ <M>x = 2</M> (จริง = <M>e^2 \approx 7.389</M>)</h3>
-        <DiffWorkedExample/>
-
-        <Callout kind="tip" title="วิธีเลือก">
-          <ul>
-            <li>มีข้อมูลแค่ <em>ปลายซ้าย</em> (x = a) → ใช้ <b>Forward</b></li>
-            <li>มีข้อมูลแค่ <em>ปลายขวา</em> (x = b) → ใช้ <b>Backward</b></li>
-            <li>มีข้อมูล<em>ทั้งสองข้าง</em> → ใช้ <b>Central</b> เสมอ (แม่นกว่า)</li>
+        <p>เราอยากได้ <M>{`f'(x_i)`}</M> → <b>ย้ายข้างทีละก้าว</b> (🎙️ อาจารย์ไล่ให้ดูสด ๆ บนกระดาน):</p>
+        <window.HandWalkthrough steps={[
+          { title: "ย้ายทุกเทอมที่ไม่ใช่ f′ ไปอีกฝั่ง",
+            body: `h·f′(xᵢ) = f(xᵢ₊₁) − f(xᵢ) − h²/2!·f″(xᵢ) − h³/3!·f‴(xᵢ) − …
+(จับบวกย้ายเป็นลบ ทั้งแถว)` },
+          { title: "หารด้วย h ทั้งสมการ",
+            body: `f′(xᵢ) = [f(xᵢ₊₁) − f(xᵢ)]/h  −  h/2!·f″(xᵢ) − h²/3!·f‴(xᵢ) − …
+                └── ใช้ได้จริง ──┘   └──── รู้ค่าไม่ได้ (ติด f″, f‴) ────┘` },
+          { title: "เทอมท้ายใช้ไม่ได้ → “ทิ้ง” แล้วแปะป้ายว่า O(h)",
+            body: `f′(xᵢ) = [f(xᵢ₊₁) − f(xᵢ)]/h + O(h)
+O(h) = ก้อน error ทั้งหมดที่เราทิ้ง
+ทำไมเรียก O(h)? → ดู h กำลังต่ำสุดในก้อนที่ทิ้ง:
+−(h/2)f″ − (h²/6)f‴ − …  ← ตัวแรกคือ h¹
+🎙️ "ตัวแรกที่มันเจอคือ h กำลังหนึ่ง" → error of order h` },
+        ]}/>
+        <Formula label="① First Forward Divided-Difference">
+          <MB>{`f'(x_i) = \\frac{f(x_{i+1}) - f(x_i)}{h} + O(h)`}</MB>
+        </Formula>
+        <Callout kind="good" title="O(h) แปลว่าอะไรในทางปฏิบัติ">
+          <ul style={{margin:0}}>
+            <li><b>O(h):</b> ลด h ครึ่งหนึ่ง → error ลด<b>ครึ่งหนึ่ง</b> (ช้า)</li>
+            <li><b>O(h²):</b> ลด h ครึ่งหนึ่ง → error เหลือ <b>1/4</b> (เร็ว)</li>
+            <li><b>O(h⁴):</b> ลด h ครึ่งหนึ่ง → error เหลือ <b>1/16</b> (เร็วมาก)</li>
+            <li>🎙️ <i>“ยิ่งเก็บเทอม Taylor เยอะขึ้น ค่าที่หายไปน้อยลง คำตอบยิ่งถูกต้องขึ้น”</i> — สูตรชุด “ละเอียด” (หัวข้อ 6) คือการเก็บเทอมเพิ่มนั่นเอง</li>
           </ul>
         </Callout>
-      </Sect>
 
-      <Sect tag="2" title="Higher Derivatives">
-        <p>จาก Taylor expansion เพิ่ม term — เอา <M>{`f(x_{i+1}) + f(x_{i-1})`}</M>:</p>
-        <MB>{`f(x_{i+1}) + f(x_{i-1}) = 2 f(x_i) + h^2 f''(x_i) + \\frac{h^4}{12}f^{(4)}(x_i) + \\cdots`}</MB>
-
-        <Formula label="Central f''(x) — O(h²)">
-          <MB>{`f''(x_i) \\approx \\frac{f(x_{i+1}) - 2 f(x_i) + f(x_{i-1})}{h^2}`}</MB>
-        </Formula>
-
-        <p>แบบ Forward / Backward สำหรับ <M>f''(x)</M>:</p>
-        <Formula label="Forward f''(x) — O(h)">
-          <MB>{`f''(x_i) \\approx \\frac{f(x_{i+2}) - 2f(x_{i+1}) + f(x_i)}{h^2}`}</MB>
-        </Formula>
-        <Formula label="Backward f''(x) — O(h)">
-          <MB>{`f''(x_i) \\approx \\frac{f(x_i) - 2f(x_{i-1}) + f(x_{i-2})}{h^2}`}</MB>
-        </Formula>
-      </Sect>
-
-      <Sect tag="3" title="More Accurate Derivative — O(h²), O(h⁴)">
-        <p>ใช้จุดมากขึ้น → ตัด term error ตัวต่อไปได้</p>
-
-        <Formula label="Central f'(x) — O(h⁴)">
-          <MB>{`f'(x_i) \\approx \\frac{-f(x_{i+2}) + 8 f(x_{i+1}) - 8 f(x_{i-1}) + f(x_{i-2})}{12 h}`}</MB>
-        </Formula>
-
-        <Formula label="Central f''(x) — O(h⁴)">
-          <MB>{`f''(x_i) \\approx \\frac{-f(x_{i+2}) + 16 f(x_{i+1}) - 30 f(x_i) + 16 f(x_{i-1}) - f(x_{i-2})}{12 h^2}`}</MB>
-        </Formula>
-
-        <Callout title="ตารางสัมประสิทธิ์ (จากสไลด์)">
-          <table className="tbl">
-            <thead><tr><th>Order</th><th>Formula</th><th>i-2</th><th>i-1</th><th>i</th><th>i+1</th><th>i+2</th><th>÷</th><th>Err</th></tr></thead>
-            <tbody>
-              <tr><td>f'</td><td>Forward</td><td></td><td></td><td>-3</td><td>4</td><td>-1</td><td>2h</td><td className="num">O(h²)</td></tr>
-              <tr><td>f'</td><td>Backward</td><td>1</td><td>-4</td><td>3</td><td></td><td></td><td>2h</td><td className="num">O(h²)</td></tr>
-              <tr><td>f'</td><td>Central</td><td>-1</td><td>-8</td><td>0</td><td>8</td><td>1</td><td>12h</td><td className="num">O(h⁴)</td></tr>
-              <tr><td>f''</td><td>Central</td><td>-1</td><td>16</td><td>-30</td><td>16</td><td>-1</td><td>12h²</td><td className="num">O(h⁴)</td></tr>
-              <tr><td>f'''</td><td>Central</td><td>-1</td><td>2</td><td>0</td><td>-2</td><td>1</td><td>2h³</td><td className="num">O(h²)</td></tr>
-              <tr><td>f⁽⁴⁾</td><td>Central</td><td>1</td><td>-4</td><td>6</td><td>-4</td><td>1</td><td>h⁴</td><td className="num">O(h²)</td></tr>
-            </tbody>
-          </table>
+        <Callout kind="tip" title="🎙️ กรอบการคิด Given / Step (จากสรุป — ใช้ทุกข้อในบทนี้)">
+          <p style={{margin:"0 0 4px"}}><b>Given:</b> ① ให้ <M>x</M> ② ให้ <M>h</M> ③ สั่งหาอนุพันธ์อันดับที่เท่าไหร่ <b>+ ดู Big-O ที่โจทย์กำหนดด้วย!</b></p>
+          <p style={{margin:0}}><b>Step:</b> ① เขียนสูตร <M>{`f'(x_i)`}</M> ที่ตรงทั้งทิศและ Big-O → ② สร้างตาราง <M>{`x, f(x)`}</M> → ③ แทนสูตร → ④ หาค่าจริง → ⑤ หา error</p>
         </Callout>
 
-        <Callout kind="tip" title="fx-991CW · 5-point เก็บ f-values ในตัวแปร A–E">
-          <p>สูตร 5-point เช่น <M>{`f'(x_i) = (-f_{i+2}+8f_{i+1}-8f_{i-1}+f_{i-2})/(12h)`}</M> มีค่าคงที่ <code>−1, 8, 0, −8, 1</code> — เก็บค่า f ในตัวแปรช่วยลดข้อผิดพลาด:</p>
-          <CalcSteps steps={[
-            <span>คำนวณ <M>{`f(x_{i-2})`}</M> → <Key>STO</Key> <Key>A</Key></span>,
-            <span>คำนวณ <M>{`f(x_{i-1})`}</M> → <Key>STO</Key> <Key>B</Key></span>,
-            <span>คำนวณ <M>{`f(x_i)`}</M> → <Key>STO</Key> <Key>C</Key>  (ใช้กับ f'' Central)</span>,
-            <span>คำนวณ <M>{`f(x_{i+1})`}</M> → <Key>STO</Key> <Key>D</Key></span>,
-            <span>คำนวณ <M>{`f(x_{i+2})`}</M> → <Key>STO</Key> <Key>E</Key></span>,
-            <span>ประกอบสูตร: <code>(−E + 8D − 8B + A) ÷ (12h)</code> → กด <Key>=</Key> ได้ <M>f'(x_i)</M> แม่นยำ O(h⁴)</span>,
-            <span>สำหรับ <M>f''</M>: <code>(−E + 16D − 30C + 16B − A) ÷ (12h²)</code></span>,
-          ]}/>
-          <p style={{margin:"6px 0 0", fontSize:'0.778rem'}}>ทริค: ถ้า h เป็น decimal คงที่ → คำนวณ <code>1/(12h)</code> ก่อน → <Key>STO</Key> <Key>F</Key> → ใช้ <code>(−E+8D−8B+A)×F</code></p>
-          <p style={{margin:"4px 0 0", fontSize:'0.75rem', color:"var(--text-faint)"}}>คนสอบเร็วใช้เทคนิคนี้คำนวณ 5-point ได้ใน 30 วินาที — เร็วกว่าคำนวณทีละสูตรด้วยมือ 3 เท่า</p>
+        <h3>สูตร Error — มี 2 แบบ ระวังตัวหาร!</h3>
+        <Formula label="แบบที่ 1 · วัดจากค่าจริง (ใช้เมื่อรู้ค่าจริง — แบบฝึกหัดสั่ง “เทียบกับค่าจริง”)">
+          <MB>{`\\varepsilon = \\left|\\frac{\\text{ค่าจริง} - \\text{ค่าที่หาได้}}{\\text{ค่าจริง}}\\right|\\times 100\\%`}</MB>
+        </Formula>
+        <Formula label="แบบที่ 2 · ตัวหารเป็นค่าที่หาได้ (ใช้เมื่อไม่รู้ค่าจริง)">
+          <MB>{`\\varepsilon = \\left|\\frac{\\text{ค่าที่หาได้} - \\text{ค่าจริง}}{\\text{ค่าที่หาได้}}\\right|\\times 100\\%`}</MB>
+        </Formula>
+        <Callout kind="warn" title="⚠︎ ระวังชีท: สรุปเขียนมือกับโปรแกรมอาจารย์ใช้คนละแบบ">
+          <p style={{margin:0}}>ตัวอย่างในสรุปเขียนมือ (ex.7) ใช้<b>แบบที่ 2</b> (ตัวหาร = ค่าที่หาได้ → forward ได้ 11.98%) แต่<b>โปรแกรมของอาจารย์เอง</b>ใช้<b>แบบที่ 1</b> (ตัวหาร = ค่าจริง → forward ได้ 13.61%) — ค่าไม่เท่ากันทั้งที่ถูกทั้งคู่! เวลาสอบ<b>เขียนสูตร error ที่ใช้กำกับเสมอ</b> แล้วเลือกตามคำสั่งโจทย์ (สั่ง “เทียบกับค่าจริง” → แบบที่ 1)</p>
         </Callout>
       </Sect>
 
-      <Sect tag="4" title="fx-991CW · d/dx ในเครื่อง">
-        <Callout title="วิธีกด">
-          <CalcSteps steps={[
-            <span><Key>HOME</Key> → <Key>Calculate</Key></span>,
-            <span>กด <Key>OPTN</Key> หรือเลือก <code>d/dx</code> จากเมนู</span>,
-            <span>พิมพ์ฟังก์ชัน + ค่า x เช่น <code>d/dx(x³+2x | x=2)</code></span>,
-            <span><Key>=</Key> → ได้คำตอบทันที</span>,
-            <span><b>เครื่องใช้ Central Difference</b> O(h²) เป็น default</span>,
-          ]}/>
-        </Callout>
-
-        <Callout kind="warn" title="ระวัง! d/dx ในเครื่องไม่เหมือนทำมือเป๊ะ">
-          เครื่องใช้ <em>numerical</em> diff (ไม่ใช่ symbolic) — มี error เล็ก ๆ ตามค่า h ที่เครื่องเลือก ถ้าโจทย์ให้ "ค่าจริง" มาเปรียบเทียบ ผลจาก d/dx จะใกล้แต่ไม่เป๊ะ
-        </Callout>
-      </Sect>
-
-      <Sect tag="5" title="Python — Numerical Diff ครบสูตร">
-        <PythonRunner code={`import math
-
-# First derivative
-def fwd(f, x, h):  return (f(x+h) - f(x))/h
-def bwd(f, x, h):  return (f(x) - f(x-h))/h
-def ctr(f, x, h):  return (f(x+h) - f(x-h))/(2*h)
-def ctr4(f, x, h): return (-f(x+2*h) + 8*f(x+h) - 8*f(x-h) + f(x-2*h))/(12*h)
-
-# Second derivative
-def fpp(f, x, h):  return (f(x+h) - 2*f(x) + f(x-h))/(h*h)
-def fpp4(f, x, h): return (-f(x+2*h) + 16*f(x+h) - 30*f(x) + 16*f(x-h) - f(x-2*h))/(12*h*h)
-
-f = math.exp
-x = 2; h = 0.25
-true_val = math.exp(2)
-print(f"True f'(2) = e² = {true_val:.6f}")
-print(f"{'method':<20} {'value':>12} {'error%':>10}")
-for name, fn in [
-    ("Forward", fwd), ("Backward", bwd), ("Central O(h²)", ctr), ("Central O(h⁴)", ctr4)
-]:
-    v = fn(f, x, h)
-    print(f"{name:<20} {v:>12.6f} {abs(true_val-v)/true_val*100:>10.4f}")
-
-print(f"\\nTrue f''(2) = e² = {true_val:.6f}")
-print(f"{'Central O(h²)':<20} {fpp(f, x, h):>12.6f} {abs(true_val-fpp(f,x,h))/true_val*100:>10.4f}")
-print(f"{'Central O(h⁴)':<20} {fpp4(f, x, h):>12.6f} {abs(true_val-fpp4(f,x,h))/true_val*100:>10.4f}")`} height={300}/>
-      </Sect>
-
-      <Sect tag="6" title="Richardson Extrapolation · เพิ่มความแม่นจาก O(h²) → O(h⁴)">
-        <p>ถ้าเรามี <M>{`D(h)`}</M> = central difference ที่ <M>h</M> และ <M>{`D(h/2)`}</M> ที่ <M>{`h/2`}</M> — รวมกันให้ลด error ได้</p>
-
-        <Formula label="Richardson formula">
-          <MB>{`D_{\\text{refined}} = \\frac{4\\,D(h/2) - D(h)}{3} = D(h/2) + \\frac{D(h/2) - D(h)}{3}`}</MB>
-          <p style={{fontSize:'0.778rem', color:"var(--text-dim)", margin:"4px 0 0"}}>O(h²) + O(h²) → O(h⁴)</p>
-        </Formula>
-
-        <Callout kind="good" title="ที่มา">
-          <p>Central diff มี error: <M>{`D(h) = f'(x) + c h^2 + O(h^4)`}</M></p>
-          <p>ที่ h/2: <M>{`D(h/2) = f'(x) + c (h/2)^2 + O(h^4) = f'(x) + (c/4) h^2 + O(h^4)`}</M></p>
-          <p>คูณ 4 ใน h/2 แล้วลบ: <M>{`4D(h/2) - D(h) = 3 f'(x) + O(h^4)`}</M> → หาร 3 ได้ <M>{`f'(x) + O(h^4)`}</M> ✓</p>
-        </Callout>
-
-        <h3>ตัวอย่าง · <M>{`f(x) = e^x`}</M> ที่ x = 2</h3>
+      {/* ═══════════════ 4 · 3 สาย ═══════════════ */}
+      <Sect tag="4" title="First Derivative ครบ 3 สาย — Forward · Backward · Central">
+        <p>🎙️ อาจารย์อธิบายด้วย “ทิศที่มอง” จากจุดที่เรายืน (<M>{`x_i`}</M>):</p>
         <NumTable
-          headers={["h", "D(h) [central O(h²)]", "D(h/2)", "Richardson [O(h⁴)]", "Error vs e²"]}
-          rows={[0.4, 0.2, 0.1, 0.05].map(h => {
-            const D1 = diffCentral(Math.exp, 2, h);
-            const D2 = diffCentral(Math.exp, 2, h/2);
-            const Dr = (4*D2 - D1)/3;
-            return [h, D1.toFixed(8), D2.toFixed(8), Dr.toFixed(10), Math.abs(Dr - Math.exp(2)).toExponential(3)];
-          })}
+          headers={["สาย", "ยืนที่", "อาศัยข้อมูล", "มุมมอง 🎙️", "Error"]}
+          rows={[
+            ["Forward", "xᵢ", "xᵢ กับ xᵢ₊₁ (ข้างหน้า)", "“มองมาด้านขวา — จุดปัจจุบันเทียบจุดถัดไป”", "O(h)"],
+            ["Backward", "xᵢ", "xᵢ₋₁ กับ xᵢ (ข้างหลัง)", "“อาศัยตัวก่อนหน้า”", "O(h)"],
+            ["Central", "xᵢ", "xᵢ₋₁ กับ xᵢ₊₁ (สองข้าง)", "“ถ่วงน้ำหนักทั้งหน้าและหลัง — ฟังเพื่อนสองคน”", "O(h²)"],
+          ]}
         />
 
-        <PythonRunner code={`import math
+        <h3>ที่มา Backward — Taylor ถอยหลัง 1 ก้าว</h3>
+        <p>แทน <M>{`x = x_{i-1}`}</M> (ก้าวถอยหลัง ระยะ <M>{`-h`}</M>) → เครื่องหมาย<b>สลับบวกลบ</b>ทีละเทอม (เพราะ <M>{`(-h)^2 = +h^2`}</M> แต่ <M>{`(-h)^3 = -h^3`}</M>):</p>
+        <Formula>
+          <MB>{`f(x_{i-1}) = f(x_i) - h\\,f'(x_i) + \\frac{h^2}{2!}f''(x_i) - \\frac{h^3}{3!}f'''(x_i) + \\cdots`}</MB>
+        </Formula>
+        <p>ย้ายข้างแบบเดิม (ไล่เต็ม ๆ อยู่ในเฉลยแบบฝึกหัดข้อ 3 ด้านล่าง) ได้:</p>
+        <Formula label="② First Backward Divided-Difference">
+          <MB>{`f'(x_i) = \\frac{f(x_i) - f(x_{i-1})}{h} + O(h)`}</MB>
+        </Formula>
 
-def central(f, x, h): return (f(x+h) - f(x-h)) / (2*h)
-def richardson(f, x, h):
-    D1 = central(f, x, h)
-    D2 = central(f, x, h/2)
-    return (4*D2 - D1) / 3
+        <h3>ที่มา Central — จับสองสมการ “ลบกัน” แล้วเวทมนตร์เกิด</h3>
+        <p>เอาสมการ forward ลบ สมการ backward: เทอม <M>{`f(x_i)`}</M> ตัดกัน, เทอม <M>{`f''`}</M> (กำลังคู่) <b>ตัดกันหมด!</b></p>
+        <Formula>
+          <MB>{`f(x_{i+1}) - f(x_{i-1}) = 2h\\,f'(x_i) + \\frac{2h^3}{3!}f'''(x_i) + \\cdots`}</MB>
+        </Formula>
+        <Formula label="③ Central Divided-Difference">
+          <MB>{`f'(x_i) = \\frac{f(x_{i+1}) - f(x_{i-1})}{2h} + O(h^2)`}</MB>
+          <p style={{fontSize:'0.8rem', color:"var(--text-dim)", margin:"6px 0 0"}}>ก้อนที่ทิ้งเริ่มที่ <M>{`h^2`}</M> (เทอม <M>{`f''`}</M> หายไปเองจากการลบ) → O(h²) — <b>แม่นกว่าโดยไม่ต้องคำนวณเพิ่มแม้แต่จุดเดียว</b></p>
+        </Formula>
 
-f = math.exp; x = 2; true_val = math.exp(2)
-print(f"True f'(2) = e² = {true_val:.12f}\\n")
-for h in [0.4, 0.2, 0.1, 0.05, 0.025]:
-    D = central(f, x, h)
-    R = richardson(f, x, h)
-    print(f"h={h:.4f}  Central={D:.10f} err={abs(D-true_val):.2e}  Richardson={R:.10f} err={abs(R-true_val):.2e}")`} height={200}/>
-      </Sect>
+        <h3>Animation — 3 สายมองคนละทิศ (ตัวเลขจริงจาก ex.7)</h3>
+        <ThreeWaysViz/>
 
-      <Sect tag="7" title="Error vs h · U-shape ของ Floating Point">
-        <p>ลด h → truncation error ลด, แต่ <em>round-off</em> จาก subtraction เริ่มสำคัญที่ h เล็กมาก ๆ</p>
-        <DiffErrorPlot/>
-        <Callout kind="warn" title="กับดักที่นักศึกษาทุกคนเจอ">
-          <p>คิดว่า "ยิ่ง h เล็กยิ่งแม่น" — ผิด! สำหรับ floating-point มี <em>sweet spot</em>:</p>
-          <ul>
-            <li>O(h): h ≈ √ε ≈ 10⁻⁸</li>
-            <li>O(h²): h ≈ ε^(1/3) ≈ 10⁻⁵</li>
-            <li>O(h⁴): h ≈ ε^(1/5) ≈ 10⁻³</li>
+        <h3>🎙️ ทำตามสรุป · ex.7 — <M>{`f(x)=e^x`}</M> หา <M>{`f'(2)`}</M>, h = 0.25</h3>
+        <p>ค่าจริง: <M>{`f'(x)=e^x`}</M> → <M>{`f'(2)=e^2 = 7.389056099`}</M>. ขั้นแรก<b>สร้างตาราง</b> (Hint ของโจทย์ — และคือจุดที่เครื่องคิดเลขโหมด Table ช่วยชีวิต):</p>
+        <NumTable
+          headers={["i", "xᵢ", "f(xᵢ) = eˣ", "ใครใช้บ้าง"]}
+          rows={[
+            ["i−1", "1.75", "5.754602676", "Backward, Central"],
+            ["i", "2.00", "7.389056099", "Forward, Backward"],
+            ["i+1", "2.25", "9.487735836", "Forward, Central"],
+          ]}
+        />
+        <window.HandWalkthrough steps={[
+          { title: "7.1 Forward O(h)",
+            body: `f′(2) ≈ [f(2.25) − f(2)] / 0.25
+     = (9.487735836 − 7.389056099) / 0.25
+     = 2.098679737 / 0.25 = 8.394718950
+ε = |7.389056099 − 8.394718950| / 7.389056099 × 100
+  = 13.61%   (แบบที่ 2 ตัวหารค่าที่หาได้ → 11.98%)`,
+            calc: "Table: Start 1.75, End 2.25, Step 0.25 → ได้ f ครบ 3 จุดในจอเดียว" },
+          { title: "7.2 Backward O(h)",
+            body: `f′(2) ≈ [f(2) − f(1.75)] / 0.25
+     = (7.389056099 − 5.754602676) / 0.25
+     = 6.537813692
+ε = |7.389056099 − 6.537813692| / 7.389056099 × 100
+  = 11.52%   (แบบที่ 2 → 13.02%)` },
+          { title: "7.3 Central O(h²) — ใช้ตารางเดิม ไม่ต้องหาอะไรเพิ่ม!",
+            body: `f′(2) ≈ [f(2.25) − f(1.75)] / (2×0.25)
+     = (9.487735836 − 5.754602676) / 0.5
+     = 7.466266321
+ε = |7.389056099 − 7.466266321| / 7.389056099 × 100
+  = 1.04%   ← จาก ~12–13% เหลือ 1% ด้วยข้อมูลชุดเดิม`,
+            calc: "( 9.487735836 − 5.754602676 ) ÷ 0.5 =" },
+        ]}/>
+        <Callout kind="good" title="อ่านผล ex.7 (ตรงกับสรุป + โปรแกรมอาจารย์เป๊ะ)">
+          <p style={{margin:0}}>Forward <b>เกิน</b>จริง (มองขวา — ทางขึ้นชันกว่าจุดที่ยืน เพราะ eˣ โค้งขึ้น) · Backward <b>ขาด</b> (มองซ้าย — ทางที่ผ่านมาชันน้อยกว่า) · Central เฉลี่ยสองมุมมอง → <b>สมดุลพอดี แม่นสุด</b>. นี่คือเหตุผลเชิงภาพว่าทำไมเทอม f″ ถึงตัดกันหาย</p>
+        </Callout>
+
+        <h3>Animation — h เล็กลง secant ทาบ tangent</h3>
+        <SecantTangentViz/>
+
+        <h3>ลองเลื่อน h เอง — ดู error สด ๆ ทั้ง 3 สูตร</h3>
+        <DiffComparison/>
+
+        <Callout kind="tip" title="วิธีเลือกสาย (ออกสอบบ่อย)">
+          <ul style={{margin:0}}>
+            <li>ข้อมูลอยู่<b>ต้นตาราง</b> (ไม่มีจุดซ้าย) → <b>Forward</b> เท่านั้น</li>
+            <li>ข้อมูลอยู่<b>ท้ายตาราง</b> (ไม่มีจุดขวา) → <b>Backward</b> เท่านั้น</li>
+            <li>อยู่<b>กลางตาราง</b> (มีทั้งสองข้าง) → <b>Central</b> เสมอ (O(h²) ฟรี ๆ)</li>
+            <li>โจทย์<b>สั่งวิธีมา</b> → ทำตามโจทย์ ห้ามสลับ (แบบฝึกหัดสั่งครบทั้ง 3)</li>
           </ul>
-          <p style={{margin:0}}>ที่ h เล็กกว่านี้ round-off เริ่มชนะ truncation</p>
         </Callout>
       </Sect>
 
-      <Sect tag="8" title="Interactive · Differentiation Solver">
+      {/* ═══════════════ 5 · Higher derivatives ═══════════════ */}
+      <Sect tag="5" title="Higher Derivatives — f″, f‴, f⁗ (diff มากกว่า 1 ครั้ง)">
+        <p>ต้องการ <M>{`f''`}</M>? ใช้ <b>Taylor 2 สมการ</b> (ก้าว 1 กับก้าว 2) มา “ผสม” ให้เทอม <M>{`f'`}</M> ตัดกัน — 🎙️ อาจารย์ไล่บนกระดานตามนี้ (ตรงกับสรุปหน้า 23):</p>
+        <window.HandWalkthrough steps={[
+          { title: "เขียน Taylor 2 ก้าว",
+            body: `①  f(xᵢ₊₁) = f(xᵢ) + h·f′ + h²/2!·f″ + h³/3!·f‴ + …
+②  f(xᵢ₊₂) = f(xᵢ) + (2h)·f′ + (2h)²/2!·f″ + …
+            = f(xᵢ) + 2h·f′ + 2h²·f″ + (8h³/6)·f‴ + …` },
+          { title: "อยากฆ่า f′ → เอา ① คูณ 2 แล้วลบ",
+            body: `③ = 2×①:  2f(xᵢ₊₁) = 2f(xᵢ) + 2h·f′ + h²·f″ + (2h³/6)·f‴ + …
+② − ③:  f(xᵢ₊₂) − 2f(xᵢ₊₁) = −f(xᵢ) + h²·f″ + h³·f‴ + …
+(เทอม 2h·f′ ตัดกันพอดี ✓)` },
+          { title: "ย้ายข้าง หารด้วย h²",
+            body: `f″(xᵢ) = [f(xᵢ₊₂) − 2f(xᵢ₊₁) + f(xᵢ)] / h²  + O(h)
+ก้อนที่ทิ้งเริ่มที่ h¹ → O(h)
+(ทริคเดียวกันนี้ไล่ได้ f‴, f⁗ — แค่ใช้ก้าวเยอะขึ้น)` },
+        ]}/>
+
+        <h3>ตารางสูตรชุด “ธรรมดา” ครบ 4 อันดับ × 3 ทิศ (12 สูตรแรกจาก 24)</h3>
+        <NumTable
+          headers={["อนุพันธ์", "Forward · O(h)", "Backward · O(h)", "Central · O(h²)"]}
+          rows={[
+            ["f′", "(fᵢ₊₁ − fᵢ)/h", "(fᵢ − fᵢ₋₁)/h", "(fᵢ₊₁ − fᵢ₋₁)/2h"],
+            ["f″", "(fᵢ₊₂ − 2fᵢ₊₁ + fᵢ)/h²", "(fᵢ − 2fᵢ₋₁ + fᵢ₋₂)/h²", "(fᵢ₊₁ − 2fᵢ + fᵢ₋₁)/h²"],
+            ["f‴", "(fᵢ₊₃ − 3fᵢ₊₂ + 3fᵢ₊₁ − fᵢ)/h³", "(fᵢ − 3fᵢ₋₁ + 3fᵢ₋₂ − fᵢ₋₃)/h³", "(fᵢ₊₂ − 2fᵢ₊₁ + 2fᵢ₋₁ − fᵢ₋₂)/2h³"],
+            ["f⁗", "(fᵢ₊₄ − 4fᵢ₊₃ + 6fᵢ₊₂ − 4fᵢ₊₁ + fᵢ)/h⁴", "(fᵢ − 4fᵢ₋₁ + 6fᵢ₋₂ − 4fᵢ₋₃ + fᵢ₋₄)/h⁴", "(fᵢ₊₂ − 4fᵢ₊₁ + 6fᵢ − 4fᵢ₋₁ + fᵢ₋₂)/h⁴"],
+          ]}
+        />
+        <Callout kind="good" title="ไม่ต้องท่อง! สัมประสิทธิ์คือ “สามเหลี่ยมปาสกาล + สลับเครื่องหมาย” (โน้ตสีน้ำเงินในสรุป)">
+          <div style={{fontFamily:"var(--font-mono)", fontSize:'0.8rem', lineHeight:1.6, margin:"0 0 6px", whiteSpace:"pre", overflowX:"auto"}}>{`อันดับ 1:      1  −1                (แถว 1-1 ของปาสกาล)
+อันดับ 2:    1  −2   1              (แถว 1-2-1)
+อันดับ 3:   1  −3   3  −1           (แถว 1-3-3-1)
+อันดับ 4:  1  −4   6  −4   1        (แถว 1-4-6-4-1)`}</div>
+          <ul style={{margin:0}}>
+            <li><b>Forward:</b> ไล่จากจุดไกลสุด (<M>{`x_{i+n}`}</M>) ลงมาหา <M>{`x_i`}</M> · ตัวหาร <M>{`h^n`}</M></li>
+            <li><b>Backward:</b> ชุดเดียวกัน ไล่จาก <M>{`x_i`}</M> ถอยหลังไป <M>{`x_{i-n}`}</M></li>
+            <li><b>Central:</b> อันดับคู่ (f″, f⁗) ใช้แถวปาสกาลคร่อมกลาง · อันดับคี่ (f′, f‴) มี “ช่องว่าง” ตรงกลาง (สัมประสิทธิ์ของ <M>{`f_i`}</M> เป็น 0) และหารด้วย <M>{`2h^n`}</M></li>
+          </ul>
+        </Callout>
+
+        <h3>Animation — สูตรไหนแตะจุดไหน (stencil + น้ำหนัก)</h3>
+        <StencilViz/>
+      </Sect>
+
+      {/* ═══════════════ 6 · More accurate ═══════════════ */}
+      <Sect tag="6" title="More Accurate Derivative — ชุด “ละเอียด” O(h²) / O(h⁴)">
+        <p>🎙️ <i>“ถ้าเก็บเทอม Taylor เพิ่ม ค่าที่หายไปก็น้อยลง”</i> — ใช้<b>จุดเพิ่มขึ้น 1 จุด</b>ต่อสูตร เพื่อตัดเทอม error ตัวแรกทิ้ง: Forward/Backward ขยับจาก O(h) → <b>O(h²)</b>, Central จาก O(h²) → <b>O(h⁴)</b> (อีก 12 สูตรที่เหลือ — ครบ 24)</p>
+
+        <Callout kind="warn" title="⚠︎ ทักษะออกสอบ: “Big-O ในโจทย์” คือตัวบอกว่าใช้สูตรชุดไหน!">
+          <p style={{margin:0}}>โจทย์เขียนว่า “จงใช้ forward divided-difference <b>O(h)</b>” → ชุดธรรมดา. เขียนว่า “forward <b>O(h²)</b>” → ต้องใช้ชุดละเอียด <M>{`[-f_{i+2}+4f_{i+1}-3f_i]/2h`}</M> — ใช้ชุดธรรมดาแล้วอ้างว่า O(h²) คือ<b>ผิดทั้งข้อ</b>. ในสรุปอาจารย์เขียนตัวแดงไว้เลยว่า “<b>ดู Big O ด้วย</b>”</p>
+        </Callout>
+
+        <NumTable
+          headers={["อนุพันธ์", "Forward · O(h²)", "Backward · O(h²)", "Central · O(h⁴)"]}
+          rows={[
+            ["f′", "(−fᵢ₊₂ + 4fᵢ₊₁ − 3fᵢ)/2h", "(3fᵢ − 4fᵢ₋₁ + fᵢ₋₂)/2h", "(−fᵢ₊₂ + 8fᵢ₊₁ − 8fᵢ₋₁ + fᵢ₋₂)/12h"],
+            ["f″", "(−fᵢ₊₃ + 4fᵢ₊₂ − 5fᵢ₊₁ + 2fᵢ)/h²", "(2fᵢ − 5fᵢ₋₁ + 4fᵢ₋₂ − fᵢ₋₃)/h²", "(−fᵢ₊₂ + 16fᵢ₊₁ − 30fᵢ + 16fᵢ₋₁ − fᵢ₋₂)/12h²"],
+            ["f‴", "(−3fᵢ₊₄ + 14fᵢ₊₃ − 24fᵢ₊₂ + 18fᵢ₊₁ − 5fᵢ)/2h³", "(5fᵢ − 18fᵢ₋₁ + 24fᵢ₋₂ − 14fᵢ₋₃ + 3fᵢ₋₄)/2h³", "(−fᵢ₊₃ + 8fᵢ₊₂ − 13fᵢ₊₁ + 13fᵢ₋₁ − 8fᵢ₋₂ + fᵢ₋₃)/8h³"],
+            ["f⁗", "(−2fᵢ₊₅ + 11fᵢ₊₄ − 24fᵢ₊₃ + 26fᵢ₊₂ − 14fᵢ₊₁ + 3fᵢ)/h⁴", "(3fᵢ − 14fᵢ₋₁ + 26fᵢ₋₂ − 24fᵢ₋₃ + 11fᵢ₋₄ − 2fᵢ₋₅)/h⁴", "(−fᵢ₊₃ + 12fᵢ₊₂ − 39fᵢ₊₁ + 56fᵢ − 39fᵢ₋₁ + 12fᵢ₋₂ − fᵢ₋₃)/6h⁴"],
+          ]}
+        />
+        <Callout kind="tip" title="ที่มาแบบย่อ (ทำไมได้ O(h²) จากจุดเพิ่ม 1 จุด)">
+          <p style={{margin:0}}>เช่น forward f′: เขียน Taylor ของ <M>{`f(x_{i+1})`}</M> และ <M>{`f(x_{i+2})`}</M> แล้วผสมกันแบบ <M>{`4f(x_{i+1}) - f(x_{i+2})`}</M> → เทอม <M>{`f''`}</M> ตัดกันพอดี (เพราะ <M>{`4\\cdot\\frac{h^2}{2} = \\frac{(2h)^2}{2}`}</M>) เหลือ error เริ่มที่ <M>{`h^2`}</M>. หลักคิดเดียวกับ Central แต่ใช้จุดข้างเดียว — เหมาะกับ<b>ต้น/ท้ายตาราง</b>ที่อยากได้ความแม่นสูง</p>
+        </Callout>
+
+        <h3>🎙️ ทำตามสรุป · ex.8 — <M>{`f(x)=e^{-x/3}+x^2`}</M> หา <M>{`f''(-2.5)`}</M>, h = 0.1</h3>
+        <p><b>หาค่าจริงก่อน</b> (ดิฟมือ 2 รอบ): <M>{`f'(x) = -\\tfrac{1}{3}e^{-x/3} + 2x`}</M> → <M>{`f''(x) = \\tfrac{1}{9}e^{-x/3} + 2`}</M> → <M>{`f''(-2.5) = \\tfrac{1}{9}e^{0.8333} + 2 = 2.255663988`}</M></p>
+        <NumTable
+          headers={["xᵢ", "f(xᵢ) = e^(−x/3) + x²", "ใครใช้บ้าง"]}
+          rows={[
+            ["−2.2", "6.922009084", "Forward (i+3)"],
+            ["−2.3", "7.442579018", "Forward (i+2), Central (i+2)"],
+            ["−2.4", "7.985540928", "Forward (i+1), Central (i+1)"],
+            ["−2.5", "8.550975891", "ทุกสูตร (จุดที่ยืน i)"],
+            ["−2.6", "9.138967730", "Backward (i−1), Central (i−1)"],
+            ["−2.7", "9.749603111", "Backward (i−2), Central (i−2)"],
+            ["−2.8", "10.382971638", "Backward (i−3)"],
+          ]}
+        />
+        <window.HandWalkthrough steps={[
+          { title: "8.1 Forward O(h²) — จุดที่ใช้: i ถึง i+3 (x = −2.5 → −2.2)",
+            body: `สูตร: f″(xᵢ) = [−f(xᵢ₊₃) + 4f(xᵢ₊₂) − 5f(xᵢ₊₁) + 2f(xᵢ)]/h²
+f″(−2.5) = [−f(−2.2) + 4f(−2.3) − 5f(−2.4) + 2f(−2.5)]/(0.1)²
+= [−6.922009084 + 29.770316072 − 39.927704640 + 17.101951782]/0.01
+= 0.022554130/0.01 = 2.255412852
+ε = |2.255663988 − 2.255412852|/2.255663988 ≈ 0.0111%`,
+            calc: "Table: Start −2.8, End −2.2, Step 0.1 → ตารางเดียวใช้ได้ทั้ง 3 ข้อ!" },
+          { title: "8.2 Backward O(h²) — จุดที่ใช้: i−3 ถึง i (x = −2.8 → −2.5)",
+            body: `สูตร: f″(xᵢ) = [2f(xᵢ) − 5f(xᵢ₋₁) + 4f(xᵢ₋₂) − f(xᵢ₋₃)]/h²
+f″(−2.5) = [2f(−2.5) − 5f(−2.6) + 4f(−2.7) − f(−2.8)]/0.01
+= [17.101951782 − 45.694838650 + 38.998412444 − 10.382971638]/0.01
+= 2.255393907
+ε ≈ 0.0120%` },
+          { title: "8.3 Central O(h⁴) — จุดที่ใช้: i−2 ถึง i+2 (คร่อมกลาง)",
+            body: `สูตร: f″(xᵢ) = [−f(xᵢ₊₂) + 16f(xᵢ₊₁) − 30f(xᵢ) + 16f(xᵢ₋₁) − f(xᵢ₋₂)]/12h²
+f″(−2.5) = [−f(−2.3) + 16f(−2.4) − 30f(−2.5) + 16f(−2.6) − f(−2.7)]/(12×0.01)
+= 2.255663984
+ε ≈ 0.00000016%  ← ตรงกับค่าจริงถึงทศนิยมตำแหน่งที่ 8!` },
+        ]}/>
+        <Callout kind="warn" title="⚠︎ ระวังโค้ดอาจารย์ข้อนี้: เครื่องหมายในฟังก์ชันกลับ">
+          <p style={{margin:0}}>โจทย์พิมพ์ <M>{`f(x)=e^{-x/3}+x^2`}</M> และสรุปเขียนมือก็คิดตามนี้ (ได้ 2.2557 ✓) แต่<b>โค้ด JS ของอาจารย์พิมพ์ <code>Math.exp(x/3)</code></b> (ไม่มีลบ) เลยได้ 2.0482 — โค้ดสอดคล้องในตัวเอง (error จิ๋วเหมือนกัน) แต่เป็น<b>คนละฟังก์ชัน</b>กับโจทย์. ยึดตามโจทย์พิมพ์ + สรุปเขียนมือ</p>
+        </Callout>
+      </Sect>
+
+      {/* ═══════════════ 📟 · เครื่องคิดเลขไว ๆ ═══════════════ */}
+      <Sect tag="📟" title="fx-991CW · สูตรลัดกดไว — ข้อสอบเยอะ เวลาน้อย">
+        <p>ข้อสอบ diff คือ “เขียนสูตร → ตาราง → แทน → error” ซ้ำ ๆ หลายข้อ — เป้าหมาย: <b>ข้อละไม่เกิน 2 นาที</b>. เวิร์กโฟลว์นี้ใช้ได้กับทุกสูตรในบท:</p>
+
+        <Callout title="1. โหมด Table = หัวใจ — ได้ f(xᵢ) ครบทุกจุดในครั้งเดียว">
+          <CalcSteps steps={[
+            <span><Key>HOME</Key> → <Key>Table</Key> → พิมพ์ <code>f(x)</code> ของโจทย์ → <Key>OK</Key></span>,
+            <span>ตั้งช่วงให้<b>ครอบทุกจุดที่สูตรใช้</b>: <b>Start</b> = จุดซ้ายสุด, <b>End</b> = จุดขวาสุด, <b>Step</b> = <M>h</M></span>,
+            <span>สูตรธรรมดา f′: Start = <M>{`x-h`}</M>, End = <M>{`x+h`}</M> (3 แถว — ใช้ได้ทั้ง fwd/bwd/ctr)</span>,
+            <span>สูตรละเอียด f″: Start = <M>{`x-3h`}</M>, End = <M>{`x+3h`}</M> (7 แถว — ใช้ได้<b>ทั้ง 3 ข้อย่อย</b> เหมือน ex.8)</span>,
+            <span>จดตารางลงกระดาษ (ข้อสอบต้องโชว์) แล้วค่อยประกอบสูตร</span>,
+          ]}/>
+          <p style={{margin:"6px 0 0", fontSize:'0.8rem'}}><b>จุดที่คนพลาด:</b> โหมด Table ของ 991CW แสดงทศนิยมตามจอ — กดที่ค่าแล้วดูบรรทัดล่างเพื่อจดให้ครบ 9 หลัก อย่าปัดเองกลางทาง (error เราเล็กระดับ 0.01% ปัดพลาดคือคำตอบเพี้ยน)</p>
+        </Callout>
+
+        <Callout title="2. เก็บค่า f ใส่ตัวแปร A–E → ประกอบสูตรก้อนเดียว กด = ทีเดียว">
+          <CalcSteps steps={[
+            <span>จากโหมด Calculate: คำนวณ/พิมพ์ค่า <M>{`f(x_{i-2})`}</M> → <Key>STO</Key> <Key>A</Key>, <M>{`f(x_{i-1})`}</M> → <Key>B</Key>, <M>{`f(x_i)`}</M> → <Key>C</Key></span>,
+            <span>ต่อด้วย <M>{`f(x_{i+1})`}</M> → <Key>D</Key>, <M>{`f(x_{i+2})`}</M> → <Key>E</Key> (จุดไม่ครบ 5 ก็เก็บเท่าที่ใช้)</span>,
+            <span>Central O(h²): <code>(D − B) ÷ (2×0.25)</code> → <Key>=</Key></span>,
+            <span>Central O(h⁴): <code>(−E + 8D − 8B + A) ÷ (12×0.25)</code> → <Key>=</Key></span>,
+            <span>f″ Central: <code>(D − 2C + B) ÷ 0.25²</code> → <Key>=</Key></span>,
+          ]}/>
+          <p style={{margin:"6px 0 0", fontSize:'0.8rem'}}>พิมพ์ก้อนเดียวแล้วกด = ครั้งเดียว <b>เร็วกว่าและพลาดยากกว่า</b>กดทีละท่อน — ถ้าตัวเลขเพี้ยนก็ไล่ดูสูตรบนจอได้ทั้งบรรทัด</p>
+        </Callout>
+
+        <Callout title="3. หา “ค่าจริง” ไวด้วยปุ่ม d/dx (ไว้คิด error)">
+          <CalcSteps steps={[
+            <span><Key>HOME</Key> → <Key>Calculate</Key> → <Key>CATALOG/OPTN</Key> → เลือก <code>d/dx</code></span>,
+            <span>พิมพ์ <code>d/dx( eˣ ) | x=2</code> → <Key>=</Key> → ได้ 7.389056099 ทันที → <Key>STO</Key> <Key>X</Key></span>,
+            <span>error: <code>|X − Ans| ÷ X × 100</code> (ใช้ Ans จากค่าประมาณล่าสุด)</span>,
+            <span>อนุพันธ์อันดับ 2 เครื่องไม่มีปุ่มตรง ๆ → ดิฟมือหาสูตร <M>{`f''`}</M> แล้วกดแทนค่า (เช่น ex.8: <code>e^(2.5÷3)÷9+2</code>)</span>,
+          ]}/>
+          <p style={{margin:"6px 0 0", fontSize:'0.8rem'}}><b>ระวัง:</b> d/dx ของเครื่องเป็น numerical (central) — ใช้เป็นค่าจริงตอนหา error ได้เพราะแม่นมาก แต่<b>ห้ามใช้แทนคำตอบ</b> โจทย์สั่ง forward/backward ต้องโชว์สูตรนั้นจริง ๆ</p>
+        </Callout>
+
+        <Callout kind="tip" title="งบเวลา 2 นาที/ข้อ (ซ้อมจนเป็นกล้ามเนื้อ)">
+          <NumTable
+            headers={["ขั้น", "ทำอะไร", "เวลา"]}
+            rows={[
+              ["①", "เขียนสูตรที่ตรงทิศ + Big-O ของโจทย์", "~15 วิ"],
+              ["②", "Table mode → จดตาราง x, f(x)", "~40 วิ"],
+              ["③", "ประกอบสูตรก้อนเดียว กด =", "~30 วิ"],
+              ["④", "ค่าจริง (d/dx หรือดิฟมือ) + error", "~30 วิ"],
+            ]}
+          />
+          <p style={{margin:"6px 0 0", fontSize:'0.8rem'}}>ถ้าโจทย์หลายข้อใช้<b>ฟังก์ชันเดียวกัน</b> (เช่น ex.7 ทั้ง 3 ข้อย่อย) — ทำตารางรอบเดียว ใช้ทุกข้อ อย่าเข้า Table ใหม่ทุกข้อ</p>
+        </Callout>
+      </Sect>
+
+      {/* ═══════════════ ✍️ · แบบฝึกหัด 2 ═══════════════ */}
+      <Sect tag="✍️" title="แบบฝึกหัด 2 · ทำเต็มทุกข้อ (มือ + เครื่องคิดเลข + โปรแกรม) — การบ้าน 6 คะแนน">
+        <p>โจทย์จริงปีนี้ 3 ข้อ — ข้อ 1–2 “คำนวณ error เทียบกับค่าจริง พร้อมทั้งเขียนโปรแกรม” ข้อ 3 พิสูจน์ order of error. ทุกตัวเลขผมรันโปรแกรมยืนยันแล้ว</p>
+        <DiffExerciseOne/>
+        <DiffExerciseTwo/>
+        <DiffExerciseThree/>
+      </Sect>
+
+      {/* ═══════════════ 🎮 · Solver ═══════════════ */}
+      <Sect tag="🎮" title="ลองเล่น · Differentiation Solver">
+        <p>พิมพ์ฟังก์ชันอะไรก็ได้ ใส่ x กับ h แล้วดูครบทุกสูตรพร้อมกัน (ใช้ตรวจการบ้านได้)</p>
         <DiffSolver/>
       </Sect>
 
-      <Sect tag="∑" title="Quick Reference">
-        <Callout kind="tip" title="วิธีจำ — 3 + 1">
-          <ul>
-            <li><b>Forward:</b> มองข้างหน้าเท่านั้น — error O(h)</li>
-            <li><b>Backward:</b> มองข้างหลังเท่านั้น — error O(h)</li>
-            <li><b>Central:</b> มองทั้งสองข้าง — error O(h²) ดีกว่ามาก</li>
-            <li><b>5-point Central:</b> ใช้ 4 จุดข้าง + 1 จุดเรา — error O(h⁴) ดีที่สุด</li>
+      {/* ═══════════════ 📉 · U-shape ═══════════════ */}
+      <Sect tag="📉" title="Error vs h — เส้นโค้งรูปตัว U ของ Floating Point">
+        <p>ตามทฤษฎี “h ยิ่งเล็กยิ่งแม่น” — แต่ในคอมพิวเตอร์จริง <b>ไม่ใช่!</b> กดเล่นดู error ตอน h เล็กมาก ๆ:</p>
+        <DiffErrorPlot/>
+        <Callout kind="warn" title="กับดักที่เจอตอนเขียนโปรแกรม (สำคัญกับข้อสอบ code)">
+          <p style={{margin:"0 0 6px"}}>สูตร diff เอาเลขที่<b>เกือบเท่ากันมาลบกัน</b> (เช่น f(2.0000001) − f(2)) — พอ h เล็กมาก ทศนิยมที่เหลือจากการลบมีน้อย round-off error เลยระเบิด. มี <i>sweet spot</i>:</p>
+          <ul style={{margin:0}}>
+            <li>O(h): ดีสุดแถว h ≈ 10⁻⁸ · O(h²): h ≈ 10⁻⁵ · O(h⁴): h ≈ 10⁻³</li>
+            <li>ข้อสอบให้ h = 0.25 หรือ 0.1 → โซนปลอดภัย truncation error ล้วน ไม่ต้องกังวล</li>
+            <li>แต่ถ้าเขียนโปรแกรมแล้วมือลั่นใส่ h = 1e-15 “เผื่อแม่น” → คำตอบพังแบบงง ๆ</li>
           </ul>
-          <p>error ลดลงตาม h: ลด h → 1/2 ทำให้ error ลด → 1/2 (O(h)), 1/4 (O(h²)), 1/16 (O(h⁴))</p>
         </Callout>
       </Sect>
 
-      <Sect tag="✸" title="ข้อสอบจำลอง">
-        <Problem label="ข้อ 1 · 3 สาย" solution={
+      {/* ═══════════════ 🎁 · โบนัส ═══════════════ */}
+      <Sect tag="🎁" title="ของแถม (เกินขอบเขตปีนี้) — Richardson Extrapolation">
+        <Callout kind="tip" title="อ่านเพื่อรู้ลึก ไม่อยู่ในชีท/แบบฝึกหัดปีนี้">
+          <p style={{margin:0}}>เทคนิค “เอาคำตอบ 2 ความละเอียดมาสกัดกันเอง” ให้ order พุ่งขึ้น — แนวคิดเดียวกับ Romberg ของบท Integration ถ้าเวลาน้อยข้ามได้เลย</p>
+        </Callout>
+        <p>มี <M>{`D(h)`}</M> = central ที่ระยะ <M>h</M> และ <M>{`D(h/2)`}</M> ที่ระยะครึ่งเดียว — ทั้งคู่ O(h²) แต่ผสมกันฉลาด ๆ ได้ O(h⁴):</p>
+        <Formula label="Richardson: O(h²) + O(h²) → O(h⁴)">
+          <MB>{`D_{\\text{refined}} = \\frac{4\\,D(h/2) - D(h)}{3}`}</MB>
+        </Formula>
+        <Callout kind="good" title="ที่มา (3 บรรทัด)">
+          <p style={{margin:"0 0 4px"}}>error ของ central รู้รูปร่าง: <M>{`D(h) = f'(x) + c\\,h^2 + O(h^4)`}</M></p>
+          <p style={{margin:"0 0 4px"}}>ที่ h/2: <M>{`D(h/2) = f'(x) + \\tfrac{c}{4}h^2 + O(h^4)`}</M> — ก้อน error เหลือ 1/4 พอดี</p>
+          <p style={{margin:0}}><M>{`4D(h/2) - D(h) = 3f'(x) + O(h^4)`}</M> → หาร 3 จบ — เทอม <M>{`h^2`}</M> ฆ่ากันเองพอดี</p>
+        </Callout>
+        <NumTable
+          headers={["h", "Central D(h)", "D(h/2)", "Richardson", "|err| vs e²"]}
+          rows={[0.4, 0.2, 0.1].map(h => {
+            const D1 = diffCentral(Math.exp, 2, h);
+            const D2 = diffCentral(Math.exp, 2, h/2);
+            const Dr = (4*D2 - D1)/3;
+            return [h, D1.toFixed(8), D2.toFixed(8), Dr.toFixed(10), Math.abs(Dr - DIFF_TRUE_E2).toExponential(2)];
+          })}
+        />
+      </Sect>
+
+      {/* ═══════════════ ∑ · Quick Ref ═══════════════ */}
+      <Sect tag="∑" title="สรุป 24 สูตร + วิธีจำ (ที่ออกสอบปีนี้)">
+        <Callout kind="tip" title="แผนที่ 24 สูตร — จำโครง ไม่จำทีละตัว">
+          <ul style={{margin:0}}>
+            <li><b>โครง:</b> อนุพันธ์ 4 อันดับ (f′ f″ f‴ f⁗) × ทิศ 3 (Fwd/Bwd/Ctr) × ระดับ 2 (ธรรมดา/ละเอียด) = <b>24</b></li>
+            <li><b>ชุดธรรมดา:</b> สัมประสิทธิ์ = สามเหลี่ยมปาสกาลสลับเครื่องหมาย · Error: Fwd/Bwd = O(h), Ctr = O(h²)</li>
+            <li><b>ชุดละเอียด:</b> ใช้จุดเพิ่ม 1 จุด · Error: Fwd/Bwd = O(h²), Ctr = O(h⁴) · ตัวที่ใช้บ่อยสุดในสอบ: f′ Fwd O(h²) = (−fᵢ₊₂+4fᵢ₊₁−3fᵢ)/2h กับ f′ Ctr O(h⁴) = (−fᵢ₊₂+8fᵢ₊₁−8fᵢ₋₁+fᵢ₋₂)/12h</li>
+            <li><b>ตัวหาร:</b> อันดับ n หาร <M>{`h^n`}</M> เสมอ (Ctr อันดับคี่มี ×2, ชุดละเอียดมี 12, 8, 6 ตามตาราง)</li>
+            <li><b>เช็กเร็ว:</b> ผลรวมสัมประสิทธิ์ต้องเป็น <b>0</b> ทุกสูตร (ลองบวกดู: 1−2+1 = 0 ✓, −1+16−30+16−1 = 0 ✓) — ใช้ตรวจว่าจำสูตรผิดไหมก่อนกดเครื่อง!</li>
+          </ul>
+        </Callout>
+        <NumTable
+          headers={["สถานการณ์", "ใช้อะไร", "เพราะ"]}
+          rows={[
+            ["จุดอยู่ต้นตาราง / รู้แค่ข้างหน้า", "Forward", "ไม่มีข้อมูลฝั่งซ้าย"],
+            ["จุดอยู่ท้ายตาราง / รู้แค่ข้างหลัง", "Backward", "ไม่มีข้อมูลฝั่งขวา"],
+            ["จุดอยู่กลาง มีข้อมูลสองข้าง", "Central", "แม่นกว่า 1 order ฟรี ๆ"],
+            ["โจทย์ระบุ O(h²)/O(h⁴)", "ชุดละเอียด", "Big-O ในโจทย์ = คำสั่งเลือกชุดสูตร"],
+            ["h ลดครึ่ง อยากรู้ error", "O(h)→½ · O(h²)→¼ · O(h⁴)→1/16", "นิยามของ order"],
+          ]}
+        />
+      </Sect>
+
+      {/* ═══════════════ ✸ · ข้อสอบจำลอง ═══════════════ */}
+      <Sect tag="✸" title="ข้อสอบจำลอง — เขียนมือ + เขียนโปรแกรม (จับเวลาเลย)">
+        <TimedExam presets={[15, 25, 36]} label="ครบชุด 5 ข้อ · เวลาแนะนำรวม 36 นาที (6+4+8+10+8) — โหมดกดดันลอง 25 หรือ 15">
+        <Problem label="ข้อ 1 · ตารางข้อมูลล้วน ไม่มีสมการ (เขียนมือ ~6 นาที)" solution={
           <div>
-            <p>ที่ x = 2, h = 0.1:</p>
-            <p><M>f(2.1) \approx 8.1662, f(1.9) \approx 6.6859, f(2) \approx 7.3891</M></p>
-            <p>Forward: <M>{`(8.1662 - 7.3891)/0.1 = 7.7710`}</M> — err 5.17%</p>
-            <p>Backward: <M>{`(7.3891 - 6.6859)/0.1 = 7.0320`}</M> — err 4.83%</p>
-            <p>Central: <M>{`(8.1662 - 6.6859)/0.2 = 7.4015`}</M> — err 0.17%</p>
+            <p style={{marginTop:0}}><b>คิดก่อนคำนวณ:</b> h = 0.2 คงที่ · ไม่มีสมการ → ห้ามใช้ d/dx, ต้องเลือกสูตรตาม<b>ตำแหน่งของจุดในตาราง</b>:</p>
+            <ul>
+              <li><M>{`f'(1.0)`}</M>: จุด<b>ซ้ายสุด</b> ไม่มีข้อมูลก่อนหน้า → <b>Forward</b>: <M>{`(1.848-2.0)/0.2 = -0.76`}</M></li>
+              <li><M>{`f'(1.4)`}</M>: จุด<b>กลาง</b> มีสองข้าง → <b>Central</b>: <M>{`(1.976-1.848)/(2\\times0.2) = 0.32`}</M></li>
+              <li><M>{`f'(1.8)`}</M>: จุด<b>ขวาสุด</b> → <b>Backward</b>: <M>{`(2.352-1.976)/0.2 = 1.88`}</M></li>
+              <li><M>{`f''(1.4)`}</M>: Central f″: <M>{`(1.976 - 2(1.824) + 1.848)/0.2^2 = 0.176/0.04 = 4.40`}</M></li>
+            </ul>
+            <Callout kind="tip" title="สิ่งที่กรรมการดู">
+              เลือกสูตร<b>ถูกทิศตามตำแหน่งข้อมูล</b> + เขียนสูตรก่อนแทนตัวเลข — โจทย์แบบนี้วัด “เข้าใจว่าเมื่อไหร่ใช้อะไร” ไม่ใช่แค่กดเลขเป็น
+            </Callout>
           </div>
         }>
-          คำนวณ <M>{`f'(x)`}</M> ของ <M>{`f(x) = e^x`}</M> ที่ x = 2 ด้วย h = 0.1 ใช้ Forward, Backward, Central พร้อม error %
+          เซนเซอร์เก็บค่า <M>f(x)</M> ได้ตามตาราง: x = 1.0, 1.2, 1.4, 1.6, 1.8 → f = 2.000, 1.848, 1.824, 1.976, 2.352. จงประมาณ (ก) <M>{`f'(1.0)`}</M> (ข) <M>{`f'(1.4)`}</M> (ค) <M>{`f'(1.8)`}</M> (ง) <M>{`f''(1.4)`}</M> — เลือกสูตรที่เหมาะสุดในแต่ละข้อ พร้อมให้เหตุผล
         </Problem>
 
-        <Problem label="ข้อ 2 · Higher accuracy" solution={
+        <Problem label="ข้อ 2 · กับดัก Big-O (เขียนมือ ~4 นาที)" solution={
           <div>
-            <p>Central O(h⁴):</p>
-            <MB>{`f''(2.5) \\approx \\frac{-f(2.3) + 16f(2.4) - 30f(2.5) + 16f(2.6) - f(2.7)}{12(0.1)^2}`}</MB>
-            <p>คำนวณ + เทียบกับค่าจริงด้วย Taylor</p>
+            <p style={{marginTop:0}}>โจทย์สั่ง <b>O(h²)</b> → ต้องใช้ชุดละเอียด: <M>{`f'(x_i) = \\dfrac{-f(x_{i+2}) + 4f(x_{i+1}) - 3f(x_i)}{2h}`}</M></p>
+            <div style={{fontFamily:"var(--font-mono)", fontSize:'0.82rem', lineHeight:1.8}}>
+              ตาราง: f(1.0) = ln 1 = 0, f(1.1) = 0.095310180, f(1.2) = 0.182321557<br/>
+              f′(1) ≈ [−0.182321557 + 4(0.095310180) − 3(0)] / (2×0.1)<br/>
+              &nbsp;&nbsp;&nbsp;= 0.198919163 / 0.2 = <b>0.994595812</b><br/>
+              ค่าจริง: f′(x) = 1/x → f′(1) = 1<br/>
+              ε = |1 − 0.994595812|/1 × 100 = <b>0.54%</b>
+            </div>
+            <Callout kind="warn" title="ถ้าเผลอใช้สูตรธรรมดา O(h)">
+              (0.095310180 − 0)/0.1 = 0.953101798 → ε = 4.69% — <b>ค่า error ต่างกัน ~9 เท่า</b> และผิดตามคำสั่งโจทย์ทันที เพราะโจทย์ระบุ O(h²)
+            </Callout>
           </div>
         }>
-          ใช้สูตร Central O(h⁴) คำนวณ <M>{`f''(x)`}</M> ของ <M>{`f(x) = \\sin x + 2x`}</M> ที่ <M>x = 2.5</M> ด้วย h = 0.1
+          จงประมาณ <M>{`f'(1)`}</M> ของ <M>{`f(x) = \\ln x`}</M> ด้วยวิธี forward divided-difference <b>O(h²)</b>, h = 0.1 พร้อมคำนวณ error เทียบค่าจริง
         </Problem>
+
+        <Problem label="ข้อ 3 · พิสูจน์ order (เขียนมือ ~8 นาที = ข้อ 3 ของแบบฝึกหัดจริง)" solution={
+          <div>
+            <p style={{marginTop:0}}>ดูเฉลยเต็มที่ <b>แบบฝึกหัด ข้อ 3</b> ด้านบน — โครงคำตอบที่ต้องเขียนให้ครบ:</p>
+            <ol style={{margin:"0 0 0 18px"}}>
+              <li>เขียน Taylor ของ <M>{`f(x_{i-1})`}</M> (backward) / ทั้งคู่ (central)</li>
+              <li>ย้ายข้างจนเหลือ <M>{`f'(x_i)`}</M> โดดเดี่ยวฝั่งซ้าย</li>
+              <li>ชี้เทอม error ตัวแรกที่ถูกทิ้ง → กำลังของ h ตัวต่ำสุด = order</li>
+              <li>Central ต้องโชว์ว่าเทอม <M>{`f''`}</M> <b>ตัดกันหาย</b>จากการลบ (จุดให้คะแนนหลัก)</li>
+            </ol>
+          </div>
+        }>
+          จงแสดงว่า first backward divided-difference มี error of order <M>h</M> และ central divided-difference มี error of order <M>{`h^2`}</M> (โดยดูตัวอย่างจากการพิสูจน์ forward)
+        </Problem>
+
+        <Problem label="ข้อ 4 · เขียนโปรแกรม 3 วิธี + error (code ~10 นาที)" solution={
+          <div>
+            <p style={{marginTop:0}}>โครงเดียวกับโปรแกรมจริงของอาจารย์ (JS) — เวอร์ชัน Python รันได้เลย ผลตรงกับที่คิดมือใน ex.7:</p>
+            <PythonRunner code={`import math
+
+def f(x):
+    return math.exp(x)
+
+x = 2
+h = 0.25
+true_diff = math.exp(x)          # f'(x) = e^x
+
+forward  = ( f(x+h) - f(x) ) / h
+backward = ( f(x) - f(x-h) ) / h
+central  = ( f(x+h) - f(x-h) ) / (2*h)
+
+def error(ans):                   # แบบที่ 1: เทียบค่าจริง (ตามโปรแกรมอาจารย์)
+    return abs( (true_diff - ans) / true_diff ) * 100
+
+print("--Forward O(h)--")
+print("Ans:", forward,  "Error:", error(forward),  "%")
+print("--Backward O(h)--")
+print("Ans:", backward, "Error:", error(backward), "%")
+print("--Central O(h2)--")
+print("Ans:", central,  "Error:", error(central),  "%")`} height={300}/>
+            <Callout kind="good" title="ผลที่ต้องได้ (เทียบ output จริงของอาจารย์)">
+              Forward 8.394718949… (13.61%) · Backward 6.537813691… (11.52%) · Central 7.466266320… (1.045%) — ตรงทั้งสามค่า ✓
+            </Callout>
+          </div>
+        }>
+          จงเขียนโปรแกรมหา <M>{`f'(2)`}</M> ของ <M>{`f(x)=e^x`}</M> (h = 0.25) ด้วย Forward, Backward, Central พร้อม error เทียบค่าจริงทั้ง 3 วิธี
+        </Problem>
+
+        <Problem label="ข้อ 5 · ประยุกต์: ข้อมูลเซนเซอร์รถ (มือ + code ~8 นาที)" solution={
+          <div>
+            <p style={{marginTop:0}}><b>มือ:</b> t = 2 อยู่กลางตาราง → Central ทั้งคู่ (h = 1):</p>
+            <div style={{fontFamily:"var(--font-mono)", fontSize:'0.82rem', lineHeight:1.8}}>
+              v(2) = S′(2) ≈ [S(3) − S(1)]/(2×1) = (36 − 4)/2 = <b>16 m/s</b><br/>
+              a(2) = S″(2) ≈ [S(3) − 2S(2) + S(1)]/1² = 36 − 32 + 4 = <b>8 m/s²</b>
+            </div>
+            <p><b>ทำไมได้ค่า “เป๊ะ”:</b> ข้อมูลชุดนี้คือ <M>{`S(t)=4t^2`}</M> (พหุนามดีกรี 2) — error ของ Central ขึ้นกับ <M>{`f'''`}</M> ซึ่งเป็น 0 → <b>error = 0 พอดี</b> (เหมือน Simpson เป๊ะกับพหุนามดีกรี ≤ 3 ในบทที่แล้ว — โครงเหตุผลเดียวกัน!)</p>
+            <PythonRunner code={`S = [0, 4, 16, 36, 64]     # ระยะทางสะสม (m) ที่ t = 0..4 s
+h = 1
+
+# central ที่ t=2 (index 2)
+v = (S[3] - S[1]) / (2*h)
+a = (S[3] - 2*S[2] + S[1]) / h**2
+print(f"v(2) = {v} m/s")
+print(f"a(2) = {a} m/s^2")
+
+# โบนัส: หา v ทุกจุดที่ทำได้ (ต้นตาราง forward, ท้าย backward, กลาง central)
+for i in range(5):
+    if i == 0:      v_i = (S[1] - S[0]) / h          # forward
+    elif i == 4:    v_i = (S[4] - S[3]) / h          # backward
+    else:           v_i = (S[i+1] - S[i-1]) / (2*h)  # central
+    print(f"t={i}s  v ≈ {v_i} m/s")`} height={280}/>
+            <p style={{margin:"6px 0 0", fontSize:'0.82rem'}}>นี่คืออุปมา “ขับรถ” ของอาจารย์แบบกลับด้าน: เรามีแค่<b>เลขไมล์</b> (S) แต่คำนวณ<b>หน้าปัดความเร็ว</b> (v) กับ<b>ความเร่ง</b> (a) เองได้ด้วย divided-difference — ไม่มีสมการ ไม่มีการดิฟจริงสักครั้ง</p>
+          </div>
+        }>
+          รถคันหนึ่งบันทึกระยะทางสะสมทุก 1 วินาที: t = 0,1,2,3,4 s → S = 0, 4, 16, 36, 64 m. จงหา (ก) ความเร็วที่ t = 2 (ข) ความเร่งที่ t = 2 ด้วยสูตรที่แม่นที่สุดที่ข้อมูลอำนวย พร้อมเขียนโปรแกรม
+        </Problem>
+        </TimedExam>
       </Sect>
     </div>
   );
 }
 
-// Animated: central secant line rotates toward the true tangent as h → 0
+/* ══════════════════════════════════════════════════════════════════
+   ANIMATIONS & VIZ
+   ══════════════════════════════════════════════════════════════════ */
+
+// อุปมา "เดินขึ้นเขา" — จุดเดินไปตามเนิน, สามเหลี่ยม A-B โผล่, slope = B/A เปลี่ยนตามตำแหน่ง
+function MountainSlopeViz() {
+  const hill = (x) => 0.55 + 2.7 / (1 + Math.exp(-(x - 5) * 0.9));
+  const dhill = (x) => { const e = Math.exp(-(x - 5) * 0.9); return 2.7 * 0.9 * e / ((1 + e) * (1 + e)); };
+  const W = 580, H = 300, padding = { l: 30, r: 14, t: 14, b: 26 };
+  const xMin = 0, xMax = 10, yMin = 0, yMax = 4;
+  const sx = makeScale([xMin, xMax], [padding.l, W - padding.r]);
+  const sy = makeScale([yMin, yMax], [H - padding.b, padding.t]);
+  const curve = plotPath(hill, 0.2, 9.8, sx, sy, 220);
+  const spots = [1.5, 3.2, 4.3, 5.0, 6.0, 7.5, 9.0];
+  return (
+    <StepPlayer steps={spots.length} stepDuration={1500} label={(s) => `จุดที่ ${s + 1}/7`}>
+      {({ step }) => {
+        const x0 = spots[step];
+        const y0 = hill(x0), m = dhill(x0);
+        const A = 1.4, B = m * A;   // สามเหลี่ยมประกอบ tangent
+        const deg = (Math.atan(m) * 180 / Math.PI).toFixed(1);
+        return (
+          <div>
+            <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
+              <Axes width={W} height={H} padding={padding} xDomain={[xMin, xMax]} yDomain={[yMin, yMax]}/>
+              <path d={curve} fill="none" stroke="#ffd66b" strokeWidth="2.5"/>
+              {/* เส้นสัมผัส */}
+              <line x1={sx(x0 - 1.1)} y1={sy(y0 - m*1.1)} x2={sx(x0 + 1.6)} y2={sy(y0 + m*1.6)} stroke="#83c167" strokeWidth="2"/>
+              {/* สามเหลี่ยม A (ชิด) - B (ข้าม) */}
+              <line x1={sx(x0)} y1={sy(y0)} x2={sx(x0 + A)} y2={sy(y0)} stroke="#58c4dd" strokeWidth="1.6" strokeDasharray="4 3"/>
+              <line x1={sx(x0 + A)} y1={sy(y0)} x2={sx(x0 + A)} y2={sy(y0 + B)} stroke="#f47274" strokeWidth="1.6" strokeDasharray="4 3"/>
+              <text x={sx(x0 + A/2)} y={sy(y0) + 14} textAnchor="middle" fill="#58c4dd" fontSize="11" fontFamily="JetBrains Mono">A (ชิด)</text>
+              <text x={sx(x0 + A) + 6} y={sy(y0 + B/2)} fill="#f47274" fontSize="11" fontFamily="JetBrains Mono">B (ข้าม)</text>
+              {/* คนเดิน */}
+              <circle cx={sx(x0)} cy={sy(y0)} r="6" fill="#ffd66b" stroke="#0e1116" strokeWidth="1.5"/>
+              <text x={sx(x0)} y={sy(y0) - 12} textAnchor="middle" fontSize="13">🚶</text>
+              <text x={W - padding.r - 10} y={padding.t + 18} textAnchor="end" fontFamily="JetBrains Mono" fontSize="12" fill="#83c167">
+                slope = B/A = tan θ = {m.toFixed(3)}  (θ ≈ {deg}°)
+              </text>
+            </svg>
+            <p className="muted" style={{ fontSize: '0.8rem', marginTop: 6 }}>
+              <b style={{color:"var(--green)"}}>เดินไปตามเขา ความชัน “ที่จุด” เปลี่ยนตลอด</b> — ตีนเขาชันน้อย, กลางเขา (x=5) ชันสุด (θ ใหญ่สุด = เหนื่อยสุด), ใกล้ยอดกลับแบนอีกครั้ง → ความชันชั่วขณะคือ f′(x) ที่เราจะประมาณ
+            </p>
+          </div>
+        );
+      }}
+    </StepPlayer>
+  );
+}
+
+// ตัวอย่างเดินหลักเลคเชอร์: f=3x², secant จาก x=3 ไป x₂ ที่ขยับเข้ามาเรื่อย ๆ → slope 24→21→…→18
+function SecantShrinkViz() {
+  const f = (x) => 3*x*x;
+  const x1 = 3, trueSlope = 18;
+  const x2list = [5, 4, 3.5, 3.25, 3.1, 3.01];
+  const W = 580, H = 300, padding = { l: 40, r: 14, t: 14, b: 26 };
+  const xMin = 2.2, xMax = 5.6, yMin = 0, yMax = 100;
+  const sx = makeScale([xMin, xMax], [padding.l, W - padding.r]);
+  const sy = makeScale([yMin, yMax], [H - padding.b, padding.t]);
+  const curve = plotPath(f, xMin, xMax, sx, sy, 200);
+  return (
+    <StepPlayer steps={x2list.length} stepDuration={1400} label={(s) => `x₂ = ${x2list[s]}`}>
+      {({ step }) => {
+        const x2 = x2list[step];
+        const slope = (f(x2) - f(x1)) / (x2 - x1);   // = 3(x₂+3) เป๊ะ
+        const secY = (X) => f(x1) + slope * (X - x1);
+        const tanY = (X) => f(x1) + trueSlope * (X - x1);
+        return (
+          <div>
+            <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
+              <Axes width={W} height={H} padding={padding} xDomain={[xMin, xMax]} yDomain={[yMin, yMax]}/>
+              <line x1={sx(xMin)} y1={sy(tanY(xMin))} x2={sx(xMax)} y2={sy(tanY(xMax))} stroke="#83c167" strokeWidth="1.4" strokeDasharray="5 4"/>
+              <line x1={sx(xMin)} y1={sy(secY(xMin))} x2={sx(xMax)} y2={sy(secY(xMax))} stroke="#f47274" strokeWidth="2"/>
+              <path d={curve} fill="none" stroke="#ffd66b" strokeWidth="2.5"/>
+              <circle cx={sx(x1)} cy={sy(f(x1))} r="5" fill="#ffd66b" stroke="#0e1116" strokeWidth="1.5"/>
+              <circle cx={sx(x2)} cy={sy(f(x2))} r="5" fill="#f47274" stroke="#0e1116" strokeWidth="1.5"/>
+              <text x={sx(x1)} y={sy(f(x1)) + 18} textAnchor="middle" fill="#ffd66b" fontSize="11" fontFamily="JetBrains Mono">x₁=3</text>
+              <text x={sx(x2)} y={sy(f(x2)) - 10} textAnchor="middle" fill="#f47274" fontSize="11" fontFamily="JetBrains Mono">x₂={x2}</text>
+              <text x={W - padding.r - 10} y={padding.t + 18} textAnchor="end" fontFamily="JetBrains Mono" fontSize="12" fill="#f47274">
+                slope เฉลี่ย = {slope.toFixed(2)} · ค่าจริง = 18 · ห่าง {(slope - trueSlope).toFixed(2)}
+              </text>
+            </svg>
+            <p className="muted" style={{fontSize:'0.8rem', marginTop:6}}>
+              เส้นแดง (secant/slope เฉลี่ย) หมุนเข้าหาเส้นเขียวประ (tangent/slope ชั่วขณะ = 18) เมื่อ x₂ “ซอย” เข้ามาใกล้ x₁ — 24 → 21 → 19.5 → 18.75 → 18.3 → 18.03
+            </p>
+          </div>
+        );
+      }}
+    </StepPlayer>
+  );
+}
+
+// Taylor เติมทีละเทอม: ค่าคงที่ → เส้นตรง → พาราโบลา (เป๊ะ) สำหรับ 3x²+5x+8 รอบ x₀=0, เป้า x=3
+function TaylorBuildViz() {
+  const f = (x) => 3*x*x + 5*x + 8;
+  const approx = [
+    { fn: (x) => 8,                 label: "1 เทอม: f(0) = 8 (เส้นแบน)", at3: 8 },
+    { fn: (x) => 8 + 5*x,           label: "2 เทอม: 8 + 5x (เอียงตาม slope)", at3: 23 },
+    { fn: (x) => 8 + 5*x + 3*x*x,   label: "3 เทอม: 8 + 5x + 3x² (ทาบสนิท — เป๊ะ!)", at3: 50 },
+  ];
+  const W = 580, H = 300, padding = { l: 40, r: 14, t: 14, b: 26 };
+  const xMin = -0.6, xMax = 3.6, yMin = 0, yMax = 56;
+  const sx = makeScale([xMin, xMax], [padding.l, W - padding.r]);
+  const sy = makeScale([yMin, yMax], [H - padding.b, padding.t]);
+  const curve = plotPath(f, xMin, xMax, sx, sy, 200);
+  return (
+    <StepPlayer steps={3} stepDuration={1800} label={(s) => `${s + 1} เทอม`}>
+      {({ step }) => {
+        const ap = approx[step];
+        const apPath = plotPath(ap.fn, xMin, xMax, sx, sy, 160);
+        return (
+          <div>
+            <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
+              <Axes width={W} height={H} padding={padding} xDomain={[xMin, xMax]} yDomain={[yMin, yMax]}/>
+              <path d={curve} fill="none" stroke="#ffd66b" strokeWidth="2.5"/>
+              <path d={apPath} fill="none" stroke="#58c4dd" strokeWidth="2.2" strokeDasharray="6 3"/>
+              {/* จุดยืน x0=0 และเป้า x=3 */}
+              <circle cx={sx(0)} cy={sy(8)} r="5" fill="#83c167" stroke="#0e1116" strokeWidth="1.5"/>
+              <text x={sx(0)} y={sy(8) - 10} textAnchor="middle" fill="#83c167" fontSize="11" fontFamily="JetBrains Mono">ยืนที่ x₀=0</text>
+              <line x1={sx(3)} y1={sy(0)} x2={sx(3)} y2={sy(52)} stroke="#9aa4b2" strokeWidth="1" strokeDasharray="2 4"/>
+              <circle cx={sx(3)} cy={sy(50)} r="5" fill="#ffd66b" stroke="#0e1116" strokeWidth="1.5"/>
+              <circle cx={sx(3)} cy={sy(ap.at3)} r="6" fill="#58c4dd" stroke="#0e1116" strokeWidth="1.5"/>
+              <text x={sx(3) - 8} y={sy(ap.at3) + 4} textAnchor="end" fill="#58c4dd" fontSize="12" fontFamily="JetBrains Mono">เดาได้ {ap.at3}</text>
+              <text x={sx(3) + 8} y={sy(50) + 4} fill="#ffd66b" fontSize="12" fontFamily="JetBrains Mono">จริง 50</text>
+            </svg>
+            <p className="muted" style={{fontSize:'0.8rem', marginTop:6}}>
+              <b style={{color:"var(--blue)"}}>{ap.label}</b> — เส้นฟ้าประ = Taylor ที่ตัดเหลือ {step + 1} เทอม, เส้นเหลือง = ฟังก์ชันจริง. ค่าที่ x=3: {ap.at3} (จริง 50)
+            </p>
+          </div>
+        );
+      }}
+    </StepPlayer>
+  );
+}
+
+// 3 สายมองคนละทิศ — ตัวเลขจริงจาก ex.7 (e^x ที่ x=2, h=0.25)
+function ThreeWaysViz() {
+  const f = Math.exp, x0 = 2, h = 0.25;
+  const trueSlope = DIFF_TRUE_E2;
+  const ways = [
+    { name: "Forward — มองขวา", color: "#f47274", xa: x0, xb: x0 + h, slope: (f(x0+h)-f(x0))/h, order: "O(h)" },
+    { name: "Backward — มองซ้าย", color: "#58c4dd", xa: x0 - h, xb: x0, slope: (f(x0)-f(x0-h))/h, order: "O(h)" },
+    { name: "Central — มองสองข้าง", color: "#83c167", xa: x0 - h, xb: x0 + h, slope: (f(x0+h)-f(x0-h))/(2*h), order: "O(h²)" },
+  ];
+  const W = 580, H = 300, padding = { l: 40, r: 14, t: 14, b: 26 };
+  const xMin = 1.55, xMax = 2.45, yMin = 4, yMax = 12;
+  const sx = makeScale([xMin, xMax], [padding.l, W - padding.r]);
+  const sy = makeScale([yMin, yMax], [H - padding.b, padding.t]);
+  const curve = plotPath(f, xMin, xMax, sx, sy, 200);
+  return (
+    <StepPlayer steps={3} stepDuration={1800} label={(s) => ways[s].name.split(" — ")[0]}>
+      {({ step }) => {
+        const w = ways[step];
+        const ya = f(w.xa), m = w.slope;
+        const lineY = (X) => ya + m * (X - w.xa);
+        const tanY = (X) => f(x0) + trueSlope * (X - x0);
+        const err = Math.abs(trueSlope - m) / trueSlope * 100;
+        return (
+          <div>
+            <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
+              <Axes width={W} height={H} padding={padding} xDomain={[xMin, xMax]} yDomain={[yMin, yMax]}/>
+              <line x1={sx(xMin)} y1={sy(tanY(xMin))} x2={sx(xMax)} y2={sy(tanY(xMax))} stroke="#9aa4b2" strokeWidth="1.3" strokeDasharray="5 4"/>
+              <line x1={sx(xMin)} y1={sy(lineY(xMin))} x2={sx(xMax)} y2={sy(lineY(xMax))} stroke={w.color} strokeWidth="2.2"/>
+              <path d={curve} fill="none" stroke="#ffd66b" strokeWidth="2.5"/>
+              {[w.xa, w.xb].map((xx, i) => (
+                <circle key={i} cx={sx(xx)} cy={sy(f(xx))} r="5" fill={w.color} stroke="#0e1116" strokeWidth="1.5"/>
+              ))}
+              <circle cx={sx(x0)} cy={sy(f(x0))} r="4" fill="#ffd66b" stroke="#0e1116" strokeWidth="1.2"/>
+              <text x={sx(x0)} y={sy(f(x0)) + 18} textAnchor="middle" fill="#ffd66b" fontSize="11" fontFamily="JetBrains Mono">xᵢ = 2</text>
+              <text x={W - padding.r - 10} y={padding.t + 18} textAnchor="end" fontFamily="JetBrains Mono" fontSize="12" fill={w.color}>
+                {w.order} → {m.toFixed(6)} · err {err.toFixed(2)}%
+              </text>
+            </svg>
+            <p className="muted" style={{fontSize:'0.8rem', marginTop:6}}>
+              <b style={{color:w.color}}>{w.name}</b> — เส้นเทาประ = tangent จริง (slope = e² = 7.3891). Forward เกิน (8.39) เพราะทางขวาชันกว่า · Backward ขาด (6.54) · Central เฉลี่ยพอดี (7.47)
+            </p>
+          </div>
+        );
+      }}
+    </StepPlayer>
+  );
+}
+
+// central secant หมุนเข้า tangent เมื่อ h → 0 (ของเดิม — ยังตรงเนื้อหา)
 function SecantTangentViz() {
   const f = Math.exp;
   const x0 = 2;
-  const trueSlope = Math.exp(2);   // f'(2) = e²
+  const trueSlope = DIFF_TRUE_E2;
   const fx0 = f(x0);
   const hValues = [0.7, 0.5, 0.35, 0.2, 0.1, 0.05];
   const xDomain = [1.2, 2.8];
@@ -285,10 +807,8 @@ function SecantTangentViz() {
         const h = hValues[step];
         const xl = x0 - h, xr = x0 + h;
         const fl = f(xl), fr = f(xr);
-        const m = (fr - fl) / (2 * h);   // central difference slope
-        // secant through the two sample points, extended across the domain
+        const m = (fr - fl) / (2 * h);
         const secY = (X) => fl + m * (X - xl);
-        // true tangent through (x0, f(x0))
         const tanY = (X) => fx0 + trueSlope * (X - x0);
         const markers = [
           { kind: "line", x1: xDomain[0], y1: tanY(xDomain[0]), x2: xDomain[1], y2: tanY(xDomain[1]), color: "#83c167", dashed: true, width: 1.3 },
@@ -315,7 +835,7 @@ function SecantTangentViz() {
                 <div style={{fontFamily:"var(--font-mono)", fontSize:'0.778rem', lineHeight:1.7}}>
                   <div><span style={{color:"#83c167"}}>f′(2) = e²</span> = {trueSlope.toFixed(6)}</div>
                   <div>error = {errPct.toFixed(4)}%</div>
-                  <div style={{color:"var(--text-faint)", fontSize:'0.75rem', marginTop:4}}>เส้นเหลือง (secant) เข้าหาเส้นเขียว (tangent) เมื่อ h เล็กลง</div>
+                  <div style={{color:"var(--text-faint)", fontSize:'0.75rem', marginTop:4}}>h ลดครึ่ง → error เหลือ ~1/4 (สมกับ O(h²))</div>
                 </div>
               </div>
             </div>
@@ -326,16 +846,89 @@ function SecantTangentViz() {
   );
 }
 
+// stencil ของสูตรชุดธรรมดา — จุดไหนถูกใช้ + น้ำหนักเท่าไหร่ (เห็นแพตเทิร์นปาสกาล)
+function StencilViz() {
+  const [dir, setDir] = React.useState("forward");
+  const [order, setOrder] = React.useState(2);
+  // weights: {offset: coeff} ชุดธรรมดา + ตัวหาร
+  const DATA = {
+    forward: {
+      1: { w: {0:-1, 1:1}, den: "h" },
+      2: { w: {0:1, 1:-2, 2:1}, den: "h²" },
+      3: { w: {0:-1, 1:3, 2:-3, 3:1}, den: "h³" },
+      4: { w: {0:1, 1:-4, 2:6, 3:-4, 4:1}, den: "h⁴" },
+    },
+    backward: {
+      1: { w: {[-1]:-1, 0:1}, den: "h" },
+      2: { w: {[-2]:1, [-1]:-2, 0:1}, den: "h²" },
+      3: { w: {[-3]:-1, [-2]:3, [-1]:-3, 0:1}, den: "h³" },
+      4: { w: {[-4]:1, [-3]:-4, [-2]:6, [-1]:-4, 0:1}, den: "h⁴" },
+    },
+    central: {
+      1: { w: {[-1]:-1, 1:1}, den: "2h" },
+      2: { w: {[-1]:1, 0:-2, 1:1}, den: "h²" },
+      3: { w: {[-2]:-1, [-1]:2, 1:-2, 2:1}, den: "2h³" },
+      4: { w: {[-2]:1, [-1]:-4, 0:6, 1:-4, 2:1}, den: "h⁴" },
+    },
+  };
+  const COLORS = { forward: "#f47274", backward: "#58c4dd", central: "#83c167" };
+  const cur = DATA[dir][order];
+  const color = COLORS[dir];
+  const W = 580, H = 170;
+  const offs = [-4,-3,-2,-1,0,1,2,3,4];
+  const cx = (o) => W/2 + o * 58;
+  const primes = ["′","″","‴","⁗"];
+  return (
+    <div className="card">
+      <div className="chip-row" style={{marginBottom:8}}>
+        {[["forward","Forward"],["backward","Backward"],["central","Central"]].map(([k,l]) => (
+          <button key={k} className={"btn small " + (dir === k ? "primary" : "")} onClick={() => setDir(k)}>{l}</button>
+        ))}
+        <span style={{width:14}}/>
+        {[1,2,3,4].map(n => (
+          <button key={n} className={"btn small " + (order === n ? "primary" : "")} onClick={() => setOrder(n)}>f{primes[n-1]}</button>
+        ))}
+      </div>
+      <svg className="svg-stage" viewBox={`0 0 ${W} ${H}`}>
+        <line x1={20} y1={H-52} x2={W-20} y2={H-52} stroke="#3a4150" strokeWidth="1.5"/>
+        {offs.map(o => {
+          const used = cur.w[o] !== undefined;
+          return (
+            <g key={o}>
+              <circle cx={cx(o)} cy={H-52} r={o === 0 ? 7 : 5}
+                fill={used ? color : "#242a35"} stroke={o === 0 ? "#ffd66b" : "#3a4150"} strokeWidth={o === 0 ? 2 : 1}/>
+              <text x={cx(o)} y={H-32} textAnchor="middle" fill="#9aa4b2" fontSize="10" fontFamily="JetBrains Mono">
+                {o === 0 ? "xᵢ" : (o > 0 ? `i+${o}` : `i−${-o}`)}
+              </text>
+              {used && (
+                <text x={cx(o)} y={H-70} textAnchor="middle" fill={color} fontSize="15" fontWeight="700" fontFamily="JetBrains Mono">
+                  {cur.w[o] > 0 ? `+${cur.w[o]}` : cur.w[o]}
+                </text>
+              )}
+            </g>
+          );
+        })}
+        <text x={W/2} y={26} textAnchor="middle" fill={color} fontSize="13" fontFamily="JetBrains Mono">
+          f{primes[order-1]}(xᵢ) = [ Σ น้ำหนัก × f ] ÷ {cur.den}   ·   {dir === "central" ? "O(h²)" : "O(h)"}
+        </text>
+      </svg>
+      <p className="muted" style={{fontSize:'0.78rem', margin:"6px 0 0"}}>
+        จุดเหลืองขอบ = จุดที่ยืน (xᵢ). สลับ f′→f⁗ ดูเลขน้ำหนัก: 1·1 → 1·2·1 → 1·3·3·1 → 1·4·6·4·1 (สามเหลี่ยมปาสกาล สลับเครื่องหมาย) · Forward กินจุดขวา, Backward กินจุดซ้าย, Central คร่อมกลาง (f′/f‴ เว้นตรงกลาง)
+      </p>
+    </div>
+  );
+}
+
+// เลื่อน h ดู error สด ๆ (ของเดิม)
 function DiffComparison() {
-  const [logh, setLogh] = React.useState(-1);   // h = 10^logh
+  const [logh, setLogh] = React.useState(-1);
   const h = Math.pow(10, logh);
   const f = Math.exp;
   const x = 2;
-  const trueVal = Math.exp(2);
+  const trueVal = DIFF_TRUE_E2;
   const v_fwd = diffForward(f, x, h);
   const v_bwd = diffBackward(f, x, h);
   const v_ctr = diffCentral(f, x, h);
-
   return (
     <div className="card">
       <div className="field-row">
@@ -346,9 +939,9 @@ function DiffComparison() {
       </div>
       <div className="grid-3" style={{marginTop:12}}>
         {[
-          { name: "Forward", val: v_fwd, color: "var(--blue)" },
-          { name: "Backward", val: v_bwd, color: "var(--pink)" },
-          { name: "Central", val: v_ctr, color: "var(--green)" },
+          { name: "Forward O(h)", val: v_fwd, color: "var(--pink, #f47274)" },
+          { name: "Backward O(h)", val: v_bwd, color: "var(--blue)" },
+          { name: "Central O(h²)", val: v_ctr, color: "var(--green)" },
         ].map((m, i) => {
           const err = Math.abs(trueVal - m.val) / trueVal * 100;
           return (
@@ -361,31 +954,251 @@ function DiffComparison() {
         })}
       </div>
       <div className="mono" style={{fontSize:'0.75rem', marginTop:10, color:"var(--text-dim)"}}>
-        คำตอบจริง f'(2) = e² = {trueVal.toFixed(10)}
+        ค่าจริง f′(2) = e² = {trueVal.toFixed(10)}
       </div>
-      <p className="muted" style={{fontSize:'0.778rem', marginTop:8}}>ลดค่า h ดู error ของแต่ละสูตร — Central error ลดเร็วกว่า แต่ถ้า h เล็กเกินไป (10⁻⁸) จะเริ่มเจอ <em>round-off error</em> ของ floating point!</p>
+      <p className="muted" style={{fontSize:'0.778rem', marginTop:8}}>ลด h แล้วดู: Central ลดเร็วกว่า (order สูงกว่า) — แต่ลากไปสุดซ้าย (h = 10⁻⁸) ทุกสูตรเริ่มพัง เพราะ round-off (ดูหัวข้อ 📉)</p>
     </div>
   );
 }
 
-function DiffWorkedExample() {
-  const f = Math.exp;
-  const trueV = Math.exp(2);
-  const h = 0.25;
+/* ══════════════════════════════════════════════════════════════════
+   แบบฝึกหัด 2 — เฉลยเต็ม
+   ══════════════════════════════════════════════════════════════════ */
+
+function DiffExerciseOne() {
   return (
-    <NumTable
-      headers={["Method", "สูตร", "ค่าที่ได้", "ค่าจริง", "error %"]}
-      rows={[
-        ["Forward", "(f(2.25)−f(2))/0.25", diffForward(f,2,h).toFixed(6), trueV.toFixed(6), (Math.abs(trueV-diffForward(f,2,h))/trueV*100).toFixed(4)],
-        ["Backward", "(f(2)−f(1.75))/0.25", diffBackward(f,2,h).toFixed(6), trueV.toFixed(6), (Math.abs(trueV-diffBackward(f,2,h))/trueV*100).toFixed(4)],
-        ["Central", "(f(2.25)−f(1.75))/0.5", diffCentral(f,2,h).toFixed(6), trueV.toFixed(6), (Math.abs(trueV-diffCentral(f,2,h))/trueV*100).toFixed(4)],
-      ]}
-    />
+    <div className="card" style={{marginTop:14, borderLeft:"3px solid var(--blue)"}}>
+      <h3 style={{marginTop:0}}>ข้อ 1 · <M>{`f(x)=e^x`}</M> หา <M>{`f'(2)`}</M>, h = 0.25 (forward / backward / central)</h3>
+      <p className="muted" style={{fontSize:'0.82rem'}}>ข้อนี้ = ex.7 ของสรุปเป๊ะ ๆ — เฉลยมือเต็มอยู่หัวข้อ 4 ด้านบนแล้ว (ตาราง 3 จุด + walkthrough 3 ข้อย่อย) สรุปคำตอบ:</p>
+      <NumTable
+        headers={["ข้อ", "วิธี", "สูตร", "ค่าที่ได้", "ε เทียบค่าจริง"]}
+        rows={[
+          ["1.1", "Forward O(h)", "[f(2.25)−f(2)]/0.25", "8.394718950", "13.61%"],
+          ["1.2", "Backward O(h)", "[f(2)−f(1.75)]/0.25", "6.537813692", "11.52%"],
+          ["1.3", "Central O(h²)", "[f(2.25)−f(1.75)]/0.5", "7.466266321", "1.04%"],
+        ]}
+      />
+      <h4>โปรแกรม — 🎙️ โค้ด JavaScript จริงของอาจารย์ (จากสรุปหน้า f′(x))</h4>
+      <CodeBlock code={`// ─── first derivative 3 วิธี (JavaScript สไตล์อาจารย์) ───
+function f(x){
+    return Math.exp(x);
+}
+const x = 2;
+const h = 0.25;
+const trueDiff = Math.exp(x);          // f'(x) = e^x → ค่าจริง
+
+let forward  = ( f(x+h) - f(x) ) / h;
+let backward = ( f(x) - f(x-h) ) / h;
+let central  = ( f(x+h) - f(x-h) ) / (2*h);
+
+function Error(ans){
+    return Math.abs( ( trueDiff - ans ) / trueDiff ) * 100;
+}
+
+console.log("--Forward O(h)--");
+console.log("Ans:", forward, "Error:", Error(forward), "%");
+console.log("--Backward O(h)--");
+console.log("Ans:", backward, "Error:", Error(backward), "%");
+console.log("--Central O(h)--");
+console.log("Ans:", central, "Error:", Error(central), "%");
+
+// Output จริงของอาจารย์:
+// Forward  8.394718949711503  Error: 13.610166675096611 %
+// Backward 6.537813691699682  Error: 11.520313228561907 %
+// Central  7.466266320705593  Error:  1.0449267232673511 %`}/>
+      <p style={{margin:"8px 0 4px", fontSize:'0.82rem'}}>เวอร์ชัน Python (กด ▸ Run — ผลต้องตรงกับตารางข้างบน):</p>
+      <PythonRunner code={`import math
+
+def f(x):
+    return math.exp(x)
+
+x = 2
+h = 0.25
+true_diff = math.exp(x)
+
+forward  = ( f(x+h) - f(x) ) / h
+backward = ( f(x) - f(x-h) ) / h
+central  = ( f(x+h) - f(x-h) ) / (2*h)
+
+def error(ans):
+    return abs( (true_diff - ans) / true_diff ) * 100
+
+print(f"true f'(2) = {true_diff}")
+print(f"Forward  O(h) : {forward}   Error: {error(forward):.4f} %")
+print(f"Backward O(h) : {backward}   Error: {error(backward):.4f} %")
+print(f"Central  O(h2): {central}   Error: {error(central):.4f} %")`} height={260}/>
+    </div>
+  );
+}
+
+function DiffExerciseTwo() {
+  return (
+    <div className="card" style={{marginTop:14, borderLeft:"3px solid var(--purple, #a87dbe)"}}>
+      <h3 style={{marginTop:0}}>ข้อ 2 · <M>{`f(x)=e^x+3x`}</M> หา <M>{`f'(4)`}</M>, h = 0.25</h3>
+      <p className="muted" style={{fontSize:'0.82rem'}}>โครงเดียวกับข้อ 1 แต่ฟังก์ชันบวกพจน์เชิงเส้น — จุดวัดใจคือ<b>หาค่าจริงให้ถูก</b>: <M>{`f'(x)=e^x+3`}</M> → <M>{`f'(4)=e^4+3 = 54.598150033 + 3 = 57.598150033`}</M></p>
+      <p style={{margin:"0 0 6px"}}><b>Step ① สร้างตาราง</b> (Hint ของโจทย์ · Table mode: Start 3.75, End 4.25, Step 0.25):</p>
+      <NumTable
+        headers={["i", "xᵢ", "f(xᵢ) = eˣ + 3x"]}
+        rows={[
+          ["i−1", "3.75", "42.521082000 + 11.25 = 53.771082000"],
+          ["i", "4.00", "54.598150033 + 12.00 = 66.598150033"],
+          ["i+1", "4.25", "70.105412347 + 12.75 = 82.855412347"],
+        ]}
+      />
+      <window.HandWalkthrough steps={[
+        { title: "2.1 Forward O(h)",
+          body: `f′(4) ≈ [f(4.25) − f(4)] / 0.25
+     = (82.855412347 − 66.598150033) / 0.25
+     = 65.029049254
+ε = |57.598150033 − 65.029049254| / 57.598150033 × 100
+  = 12.90%`,
+          calc: "( 82.855412347 − 66.598150033 ) ÷ 0.25 =" },
+        { title: "2.2 Backward O(h)",
+          body: `f′(4) ≈ [f(4) − f(3.75)] / 0.25
+     = (66.598150033 − 53.771082000) / 0.25
+     = 51.308272132
+ε = |57.598150033 − 51.308272132| / 57.598150033 × 100
+  = 10.92%` },
+        { title: "2.3 Central O(h²)",
+          body: `f′(4) ≈ [f(4.25) − f(3.75)] / 0.5
+     = (82.855412347 − 53.771082000) / 0.5
+     = 58.168660693
+ε = |57.598150033 − 58.168660693| / 57.598150033 × 100
+  = 0.99%   ← เหมือนเดิม: central ชนะขาดที่ h เท่ากัน` },
+      ]}/>
+      <Callout kind="tip" title="สังเกต (ไว้เช็กคำตอบเร็ว ๆ ในห้องสอบ)">
+        <p style={{margin:0}}>พจน์ <M>{`3x`}</M> เป็น<b>เส้นตรง</b> — ทุกสูตร diff ให้ค่าเส้นตรง<b>เป๊ะ</b> (error ของมัน = 0 เพราะ f″ ของ 3x เป็น 0) → error ทั้งหมดมาจาก <M>{`e^x`}</M> ล้วน ๆ. ดังนั้น % error ข้อนี้ควร “หน้าตาคล้าย” ข้อ 1 แต่เจือจางลงนิดหน่อย (13.61→12.90) เพราะฐานใหญ่ขึ้น — ถ้าคำนวณแล้วออกทะเล แปลว่ากดเลขพลาด</p>
+      </Callout>
+      <h4>โปรแกรม</h4>
+      <PythonRunner code={`import math
+
+def f(x):
+    return math.exp(x) + 3*x
+
+x = 4
+h = 0.25
+true_diff = math.exp(x) + 3        # f'(x) = e^x + 3
+
+forward  = ( f(x+h) - f(x) ) / h
+backward = ( f(x) - f(x-h) ) / h
+central  = ( f(x+h) - f(x-h) ) / (2*h)
+
+def error(ans):
+    return abs( (true_diff - ans) / true_diff ) * 100
+
+print(f"true f'(4) = {true_diff}")
+print(f"Forward  O(h) : {forward}   Error: {error(forward):.4f} %")
+print(f"Backward O(h) : {backward}   Error: {error(backward):.4f} %")
+print(f"Central  O(h2): {central}   Error: {error(central):.4f} %")`} height={260}/>
+    </div>
+  );
+}
+
+function DiffExerciseThree() {
+  return (
+    <div className="card" style={{marginTop:14, borderLeft:"3px solid var(--green)"}}>
+      <h3 style={{marginTop:0}}>ข้อ 3 · พิสูจน์: ทำไม backward = O(h) และ central = O(h²)</h3>
+      <p className="muted" style={{fontSize:'0.82rem'}}>โจทย์ให้ “ดูตัวอย่างจาก forward” — เขียน 3 ท่อน: forward (ตาม), backward, central. นี่คือคำตอบเต็มที่เขียนส่งได้เลย</p>
+
+      <h4>ท่อนที่ 1 · Forward (ตัวอย่างที่โจทย์ให้)</h4>
+      <p>จาก Taylor: <M>{`f(x_{i+1}) = f(x_i) + h f'(x_i) + \\frac{h^2}{2!}f''(x_i) + \\cdots`}</M> ย้ายข้างหา <M>{`f'`}</M>:</p>
+      <MB>{`f'(x_i) = \\frac{f(x_{i+1}) - f(x_i)}{h} \\;\\underbrace{- \\frac{h}{2!}f''(x_i) - \\frac{h^2}{3!}f'''(x_i) - \\cdots}_{\\text{เทอมที่ทิ้ง — ตัวแรกคือ } h^1}`}</MB>
+      <p>เทอมที่ทิ้งมี <M>h</M> กำลัง<b>ต่ำสุดคือ 1</b> ∴ error of order <M>h</M> ∎</p>
+
+      <h4>ท่อนที่ 2 · Backward = O(h)</h4>
+      <p>Taylor ก้าวถอยหลัง (แทนระยะ <M>{`-h`}</M> — เครื่องหมายสลับที่กำลังคี่):</p>
+      <MB>{`f(x_{i-1}) = f(x_i) - h f'(x_i) + \\frac{h^2}{2!}f''(x_i) - \\frac{h^3}{3!}f'''(x_i) + \\cdots`}</MB>
+      <p>ย้าย <M>{`h f'(x_i)`}</M> ไปฝั่งซ้าย แล้วย้ายที่เหลือไปขวา, หารด้วย <M>h</M>:</p>
+      <MB>{`f'(x_i) = \\frac{f(x_i) - f(x_{i-1})}{h} \\;\\underbrace{+ \\frac{h}{2!}f''(x_i) - \\frac{h^2}{3!}f'''(x_i) + \\cdots}_{\\text{ตัวแรกคือ } h^1}`}</MB>
+      <p>เทอมทิ้งตัวแรกยังเป็น <M>{`h^1`}</M> (แค่กลับเครื่องหมาย) ∴ backward ก็ error of order <M>h</M> ∎</p>
+
+      <h4>ท่อนที่ 3 · Central = O(h²)</h4>
+      <p>เอาสมการ forward <b>ลบ</b> สมการ backward (เขียนทั้งคู่ก่อน แล้วลบทีละเทอม):</p>
+      <MB>{`f(x_{i+1}) - f(x_{i-1}) = 2h f'(x_i) + \\frac{2h^3}{3!}f'''(x_i) + \\frac{2h^5}{5!}f^{(5)}(x_i) + \\cdots`}</MB>
+      <p><b>จุดสำคัญ (จุดให้คะแนน):</b> เทอมกำลังคู่ (<M>{`f'', f^{(4)}, \\dots`}</M>) มีเครื่องหมาย<b>เหมือนกัน</b>ทั้งสองสมการ → ลบกัน<b>หายเกลี้ยง</b>. หารด้วย <M>{`2h`}</M>:</p>
+      <MB>{`f'(x_i) = \\frac{f(x_{i+1}) - f(x_{i-1})}{2h} \\;\\underbrace{- \\frac{h^2}{3!}f'''(x_i) - \\cdots}_{\\text{ตัวแรกคือ } h^2}`}</MB>
+      <p>เทอมทิ้งตัวแรกคือ <M>{`h^2`}</M> ∴ central error of order <M>{`h^2`}</M> ∎</p>
+
+      <Callout kind="good" title="เช็กด้วยโปรแกรม — ลด h ครึ่งหนึ่ง แล้วดู error หด">
+        <PythonRunner code={`import math
+f = math.exp; x = 2; true = math.exp(2)
+
+print(f"{'h':>8} | {'fwd err%':>12} {'อัตราหด':>8} | {'ctr err%':>12} {'อัตราหด':>8}")
+prev_f = prev_c = None
+for h in [0.4, 0.2, 0.1, 0.05, 0.025]:
+    ef = abs(true - (f(x+h)-f(x))/h) / true * 100
+    ec = abs(true - (f(x+h)-f(x-h))/(2*h)) / true * 100
+    rf = f"x{prev_f/ef:.2f}" if prev_f else "-"
+    rc = f"x{prev_c/ec:.2f}" if prev_c else "-"
+    print(f"{h:>8} | {ef:>12.6f} {rf:>8} | {ec:>12.6f} {rc:>8}")
+    prev_f, prev_c = ef, ec
+print()
+print("forward หดทีละ ~2 เท่า = O(h) | central หดทีละ ~4 เท่า = O(h²)  ✓ ตรงกับที่พิสูจน์")`} height={240}/>
+      </Callout>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   Solver · Error plot
+   ══════════════════════════════════════════════════════════════════ */
+
+function DiffSolver() {
+  const [expr, setExpr] = React.useState("exp(x)");
+  const [x, setX] = React.useState("2");
+  const [h, setH] = React.useState("0.25");
+  const [result, setResult] = React.useState(null);
+  const [err, setErr] = React.useState("");
+  const run = () => {
+    try {
+      const f = parseExpr(expr);
+      const xv = +x, hv = +h;
+      setResult({
+        fwd:  diffForward(f, xv, hv),
+        bwd:  diffBackward(f, xv, hv),
+        ctr:  diffCentral(f, xv, hv),
+        fwd2: (-f(xv+2*hv) + 4*f(xv+hv) - 3*f(xv)) / (2*hv),
+        bwd2: (3*f(xv) - 4*f(xv-hv) + f(xv-2*hv)) / (2*hv),
+        ctr4: (-f(xv+2*hv) + 8*f(xv+hv) - 8*f(xv-hv) + f(xv-2*hv)) / (12*hv),
+        f2c:  (f(xv+hv) - 2*f(xv) + f(xv-hv)) / (hv*hv),
+        f2c4: (-f(xv+2*hv) + 16*f(xv+hv) - 30*f(xv) + 16*f(xv-hv) - f(xv-2*hv)) / (12*hv*hv),
+        rich: richardsonDeriv(f, xv, hv).D,
+      });
+      setErr("");
+    } catch (e) { setErr(e.message); setResult(null); }
+  };
+  return (
+    <div className="solver-shell">
+      <h4>Differentiation Solver</h4>
+      <div className="input-row">
+        <FnInput value={expr} onChange={setExpr} label="f(x) ="/>
+        <label>x =</label><input type="text" value={x} onChange={e => setX(e.target.value)} style={{width:80}}/>
+        <label>h =</label><input type="text" value={h} onChange={e => setH(e.target.value)} style={{width:80}}/>
+        <button className="btn primary" onClick={run}>▸ คำนวณ</button>
+      </div>
+      {err && <Callout kind="danger">{err}</Callout>}
+      {result && (
+        <NumTable
+          headers={["อนุพันธ์", "Method", "Order", "ค่าที่ได้"]}
+          rows={[
+            ["f′", "Forward", "O(h)", result.fwd.toFixed(10)],
+            ["f′", "Backward", "O(h)", result.bwd.toFixed(10)],
+            ["f′", "Central", "O(h²)", result.ctr.toFixed(10)],
+            ["f′", "Forward (ละเอียด)", "O(h²)", result.fwd2.toFixed(10)],
+            ["f′", "Backward (ละเอียด)", "O(h²)", result.bwd2.toFixed(10)],
+            ["f′", "Central 5 จุด", "O(h⁴)", result.ctr4.toFixed(10)],
+            ["f′", "Richardson", "O(h⁴)", result.rich.toFixed(10)],
+            ["f″", "Central", "O(h²)", result.f2c.toFixed(10)],
+            ["f″", "Central (ละเอียด)", "O(h⁴)", result.f2c4.toFixed(10)],
+          ]}
+        />
+      )}
+    </div>
   );
 }
 
 function DiffErrorPlot() {
-  const f = Math.exp; const x = 2; const trueVal = Math.exp(2);
+  const f = Math.exp; const x = 2; const trueVal = DIFF_TRUE_E2;
   const hs = [];
   for (let p = -16; p <= 0; p += 0.5) hs.push(Math.pow(10, p));
   const data = hs.map(h => ({
@@ -405,8 +1218,6 @@ function DiffErrorPlot() {
   const yDomain = [Math.min(...allE) - 0.5, Math.max(...allE) + 0.5];
   const sx = makeScale(xDomain, [padding.l, W - padding.r]);
   const sy = makeScale(yDomain, [H - padding.b, padding.t]);
-
-  // Animated: trace the error curves as h sweeps — เห็น error ลดแล้ว "กลับเพิ่ม" (U-shape) จาก round-off
   return (
     <div className="error-plot">
       <StepPlayer steps={data.length} stepDuration={450} label={(s) => `h = ${data[s].h.toExponential(1)}`}>
@@ -429,61 +1240,15 @@ function DiffErrorPlot() {
               <text x={padding.l+10} y={padding.t+18} fill="#f47274" fontFamily="JetBrains Mono" fontSize="12">— Forward O(h)</text>
               <text x={padding.l+10} y={padding.t+36} fill="#58c4dd" fontFamily="JetBrains Mono" fontSize="12">— Central O(h²)</text>
               <text x={padding.l+10} y={padding.t+54} fill="#83c167" fontFamily="JetBrains Mono" fontSize="12">— Richardson O(h⁴)</text>
-              <text x={W/2} y={H-6} fill="#9aa4b2" fontSize="11" textAnchor="middle" fontFamily="JetBrains Mono">log₁₀ h →</text>
+              <text x={W/2} y={H-6} fill="#9aa4b2" fontSize="11" textAnchor="middle" fontFamily="JetBrains Mono">log₁₀ h →  (ขวา = h ใหญ่, ซ้าย = h จิ๋ว)</text>
               <text x={14} y={H/2} fill="#9aa4b2" fontSize="11" transform={`rotate(-90 14 ${H/2})`} textAnchor="middle" fontFamily="JetBrains Mono">log₁₀ |error|</text>
             </svg>
           );
         }}
       </StepPlayer>
-      <p className="muted" style={{fontSize:'0.75rem', margin:"6px 0 0"}}>เห็นชัดว่า error ลดลงเรื่อย ๆ ตอน h ใหญ่ — แต่<b>กลับเพิ่ม</b>ตอน h เล็กมาก เพราะ floating-point round-off</p>
-    </div>
-  );
-}
-
-function DiffSolver() {
-  const [expr, setExpr] = React.useState("exp(x)");
-  const [x, setX] = React.useState("2");
-  const [h, setH] = React.useState("0.1");
-  const [result, setResult] = React.useState(null);
-  const [err, setErr] = React.useState("");
-  const run = () => {
-    try {
-      const f = parseExpr(expr);
-      const xv = +x, hv = +h;
-      setResult({
-        fwd: diffForward(f, xv, hv),
-        bwd: diffBackward(f, xv, hv),
-        ctr: diffCentral(f, xv, hv),
-        ctr4: (-f(xv+2*hv) + 8*f(xv+hv) - 8*f(xv-hv) + f(xv-2*hv)) / (12*hv),
-        rich: richardsonDeriv(f, xv, hv).D,
-        f2:  (f(xv+hv) - 2*f(xv) + f(xv-hv)) / (hv*hv),
-      });
-      setErr("");
-    } catch (e) { setErr(e.message); setResult(null); }
-  };
-  return (
-    <div className="solver-shell">
-      <h4>Differentiation Solver</h4>
-      <div className="input-row">
-        <FnInput value={expr} onChange={setExpr} label="f(x) ="/>
-        <label>x =</label><input type="text" value={x} onChange={e => setX(e.target.value)} style={{width:80}}/>
-        <label>h =</label><input type="text" value={h} onChange={e => setH(e.target.value)} style={{width:80}}/>
-        <button className="btn primary" onClick={run}>คำนวณ</button>
-      </div>
-      {err && <Callout kind="danger">{err}</Callout>}
-      {result && (
-        <NumTable
-          headers={["Method", "Order", "f'(x)"]}
-          rows={[
-            ["Forward", "O(h)", result.fwd.toFixed(10)],
-            ["Backward", "O(h)", result.bwd.toFixed(10)],
-            ["Central", "O(h²)", result.ctr.toFixed(10)],
-            ["Central 5-pt", "O(h⁴)", result.ctr4.toFixed(10)],
-            ["Richardson", "O(h⁴)", result.rich.toFixed(10)],
-            ["f''(x) Central", "O(h²)", result.f2.toFixed(10)],
-          ]}
-        />
-      )}
+      <p className="muted" style={{fontSize:'0.75rem', margin:"6px 0 0"}}>
+        อ่านจากขวาไปซ้าย: ตอนแรก error ลดตาม order (ชัน −1, −2, −4) แต่พอ h เล็กเกิน (~ซ้ายกลางจอ) ทุกเส้น<b>เด้งกลับขึ้น</b> — round-off ชนะ truncation → รูปตัว U
+      </p>
     </div>
   );
 }
