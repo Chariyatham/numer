@@ -171,14 +171,23 @@ function CheatLesson() {
       {/* CHEAT SHEET 8 — DIFF */}
       <Sect tag="08" title="Differentiation · Cheat Sheet">
         <div className="cheat-card">
-          <h4>First Derivative</h4>
+          <h4>First Derivative · ชุดธรรมดา</h4>
           <table className="tbl mono">
             <thead><tr><th>Method</th><th>สูตร</th><th>Error</th></tr></thead>
             <tbody>
               <tr><td>Forward</td><td>[f(x+h) − f(x)]/h</td><td>O(h)</td></tr>
               <tr><td>Backward</td><td>[f(x) − f(x−h)]/h</td><td>O(h)</td></tr>
               <tr><td>Central</td><td>[f(x+h) − f(x−h)]/(2h)</td><td>O(h²)</td></tr>
-              <tr><td>5-point Central</td><td>[−f(x+2h) + 8f(x+h) − 8f(x−h) + f(x−2h)]/(12h)</td><td>O(h⁴)</td></tr>
+            </tbody>
+          </table>
+
+          <h4>First Derivative · ชุดละเอียด (โจทย์ระบุ Big-O สูง)</h4>
+          <table className="tbl mono">
+            <thead><tr><th>Method</th><th>สูตร</th><th>Error</th></tr></thead>
+            <tbody>
+              <tr><td>Forward</td><td>[−f(x+2h) + 4f(x+h) − 3f(x)]/(2h)</td><td>O(h²)</td></tr>
+              <tr><td>Backward</td><td>[3f(x) − 4f(x−h) + f(x−2h)]/(2h)</td><td>O(h²)</td></tr>
+              <tr><td>Central 5-point</td><td>[−f(x+2h) + 8f(x+h) − 8f(x−h) + f(x−2h)]/(12h)</td><td>O(h⁴)</td></tr>
             </tbody>
           </table>
 
@@ -186,17 +195,24 @@ function CheatLesson() {
           <table className="tbl mono">
             <thead><tr><th>Method</th><th>สูตร</th><th>Error</th></tr></thead>
             <tbody>
+              <tr><td>Forward</td><td>[f(x+2h) − 2f(x+h) + f(x)]/h²</td><td>O(h)</td></tr>
+              <tr><td>Backward</td><td>[f(x) − 2f(x−h) + f(x−2h)]/h²</td><td>O(h)</td></tr>
               <tr><td>Central</td><td>[f(x+h) − 2f(x) + f(x−h)]/h²</td><td>O(h²)</td></tr>
-              <tr><td>5-point Central</td><td>[−f(x+2h) + 16f(x+h) − 30f(x) + 16f(x−h) − f(x−2h)]/(12h²)</td><td>O(h⁴)</td></tr>
+              <tr><td>Forward ละเอียด</td><td>[−f(x+3h) + 4f(x+2h) − 5f(x+h) + 2f(x)]/h²</td><td>O(h²)</td></tr>
+              <tr><td>Backward ละเอียด</td><td>[2f(x) − 5f(x−h) + 4f(x−2h) − f(x−3h)]/h²</td><td>O(h²)</td></tr>
+              <tr><td>Central 5-point</td><td>[−f(x+2h) + 16f(x+h) − 30f(x) + 16f(x−h) − f(x−2h)]/(12h²)</td><td>O(h⁴)</td></tr>
             </tbody>
           </table>
 
-          <Callout kind="tip">เลือก central เมื่อมีข้อมูลทั้งสองข้าง — แม่นกว่า ~10×</Callout>
+          <Callout kind="warn" title="Big-O ในโจทย์ = คำสั่งเลือกชุดสูตร">
+            โจทย์เขียน “forward O(h)” → ชุดธรรมดา · “forward O(h²)” → ชุดละเอียด (ใช้ชุดธรรมดาแล้วอ้าง O(h²) = ผิดทั้งข้อ) · <b>เช็กเร็ว:</b> ผลรวมสัมประสิทธิ์ทุกสูตรต้องเป็น 0 (เช่น −1+4−3 = 0 ✓)
+          </Callout>
+          <Callout kind="tip">เลือก central เมื่อมีข้อมูลทั้งสองข้าง — แม่นกว่า ~10× · ต้น/ท้ายตารางเท่านั้นที่จำเป็นต้องใช้ forward/backward</Callout>
         </div>
       </Sect>
 
       {/* COMMON MISTAKES */}
-      <Sect tag="❌" title="Top 20 พลาดบ่อย — อย่าทำซ้ำ!">
+      <Sect tag="❌" title="Top 22 พลาดบ่อย — อย่าทำซ้ำ!">
         <div className="grid-2">
           <Callout kind="danger" title="Root Finding">
             <ol>
@@ -240,6 +256,8 @@ function CheatLesson() {
             <ol start={19}>
               <li>Central สูตรลืมหารด้วย <em>2h</em> (เผลอหารด้วย h)</li>
               <li>h เล็กไป (10⁻¹⁰) → round-off error ใหญ่กว่า truncation</li>
+              <li>โจทย์สั่ง O(h²) แต่ใช้สูตรชุดธรรมดา O(h) → ผิดทั้งข้อ (ดู Big-O ในโจทย์!)</li>
+              <li>สูตร error สลับตัวหาร — “เทียบค่าจริง” ต้องหารด้วย<em>ค่าจริง</em> ไม่ใช่ค่าที่หาได้</li>
             </ol>
           </Callout>
         </div>

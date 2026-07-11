@@ -10,3 +10,9 @@ node_modules/
 graphify-out/.graphify_*
 graphify-out/cache/
 graphify-out/manifest.json
+
+# เสียงเลคเชอร์ + คำถอดเสียง — ห้ามขึ้น repo (public; อาจารย์ไม่ต้องการให้เผยแพร่)
+transcripts/
+numer_ชีทเรียนปีนี้/
+*.m4a
+*.mp3
