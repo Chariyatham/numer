@@ -16,3 +16,7 @@ transcripts/
 numer_ชีทเรียนปีนี้/
 *.m4a
 *.mp3
+
+# เอกสารติว/สรุปจากอาจารย์ — ห้ามขึ้น public repo เช่นกัน
+uploads/ติว*.pdf
+uploads/สรุป*.pdf
