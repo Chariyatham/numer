@@ -72,3 +72,19 @@ The app uses `localStorage` heavily — font size (`numer-fs`), per-chapter scro
 ## Teaching standard (kim's explicit requirement)
 
 When writing or revising lesson content: professor/sheet-level detail is the *minimum* — never summarize away topics, always explain the "why" behind each formula, and prefer animations/interactive widgets over static text. kim wants to understand deeply enough to teach others. Transcribed lectures (when available) reveal what the professor emphasizes beyond the sheets — weave that in and mark it as lecture-sourced.
+
+## Lesson QA — กฎตัวเลข (added 2026-07-26 after cross-model review)
+
+ทุก defect ที่เจอในการรีวิวไขว้เป็น failure class เดียวกัน: **เลขที่คำนวณต่อจากเลขที่ปัดแล้ว**. กฎ:
+
+1. **เลขอนุพัทธ์** (error %, "เร็วกว่า X เท่า", ε เปรียบเทียบ) ต้องคำนวณจาก **full-precision program output** — ห้ามคำนวณจากค่าที่ปัดโชว์ในตาราง (เคยพลาด: FP error 0.00084%→จริง 0.00086%, ~460 เท่า→จริง ~450 เท่า)
+2. ถ้าอ้าง output ของโปรแกรม ให้**รันจริงแล้ว copy เลขจาก output** อย่าคำนวณในหัว (เคยพลาด: f = −2.0×10⁻⁵ ที่จริง −2.2×10⁻⁵)
+3. **เงื่อนไขหยุดที่สอนใน Callout ต้องตรงกับโค้ดข้างล่างเป๊ะ** — absolute `|Δx|` กับ relative `|Δx/x|` คือคนละเกณฑ์ (เคยพลาด: callout สอน absolute แต่โค้ดใช้ relative)
+4. **precision ที่โชว์ต้องเท่ากันทั้งหัวข้อ** — walkthrough ทำมือกับตารางสรุปต้องปัดตำแหน่งเท่ากัน (มาตรฐานบท root/diff = 6 ตำแหน่ง)
+5. เปลี่ยนที่มาโจทย์ (เช่น root1.pdf → การบ้าน 4) ต้อง **grep ทั้งไฟล์หา label เก่า** ให้ครบ: หัวข้อ h3, ตัวหนังสือเล็กใน Callout, และ**comment บรรทัดแรกในโค้ด Python** (จุดที่หลุดบ่อยสุด)
+6. Bullet สเปคโจทย์ต้องบรรยายสิ่งที่โปรแกรมที่แสดง**ทำจริง** ไม่ใช่ variant อื่นของ algorithm (เคยพลาด: bullet บอก "หา min |f(x)|" แต่โค้ดหยุดเมื่อ f เปลี่ยนเครื่องหมาย)
+
+Review pipeline ก่อน commit บทเรียน (ทำครบทั้ง 3 ขั้น):
+1. รันเลข**ทุกตัว**ที่ปรากฏในบทด้วย python เทียบทีละตัว — รวมถึงเลขใน Callout/หมายเหตุ ไม่ใช่แค่ตารางหลัก
+2. เทียบกับใบงาน/ชีทจริง (PDF) ว่าโจทย์-สูตร-ตัวอย่างเทสตรง และจดจุดที่ใบงานพิมพ์ผิดไว้ในบทเรียนด้วย (เช่น การบ้าน 4 พิมพ์ข้อย่อยของข้อ 1 หลงเป็น 2.1/2.2)
+3. เปิดหน้าจริง (serve + playwright + `/usr/bin/chromium`) เช็ค console error + screenshot ส่วนที่แก้
