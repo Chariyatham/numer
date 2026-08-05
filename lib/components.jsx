@@ -59,13 +59,29 @@ function tokenizeLine(line, lang) {
   const kws = lang === "python"
     ? /\b(def|return|if|elif|else|while|for|in|import|from|as|print|True|False|None|and|or|not|lambda|class|try|except|raise|with|pass|break|continue|yield)\b/g
     : /\b(function|return|if|else|while|for|let|const|var|true|false|null|undefined|new|class|import|export|from|as|try|catch|throw)\b/g;
-  // We'll do a few passes via replace with markers
+  // Each pass stashes its markup behind a placeholder built from private-use
+  // codepoints. Without this, a later pass matches the quotes and word chars of
+  // an earlier pass's own <span class="..."> and shreds it — the string pass eats
+  // class="code-tok-com", the keyword pass eats the word `class`.
   let s = line.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  s = s.replace(/(#.*$|\/\/.*$)/g, '<span class="code-tok-com">$1</span>');
-  s = s.replace(/(["'])((?:\\.|(?!\1).)*)\1/g, '<span class="code-tok-str">$1$2$1</span>');
-  s = s.replace(/\b(\d+\.?\d*(?:e[-+]?\d+)?)\b/gi, '<span class="code-tok-num">$1</span>');
-  s = s.replace(kws, '<span class="code-tok-kw">$1</span>');
-  s = s.replace(/\b([a-zA-Z_]\w*)(?=\()/g, '<span class="code-tok-fn">$1</span>');
+  const slots = [];
+  const stash = (cls, text) => {
+    slots.push('<span class="code-tok-' + cls + '">' + text + '</span>');
+    return String.fromCharCode(0xE000 + slots.length - 1);
+  };
+  s = s.replace(/(#.*$|\/\/.*$)/g, (m) => stash("com", m));
+  s = s.replace(/(["'])((?:\\.|(?!\1).)*)\1/g, (m) => stash("str", m));
+  s = s.replace(/\b(\d+\.?\d*(?:e[-+]?\d+)?)\b/gi, (m) => stash("num", m));
+  s = s.replace(kws, (m) => stash("kw", m));
+  s = s.replace(/\b([a-zA-Z_]\w*)(?=\()/g, (m) => stash("fn", m));
+  // A later pass can swallow an earlier placeholder into its own match (e.g. a
+  // string that contains a `#`), so a slot's text may itself hold a placeholder.
+  // Unwrap until none are left; the bound just guards against a pathological line.
+  const ph = /[\uE000-\uF8FF]/g;
+  for (let i = 0; i < 6 && ph.test(s); i++) {
+    ph.lastIndex = 0;
+    s = s.replace(ph, (c) => slots[c.charCodeAt(0) - 0xE000] ?? c);
+  }
   return s;
 }
 

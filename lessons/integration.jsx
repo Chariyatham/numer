@@ -316,6 +316,103 @@ P2 (x2,x3,x4):  h/3(            f2 + 4f3 + f4 )
         <ErrorVsNPlot/>
       </Sect>
 
+      {/* ═══════════════ 🏗️ · โจทย์ประยุกต์ ═══════════════ */}
+      <Sect tag="🏗️" title="โจทย์ประยุกต์ — แบบที่ข้อสอบชอบออก">
+        <Callout kind="warn" title="ทำไมต้องฝึกแยกจากแบบฝึกหัด">
+          <p style={{margin:0}}>แบบฝึกหัดให้ <M>{`f(x)`}</M> กับ <M>n</M> มาครบ แต่<b>ข้อสอบเล่าเป็นสถานการณ์</b> แล้วให้คุณหาเองว่าต้องอินทิเกรตอะไร บนช่วงไหน — ขั้นที่ยากที่สุดคือขั้นแรก. อาจารย์บอกว่าข้อสอบ<b>ครึ่งหนึ่งเป็นข้อเขียนโค้ด</b> ทั้ง 2 ข้อนี้จึงมีทั้งส่วนทำมือและส่วนโปรแกรม</p>
+        </Callout>
+
+        <Problem label="ประยุกต์ 1 · อ่างเก็บน้ำ (ทำมือ + โปรแกรม)" solution={
+          <div>
+            <p style={{marginTop:0}}><b>ขั้นที่ 1 — แปลงโจทย์:</b> “ปริมาณน้ำรวม” จาก “อัตราการไหล” ⇒ <M>{`V=\\int_0^6 Q(t)\\,dt`}</M></p>
+            <p><b>ขั้นที่ 2 — นับจุด:</b> 7 จุด → <b>6 ช่องย่อย (เลขคู่)</b> ⇒ Simpson 1/3 ล้วนได้ = <b>3 พาราโบลา</b>, <M>{`h=1`}</M></p>
+            <NumTable
+              headers={["i", "tᵢ", "Q(tᵢ)", "น้ำหนัก", "น้ำหนัก × Q"]}
+              rows={[
+                [0, "0", "40.000000", "×1", "40.000000"],
+                [1, "1", "39.659258", "×4", "158.637032"],
+                [2, "2", "38.660254", "×2", "77.320508"],
+                [3, "3", "37.071068", "×4", "148.284272"],
+                [4, "4", "35.000000", "×2", "70.000000"],
+                [5, "5", "32.588190", "×4", "130.352760"],
+                [6, "6", "30.000000", "×1", "30.000000"],
+              ]}
+            />
+            <div style={{fontFamily:"var(--font-mono)", fontSize:'0.84rem', lineHeight:1.9, padding:"8px 12px", background:"var(--bg-soft)", borderRadius:6, margin:"8px 0"}}>
+              Σ(น้ำหนัก×Q) = 654.594572<br/>
+              I = (h/3) × Σ = (1/3) × 654.594572 = <b style={{color:"var(--green)"}}>218.198191 m³</b><br/><br/>
+              เทียบ Comp.Trapezoidal 6 ช่อง = <b>217.978771 m³</b><br/>
+              ค่าจริง = 180 + 120/π = 218.197186<br/>
+              ε(Simpson) = <b style={{color:"var(--yellow)"}}>0.000461%</b> · ε(Trap) = <b>0.1001%</b>
+            </div>
+            <Callout kind="danger" title="⚠︎ ตั้งเครื่องเป็น Rad">
+              <p style={{margin:0}}><M>{`\\cos(\\pi t/12)`}</M> เป็นเรเดียน — ตั้ง Deg เมื่อไหร่ ตารางผิดทุกแถวและคำตอบเป็น 0 ทันที (อาจารย์ตรวจแค่คำตอบ)</p>
+            </Callout>
+            <PythonRunner code={`import math
+Q = lambda t: 30 + 10*math.cos(math.pi*t/12)     # ← เรเดียน
+a, b, m = 0, 6, 6            # m = ช่องย่อย (= 3 พาราโบลา)
+h = (b - a)/m
+xs = [a + i*h for i in range(m+1)]
+
+simp = h/3*(Q(a) + Q(b) + sum((4 if i%2 else 2)*Q(xs[i]) for i in range(1, m)))
+trap = h/2*(Q(a) + Q(b) + 2*sum(Q(xs[i]) for i in range(1, m)))
+exact = 180 + 120/math.pi
+
+print(f"{'t':>3}{'Q(t)':>13}")
+for x in xs: print(f"{x:3.0f}{Q(x):13.6f}")
+print(f"\\nSimpson = {simp:.6f}  err = {abs(exact-simp)/exact*100:.6f}%")
+print(f"Trap    = {trap:.6f}  err = {abs(exact-trap)/exact*100:.4f}%")
+print(f"exact   = {exact:.6f}")`} height={300}/>
+          </div>
+        }>
+          อ่างเก็บน้ำมีอัตราการไหลเข้า <M>{`Q(t)=30+10\\cos\\!\\left(\\frac{\\pi t}{12}\\right)`}</M> ลูกบาศก์เมตรต่อชั่วโมง วัดทุก 1 ชั่วโมงตั้งแต่ <M>{`t=0`}</M> ถึง <M>{`t=6`}</M>
+          <br/>จงหา<b>ปริมาณน้ำรวมที่ไหลเข้าอ่าง</b> ด้วยวิธีที่แม่นที่สุดที่ข้อมูลอนุญาต พร้อมบอกเหตุผลที่เลือกวิธีนั้น และเทียบกับ Composite Trapezoidal ที่จำนวนช่องเท่ากัน · <b>เขียนโปรแกรมประกอบด้วย</b>
+        </Problem>
+
+        <Problem label="ประยุกต์ 2 · งานของสปริงไม่เชิงเส้น (เห็นผลของการซอยถี่)" solution={
+          <div>
+            <p style={{marginTop:0}}><b>แปลงโจทย์:</b> งาน <M>{`W=\\int_0^4 F(x)\\,dx`}</M> — “แรงคูณระยะ” ใช้ไม่ได้เพราะแรงไม่คงที่</p>
+            <p><b>ค่าจริง:</b> <M>{`\\int_0^4 (5x+0.5x^4)dx=\\left[2.5x^2+0.1x^5\\right]_0^4=40+102.4=142.4`}</M></p>
+            <NumTable
+              headers={["วิธี", "คำตอบ", "error %", "ข้อสังเกต"]}
+              rows={[
+                ["Single Trapezoidal", "296.000000", "107.8652%", "เส้นตรงเส้นเดียวบนช่วงกว้าง 4 → พลาดเกินเท่าตัว"],
+                ["Comp. Trapezoidal 4 ช่อง", "153.000000", "7.4438%", "ซอยแล้วดีขึ้นมาก"],
+                ["Comp. Trapezoidal 8 ช่อง", "145.062500", "1.8697%", "ซอยเท่าตัว error ลด ~4 เท่า (O(h²))"],
+                ["Comp. Simpson n=2 พาราโบลา (4 ช่อง)", "142.666667", "0.1873%", "จำนวนจุดเท่ากับ Trap 4 ช่อง แต่แม่นกว่า 40 เท่า"],
+                ["Comp. Simpson n=4 พาราโบลา (8 ช่อง)", "142.416667", "0.0117%", "ซอยเท่าตัว error ลด ~16 เท่า (O(h⁴))"],
+              ]}
+            />
+            <Callout kind="good" title="ประเด็นที่โจทย์แนวนี้ต้องการ">
+              <p style={{margin:0}}>ที่<b>จำนวนจุดเท่ากัน</b> (4 ช่องย่อย) Trapezoidal พลาด 7.44% ส่วน Simpson พลาด 0.19% — แม่นกว่าเกือบ <b>40 เท่า</b> โดยไม่ต้องเก็บข้อมูลเพิ่มเลย · เหตุผล: <M>{`F`}</M> เป็นพหุนามดีกรี 4 ⇒ <M>{`f^{(4)}\\ne0`}</M> Simpson จึงไม่เป๊ะ แต่ยังแม่นกว่ามาก</p>
+            </Callout>
+            <PythonRunner code={`F = lambda x: 5*x + 0.5*x**4
+exact = 2.5*4**2 + 0.1*4**5
+
+def ctrap(f, a, b, n):
+    h = (b-a)/n
+    return h/2*(f(a) + f(b) + 2*sum(f(a+i*h) for i in range(1, n)))
+
+def csimp(f, a, b, n):        # n = จำนวนพาราโบลา → ช่องย่อย 2n
+    m = 2*n; h = (b-a)/m
+    return h/3*(f(a) + f(b) + sum((4 if i%2 else 2)*f(a+i*h) for i in range(1, m)))
+
+print(f"{'วิธี':<34}{'คำตอบ':>12}{'error %':>11}")
+print(f"{'Single Trapezoidal':<34}{ctrap(F,0,4,1):>12.6f}{abs(exact-ctrap(F,0,4,1))/exact*100:>10.4f}%")
+for n in [4, 8]:
+    v = ctrap(F, 0, 4, n)
+    print(f"{'Comp.Trap ' + str(n) + ' ช่อง':<34}{v:>12.6f}{abs(exact-v)/exact*100:>10.4f}%")
+for n in [2, 4]:
+    v = csimp(F, 0, 4, n)
+    print(f"{'Comp.Simpson n=' + str(n) + ' พาราโบลา':<34}{v:>12.6f}{abs(exact-v)/exact*100:>10.4f}%")
+print(f"{'exact':<34}{exact:>12.6f}")`} height={310}/>
+          </div>
+        }>
+          สปริงไม่เชิงเส้นมีแรง <M>{`F(x)=5x+0.5x^4`}</M> นิวตัน เมื่อ <M>x</M> คือระยะยืดเป็นเมตร
+          <br/>จงหา<b>งานที่ใช้ในการยืดสปริงจาก 0 ถึง 4 เมตร</b> โดยเปรียบเทียบ Single Trapezoidal · Composite Trapezoidal (4 และ 8 ช่อง) · Composite Simpson (2 และ 4 พาราโบลา) แล้วสรุปว่า<b>ที่จำนวนจุดเท่ากัน วิธีไหนคุ้มกว่า</b>
+        </Problem>
+      </Sect>
+
       {/* ═══════════════ ∑ · Quick Ref ═══════════════ */}
       <Sect tag="∑" title="สรุปสูตร · 4 วิธีหลัก (ที่ออกสอบปีนี้)">
         <NumTable
@@ -360,7 +457,7 @@ P2 (x2,x3,x4):  h/3(            f2 + 4f3 + f4 )
           rows={[
             ["2", "±0.5774 (±1/√3)", "1, 1", "3"],
             ["3", "0, ±0.7746", "8/9, 5/9, 5/9", "5"],
-            ["4", "±0.3399, ±0.8611", "0.6521, 0.3479", "7"],
+            ["4", "±0.3400, ±0.8611", "0.6521, 0.3479", "7"],
           ]}
         />
         <GaussLegendreViz/>
@@ -446,7 +543,7 @@ for n in [4, 8, 16]:
     print(f"{n:3d} | {t:11.7f} {abs(true_val-t)/true_val*100:7.4f}% | {s:11.7f} {abs(true_val-s)/true_val*100:7.4f}%")`} height={230}/>
             <Callout kind="good" title="อ่านผลลัพธ์">
               <ul style={{margin:0}}>
-                <li><b>Trapezoidal</b> (<M>{`O(h^2)`}</M>): <M>n</M> เพิ่มเท่าตัว error ลดราว <b>4 เท่า</b> (0.166% → 0.041% → 0.010%)</li>
+                <li><b>Trapezoidal</b> (<M>{`O(h^2)`}</M>): <M>n</M> เพิ่มเท่าตัว error ลดราว <b>4 เท่า</b> (0.1659% → 0.0415% → 0.0104%)</li>
                 <li><b>Simpson</b> (<M>{`O(h^4)`}</M>): <M>n</M> เพิ่มเท่าตัว error ลดราว <b>16 เท่า</b> — ที่ <M>n=16</M> ตรง 7 ตำแหน่งทศนิยมแล้ว</li>
                 <li>สรุป: จำนวนจุดเท่ากัน <b>Simpson แม่นกว่ามหาศาล</b> สำหรับฟังก์ชันเรียบ</li>
               </ul>
@@ -811,7 +908,8 @@ function ExerciseTwo() {
   return (
     <div className="card" style={{marginTop:14, borderLeft:"3px solid var(--purple, #a87dbe)"}}>
       <h3 style={{marginTop:0}}>ข้อ 2 · <M>{`\\displaystyle I=\\int_{-1}^{2} (x^7 + 2x^3 - 1)\\,dx`}</M></h3>
-      <p className="muted" style={{fontSize:'0.82rem'}}>ค่าจริง = <b className="mono">36.375</b> · โจทย์: 2.1 Simpson’s Rule · 2.2 Composite Simpson <M>{`n=2,4,6`}</M></p>
+      <p className="muted" style={{fontSize:'0.82rem'}}>ค่าจริง = <b className="mono">36.375</b> · โจทย์: 2.1 Simpson’s Rule · 2.2 Composite Simpson <M>{`n=2,4,6`}</M><br/>
+        <span style={{color:"var(--yellow)"}}>⚠︎ ใบแบบฝึกหัดพิมพ์ข้อย่อยของข้อ 2 หลงเป็น “1.1 / 1.2” (ซ้ำกับข้อ 1) — ที่ถูกคือ 2.1 / 2.2 ตามที่ใช้ในหน้านี้</span></p>
 
       <h4>2.1 Simpson’s Rule (single = พาราโบลาอันเดียว)</h4>
       <window.HandWalkthrough steps={[
