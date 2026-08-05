@@ -360,7 +360,7 @@ P2 (x2,x3,x4):  h/3(            f2 + 4f3 + f4 )
           rows={[
             ["2", "±0.5774 (±1/√3)", "1, 1", "3"],
             ["3", "0, ±0.7746", "8/9, 5/9, 5/9", "5"],
-            ["4", "±0.3399, ±0.8611", "0.6521, 0.3479", "7"],
+            ["4", "±0.3400, ±0.8611", "0.6521, 0.3479", "7"],
           ]}
         />
         <GaussLegendreViz/>
@@ -446,7 +446,7 @@ for n in [4, 8, 16]:
     print(f"{n:3d} | {t:11.7f} {abs(true_val-t)/true_val*100:7.4f}% | {s:11.7f} {abs(true_val-s)/true_val*100:7.4f}%")`} height={230}/>
             <Callout kind="good" title="อ่านผลลัพธ์">
               <ul style={{margin:0}}>
-                <li><b>Trapezoidal</b> (<M>{`O(h^2)`}</M>): <M>n</M> เพิ่มเท่าตัว error ลดราว <b>4 เท่า</b> (0.166% → 0.041% → 0.010%)</li>
+                <li><b>Trapezoidal</b> (<M>{`O(h^2)`}</M>): <M>n</M> เพิ่มเท่าตัว error ลดราว <b>4 เท่า</b> (0.1659% → 0.0415% → 0.0104%)</li>
                 <li><b>Simpson</b> (<M>{`O(h^4)`}</M>): <M>n</M> เพิ่มเท่าตัว error ลดราว <b>16 เท่า</b> — ที่ <M>n=16</M> ตรง 7 ตำแหน่งทศนิยมแล้ว</li>
                 <li>สรุป: จำนวนจุดเท่ากัน <b>Simpson แม่นกว่ามหาศาล</b> สำหรับฟังก์ชันเรียบ</li>
               </ul>
@@ -811,7 +811,8 @@ function ExerciseTwo() {
   return (
     <div className="card" style={{marginTop:14, borderLeft:"3px solid var(--purple, #a87dbe)"}}>
       <h3 style={{marginTop:0}}>ข้อ 2 · <M>{`\\displaystyle I=\\int_{-1}^{2} (x^7 + 2x^3 - 1)\\,dx`}</M></h3>
-      <p className="muted" style={{fontSize:'0.82rem'}}>ค่าจริง = <b className="mono">36.375</b> · โจทย์: 2.1 Simpson’s Rule · 2.2 Composite Simpson <M>{`n=2,4,6`}</M></p>
+      <p className="muted" style={{fontSize:'0.82rem'}}>ค่าจริง = <b className="mono">36.375</b> · โจทย์: 2.1 Simpson’s Rule · 2.2 Composite Simpson <M>{`n=2,4,6`}</M><br/>
+        <span style={{color:"var(--yellow)"}}>⚠︎ ใบแบบฝึกหัดพิมพ์ข้อย่อยของข้อ 2 หลงเป็น “1.1 / 1.2” (ซ้ำกับข้อ 1) — ที่ถูกคือ 2.1 / 2.2 ตามที่ใช้ในหน้านี้</span></p>
 
       <h4>2.1 Simpson’s Rule (single = พาราโบลาอันเดียว)</h4>
       <window.HandWalkthrough steps={[
