@@ -35,6 +35,7 @@ const CHAPTERS = [
   ]},
   { group: "ฝึกฝน", items: [
     { id: "midterm", num: "✸", title: "ห้องสอบ · Midterm", comp: "MidtermLesson" },
+    { id: "code", num: "⌨", title: "เขียนโค้ดจากหัว", comp: "CodeDrillLesson" },
     { id: "problems", num: "★", title: "Problem Bank · 40+ ข้อ", comp: "ProblemsLesson" },
     { id: "exam", num: "✸", title: "Mock Final Exam", comp: "ExamLesson" },
   ]},
