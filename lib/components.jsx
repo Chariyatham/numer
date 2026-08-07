@@ -156,6 +156,34 @@ finally:
 _trace_json = _json.dumps({'events': _events})
 `;
 
+// Pyodide is a singleton shared by every cell, so pin matplotlib to AGG before the user's code
+// imports it — otherwise plt.show() grabs the wasm canvas backend and paints onto the page itself.
+const PY_MPL_PREAMBLE = `
+import os as _os, sys as _sys, warnings as _warnings
+_os.environ['MPLBACKEND'] = 'AGG'
+# plt.show() ยังเขียนไว้ในโค้ดได้ (เวลาส่งอาจารย์ต้องมี) — กลบ warning ของ AGG ทิ้งไป
+# ไม่งั้นจะขึ้นเป็น [err] ทั้งที่รูปออกปกติ
+_warnings.filterwarnings('ignore', message='.*non-GUI backend.*')
+if 'matplotlib' in _sys.modules:
+    import matplotlib as _mpl
+    _mpl.use('AGG')
+`;
+
+// After a cell runs, hand back every open figure as a base64 PNG so plt.show() has something to show.
+const PY_CAPTURE_FIGS = `
+import sys as _sys, json as _json
+_imgs = []
+if 'matplotlib' in _sys.modules:
+    import io as _io, base64 as _b64
+    import matplotlib.pyplot as _plt
+    for _n in _plt.get_fignums():
+        _buf = _io.BytesIO()
+        _plt.figure(_n).savefig(_buf, format='png', dpi=120, bbox_inches='tight')
+        _imgs.append(_b64.b64encode(_buf.getvalue()).decode('ascii'))
+    _plt.close('all')
+_json.dumps(_imgs)
+`;
+
 // Step through a captured execution trace: highlight the running line + show variable values.
 function CodeStepView({ code, events, onClose }) {
   const lines = code.split("\n");
@@ -210,6 +238,7 @@ function CodeStepView({ code, events, onClose }) {
 function PythonRunner({ code: initialCode, autoRun = false, height = 160 }) {
   const [code, setCode] = useState(initialCode || "");
   const [output, setOutput] = useState("");
+  const [figs, setFigs] = useState([]);
   const [status, setStatus] = useState("idle");
   const [pyReady, setPyReady] = useState(false);
   const [trace, setTrace] = useState(null);
@@ -217,6 +246,7 @@ function PythonRunner({ code: initialCode, autoRun = false, height = 160 }) {
   const run = async () => {
     setStatus("loading");
     setOutput("");
+    setFigs([]);
     setTrace(null);
     let py;
     try {
@@ -227,14 +257,22 @@ function PythonRunner({ code: initialCode, autoRun = false, height = 160 }) {
       setOutput("โหลด Pyodide ไม่สำเร็จ: " + e.message);
       return;
     }
+    // Cells that import numpy/matplotlib need the package fetched first (big, one-time).
+    if (/^\s*(import|from)\s+(numpy|matplotlib|scipy|pandas|sympy)\b/m.test(code)) setStatus("pkg");
+    try { await py.loadPackagesFromImports(code); } catch (e) { /* package autoload best-effort */ }
     setStatus("running");
     try {
       py.setStdout({ batched: (s) => setOutput(o => o + s + "\n") });
       py.setStderr({ batched: (s) => setOutput(o => o + "[err] " + s + "\n") });
+      await py.runPythonAsync(PY_MPL_PREAMBLE);
       const result = await py.runPythonAsync(code);
       if (result !== undefined && result !== null) {
         setOutput(o => o + String(result));
       }
+      try {
+        const shots = JSON.parse(await py.runPythonAsync(PY_CAPTURE_FIGS));
+        if (shots.length) setFigs(shots);
+      } catch (e) { /* no matplotlib in this cell */ }
       setStatus("done");
     } catch (e) {
       setStatus("error");
@@ -289,18 +327,19 @@ function PythonRunner({ code: initialCode, autoRun = false, height = 160 }) {
         <span className="py-status">{
           status === "idle" ? "พร้อมรัน" :
           status === "loading" ? "กำลังโหลด Pyodide…" :
+          status === "pkg" ? "กำลังโหลดไลบรารี (ครั้งแรกนานหน่อย)…" :
           status === "running" ? "กำลังรัน…" :
           status === "done" ? "เสร็จแล้ว ✓" :
           "ผิดพลาด"
         }</span>
         <div style={{flex:1}}/>
-        <button className="btn small primary" onClick={run} disabled={status === "running" || status === "loading"}>
+        <button className="btn small primary" onClick={run} disabled={status === "running" || status === "loading" || status === "pkg"}>
           ▸ Run
         </button>
-        <button className="btn small" onClick={animate} disabled={status === "running" || status === "loading"} title="รันจริงแล้วเดินทีละบรรทัด">
+        <button className="btn small" onClick={animate} disabled={status === "running" || status === "loading" || status === "pkg"} title="รันจริงแล้วเดินทีละบรรทัด">
           ▸ ทีละบรรทัด
         </button>
-        <button className="btn small ghost" onClick={() => { setCode(initialCode); setOutput(""); setStatus("idle"); setTrace(null); }}>↺ รีเซ็ต</button>
+        <button className="btn small ghost" onClick={() => { setCode(initialCode); setOutput(""); setFigs([]); setStatus("idle"); setTrace(null); }}>↺ รีเซ็ต</button>
       </div>
       <textarea
         value={code}
@@ -310,6 +349,13 @@ function PythonRunner({ code: initialCode, autoRun = false, height = 160 }) {
       />
       {trace && <CodeStepView code={code} events={trace} onClose={() => setTrace(null)} />}
       {output && <pre className={"py-output " + (status === "error" ? "error" : "")}>{output}</pre>}
+      {figs.length > 0 && (
+        <div className="py-figs">
+          {figs.map((b64, i) => (
+            <img key={i} className="py-fig" src={"data:image/png;base64," + b64} alt={"กราฟจาก matplotlib รูปที่ " + (i+1)}/>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

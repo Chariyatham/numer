@@ -621,6 +621,16 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--b
   min-height: 20px;
 }
 .py-output.error { color: var(--red); }
+/* matplotlib figures come back as white PNGs — keep the white plate so they look like what
+   the professor will see when he runs the same script. */
+.py-figs { margin-top: 8px; display: flex; flex-direction: column; gap: 10px; }
+.py-fig {
+  max-width: 100%;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px;
+}
 .py-status {
   font-family: var(--font-mono); font-size: 0.722rem; color: var(--text-faint);
 }
