@@ -326,8 +326,8 @@ function LinearSystemsLesson() {
 
       <ExamRules/>
 
-      <Callout kind="warn" title="📮 การบ้านชุดนี้ · ระบบเดียว 6 วิธี — เฉลยครบอยู่ในหมวด 📮 ท้ายกลุ่ม Direct">
-        <p style={{margin:"0 0 6px"}}>ใบงาน <code>Gauss Elimination Method.pdf</code> ให้ระบบมา<b>ระบบเดียว</b> แล้วสั่งแก้ด้วย <b>6 วิธี</b> — โครงเดียวกับการบ้าน 4 (bisection/false position) และการบ้าน 5 (iteration) เป๊ะ</p>
+      <Callout kind="warn" title="📮 ใบงาน “ระบบเดียว 6 วิธี” (ของปีที่แล้ว) — ตัวเก็งที่แม่นที่สุดของบทนี้">
+        <p style={{margin:"0 0 6px"}}>⚠︎ <b>ใบนี้เป็นเอกสารปีที่แล้ว</b> (<code>uploads/Gauss Elimination Method.pdf</code>) — <b>ยังไม่ใช่การบ้านที่อาจารย์สั่งปีนี้</b> · แต่ให้ระบบมา<b>ระบบเดียว</b> แล้วสั่งแก้ด้วย <b>6 วิธี</b> ซึ่งเป็นโครงเดียวกับการบ้าน 4 และ 5 ของปีนี้เป๊ะ ⇒ <b>ใช้เก็งได้แม่นมาก</b> ว่าใบของปีนี้ (ถ้าสั่ง) กับข้อสอบจะหน้าตาแบบนี้</p>
         <MB>{`\\begin{cases}-2x_1+3x_2+x_3=9\\\\ 3x_1+4x_2-5x_3=0\\\\ x_1-2x_2+x_3=-4\\end{cases}`}</MB>
         <NumTable
           headers={["ข้อ", "วิธี", "ต้องส่ง"]}
@@ -351,7 +351,7 @@ function LinearSystemsLesson() {
             [<span><b>Cramer เอาแค่ 2×2 กับ 3×3</b> · “4×4 ไม่ทำ · n×n ไม่ทำ”</span>, "ซ้อมเฉพาะ 2×2 กับ 3×3 ให้คล่อง ไม่ต้องกลัวโจทย์ใหญ่กว่านั้น"],
             [<span>ถ้าเมทริกซ์<b>ไม่จัตุรัส</b> (เช่น 4×5) Cramer ใช้ไม่ได้ เพราะหา det ไม่ได้</span>, <span>ต้องเปลี่ยนไปใช้ <b>Gauss Elimination</b> — เป็นเหตุผลที่มีวิธีถัดไป</span>],
             [<span>“<b>สัปดาห์หน้าเรียน Gauss Eliminate</b> · เวอร์ชันนี้จะเรียนเมทริกซ์ที่<b>ไม่เท่ากัน</b>ด้วย”</span>, <span>คาบ <b>19 ส.ค.</b> (คาบสุดท้ายก่อนสอบ) = Gauss Elimination ⇒ ขอบเขต midterm มีบทนี้แน่</span>],
-            [<span>“การบ้านทุกคนจะต้องทำ · <b>ใช้เวลาประมาณ 2 ชั่วโมง</b>” + วางกล่องรับหน้าห้อง</span>, "ใบงาน 6 วิธีคือชุดที่แจกไว้แล้ว (เฉลยครบในหมวด 📮 ด้านล่าง)"],
+            [<span>“การบ้านทุกคนจะต้องทำ · <b>ใช้เวลาประมาณ 2 ชั่วโมง</b>” + วางกล่องรับหน้าห้อง</span>, <span>ยังไม่มีใบการบ้านของบทนี้แจกใน Classroom (ล่าสุดคือ <b>การบ้าน 5 Iteration</b>) — คาดว่าแจกหลังคาบ 19 ส.ค.</span>],
           ]}
         />
       </Callout>
@@ -436,10 +436,10 @@ function LinearSystemsLesson() {
           rows={[
             ["1", "Cramer's Rule", "Direct", "เมทริกซ์เล็ก (2×2, 3×3) — ใช้ det ล้วน", "✅ สอนแล้ว 8 ส.ค."],
             ["2", "Gauss Elimination", "Direct", "ใหญ่กว่านั้น หรือเมทริกซ์ไม่จัตุรัส", "✅ 19 ส.ค."],
-            ["3", "Gauss-Jordan", "Direct", "ทำต่อจนได้ I เลย ไม่ต้อง back-sub", "📮 อยู่ในการบ้าน"],
-            ["4", "Matrix Inversion", "Direct", "หา A⁻¹ ครั้งเดียว ใช้ซ้ำได้หลาย b", "📮 อยู่ในการบ้าน"],
-            ["5", "LU Decomposition", "Direct", "แตก A = L·U แล้วแก้สองต่อ", "📮 อยู่ในการบ้าน"],
-            ["6", "Cholesky", "Direct", "เฉพาะเมทริกซ์สมมาตร — เร็วกว่า LU เท่าตัว", "📮 อยู่ในการบ้าน"],
+            ["3", "Gauss-Jordan", "Direct", "ทำต่อจนได้ I เลย ไม่ต้อง back-sub", "📮 อยู่ในใบตัวเก็ง"],
+            ["4", "Matrix Inversion", "Direct", "หา A⁻¹ ครั้งเดียว ใช้ซ้ำได้หลาย b", "📮 อยู่ในใบตัวเก็ง"],
+            ["5", "LU Decomposition", "Direct", "แตก A = L·U แล้วแก้สองต่อ", "📮 อยู่ในใบตัวเก็ง"],
+            ["6", "Cholesky", "Direct", "เฉพาะเมทริกซ์สมมาตร — เร็วกว่า LU เท่าตัว", "📮 อยู่ในใบตัวเก็ง"],
             ["7–9", "Jacobi · Gauss-Seidel · Conjugate Gradient", "Iterative", "เมทริกซ์ใหญ่มากและมีศูนย์เยอะ", "อยู่ในสไลด์ ยังไม่สอน"],
           ]}
         />
@@ -1232,7 +1232,7 @@ print("\\nA·x =", np.round(A @ x, 6).tolist(), "  (เทียบกับ B =
       </Sect>
 
       {/* ═══════════ 📮 · การบ้าน 6 วิธี ═══════════ */}
-      <Sect tag="📮" title="การบ้าน · ระบบเดียว 6 วิธี — เฉลยเต็มทั้ง 6 ข้อ">
+      <Sect tag="📮" title="ใบงานตัวเก็ง · ระบบเดียว 6 วิธี — เฉลยเต็มทั้ง 6 ข้อ">
         <p>ทั้ง 6 ข้อใช้ระบบเดียวกัน ⇒ <b>เขียนเมทริกซ์ครั้งเดียวใช้ได้ทั้งใบ</b> · ที่ต่างกันคือ “ทางเดิน” ไม่ใช่คำตอบ — ทุกวิธีต้องลงที่ <M>{`(-1,\\,2,\\,1)`}</M> เหมือนกันหมด ถ้าวิธีไหนได้ไม่ตรง แปลว่าวิธีนั้นคำนวณพลาด</p>
 
         <Callout kind="tip" title="ตรวจก่อนลงมือ — 10 วินาทีที่กันพังทั้งใบ">
@@ -1443,6 +1443,127 @@ for name, fn in [("1.1 Cramer", cramer), ("1.2 Gauss", gauss),
 x = gauss(A, b)
 print("\\nตรวจ A·x =", [round(sum(A[i][j]*x[j] for j in range(n)), 6) for i in range(n)],
       " ควรเท่ากับ b =", b)`} height={520}/>
+      </Sect>
+
+      {/* ═══════════ 🔲 · เมทริกซ์ไม่จัตุรัส ═══════════ */}
+      <Sect tag="🔲" title="เมทริกซ์ไม่จัตุรัส — สมการไม่เท่ากับตัวแปร (อาจารย์บอกว่าจะสอน 19 ส.ค.)">
+        <Callout kind="warn" title="⚠︎ หมวดนี้ยังไม่ได้เรียน — เตรียมไว้ล่วงหน้า">
+          <p style={{margin:0}}>ในคาบ 8 ส.ค. อาจารย์พูดถึงเรื่องนี้ไว้แต่ยังไม่ได้สอน: <i>“ถ้าเป็น 4 คูณ 5 เราจะไปใช้ Gauss Eliminate … ตอนที่คุณเรียน Gauss Eliminate คุณจะเรียนแค่ matrix เท่ากัน <b>แต่เวอร์ชันนี้คุณจะเรียน matrix ที่มันไม่เท่ากันด้วย</b>”</i> ⇒ เนื้อหาหมวดนี้ผมเตรียมจากหลักการมาตรฐาน <b>ยังไม่ได้ยืนยันกับที่อาจารย์สอนจริง</b> — พอเรียนวันที่ 19 แล้วจะมาปรับให้ตรง</p>
+        </Callout>
+
+        <h3>ทำไม Cramer ใช้ไม่ได้ แล้ว Gauss ใช้ได้</h3>
+        <p><M>{`\\det`}</M> นิยามเฉพาะเมทริกซ์<b>จัตุรัส</b> (แถว = คอลัมน์) ⇒ <M>{`4\\times5`}</M> หา <M>{`\\det`}</M> ไม่ได้ ⇒ <b>Cramer, Matrix Inversion, LU, Cholesky ใช้ไม่ได้ทั้งหมด</b> · แต่ <b>Gauss Elimination ไม่แคร์</b> เพราะมันแค่ “ลบแถวออกจากแถว” ซึ่งทำได้ทุกขนาด</p>
+
+        <h3>เริ่มจากสมการเดียว 3 ตัวแปร — เมทริกซ์ 1×3</h3>
+        <MB>{`3x+5y+4z=30\\qquad\\Rightarrow\\qquad \\big[\\,3\\ \\ 5\\ \\ 4\\,\\big]\\begin{Bmatrix}x\\\\y\\\\z\\end{Bmatrix}=\\{30\\}`}</MB>
+        <Callout kind="danger" title="1 สมการ 3 ตัวแปร ⇒ คำตอบมีไม่จำกัด ไม่ใช่ “แก้ไม่ได้”">
+          <p style={{margin:"0 0 6px"}}>ย้ายข้าง: <M>{`x=\\dfrac{30-5y-4z}{3}`}</M> ⇒ <b>เลือก <M>y</M> กับ <M>z</M> เป็นอะไรก็ได้ แล้ว <M>x</M> จะตามมาเอง</b> — <M>y,z</M> เรียกว่า <b>ตัวแปรอิสระ (free variable)</b></p>
+          <NumTable
+            headers={["เลือก y", "เลือก z", "ได้ x", "ตรวจ 3x+5y+4z"]}
+            rows={[
+              ["0", "0", "10", "30 ✓"],
+              ["3", "0", "5", "30 ✓"],
+              ["0", "3", "6", "30 ✓"],
+              ["6", "3", "−4", "30 ✓"],
+            ]}
+          />
+          <p style={{margin:"8px 0 0"}}><b>กฎนับ:</b> จำนวนตัวแปรอิสระ = (จำนวนตัวแปร) − (จำนวนสมการที่<b>อิสระต่อกัน</b>) = 3 − 1 = <b>2</b></p>
+        </Callout>
+
+        <h3>เติมสมการที่ 2 — เมทริกซ์ 2×3</h3>
+        <MB>{`\\begin{cases}3x+5y+4z=30\\\\x+y+z=9\\end{cases}\\qquad\\Rightarrow\\qquad\\left[\\begin{array}{ccc|c}3&5&4&30\\\\1&1&1&9\\end{array}\\right]`}</MB>
+        <p><b>Gauss ตามปกติ</b> — <M>{`m_{21}=\\tfrac13`}</M>, <M>{`R_2\\leftarrow R_2-\\tfrac13R_1`}</M>:</p>
+        <div style={{fontFamily:"var(--font-mono)", fontSize:'0.84rem', lineHeight:1.9, padding:"8px 12px", background:"var(--bg-soft)", borderRadius:6, margin:"8px 0"}}>
+          [ 3&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;&nbsp;4&nbsp;&nbsp;| 30 ]<br/>
+          [ 0&nbsp; −2/3&nbsp; −1/3 | −1 ]&nbsp;&nbsp;<span style={{color:"var(--text-dim)"}}>× (−3) →</span>&nbsp; 2y + z = 3<br/><br/>
+          ให้ <b>y = t</b> (ตัวอิสระ) ⇒ z = 3 − 2t<br/>
+          จากแถว 2 เดิม: x = 9 − y − z = 9 − t − (3 − 2t) = <b>6 + t</b>
+        </div>
+        <Formula label="คำตอบทั่วไป (general solution)">
+          <MB>{`\\begin{Bmatrix}x\\\\y\\\\z\\end{Bmatrix}=\\begin{Bmatrix}6\\\\0\\\\3\\end{Bmatrix}+t\\begin{Bmatrix}1\\\\1\\\\-2\\end{Bmatrix}\\qquad t\\in\\mathbb{R}`}</MB>
+        </Formula>
+        <NumTable
+          headers={["t", "(x, y, z)", "3x+5y+4z", "x+y+z"]}
+          rows={[
+            ["0", "(6, 0, 3)", "30 ✓", "9 ✓"],
+            ["1", "(7, 1, 1)", "30 ✓", "9 ✓"],
+            ["2", "(8, 2, −1)", "30 ✓", "9 ✓"],
+            ["−1", "(5, −1, 5)", "30 ✓", "9 ✓"],
+          ]}
+        />
+        <p><b>ตัวอิสระเหลือ 1 ตัว</b> (3 ตัวแปร − 2 สมการ) ⇒ คำตอบเป็น<b>เส้นตรง</b>ในปริภูมิ 3 มิติ ไม่ใช่จุดเดียว</p>
+        <Callout kind="tip" title="⚠︎ คำตอบทั่วไปเขียนได้หลายหน้าตา — ถูกทั้งคู่ อย่าตกใจ">
+          <p style={{margin:"0 0 4px"}}>ข้างบนเลือก <M>{`y`}</M> เป็นตัวอิสระ · โปรแกรมข้างล่างจัดเป็น RREF แล้วเลือก <M>{`z`}</M> เป็นตัวอิสระ ได้หน้าตาต่างกัน:</p>
+          <div style={{fontFamily:"var(--font-mono)", fontSize:'0.82rem', lineHeight:1.8, padding:"6px 10px", background:"var(--bg-soft)", borderRadius:6}}>
+            เลือก y = t : (x, y, z) = (6 + t, &nbsp;t, &nbsp;3 − 2t)<br/>
+            เลือก z = s : (x, y, z) = (7.5 − s/2, &nbsp;1.5 − s/2, &nbsp;s)
+          </div>
+          <p style={{margin:"6px 0 0"}}>แทน <M>{`s=3-2t`}</M> จะพบว่า<b>เป็นเส้นตรงเดียวกันเป๊ะ</b> · ในข้อสอบ ถ้าเขียนคำตอบทั่วไปให้<b>ระบุชัดว่าให้ตัวไหนเป็นตัวอิสระ</b> แล้วแทนกลับตรวจ ก็ถูกทั้งคู่</p>
+        </Callout>
+
+        <h3>เติมสมการที่ 3 — กลับมาเป็น 3×3 คำตอบเดียว</h3>
+        <p>เพิ่ม <M>{`2x+3y+2z=18`}</M> แล้วแทนคำตอบทั่วไปลงไป:</p>
+        <div style={{fontFamily:"var(--font-mono)", fontSize:'0.84rem', lineHeight:1.9, padding:"8px 12px", background:"var(--bg-soft)", borderRadius:6, margin:"8px 0"}}>
+          2(6 + t) + 3(t) + 2(3 − 2t) = 12 + 2t + 3t + 6 − 4t = <b>18 + t</b><br/>
+          ตั้งให้เท่ากับ 18 ⇒ <b>t = 0</b> ⇒ คำตอบเดียวคือ <b style={{color:"var(--green)"}}>(6, 0, 3)</b><br/><br/>
+          ตรวจ 3 บรรทัด: 3(6)+5(0)+4(3)=30 ✓ · 6+0+3=9 ✓ · 2(6)+3(0)+2(3)=18 ✓
+        </div>
+
+        <Callout kind="danger" title="กรณีที่ 3 · สมการมากกว่าตัวแปร แล้วขัดกัน ⇒ ไม่มีคำตอบ">
+          <p style={{margin:0}}>ถ้าเพิ่มสมการที่ 4 ว่า <M>{`x+y+z=10`}</M> — แต่สมการที่ 2 บอกว่า <M>{`x+y+z=9`}</M> ⇒ ทำ Gauss แล้วจะได้แถว <b><M>{`[\\,0\\ \\ 0\\ \\ 0\\ |\\ 1\\,]`}</M></b> ซึ่งอ่านว่า <M>{`0=1`}</M> เป็นเท็จ ⇒ <b>ระบบไม่มีคำตอบ (inconsistent)</b></p>
+        </Callout>
+
+        <Callout kind="good" title="สรุปให้จำ 3 บรรทัด — อ่านจากแถวสุดท้ายหลังทำ Gauss">
+          <NumTable
+            headers={["แถวสุดท้ายหน้าตาแบบ", "แปลว่า", "คำตอบ"]}
+            rows={[
+              [<M>{`[\\,0\\ 0\\ 0\\,|\\,c\\neq0\\,]`}</M>, "0 = ค่าที่ไม่ใช่ศูนย์", "ไม่มีคำตอบ"],
+              [<M>{`[\\,0\\ 0\\ 0\\,|\\,0\\,]`}</M>, "แถวว่าง = สมการซ้ำ", "มีไม่จำกัด (มีตัวอิสระ)"],
+              ["มีตัวหลักครบทุกคอลัมน์", "สมการอิสระเท่าจำนวนตัวแปร", "คำตอบเดียว"],
+            ]}
+          />
+        </Callout>
+
+        <PythonRunner code={`# Gauss Elimination ที่รับเมทริกซ์ "ขนาดอะไรก็ได้" — ไม่ต้องจัตุรัส
+from fractions import Fraction as F
+
+def gauss_general(A, b):
+    m, n = len(A), len(A[0])                      # m สมการ · n ตัวแปร
+    M = [[F(A[i][j]) for j in range(n)] + [F(b[i])] for i in range(m)]
+    piv, row = [], 0
+    for col in range(n):                          # ไล่ทีละคอลัมน์
+        r = next((k for k in range(row, m) if M[k][col] != 0), None)
+        if r is None:
+            continue                              # คอลัมน์นี้ไม่มีตัวหลัก -> ตัวแปรอิสระ
+        M[row], M[r] = M[r], M[row]
+        M[row] = [v / M[row][col] for v in M[row]]
+        for k in range(m):
+            if k != row and M[k][col] != 0:
+                f = M[k][col]
+                M[k] = [M[k][j] - f*M[row][j] for j in range(n+1)]
+        piv.append(col); row += 1
+        if row == m: break
+
+    for k in range(m):                            # เช็คแถว [0 0 0 | c]
+        if all(M[k][j] == 0 for j in range(n)) and M[k][n] != 0:
+            return "ไม่มีคำตอบ (inconsistent)", M
+    free = [c for c in range(n) if c not in piv]
+    kind = "คำตอบเดียว" if not free else f"มีไม่จำกัด · ตัวแปรอิสระ {len(free)} ตัว (คอลัมน์ {free})"
+    return kind, M
+
+name = ["x", "y", "z"]
+tests = [
+    ("1 สมการ 3 ตัวแปร",   [[3,5,4]],                    [30]),
+    ("2 สมการ 3 ตัวแปร",   [[3,5,4],[1,1,1]],            [30,9]),
+    ("3 สมการ 3 ตัวแปร",   [[3,5,4],[1,1,1],[2,3,2]],    [30,9,18]),
+    ("4 สมการ ขัดกัน",     [[3,5,4],[1,1,1],[2,3,2],[1,1,1]], [30,9,18,10]),
+]
+for label, A, b in tests:
+    kind, M = gauss_general(A, b)
+    print(f"=== {label} -> {kind}")
+    for r in M:
+        print("   [" + "  ".join(f"{str(v):>6}" for v in r[:-1]) + " | " + f"{str(r[-1]):>5}" + " ]")
+    print()`} height={520}/>
       </Sect>
 
       {/* ═══════════ 🎯 · โจทย์ประยุกต์ ═══════════ */}
