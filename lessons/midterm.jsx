@@ -4,6 +4,339 @@
 //                      ทริกเก็บคะแนน + ทริกเครื่องคิดเลข + ข้อสอบยากจับเวลา
 // เลขทุกตัวในหน้านี้ยืนยันด้วยโปรแกรมแล้ว (เศษส่วน/full precision)
 
+// ─── สมุดพลาด ───────────────────────────────────────────────────────────────
+// เก็บว่าซ้อมรอบไหนผิดข้อไหน "เพราะอะไร" แล้วสรุปเป็นโรคประจำตัว — เพราะกติกาตรวจ
+// แค่คำตอบ การรู้ว่าตัวเองพลาดแบบไหนบ่อยสุดมีค่ากว่าการรู้ว่าทำผิดกี่ข้อ
+const ERR_LOG_KEY = "numer-errlog";
+
+const ERR_KINDS = [
+  { id: "read",  label: "อ่านโจทย์ผิด / ตีความผิด", color: "var(--red)",
+    fix: "ก่อนลงมือทุกข้อ ขีดเส้นใต้ 3 อย่าง: (1) หาอะไร (2) บังคับวิธีไหน (3) กี่รอบ / เกณฑ์หยุดอะไร — ใช้เวลา 20 วินาที แต่กันเสียทั้งข้อ" },
+  { id: "round", label: "ปัดเลขกลางทาง", color: "var(--yellow)",
+    fix: "ห้ามจดเลขแล้วพิมพ์กลับเข้าเครื่อง — เดินต่อด้วย Ans / STO / ↑= ให้จบในเครื่อง แล้วค่อยปัดตอนเขียนคำตอบสุดท้ายครั้งเดียว" },
+  { id: "code",  label: "โครงโค้ด / เลื่อนตัวแปรพลาด", color: "var(--blue)",
+    fix: "ไปหน้า “เขียนโค้ดจากหัว” (#code) ทำดริลกระดาษเปล่าซ้ำจนเขียน 4 โครงได้โดยไม่คิด — จุดตายคือ x0, x1 = x1, x2 กับบรรทัดเงื่อนไขหยุด" },
+  { id: "stop",  label: "เงื่อนไขหยุด / สูตร error ผิด", color: "var(--green)",
+    fix: "ท่องตารางกติกาเดินตาราง (หมวด ⭐ ด้านบน) — แยกให้ออกว่าโจทย์ขอ absolute |Δx| หรือ relative ε และวิธีไหนมี “รอบทำทิ้ง”" },
+  { id: "calc",  label: "กดเครื่อง / เลขคณิตพลาด", color: "var(--purple, #b18cff)",
+    fix: "เช็ค Rad/Deg ก่อนทุกครั้งที่มี sin/cos · และประมาณคำตอบคร่าว ๆ ในหัวก่อนกด ถ้าผลต่างจากที่คาดเป็นสิบเท่าแปลว่ากดผิด" },
+  { id: "time",  label: "ทำไม่ทัน (ไม่ใช่ทำผิด)", color: "var(--text-dim)",
+    fix: "ปัญหาการจัดลำดับ ไม่ใช่ความรู้ — ซ้อมอ่านครบ 6 ข้อใน 5 นาทีแรกแล้วเรียงตามความชัวร์ · ข้อที่ทำครึ่งเดียวได้ 0 เท่ากับไม่ทำ" },
+];
+
+function ErrorLog() {
+  const [rows, setRows] = React.useState(() => {
+    try { return JSON.parse(localStorage.getItem(ERR_LOG_KEY) || "[]"); } catch { return []; }
+  });
+  const [set, setSet] = React.useState("A");
+  const [no, setNo] = React.useState("1");
+  const [kind, setKind] = React.useState(ERR_KINDS[0].id);
+  const [note, setNote] = React.useState("");
+
+  const persist = (next) => { setRows(next); localStorage.setItem(ERR_LOG_KEY, JSON.stringify(next)); };
+  const add = () => persist([...rows, { k: Date.now(), set, no, kind, note: note.trim() }]);
+  const del = (k) => persist(rows.filter(r => r.k !== k));
+
+  const counts = ERR_KINDS
+    .map(k => ({ ...k, n: rows.filter(r => r.kind === k.id).length }))
+    .filter(k => k.n > 0)
+    .sort((a, b) => b.n - a.n);
+  const max = counts.length ? counts[0].n : 0;
+
+  const ctl = { background:"var(--screen)", color:"var(--text)", border:"1px solid var(--border)",
+                borderRadius:6, padding:"5px 8px", fontFamily:"var(--font-mono)", fontSize:'0.78rem' };
+
+  return (
+    <div className="card" style={{padding:"14px 16px"}}>
+      <div style={{display:"flex", gap:8, flexWrap:"wrap", alignItems:"center"}}>
+        <select style={ctl} value={set} onChange={e => setSet(e.target.value)}>
+          {["A", "B", "C", "โจทย์ยาก 10 ข้อ", "การบ้าน", "อื่น ๆ"].map(s => <option key={s} value={s}>ชุด {s}</option>)}
+        </select>
+        <select style={ctl} value={no} onChange={e => setNo(e.target.value)}>
+          {["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"].map(n => <option key={n} value={n}>ข้อ {n}</option>)}
+        </select>
+        <select style={{...ctl, flex:"1 1 220px"}} value={kind} onChange={e => setKind(e.target.value)}>
+          {ERR_KINDS.map(k => <option key={k.id} value={k.id}>{k.label}</option>)}
+        </select>
+        <input style={{...ctl, flex:"1 1 200px"}} placeholder="โน้ตสั้น ๆ (ไม่ใส่ก็ได้)"
+          value={note} onChange={e => setNote(e.target.value)}
+          onKeyDown={e => { if (e.key === "Enter") { add(); setNote(""); } }}/>
+        <button className="btn small primary" onClick={() => { add(); setNote(""); }}>+ บันทึก</button>
+      </div>
+
+      {rows.length === 0 ? (
+        <p className="muted" style={{margin:"12px 0 0", fontSize:'0.82rem'}}>ยังไม่มีบันทึก — ซ้อมเสร็จรอบหนึ่งแล้วมากรอกทุกข้อที่ไม่ได้คะแนน <b>รวมถึงข้อที่ทำไม่ทันด้วย</b></p>
+      ) : (
+        <>
+          <div style={{marginTop:14, display:"flex", flexDirection:"column", gap:5}}>
+            {counts.map(c => (
+              <div key={c.id} style={{display:"flex", alignItems:"center", gap:8, fontSize:'0.8rem'}}>
+                <span style={{flex:"0 0 190px"}}>{c.label}</span>
+                <span style={{flex:1, height:14, background:"var(--bg-soft)", borderRadius:3, overflow:"hidden"}}>
+                  <span style={{display:"block", height:"100%", width:`${(c.n / max) * 100}%`, background:c.color}}/>
+                </span>
+                <b style={{flex:"0 0 28px", textAlign:"right", fontFamily:"var(--font-mono)"}}>{c.n}</b>
+              </div>
+            ))}
+          </div>
+
+          <div style={{marginTop:14}}>
+            <b style={{fontSize:'0.86rem'}}>🩺 โรคประจำตัว — แก้ตามลำดับนี้</b>
+            <ol style={{margin:"6px 0 0", paddingLeft:20, fontSize:'0.82rem', lineHeight:1.7}}>
+              {counts.slice(0, 3).map(c => (
+                <li key={c.id} style={{marginBottom:6}}>
+                  <b style={{color:c.color}}>{c.label} ({c.n} ครั้ง)</b> — {c.fix}
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          <details style={{marginTop:12}}>
+            <summary style={{cursor:"pointer", fontSize:'0.8rem', color:"var(--text-dim)"}}>
+              ดูรายการทั้งหมด ({rows.length})
+            </summary>
+            <div style={{marginTop:8, display:"flex", flexDirection:"column", gap:4}}>
+              {rows.map(r => {
+                const k = ERR_KINDS.find(x => x.id === r.kind);
+                return (
+                  <div key={r.k} style={{display:"flex", gap:8, alignItems:"center", fontSize:'0.78rem',
+                                         fontFamily:"var(--font-mono)", padding:"3px 6px",
+                                         background:"var(--bg-soft)", borderRadius:4}}>
+                    <span style={{flex:"0 0 130px"}}>ชุด {r.set} · ข้อ {r.no}</span>
+                    <span style={{flex:"0 0 190px", color:k ? k.color : "var(--text)"}}>{k ? k.label : r.kind}</span>
+                    <span style={{flex:1, color:"var(--text-dim)"}}>{r.note}</span>
+                    <button className="btn small ghost" onClick={() => del(r.k)}>✕</button>
+                  </div>
+                );
+              })}
+            </div>
+          </details>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ─── แผนเตรียมสอบแบบติ๊กได้ ──────────────────────────────────────────────────
+const PLAN_KEY = "numer-planchk";
+
+const PLAN = [
+  { id: "p1", title: "เฟส 1 · ปิดขอบเขต", when: "ส. 8 – พ. 13 ส.ค.",
+    goal: "ไม่เหลือหัวข้อที่ยัง “ไม่เคยลงมือทำเอง”",
+    items: [
+      ["a1", "ทำการบ้าน 5 ทั้ง 3 ข้อด้วยตัวเอง แล้วค่อยเปิดเฉลยในบท Root ตรวจ"],
+      ["a2", "บท Integration — ปิดเฉลย ทำโจทย์ทุกข้อในบท ให้ครบ 4 วิธี"],
+      ["a3", "บท Differentiation — แยกให้ออกว่า O(h) กับ O(h²) คนละชุดสูตร"],
+      ["a4", "บท Root Finding — 6 วิธี + ตารางกติกา (รอบทำทิ้ง / สูตร ε ของแต่ละวิธี)"],
+      ["a5", "หน้า #code · ดริลเติมช่องว่าง 8 ข้อ"],
+      ["a6", "หน้า #code · ดริลกระดาษเปล่า 4 ข้อ — เขียนได้โดยไม่เปิดอะไรเลย"],
+    ]},
+  { id: "p2", title: "เฟส 2 · ซ้อมจับเวลาเต็มชุด", when: "พฤ. 14 – อ. 18 ส.ค.",
+    goal: "ชิน 180 นาที + รู้ว่าตัวเองพลาดแบบไหน",
+    items: [
+      ["b1", "14 ส.ค. — ซ้อมชุด A เต็ม 180 นาที แล้วกรอกสมุดพลาดทุกข้อที่เสีย"],
+      ["b2", "แก้ “โรคอันดับ 1” จากสมุดพลาดก่อนซ้อมรอบถัดไป"],
+      ["b3", "16 ส.ค. — ซ้อมชุด B แล้วเช็คว่าโรคอันดับ 1 เดิมลดลงไหม"],
+      ["b4", "17 ส.ค. — บ่ายสอบ Law · เช้าทวนเบา ๆ อย่างเดียว ห้ามซ้อมเต็มชุด"],
+      ["b5", "18 ส.ค. — ซ้อมชุด C (เกณฑ์ 5/6) แล้วกรอกสมุดพลาด"],
+      ["b6", "ถ้าเวลาเหลือ — ชุดโจทย์ยาก 10 ข้อ (หมวด 🔥)"],
+    ]},
+  { id: "p3", title: "เฟส 3 · ไล่จุดพลาด", when: "พ. 19 ส.ค. — ห้ามอ่านของใหม่",
+    goal: "Numer ต้องพร้อม 100% ภายในคืนนี้ เพราะพรุ่งนี้เย็นมีสอบอีกวิชา",
+    items: [
+      ["c1", "ทำซ้ำเฉพาะข้อที่อยู่ในสมุดพลาด ไม่ต้องไล่ทั้งหมด"],
+      ["c2", "ปิดตาเขียน 4 โครงโค้ดให้ครบ (bracketing / open / summation / finite difference)"],
+      ["c3", "ท่องกติกาเดินตาราง + สูตร ε ของทุกวิธี"],
+      ["c4", "ท่อง keystroke fx-991CW — เอาโพยเข้าห้องไม่ได้ ต้องอยู่ในหัว"],
+      ["c5", "เช็คเครื่องคิดเลข: ถ่านใหม่ · ตั้ง Rad · ลอง Ans-loop / STO / ↑="],
+      ["c6", "คาบ 19 ส.ค. เป็นคาบสุดท้าย — ถ้าอาจารย์แตะบทใหม่ ส่งไฟล์มาทันที"],
+    ]},
+  { id: "p4", title: "วันสอบ", when: "พฤ. 20 – ศ. 21 ส.ค.",
+    goal: "ไม่มีอะไรใหม่ เหลือแค่รักษาสภาพ",
+    items: [
+      ["d1", "20 ส.ค. เช้า — ทวน Cheat Sheet 1 ชม. แล้วปล่อย Numer ไว้แค่นั้น"],
+      ["d2", "20 ส.ค. 16:30–19:30 สอบ Selec Top (78-1201 ชั้น 12) → กลับมานอนเลย ห้ามฝืนอ่านต่อ"],
+      ["d3", "21 ส.ค. เช้า — ทวนสมุดพลาด 20 นาที ไม่แตะโจทย์ใหม่"],
+      ["d4", "ถึงห้อง 78-318 (ชั้น 3 อาคาร 78 · แถว 2 ลำดับ 4) ก่อน 08:40"],
+      ["d5", "ในห้อง 5 นาทีแรก — อ่านครบ 6 ข้อ ชี้ตัว “ข้อวัดสมอง” แล้วกาไว้ว่าจะทิ้ง"],
+      ["d6", "ทำข้อโค้ดก่อน → ข้อวัดพลัง → เหลือเวลาค่อยตรวจซ้ำ (ไม่ใช่เริ่มข้อใหม่)"],
+    ]},
+];
+
+function PlanChecklist() {
+  const [done, setDone] = React.useState(() => {
+    try { return JSON.parse(localStorage.getItem(PLAN_KEY) || "{}"); } catch { return {}; }
+  });
+  const toggle = (k) => {
+    const next = { ...done, [k]: !done[k] };
+    setDone(next);
+    localStorage.setItem(PLAN_KEY, JSON.stringify(next));
+  };
+  const all = PLAN.flatMap(p => p.items.map(i => i[0]));
+  const n = all.filter(k => done[k]).length;
+
+  return (
+    <div>
+      <div style={{display:"flex", alignItems:"center", gap:10, margin:"0 0 12px"}}>
+        <span style={{flex:1, height:10, background:"var(--bg-soft)", borderRadius:5, overflow:"hidden"}}>
+          <span style={{display:"block", height:"100%", width:`${(n / all.length) * 100}%`,
+                        background:"var(--green)", transition:"width .2s"}}/>
+        </span>
+        <b style={{fontFamily:"var(--font-mono)", fontSize:'0.82rem'}}>{n}/{all.length}</b>
+      </div>
+      {PLAN.map(ph => {
+        const dn = ph.items.filter(i => done[i[0]]).length;
+        return (
+          <div key={ph.id} className="card" style={{padding:"12px 14px", marginBottom:10}}>
+            <div style={{display:"flex", alignItems:"baseline", gap:8, flexWrap:"wrap"}}>
+              <b style={{fontSize:'0.94rem'}}>{ph.title}</b>
+              <span className="tag">{ph.when}</span>
+              <div style={{flex:1}}/>
+              <span style={{fontFamily:"var(--font-mono)", fontSize:'0.78rem',
+                            color: dn === ph.items.length ? "var(--green)" : "var(--text-faint)"}}>
+                {dn}/{ph.items.length}{dn === ph.items.length ? " ✓" : ""}
+              </span>
+            </div>
+            <p style={{margin:"2px 0 8px", fontSize:'0.8rem', color:"var(--text-dim)"}}>เป้าของเฟส: {ph.goal}</p>
+            <div style={{display:"flex", flexDirection:"column", gap:3}}>
+              {ph.items.map(([k, text]) => (
+                <label key={k} style={{display:"flex", gap:8, alignItems:"flex-start", cursor:"pointer",
+                                       fontSize:'0.84rem', lineHeight:1.55,
+                                       opacity: done[k] ? 0.5 : 1,
+                                       textDecoration: done[k] ? "line-through" : "none"}}>
+                  <input type="checkbox" checked={!!done[k]} onChange={() => toggle(k)}
+                    style={{marginTop:4, accentColor:"var(--green)", flex:"0 0 auto"}}/>
+                  <span>{text}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── เครื่องสุ่มชุดสอบ ───────────────────────────────────────────────────────
+// อาจารย์ไม่บอกว่าออกบทละกี่ข้อ ⇒ วิธีฝึกที่ตรงที่สุดคือซ้อมกับสัดส่วนที่ "สุ่ม"
+// ทุกครั้ง จะได้ชินกับการเปิดข้อสอบมาแล้วเจอสัดส่วนที่ไม่ได้เตรียมใจไว้
+const DRAW_KEY = "numer-lastdraw";
+
+const CH = { integ: "Integration", diff: "Differentiation", root: "Root Finding", lin: "Linear Systems" };
+
+const POOL = [
+  // ชุดสอบเสมือน A/B/C (หน้านี้ หมวด 🎓)
+  { id:"A1", ch:"integ", t:"hand", w:"หมวด 🎓 ชุด A" }, { id:"A2", ch:"root",  t:"code", w:"หมวด 🎓 ชุด A" },
+  { id:"A3", ch:"diff",  t:"hand", w:"หมวด 🎓 ชุด A" }, { id:"A4", ch:"integ", t:"code", w:"หมวด 🎓 ชุด A" },
+  { id:"A5", ch:"root",  t:"hand", w:"หมวด 🎓 ชุด A" }, { id:"A6", ch:"diff",  t:"code", w:"หมวด 🎓 ชุด A" },
+  { id:"B1", ch:"root",  t:"hand", w:"หมวด 🎓 ชุด B" }, { id:"B2", ch:"diff",  t:"code", w:"หมวด 🎓 ชุด B" },
+  { id:"B3", ch:"integ", t:"hand", w:"หมวด 🎓 ชุด B" }, { id:"B4", ch:"root",  t:"code", w:"หมวด 🎓 ชุด B" },
+  { id:"B5", ch:"diff",  t:"hand", w:"หมวด 🎓 ชุด B" }, { id:"B6", ch:"integ", t:"code", w:"หมวด 🎓 ชุด B" },
+  { id:"C1", ch:"integ", t:"hand", w:"หมวด 🎓 ชุด C" }, { id:"C2", ch:"root",  t:"code", w:"หมวด 🎓 ชุด C" },
+  { id:"C3", ch:"root",  t:"hand", w:"หมวด 🎓 ชุด C" }, { id:"C4", ch:"integ", t:"code", w:"หมวด 🎓 ชุด C" },
+  { id:"C5", ch:"diff",  t:"hand", w:"หมวด 🎓 ชุด C" }, { id:"C6", ch:"diff",  t:"code", w:"หมวด 🎓 ชุด C" },
+  // ชุดโจทย์ยาก 10 ข้อ (หน้านี้ หมวด 🔥)
+  { id:"ยาก 1",  ch:"integ", t:"hand", w:"หมวด 🔥" }, { id:"ยาก 2",  ch:"integ", t:"hand", w:"หมวด 🔥" },
+  { id:"ยาก 3",  ch:"integ", t:"hand", w:"หมวด 🔥" }, { id:"ยาก 4",  ch:"diff",  t:"hand", w:"หมวด 🔥" },
+  { id:"ยาก 5",  ch:"root",  t:"hand", w:"หมวด 🔥" }, { id:"ยาก 6",  ch:"root",  t:"hand", w:"หมวด 🔥" },
+  { id:"ยาก 7",  ch:"root",  t:"hand", w:"หมวด 🔥" }, { id:"ยาก 8",  ch:"root",  t:"hand", w:"หมวด 🔥" },
+  { id:"ยาก 9",  ch:"integ", t:"hand", w:"หมวด 🔥" }, { id:"ยาก 10", ch:"diff",  t:"hand", w:"หมวด 🔥" },
+  // การบ้าน 6 วิธี (หน้า Gauss & Iteration หมวด 📮)
+  { id:"L1 Cramer",       ch:"lin", t:"hand", w:"#linear หมวด 📮" },
+  { id:"L2 Gauss Elim",   ch:"lin", t:"hand", w:"#linear หมวด 📮" },
+  { id:"L3 Gauss-Jordan", ch:"lin", t:"hand", w:"#linear หมวด 📮" },
+  { id:"L4 Inversion",    ch:"lin", t:"code", w:"#linear หมวด 📮" },
+  { id:"L5 LU",           ch:"lin", t:"code", w:"#linear หมวด 📮" },
+  { id:"L6 Cholesky",     ch:"lin", t:"code", w:"#linear หมวด 📮" },
+  // ดริลเขียนโค้ดจากหัว (หน้า #code)
+  { id:"กระดาษเปล่า 1", ch:"root",  t:"code", w:"#code หมวด 3" },
+  { id:"กระดาษเปล่า 2", ch:"root",  t:"code", w:"#code หมวด 3" },
+  { id:"กระดาษเปล่า 3", ch:"integ", t:"code", w:"#code หมวด 3" },
+  { id:"กระดาษเปล่า 4", ch:"diff",  t:"code", w:"#code หมวด 3" },
+];
+
+function pick(arr, n) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a.slice(0, n);
+}
+
+function RandomExamDraw() {
+  const [draw, setDraw] = React.useState(() => {
+    try { return JSON.parse(localStorage.getItem(DRAW_KEY) || "null"); } catch { return null; }
+  });
+  const [left, setLeft] = React.useState(180 * 60);
+  const [running, setRunning] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!running) return;
+    const t = setInterval(() => setLeft(s => (s <= 1 ? (setRunning(false), 0) : s - 1)), 1000);
+    return () => clearInterval(t);
+  }, [running]);
+
+  const roll = () => {
+    // อาจารย์บอก "โค้ดครึ่งหนึ่ง คำนวณครึ่งหนึ่ง" ⇒ ล็อก 3 โค้ด + 3 มือ
+    // ส่วนบทไหนกี่ข้อ ปล่อยสุ่มล้วน เพราะนั่นคือสิ่งที่เราไม่รู้จริง ๆ
+    const items = [...pick(POOL.filter(p => p.t === "code"), 3),
+                   ...pick(POOL.filter(p => p.t === "hand"), 3)];
+    const order = pick(items, 6);
+    const brain = Math.floor(Math.random() * 6);
+    const next = { order, brain, at: new Date().toLocaleString("th-TH") };
+    setDraw(next);
+    localStorage.setItem(DRAW_KEY, JSON.stringify(next));
+    setLeft(180 * 60); setRunning(false);
+  };
+
+  const mmss = (s) => `${String(Math.floor(s/3600)).padStart(2,"0")}:${String(Math.floor(s/60)%60).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`;
+  const dist = draw ? Object.keys(CH).map(k => ({ k, n: draw.order.filter(o => o.ch === k).length })) : [];
+
+  return (
+    <div className="card" style={{padding:"14px 16px"}}>
+      <div style={{display:"flex", gap:10, alignItems:"center", flexWrap:"wrap"}}>
+        <button className="btn small primary" onClick={roll}>🎲 สุ่มชุดสอบใหม่</button>
+        {draw && <>
+          <span style={{fontFamily:"var(--font-mono)", fontSize:'1.4rem', fontWeight:700,
+                        color: left < 15*60 ? "var(--red)" : "var(--green)"}}>{mmss(left)}</span>
+          <button className="btn small" onClick={() => setRunning(r => !r)}>{running ? "⏸ พัก" : "▶ เริ่มจับเวลา"}</button>
+          <button className="btn small ghost" onClick={() => { setLeft(180*60); setRunning(false); }}>↺ รีเซ็ตเวลา</button>
+        </>}
+      </div>
+
+      {!draw ? (
+        <p className="muted" style={{margin:"12px 0 0", fontSize:'0.84rem'}}>กดปุ่มเพื่อสุ่ม — จะได้ <b>6 ข้อ (3 โค้ด + 3 มือ)</b> แต่<b>สัดส่วนบทสุ่มทุกครั้ง</b> เหมือนตอนเปิดข้อสอบจริงที่ไม่รู้ว่าบทไหนมากี่ข้อ</p>
+      ) : (
+        <>
+          <p style={{margin:"12px 0 6px", fontSize:'0.82rem', color:"var(--text-dim)"}}>สุ่มเมื่อ {draw.at} — เปิดหน้าใหม่ก็ยังเป็นชุดเดิมจนกว่าจะกดสุ่มใหม่</p>
+          <NumTable
+            headers={["ข้อ", "โจทย์", "บท", "ประเภท", "อยู่ที่"]}
+            rows={draw.order.map((o, i) => [
+              i + 1,
+              <span>{o.id}{i === draw.brain && <span className="tag" style={{marginLeft:6, borderColor:"var(--red)", color:"var(--red)"}}>ข้อวัดสมอง</span>}</span>,
+              CH[o.ch],
+              o.t === "code" ? "เขียนโปรแกรม" : "คำนวณมือ",
+              o.w,
+            ])}
+          />
+          <p style={{margin:"8px 0 0", fontSize:'0.86rem'}}>
+            <b>สัดส่วนบทที่สุ่มได้รอบนี้:</b>{" "}
+            {dist.filter(d => d.n > 0).map(d => `${CH[d.k]} ${d.n} ข้อ`).join(" · ")}
+          </p>
+          <Callout kind="warn" title="กติกาของรอบนี้">
+            <ul style={{margin:0, paddingLeft:18, fontSize:'0.86rem'}}>
+              <li><b>ข้อที่ติดป้าย “ข้อวัดสมอง” ให้ทิ้ง</b> — ทำอีก 5 ข้อให้ครบใน 180 นาที (36 นาที/ข้อ) เหลือเวลาค่อยกลับมาแตะ</li>
+              <li>เปิดเฉพาะ<b>โจทย์</b>ตามที่ตารางบอก อย่าเผลออ่านเฉลยข้าง ๆ</li>
+              <li>จบแล้วกรอก<b>สมุดพลาด</b> (หมวด 🩺) ทุกข้อที่ไม่ได้คะแนน รวมข้อที่ทำไม่ทัน</li>
+            </ul>
+          </Callout>
+        </>
+      )}
+    </div>
+  );
+}
+
 function MidtermLesson() {
   return (
     <div>
@@ -16,16 +349,17 @@ function MidtermLesson() {
           steps: [
             { x: "เขียนโค้ด ~3 ข้อ", w: 50 },
             { x: "คำนวณมือ ~3 ข้อ", w: 50 },
-            { x: "~30 นาที/ข้อ", w: 100 },
+            { x: "ทิ้งข้อวัดสมอง ⇒ 36 นาที/ข้อ", w: 100 },
           ],
-          result: "90",
-          note: "อาจารย์บอกเอง: ทำได้ 5 จาก 6 ข้อถือว่าดี · ตอบเศษส่วน = 0",
+          result: "75",
+          note: "อาจารย์บอกเอง: 1 ใน 6 ข้อ “ต้องเป็นคนพิเศษ” ถึงทำได้ ⇒ เล็ง 5 ข้อให้ถูกหมด · ตอบเศษส่วน = 0",
         }}
         meta={["แนวข้อสอบจากอาจารย์", "กติกา 1/0", "คู่มือฟังก์ชัน", "ดริล 20 + โจทย์ยาก 10"]}
       />
 
       <Callout kind="warn" title="📌 อ่านตรงนี้ก่อน — หน้านี้ “มีชีวิต” จะอัปเดตเรื่อย ๆ จนถึงวันสอบ">
-        <p style={{margin:"0 0 6px"}}>ตอนนี้ยึดขอบเขต <b>Integration + Differentiation + Root Finding</b> ซึ่งเป็น 3 บทที่<b>เรียนจบแล้วแน่นอน</b> (อาจารย์ปิด Root Finding วันที่ 5 ส.ค.) เหลือคาบ <b>12 และ 19 ส.ค.</b> อีก 2 คาบ ถ้าแตะบทใหม่ทัน ผมจะเติมชุดโจทย์ของบทนั้นเข้ามาที่หน้านี้</p>
+        <p style={{margin:"0 0 6px"}}>ขอบเขตที่<b>ยืนยันแล้ว 4 บท</b>: <b>Integration + Differentiation + Root Finding</b> (จบวันที่ 5 ส.ค.) และ <b>ระบบสมการเชิงเส้น</b> ที่เปิดบทในคาบชดเชย <b>เสาร์ 8 ส.ค.</b> — เริ่มที่ <b>Cramer’s Rule (เอาแค่ 2×2 กับ 3×3)</b></p>
+        <p style={{margin:"0 0 6px"}}><b>12 ส.ค. หยุดวันแม่</b> ⇒ เหลือคาบเดียวคือ <b>19 ส.ค. ซึ่งห่างวันสอบแค่ 2 วัน</b> · อาจารย์บอกในคาบ 8 ส.ค. ว่า<b>สัปดาห์หน้าเรียน Gauss Elimination</b> ⇒ คาดว่าขอบเขตจะปิดที่ Cramer + Gauss · เฉลยการบ้าน 6 วิธีของบทนี้อยู่ในบท <b>Gauss &amp; Iteration</b> แล้ว (หมวด 📮)</p>
         <p style={{margin:0, fontSize:'0.84rem'}}>อาจารย์<b>ไม่บอกแนวข้อสอบ</b> บอกแค่ “ออกทุกบทที่สอน” ⇒ หน้านี้จึงกระจายน้ำหนักเท่า ๆ กันทุกบท ไม่เดาว่าบทไหนไม่ออก</p>
       </Callout>
 
@@ -36,7 +370,7 @@ function MidtermLesson() {
           rows={[
             ["จำนวนข้อ / คะแนน", "6 ข้อ · 90 คะแนน (คิดเข้าวิชา 45)", "เฉลี่ยข้อละ 15 คะแนน · 180 นาที ⇒ ~30 นาที/ข้อ"],
             ["สัดส่วนเนื้อหา", <span><b>“มีโค้ดครึ่งหนึ่ง มีคำนวณครึ่งหนึ่ง”</b></span>, <span>ราว <b>3 ข้อเขียนโปรแกรม + 3 ข้อคำนวณมือ</b> ⇒ ซ้อมเขียนโค้ดให้พอ ๆ กับซ้อมคิดเลข</span>],
-            ["ระดับความยาก", <span>“พวกคุณจะทำได้ 5 ข้อ” · มี<b>ข้อวัดมันสมอง</b> กับ<b>ข้อวัดพลัง</b></span>, "ยอมทิ้ง 1 ข้อได้ · ข้อ “วัดพลัง” = คำนวณยาวแต่ตรงไปตรงมา ⇒ เก็บให้ครบ"],
+            ["ระดับความยาก", <span>“พวกคุณจะทำได้ 5 ข้อ · อีกข้อหนึ่ง<b>ต้องเป็นคนที่พิเศษเท่านั้นถึงจะทำได้</b> — ข้อวัดมันสมอง · ที่เหลือ<b>วัดพลัง</b> · จะทำข้อมันสมองก็ได้นะครับ”</span>, <span><b>1 ข้อถูกออกแบบมาให้ทำไม่ได้ และอาจารย์เปิดทางให้เลือกทิ้ง</b> ⇒ วางแผนที่ 5 ข้อตั้งแต่ต้น: เพดานจริง 75/90 และได้เวลา 36 นาที/ข้อ แทน 30</span>],
             ["ขอบเขต", "“ของทุกเรื่องที่เรียน”", "ไม่มีบทไหนถูกตัดออก"],
             ["อุปกรณ์", "ห้ามเอากระดาษ/โพยเข้า · ใช้เครื่องคิดเลขได้", "ต้องจำสูตรเองทั้งหมด ⇒ ท่อง Cheat Sheet ให้ขึ้นใจ"],
           ]}
@@ -68,19 +402,59 @@ function MidtermLesson() {
         </Callout>
       </Callout>
 
+      {/* ═══════════ 🗓 · แผนเตรียมสอบ ═══════════ */}
+      <Sect tag="🗓" title="แผนเตรียมสอบ — ติ๊กไปทีละข้อ (บันทึกอัตโนมัติ)">
+        <Callout kind="danger" title="🎙️ คำพูดอาจารย์ตอนปิดคาบ 5 ส.ค. — ประโยคที่เปลี่ยนแผนทั้งหมด">
+          <div style={{fontFamily:"var(--font-mono)", fontSize:'0.82rem', lineHeight:1.85, padding:"8px 12px",
+                       background:"var(--screen)", borderRadius:6, margin:"0 0 8px", color:"var(--green)"}}>
+            “ข้อสอบมี 6 ข้อ … <b>พวกคุณจะทำได้ 5 ข้อ</b><br/>
+            อีกข้อหนึ่ง <b>แต่ต้องเป็นคนที่พิเศษเท่านั้น คุณถึงจะทำได้ — ข้อวัดมันสมอง</b><br/>
+            <b>ที่เหลือวัดพลัง</b> … คุณจะทำข้อมันสมองก็ได้นะครับ<br/>
+            มีโค้ดครึ่งหนึ่ง มีคำนวณครึ่งหนึ่ง”
+          </div>
+          <p style={{margin:"0 0 6px", fontSize:'0.8rem', color:"var(--text-faint)"}}>ถอดจากไฟล์เสียงคาบ 5 ส.ค. 2569 (<code>transcripts/w6.txt</code>) — เรียบเรียงคำที่ถอดเพี้ยนให้อ่านรู้เรื่อง แต่ใจความตรงตามเสียง</p>
+          <p style={{margin:0}}><b>แปลว่า:</b> ข้อที่ 6 <b>ถูกออกแบบมาให้ทำไม่ได้</b> ตั้งแต่ต้น และอาจารย์<b>เปิดทางให้เลือกเองว่าจะทำหรือไม่ทำ</b> ⇒ นี่ไม่ใช่ข้อที่ต้อง “พยายามให้ถึง” แต่คือข้อที่ควร<b>ตัดสินใจทิ้งตั้งแต่นาทีแรก</b></p>
+        </Callout>
+
+        <Callout kind="good" title="⇒ เพดานคะแนนจริงคือ 75 ไม่ใช่ 90 — และนั่นทำให้เวลาต่อข้อเพิ่มจาก 30 เป็น 36 นาที">
+          <NumTable
+            headers={["ถ้าคิดแบบเดิม (สู้ทั้ง 6 ข้อ)", "ถ้าคิดแบบใหม่ (ทิ้งข้อวัดสมองตั้งแต่ต้น)"]}
+            rows={[
+              ["180 ÷ 6 = 30 นาที/ข้อ", "180 ÷ 5 = 36 นาที/ข้อ (+20% ต่อข้อ)"],
+              ["เสี่ยงจมกับข้อที่ทำไม่ได้ แล้วข้อที่ทำได้เลยพลาดตาม", "ทุกข้อที่ลงมือคือข้อที่ทำได้ ⇒ มีเวลาตรวจซ้ำจริง"],
+              ["เต็ม 90 (ไม่มีใครได้)", <span>เต็มที่ทำได้จริง <b>75/90 = 83%</b></span>],
+            ]}
+          />
+          <p style={{margin:"8px 0 0"}}>เป้าที่ควรตั้งคือ <b>ทำ 5 ข้อวัดพลังให้ถูกหมด</b> ไม่ใช่ทำ 6 ข้อแบบครึ่ง ๆ · ข้อวัดสมองเป็น<b>โบนัส</b> แตะเฉพาะตอนเหลือเวลาหลังตรวจครบแล้ว — เพราะกติกาคือผิด = 0 การเอาเวลาไปตรวจ 5 ข้อที่ทำแล้ว<b>คุ้มกว่า</b>การเริ่มข้อที่ 6 เสมอ</p>
+        </Callout>
+
+        <PlanChecklist/>
+
+        <Callout kind="tip" title="กติกาใช้แผนนี้">
+          <ul style={{margin:0, paddingLeft:18}}>
+            <li>ติ๊กแล้ว<b>บันทึกในเครื่องนี้เอง</b> ปิดหน้า/ปิดเบราว์เซอร์แล้วไม่หาย</li>
+            <li>ติ๊กเฉพาะสิ่งที่<b>ทำเสร็จจริง</b> — ติ๊กเพราะ “อ่านผ่านแล้ว” จะทำให้แผนโกหกตัวเอง</li>
+            <li>ถ้าเฟส 1 ไม่จบภายใน 13 ส.ค. <b>ให้ข้ามไปเริ่มเฟส 2 ตามกำหนดอยู่ดี</b> — การซ้อมจับเวลามีค่ากว่าการอ่านให้ครบ</li>
+          </ul>
+        </Callout>
+      </Sect>
+
       <Sect tag="0" title="เกมแพลน 180 นาที — จัดลำดับก่อนลงมือข้อแรก">
         <p>อาจารย์วิชานี้ตรวจ<b>แค่คำตอบสุดท้าย</b> ผิดคือ 0 ไม่มีคะแนนบางส่วน ⇒ เกมไม่ใช่ “ทำให้ครบทุกข้อ” แต่คือ <b>“เลือกข้อที่ทำได้ แล้วทำให้ถูกจริง ๆ”</b> — และกันเวลาไว้<b>ตรวจ</b>ให้พอเสมอ</p>
 
         <NumTable
           headers={["ช่วงเวลา", "ทำอะไร", "เหตุผล"]}
           rows={[
-            ["0–10 นาที", "อ่านทั้ง 6 ข้อ เขียนกำกับว่าข้อไหนเป็น “โค้ด” ข้อไหน “คำนวณ”", "รู้ทันทีว่าข้อไหนคุ้มเวลา ก่อนจะจมกับข้อแรก"],
+            ["0–10 นาที", <span>อ่านทั้ง 6 ข้อ กำกับว่าข้อไหน “โค้ด” ข้อไหน “คำนวณ” และ<b>ชี้ตัวข้อวัดสมองแล้วกาทิ้งไว้</b></span>, "อาจารย์บอกเองว่ามี 1 ข้อที่ต้อง “คนพิเศษ” ถึงทำได้ ⇒ รู้ตัวตั้งแต่ต้นว่าจะไม่แตะ"],
             ["10–60", <span>เก็บ<b>ข้อเขียนโค้ด</b>ก่อน (ราว 3 ข้อ)</span>, "โค้ดเป็นงานที่คุมได้ที่สุด — โครงเดิมดัดนิดเดียว และไม่พลาดเพราะกดเครื่องผิด"],
-            ["60–130", "ข้อคำนวณมือที่เป็น “ข้อวัดพลัง” (ตารางวนซ้ำ / Composite หลาย n)", "ยาวแต่ตรงไปตรงมา ทำครบก็ได้เต็ม ⇒ ห้ามปล่อยให้เวลาหมดก่อน"],
-            ["130–165", "ข้อ “วัดมันสมอง” ที่ต้องคิดก่อนว่าจะเริ่มยังไง", "ยอมทิ้งได้ถ้าไม่ไหว — อาจารย์เองบอกว่าคาดหวัง 5 จาก 6 ข้อ"],
-            ["165–180", <span>ไล่ตรวจ: <b>แปลงเศษส่วนเป็นทศนิยมครบทุกข้อ</b> · เครื่องหมาย · ครบจำนวนรอบที่สั่ง</span>, "เศษส่วนที่ลืมแปลง = 0 ทั้งที่คำนวณถูก — จุดเสียคะแนนฟรีอันดับ 1"],
+            ["60–150", <span>ข้อ<b>คำนวณมือที่เป็น “ข้อวัดพลัง”</b> ทั้งหมด (ราว 2 ข้อ · ข้อละ ~45 นาทีได้สบาย)</span>, "ยาวแต่ตรงไปตรงมา ทำครบก็ได้เต็ม ⇒ นี่คือคะแนนหลักของทั้งข้อสอบ"],
+            ["150–175", <span><b>ตรวจซ้ำ 5 ข้อที่ทำแล้ว</b> ด้วยวิธีที่สอง — ไม่ใช่เริ่มข้อที่ 6</span>, "ผิด = 0 ⇒ การกู้ข้อที่ทำพลาดมีค่า 15 คะแนน เท่ากับการเริ่มข้อใหม่ที่อาจไม่จบ"],
+            ["175–180", <span>ไล่เช็ค: <b>แปลงเศษส่วนเป็นทศนิยมครบทุกข้อ</b> · เครื่องหมาย · ครบจำนวนรอบที่สั่ง</span>, "เศษส่วนที่ลืมแปลง = 0 ทั้งที่คำนวณถูก — จุดเสียคะแนนฟรีอันดับ 1"],
           ]}
         />
+        <Callout kind="warn" title="แล้วข้อวัดสมองล่ะ — แตะเมื่อไหร่">
+          <p style={{margin:0}}>แตะ<b>ต่อเมื่อตรวจ 5 ข้อครบแล้วและยังมั่นใจทุกข้อ</b> เท่านั้น · ถ้าแตะแล้วไม่เห็นทางภายใน 5 นาที ให้ปล่อยทันที — <b>15 คะแนนที่กู้จากข้อที่ทำพลาด มีค่าเท่ากับ 15 คะแนนจากข้อที่ 6 เป๊ะ แต่โอกาสสำเร็จต่างกันคนละเรื่อง</b></p>
+        </Callout>
 
         <Callout kind="tip" title="กฎ 5 นาที">
           <p style={{margin:0}}>ข้อไหน<b>ยังไม่รู้ว่าจะเริ่มยังไง</b>ภายใน 5 นาที ให้ข้ามทันที อย่าฝืน — เพราะข้อที่ทำครึ่ง ๆ ได้ 0 เท่ากับไม่ทำ. จดไว้ข้างข้อว่าติดตรงไหน แล้วกลับมาถ้าเหลือเวลา · <b>แต่ถ้ารู้วิธีแล้วแค่คำนวณยาว ให้ทำต่อจนจบ</b> อย่าทิ้งกลางคัน</p>
@@ -1045,6 +1419,772 @@ print(f"\\nแม่นขึ้น {abs(exact-d_h2)/abs(exact-d_h4):.1f} เท
       </Sect>
 
       {/* ═══════════ ❌ · กับดัก ═══════════ */}
+      {/* ═══════════ 🎓 · ชุดสอบเสมือนจริง ═══════════ */}
+      <Sect tag="🎓" title="ชุดสอบเสมือนจริง · 3 ชุด (ชุดละ 6 ข้อ · 90 คะแนน · 180 นาที)">
+        <p>ชุดข้างบน (🔥 10 ข้อ/120 นาที) ไว้<b>ฝึกทีละเรื่อง</b> · ส่วน 3 ชุดนี้คือ<b>ข้อสอบเสมือนจริง</b> — จำนวนข้อ คะแนน เวลา และสัดส่วน “โค้ดครึ่ง มือครึ่ง” ตรงกับที่อาจารย์บอกทุกอย่าง ทำให้จบในรอบเดียวโดยไม่ลุกไปไหน</p>
+        <NumTable
+          headers={["ชุด", "แนว", "ซ้อมวันที่", "เกณฑ์ผ่าน"]}
+          rows={[
+            ["A", "ตรงแนวข้อสอบที่สุด — ยากปานกลาง เดินตารางเยอะ", "ศ. 14 ส.ค.", "ถูก 4/6 ขึ้นไป"],
+            ["B", "ประยุกต์หนัก + กับดัก — ต้องตั้งสมการ/เลือกวิธีเอง", "อา. 16 ส.ค.", "ถูก 4/6 ขึ้นไป"],
+            ["C", "สั้นแต่พลาดง่าย — วัดความไวและความแม่น", "อ. 18 ส.ค.", "ถูก 5/6 ขึ้นไป"],
+          ]}
+        />
+        <Callout kind="danger" title="กติกาให้คะแนนตัวเอง — ต้องโหดเท่าอาจารย์ ไม่งั้นซ้อมไปก็ไม่รู้เรื่อง">
+          <ul style={{margin:0, paddingLeft:18}}>
+            <li><b>ข้อละ 15 คะแนน ได้เต็มหรือ 0 เท่านั้น</b> — เลขไม่ตรงตำแหน่งที่โจทย์สั่ง = 0 ไม่มีให้ครึ่งเดียว</li>
+            <li><b>ตอบเป็นทศนิยมเท่านั้น</b> เจอเศษส่วนในคำตอบสุดท้าย = 0 ทันที</li>
+            <li>ข้อเขียนโปรแกรม: ตรวจว่า<b>เขียนบนกระดาษได้โดยไม่เปิดอะไรเลย</b> — ลืม <code>x0, x1 = x1, x2</code> หรือลืมบรรทัดเงื่อนไขหยุด = 0</li>
+            <li>หมดเวลาแล้วห้ามเขียนต่อ · จดไว้ด้วยว่าข้อไหน<b>ทำไม่ทัน</b> กับข้อไหน<b>ทำแล้วผิด</b> — สองอย่างนี้แก้คนละวิธี</li>
+          </ul>
+        </Callout>
+
+        {/* ─────────── ชุด A ─────────── */}
+        <h3 style={{marginTop:24}}>ชุด A · “ตรงแนวข้อสอบ” — 3 ข้อมือ + 3 ข้อโค้ด</h3>
+        <TimedExam presets={[180, 150, 120]} label="ชุด A · 6 ข้อ · 90 คะแนน — จับเวลา 180 นาทีเท่าของจริง">
+
+        <Problem label="A1 (15 คะแนน) · ทำมือ · Integration — ข้อวัดพลัง" solution={
+          <div>
+            <p style={{marginTop:0}}><M>{`h=\\dfrac{3-1}{4}=0.5`}</M> ⇒ จุดที่ใช้ 5 จุด (4 ช่องย่อย = 2 พาราโบลา ⇒ Simpson 1/3 ล้วนใช้ได้)</p>
+            <NumTable
+              headers={["i", "xᵢ", "f(xᵢ) = ln xᵢ", "น้ำหนัก Trap", "น้ำหนัก Simpson"]}
+              rows={[
+                [0, "1.0", "0.000000", "×1", "×1"],
+                [1, "1.5", "0.405465", "×2", "×4"],
+                [2, "2.0", "0.693147", "×2", "×2"],
+                [3, "2.5", "0.916291", "×2", "×4"],
+                [4, "3.0", "1.098612", "×1", "×1"],
+              ]}
+            />
+            <div style={{fontFamily:"var(--font-mono)", fontSize:'0.84rem', lineHeight:1.9, padding:"8px 12px", background:"var(--bg-soft)", borderRadius:6, margin:"8px 0"}}>
+              <b>(ก) Composite Trapezoidal</b><br/>
+              I = (0.5/2)[0.000000 + 1.098612 + 2(0.405465 + 0.693147 + 0.916291)]<br/>
+              &nbsp;&nbsp;= 0.25 × [1.098612 + 4.029806] = 0.25 × 5.128418 = <b style={{color:"var(--yellow)"}}>1.282105</b><br/><br/>
+              <b>(ข) Composite Simpson 1/3 (2 พาราโบลา)</b><br/>
+              I = (0.5/3)[0.000000 + 1.098612 + 4(0.405465 + 0.916291) + 2(0.693147)]<br/>
+              &nbsp;&nbsp;= 0.166667 × [1.098612 + 5.287024 + 1.386294] = 0.166667 × 7.771930 = <b style={{color:"var(--green)"}}>1.295322</b>
+            </div>
+            <p><b>ค่าจริง:</b> <M>{`\\int \\ln x\\,dx = x\\ln x - x`}</M> ⇒ <M>{`[x\\ln x - x]_1^3 = (3\\ln 3 - 3) - (0 - 1) = 3\\ln 3 - 2 = 1.295837`}</M></p>
+            <NumTable
+              headers={["วิธี", "ค่าที่ได้", "ε% เทียบค่าจริง"]}
+              rows={[
+                ["Composite Trapezoidal (4 ช่อง)", "1.282105", "1.059723 %"],
+                ["Composite Simpson 1/3 (2 พาราโบลา)", "1.295322", "0.039758 %"],
+              ]}
+            />
+            <Callout kind="good" title="ทำไม Simpson แม่นกว่าเกือบ 27 เท่าทั้งที่ใช้จุดเท่ากัน">
+              <p style={{margin:0}}>จุดเท่ากันเป๊ะ (5 จุด) แต่ Trapezoidal ลาก<b>เส้นตรง</b>เชื่อม ส่วน Simpson ลาก<b>พาราโบลา</b>ผ่านทีละ 3 จุด · <M>{`\\ln x`}</M> เป็นเส้นโค้งคว่ำ ⇒ เส้นตรงลอดใต้เส้นโค้งเสมอ Trapezoidal จึง<b>ต่ำกว่าค่าจริงทุกครั้ง</b> · error ของ Trap เป็น <M>{`O(h^2)`}</M> ส่วน Simpson เป็น <M>{`O(h^4)`}</M></p>
+            </Callout>
+            <PythonRunner code={`import math
+f = math.log
+a, b, m = 1.0, 3.0, 4          # m = ช่องย่อย (= 2 พาราโบลา)
+h = (b - a) / m
+xs = [a + i*h for i in range(m+1)]
+
+trap = h/2 * (f(a) + f(b) + 2*sum(f(xs[i]) for i in range(1, m)))
+simp = h/3 * (f(a) + f(b) + sum((4 if i%2 else 2)*f(xs[i]) for i in range(1, m)))
+exact = 3*math.log(3) - 2
+
+for i, x in enumerate(xs): print(f"x{i} = {x:.1f}   ln x = {f(x):.6f}")
+print(f"\\nexact   = {exact:.6f}")
+print(f"Trap    = {trap:.6f}   err = {abs(exact-trap)/exact*100:.6f}%")
+print(f"Simpson = {simp:.6f}   err = {abs(exact-simp)/exact*100:.6f}%")`} height={300}/>
+          </div>
+        }>
+          จงประมาณค่า <M>{`\\displaystyle\\int_1^3 \\ln x\\,dx`}</M> ด้วย <b>(ก)</b> Composite Trapezoidal 4 ช่องย่อย และ <b>(ข)</b> Composite Simpson 1/3 ด้วย 2 พาราโบลา แล้วหา<b>ค่าคลาดเคลื่อนเป็นเปอร์เซ็นต์</b>ของทั้งสองวิธีเทียบกับค่าจริง (ตอบทศนิยม 6 ตำแหน่ง)
+        </Problem>
+
+        <Problem label="A2 (15 คะแนน) · เขียนโปรแกรม · Root Finding" solution={
+          <div>
+            <p style={{marginTop:0}}><b>เช็คก่อนเขียน:</b> <M>{`f(2)=8-4-5=-1`}</M>, <M>{`f(3)=27-6-5=16`}</M> ⇒ <M>{`f(x_l)f(x_u)<0`}</M> ✓ มีรากในช่วง</p>
+            <PythonRunner code={`# A2 — False Position หาราก x³ − 2x − 5 = 0 ใน [2, 3]
+f = lambda x: x**3 - 2*x - 5
+
+xl, xu = 2.0, 3.0
+prev = None
+
+print(f"{'i':>3} {'xl':>10} {'xu':>10} {'xr':>12} {'f(xr)':>12} {'|dx|':>10}")
+for i in range(1, 101):
+    xr = xu - f(xu)*(xl - xu)/(f(xl) - f(xu))     # สูตร False Position
+    dx = None if prev is None else abs(xr - prev)
+    print(f"{i:3d} {xl:10.6f} {xu:10.6f} {xr:12.8f} {f(xr):12.3e} "
+          f"{'—' if dx is None else f'{dx:.2e}':>10}")
+    if dx is not None and round(xr, 6) == round(prev, 6):   # นิ่ง 6 ทศนิยม
+        break
+    if f(xl) * f(xr) < 0:
+        xu = xr
+    else:
+        xl = xr
+    prev = xr
+
+print(f"\\nราก ≈ {xr:.6f}   (หยุดที่รอบ {i})")`} height={360}/>
+            <Callout kind="warn" title="2 จุดที่ตัดคะแนนข้อนี้">
+              <ul style={{margin:0, paddingLeft:18}}>
+                <li><b>รอบแรกไม่มี error</b> — False Position เป็นวิธีมี “รอบทำทิ้ง” ต้องมี <M>{`x_r`}</M> สองค่าถึงจะเทียบกันได้ ⇒ ต้องมีตัวแปร <code>prev</code></li>
+                <li><b><M>{`x_u`}</M> ค้างที่ 3.0 ทุกรอบ</b> — ไม่ใช่บั๊ก นี่คือ <em>one-sided convergence</em> ของ False Position (ปลายที่โค้งมากจะไม่ขยับ) ⇒ ถ้าเขียนโปรแกรมแล้วเห็นปลายค้าง<b>อย่าไปแก้</b></li>
+              </ul>
+            </Callout>
+            <NumTable
+              headers={["i", "xₗ", "xᵣ", "f(xᵣ)"]}
+              rows={[
+                [1, "2.000000", "2.058824", "−0.390810"],
+                [2, "2.058824", "2.081264", "−0.147204"],
+                [3, "2.081264", "2.089639", "−0.054677"],
+                [4, "2.089639", "2.092740", "−0.020195"],
+                ["…", "…", "…", "…"],
+                [13, "2.094551", "2.094551", "−0.0000025"],
+              ]}
+            />
+            <p>หยุดรอบที่ <b>13</b> ได้ <b>2.094551</b> (ค่าจริง 2.0945514815)</p>
+          </div>
+        }>
+          จงเขียนโปรแกรมหารากของ <M>{`f(x)=x^3-2x-5`}</M> ในช่วง <M>{`[2,3]`}</M> ด้วยวิธี <b>False Position</b> โดยให้<b>หยุดเมื่อผลลัพธ์ไม่เปลี่ยนแปลงในทศนิยม 6 ตำแหน่ง</b> และแสดงตารางทุกรอบ (i, <M>{`x_l`}</M>, <M>{`x_u`}</M>, <M>{`x_r`}</M>, <M>{`f(x_r)`}</M>)
+        </Problem>
+
+        <Problem label="A3 (15 คะแนน) · ทำมือ · Differentiation" solution={
+          <div>
+            <Callout kind="danger" title="⚠︎ ตั้งเครื่องเป็น Rad ก่อน — มี sin อยู่ในโจทย์">
+              <p style={{margin:0}}>ถ้าเครื่องอยู่ Deg ค่า <M>{`\\sin(1)`}</M> จะได้ 0.017452 แทน 0.841471 ⇒ <b>ผิดทั้งข้อ</b> ตั้งแต่บรรทัดแรก</p>
+            </Callout>
+            <NumTable
+              headers={["x", "f(x) = e^(x/2) + sin x"]}
+              rows={[
+                ["0.6", "1.914501"],
+                ["0.8", "2.209181"],
+                ["1.0", "2.490192"],
+                ["1.2", "2.754158"],
+                ["1.4", "2.999202"],
+              ]}
+            />
+            <Formula label="สูตรที่ใช้ (ชุด O(h²) — “ละเอียด”)">
+              <MB>{`f'_{fwd}=\\frac{-f_{i+2}+4f_{i+1}-3f_i}{2h}\\quad f'_{bwd}=\\frac{3f_i-4f_{i-1}+f_{i-2}}{2h}\\quad f'_{ctr}=\\frac{f_{i+1}-f_{i-1}}{2h}`}</MB>
+            </Formula>
+            <div style={{fontFamily:"var(--font-mono)", fontSize:'0.82rem', lineHeight:1.9, padding:"8px 12px", background:"var(--bg-soft)", borderRadius:6, margin:"8px 0"}}>
+              forward  = [−2.999202 + 4(2.754158) − 3(2.490192)] / 0.4 = 0.546852 / 0.4 = <b>1.367131</b><br/>
+              backward = [3(2.490192) − 4(2.209181) + 1.914501] / 0.4 = 0.548355 / 0.4 = <b>1.370887</b><br/>
+              central  = [2.754158 − 2.209181] / 0.4 = 0.544977 / 0.4 = <b>1.362443</b>
+            </div>
+            <p><b>ค่าจริง:</b> <M>{`f'(x)=\\tfrac12 e^{x/2}+\\cos x`}</M> ⇒ <M>{`f'(1)=0.824361+0.540302=1.364663`}</M></p>
+            <NumTable
+              headers={["วิธี", "ค่าที่ได้", "ε%"]}
+              rows={[
+                ["Forward O(h²)", "1.367131", "0.180844 %"],
+                ["Backward O(h²)", "1.370887", "0.456105 %"],
+                ["Central O(h²)", "1.362443", "0.162692 %"],
+              ]}
+            />
+            <Callout kind="tip" title="อ่านผลให้เป็น — central ชนะทั้งที่ใช้จุดน้อยกว่า">
+              <p style={{margin:0}}>Central ใช้แค่ <b>2 จุด</b> (0.8 กับ 1.2) แต่แม่นกว่า forward/backward ที่ใช้ 3 จุด เพราะ error ของสองข้างหักล้างกัน · ⇒ <b>ถ้าโจทย์ไม่บังคับวิธี ให้เลือก central เสมอ</b> ยกเว้นอยู่ที่ขอบตาราง (ไม่มีจุดอีกฝั่ง)</p>
+            </Callout>
+          </div>
+        }>
+          กำหนด <M>{`f(x)=e^{x/2}+\\sin x`}</M> จงหา <M>{`f'(1.0)`}</M> โดยใช้ <M>{`h=0.2`}</M> ด้วยสูตร <b>forward, backward และ central แบบ O(h²)</b> พร้อมหาค่าคลาดเคลื่อนเป็นเปอร์เซ็นต์ของแต่ละวิธีเทียบกับค่าจริง (ตอบทศนิยม 6 ตำแหน่ง)
+        </Problem>
+
+        <Problem label="A4 (15 คะแนน) · เขียนโปรแกรม · Integration" solution={
+          <div>
+            <PythonRunner code={`# A4 — หา n (จำนวนพาราโบลา) น้อยสุดที่ทำให้ Composite Simpson แม่นกว่า 1e-6
+import math
+
+f = lambda x: math.sin(x)
+a, b = 0.0, math.pi
+exact = 2.0                       # ∫₀^π sin x dx = [−cos x]₀^π = 2
+
+n = 1
+while True:
+    m = 2 * n                     # ช่องย่อย = 2 × จำนวนพาราโบลา
+    h = (b - a) / m
+    xs = [a + i*h for i in range(m+1)]
+    I = h/3 * (f(xs[0]) + f(xs[-1])
+               + sum((4 if i % 2 else 2) * f(xs[i]) for i in range(1, m)))
+    err = abs(I - exact)
+    if n <= 5 or err < 1e-6:
+        print(f"n={n:3d} (m={m:3d} ช่อง)  I={I:.10f}  |I-2|={err:.2e}")
+    if err < 1e-6:
+        break
+    n += 1
+
+print(f"\\nn น้อยที่สุด = {n} พาราโบลา  ({2*n} ช่องย่อย)")`} height={360}/>
+            <NumTable
+              headers={["n (พาราโบลา)", "ช่องย่อย", "I", "|I − 2|"]}
+              rows={[
+                [1, 2, "2.0943951024", "9.44×10⁻²"],
+                [2, 4, "2.0045597550", "4.56×10⁻³"],
+                [3, 6, "2.0008631897", "8.63×10⁻⁴"],
+                [4, 8, "2.0002691699", "2.69×10⁻⁴"],
+                [5, 10, "2.0001095173", "1.10×10⁻⁴"],
+                ["…", "…", "…", "…"],
+                [17, 34, "2.0000008107", "8.11×10⁻⁷ ✓"],
+              ]}
+            />
+            <p><b>ตอบ: n = 17 พาราโบลา (34 ช่องย่อย)</b></p>
+            <Callout kind="warn" title="กับดักของข้อนี้ — “n” ของ Simpson ไม่ใช่จำนวนช่อง">
+              <p style={{margin:0}}>อาจารย์นิยาม <M>{`h=\\dfrac{b-a}{2n}`}</M> โดย <b><M>n</M> = จำนวนพาราโบลา</b> ⇒ ช่องย่อยมี <M>{`2n`}</M> ช่อง · ถ้าเขียนโปรแกรมโดยให้ <M>n</M> เป็นจำนวนช่องย่อยตรง ๆ คำตอบจะกลายเป็น 34 แทน 17 — <b>เลขต่างกันเท่าตัว</b> ต้องอ่านนิยามให้ตรงกับที่สอน</p>
+            </Callout>
+          </div>
+        }>
+          จงเขียนโปรแกรมหา <b>จำนวนพาราโบลา n ที่น้อยที่สุด</b> ที่ทำให้ผลของ Composite Simpson 1/3 สำหรับ <M>{`\\displaystyle\\int_0^{\\pi}\\sin x\\,dx`}</M> คลาดเคลื่อนจากค่าจริงน้อยกว่า <M>{`10^{-6}`}</M> (ค่าจริง = 2) พร้อมแสดงค่า I ที่แต่ละ n
+        </Problem>
+
+        <Problem label="A5 (15 คะแนน) · ทำมือ · Root Finding ประยุกต์ — ข้อวัดมันสมอง" solution={
+          <div>
+            <p style={{marginTop:0}}><b>ขั้นที่ 1 · ย้ายทุกอย่างไปข้างเดียวให้เหลือ f(c) = 0</b></p>
+            <MB>{`f(c)=\\frac{gm}{c}\\Big(1-e^{-(c/m)t}\\Big)-40 \\;=\\; \\frac{9.81(68.1)}{c}\\Big(1-e^{-(c/68.1)(10)}\\Big)-40`}</MB>
+            <Callout kind="danger" title="ขั้นที่ 2 · ทำไมต้อง Secant ไม่ใช่ Newton">
+              <p style={{margin:0}}>ตัวแปรที่ต้องหาคือ <M>c</M> ซึ่งอยู่<b>ทั้งในตัวหารและในเลขชี้กำลัง</b> ⇒ <M>{`f'(c)`}</M> ต้องใช้ทั้ง quotient rule และ chain rule พร้อมกัน — เสียเวลาและพลาดง่ายมากในห้องสอบ · <b>Secant ใช้แค่ค่า <M>{`f`}</M> สองจุด ไม่ต้อง diff เลย</b> (อาจารย์เขียนไว้เองว่า Secant มีไว้แก้ปัญหา “diff ไม่เป็น”)</p>
+            </Callout>
+            <p><b>ขั้นที่ 3 · เดินสูตร</b> <M>{`c_{i+1}=c_i-\\dfrac{f(c_i)(c_{i-1}-c_i)}{f(c_{i-1})-f(c_i)}`}</M></p>
+            <div style={{fontFamily:"var(--font-mono)", fontSize:'0.82rem', lineHeight:1.9, padding:"8px 12px", background:"var(--bg-soft)", borderRadius:6, margin:"8px 0"}}>
+              f(12) = (668.061/12)(1 − e^(−1.762115)) − 40 = +6.113943<br/>
+              f(16) = (668.061/16)(1 − e^(−2.349486)) − 40 = −2.230261
+            </div>
+            <NumTable
+              headers={["i", "cᵢ₋₁", "cᵢ", "cᵢ₊₁", "εₐ %"]}
+              rows={[
+                [1, "12.000000", "16.000000", "14.930869", "7.160537"],
+                [2, "16.000000", "14.930869", "14.794991", "0.918407"],
+                [3, "14.930869", "14.794991", "14.801167", "0.041726"],
+              ]}
+            />
+            <p><b>ตอบ: c ≈ 14.801167 kg/s</b> (ค่าที่ลู่เข้าจริง = 14.801136 — ต่างกันที่ทศนิยมตำแหน่งที่ 5 เท่านั้นหลัง 3 รอบ)</p>
+            <PythonRunner code={`import math
+g, m, t, v_target = 9.81, 68.1, 10.0, 40.0
+f = lambda c: (g*m/c) * (1 - math.exp(-(c/m)*t)) - v_target
+
+c0, c1 = 12.0, 16.0
+print(f"f(12) = {f(12):.6f}   f(16) = {f(16):.6f}\\n")
+for i in range(1, 4):
+    c2 = c1 - f(c1)*(c0 - c1)/(f(c0) - f(c1))
+    print(f"i={i}  c0={c0:.6f}  c1={c1:.6f}  c2={c2:.6f}  eps={abs((c2-c1)/c2)*100:.6f}%")
+    c0, c1 = c1, c2
+print(f"\\nตอบ c = {c2:.6f} kg/s")`} height={260}/>
+          </div>
+        }>
+          นักกระโดดร่มมวล <M>{`m=68.1`}</M> kg ตกลงมาโดยความเร็วเป็นไปตาม <M>{`v(t)=\\dfrac{gm}{c}\\left(1-e^{-(c/m)t}\\right)`}</M> เมื่อ <M>{`g=9.81`}</M> m/s² และ <M>c</M> คือสัมประสิทธิ์แรงต้าน · จากการวัดพบว่า<b>ที่วินาทีที่ 10 ความเร็วเป็น 40 m/s</b> จงหาค่า <M>c</M> โดยใช้<b>วิธีที่ไม่ต้องหาอนุพันธ์</b> เริ่มจาก <M>{`c_0=12`}</M>, <M>{`c_1=16`}</M> ทำ <b>3 iterations</b> พร้อม error
+        </Problem>
+
+        <Problem label="A6 (15 คะแนน) · เขียนโปรแกรม · Differentiation" solution={
+          <div>
+            <PythonRunner code={`# A6 — f''(2) ของ f = ln x + x² ด้วย central O(h²) และ O(h⁴)
+import math
+f = lambda x: math.log(x) + x**2
+x0 = 2.0
+true = -1/x0**2 + 2                     # f'' = −1/x² + 2
+
+print(f"ค่าจริง f''(2) = {true:.10f}\\n")
+print(f"{'h':>6} {'O(h^2)':>14} {'err':>11} {'O(h^4)':>14} {'err':>11}")
+for h in (0.4, 0.2, 0.1, 0.05):
+    c2 = (f(x0+h) - 2*f(x0) + f(x0-h)) / h**2
+    c4 = (-f(x0+2*h) + 16*f(x0+h) - 30*f(x0)
+          + 16*f(x0-h) - f(x0-2*h)) / (12*h**2)
+    print(f"{h:6.2f} {c2:14.10f} {abs(true-c2):11.3e} {c4:14.10f} {abs(true-c4):11.3e}")`} height={300}/>
+            <NumTable
+              headers={["h", "central O(h²)", "error", "central O(h⁴)", "error"]}
+              rows={[
+                ["0.40", "1.7448625342", "5.137×10⁻³", "1.7506257681", "6.258×10⁻⁴"],
+                ["0.20", "1.7487416037", "1.258×10⁻³", "1.7500346268", "3.463×10⁻⁵"],
+                ["0.10", "1.7496869782", "3.130×10⁻⁴", "1.7500021030", "2.103×10⁻⁶"],
+                ["0.05", "1.7499218424", "7.816×10⁻⁵", "1.7500001305", "1.305×10⁻⁷"],
+              ]}
+            />
+            <Callout kind="good" title="คำตอบของ “error ลดตามกำลังเท่าไร” — อ่านจากตารางได้เลย">
+              <p style={{margin:"0 0 4px"}}>ทุกครั้งที่ <b>h ลดครึ่ง</b>:</p>
+              <ul style={{margin:0, paddingLeft:18}}>
+                <li><M>{`O(h^2)`}</M>: 5.137e−3 → 1.258e−3 → 3.130e−4 → 7.816e−5 = <b>ลดราว 4 เท่า</b> ทุกครั้ง <M>{`(=2^2)`}</M></li>
+                <li><M>{`O(h^4)`}</M>: 6.258e−4 → 3.463e−5 → 2.103e−6 → 1.305e−7 = <b>ลดราว 16 เท่า</b> ทุกครั้ง <M>{`(=2^4)`}</M></li>
+              </ul>
+              <p style={{margin:"6px 0 0"}}>นี่คือความหมายของ Big-O ที่อาจารย์ให้ท่อง — <M>{`O(h^n)`}</M> แปลว่า “h ลดครึ่ง error ลด <M>{`2^n`}</M> เท่า” · ค่าจริง <M>{`f''(2)=-\\tfrac14+2=1.75`}</M></p>
+            </Callout>
+          </div>
+        }>
+          กำหนด <M>{`f(x)=\\ln x + x^2`}</M> จงเขียนโปรแกรมหา <M>{`f''(2)`}</M> ด้วยสูตร <b>central O(h²) และ central O(h⁴)</b> ที่ <M>{`h=0.4,\\ 0.2,\\ 0.1,\\ 0.05`}</M> แสดงค่าคลาดเคลื่อนเทียบค่าจริง แล้ว<b>สรุปว่า error ของแต่ละสูตรลดลงตามกำลังเท่าไรเมื่อ h ลดครึ่ง</b>
+        </Problem>
+
+        </TimedExam>
+
+        {/* ─────────── ชุด B ─────────── */}
+        <h3 style={{marginTop:28}}>ชุด B · “ประยุกต์หนัก + กับดัก” — ชุดที่ยากที่สุดในสามชุด</h3>
+        <TimedExam presets={[180, 150, 120]} label="ชุด B · 6 ข้อ · 90 คะแนน — จับเวลา 180 นาที">
+
+        <Problem label="B1 (15 คะแนน) · ทำมือ · Root Finding — กับดักเต็มข้อ" solution={
+          <div>
+            <p style={{marginTop:0}}><b>(ก) รอบแรกเกิดอะไรขึ้น</b></p>
+            <div style={{fontFamily:"var(--font-mono)", fontSize:'0.84rem', lineHeight:1.9, padding:"8px 12px", background:"var(--bg-soft)", borderRadius:6, margin:"8px 0"}}>
+              f(0) = −6 · f(4) = 64 − 96 + 44 − 6 = +6 ⇒ f(0)f(4) = −36 &lt; 0 ✓<br/>
+              xm = (0 + 4)/2 = 2.000000<br/>
+              f(2) = 8 − 24 + 22 − 6 = <b style={{color:"var(--green)"}}>0 พอดี</b>
+            </div>
+            <Callout kind="danger" title="⇒ ตอบ 2.000000 แล้วหยุดทันที — และต้องอธิบายให้ครบ 2 ประเด็น">
+              <ul style={{margin:0, paddingLeft:18}}>
+                <li><b>โปรแกรมต้องมีบรรทัด <code>if f(xm) == 0: break</code></b> — ไม่งั้นจะเดินตารางต่อทั้งที่เจอคำตอบเป๊ะแล้ว และ <M>{`f(x_l)f(x_m)=0`}</M> ไม่เข้าเงื่อนไขทั้ง &gt;0 และ &lt;0</li>
+                <li><M>{`f(x)=(x-1)(x-2)(x-3)`}</M> ⇒ มี <b>3 ราก</b> อยู่ในช่วง [0,4] · Bisection การันตีแค่ “เจอ<b>รากหนึ่งตัว</b>” ไม่ใช่ทุกตัว — ที่ <M>{`f(a)f(b)<0`}</M> ใช้ได้เพราะจำนวนรากในช่วงเป็น<b>เลขคี่</b> ถ้ามีรากเป็นเลขคู่ในช่วงเครื่องหมายจะไม่เปลี่ยนแล้วเราจะ<b>คิดว่าไม่มีราก</b>ทั้งที่มี</li>
+              </ul>
+            </Callout>
+            <p style={{marginTop:14}}><b>(ข) หารากอื่นด้วยช่วง [0.6, 1.8]</b> — <M>{`f(0.6)=-1.344000`}</M>, <M>{`f(1.8)=+0.192000`}</M> ⇒ คร่อมราก ✓</p>
+            <NumTable
+              headers={["i", "xₗ", "xᵤ", "xₘ", "f(xₘ)", "การตัดสินใจ", "εₐ"]}
+              rows={[
+                [1, "0.600000", "1.800000", "1.200000", "+0.288000", "f(xₗ)f(xₘ) < 0 → xᵤ←xₘ", "—"],
+                [2, "0.600000", "1.200000", "0.900000", "−0.231000", "f(xₗ)f(xₘ) > 0 → xₗ←xₘ", "33.333333 %"],
+                [3, "0.900000", "1.200000", "1.050000", "+0.092625", "f(xₗ)f(xₘ) < 0 → xᵤ←xₘ", "14.285714 %"],
+                [4, "0.900000", "1.050000", "0.975000", "−0.051891", "f(xₗ)f(xₘ) > 0 → xₗ←xₘ", "7.692308 %"],
+              ]}
+            />
+            <p><b>ตอบ (ข): 0.975000</b> — กำลังบีบเข้าหารากที่ <M>{`x=1`}</M> (4 รอบยังได้ error 7.7% เพราะ Bisection ลดช่วงทีละครึ่งเท่านั้น)</p>
+          </div>
+        }>
+          กำหนด <M>{`f(x)=x^3-6x^2+11x-6`}</M><br/>
+          <b>(ก)</b> ใช้ Bisection บนช่วง <M>{`[0,4]`}</M> — จงแสดงว่าเกิดอะไรขึ้นในรอบแรก และ<b>อธิบายว่าโปรแกรมต้องเขียนอย่างไรจึงจะไม่พลาด</b><br/>
+          <b>(ข)</b> จงหารากอีกตัวหนึ่งด้วย Bisection บนช่วง <M>{`[0.6,\\ 1.8]`}</M> ทำมือ <b>4 iterations</b> พร้อม error
+        </Problem>
+
+        <Problem label="B2 (15 คะแนน) · เขียนโปรแกรม · Differentiation จากตาราง" solution={
+          <div>
+            <Callout kind="tip" title="แก่นของข้อนี้ — เลือกสูตรตาม “ตำแหน่ง” ของจุด">
+              <p style={{margin:0}}>จุดแรกไม่มีเพื่อนบ้านซ้าย ⇒ ต้องใช้ <b>forward</b> · จุดสุดท้ายไม่มีเพื่อนบ้านขวา ⇒ <b>backward</b> · จุดกลางมีทั้งสองข้าง ⇒ <b>central</b> (แม่นที่สุด) · ทั้งหมดใช้ชุด <M>{`O(h^2)`}</M> เพื่อให้ความแม่นเท่ากันทั้งตาราง</p>
+            </Callout>
+            <PythonRunner code={`# B2 — หา f'(x) ทุกจุดจากตาราง (ระยะห่างเท่ากัน) ด้วยสูตร O(h²)
+xs = [1.0, 1.5, 2.0, 2.5, 3.0]
+ys = [0.000000, 0.608198, 1.386294, 2.290727, 3.295837]
+h  = xs[1] - xs[0]
+n  = len(xs)
+d  = []
+
+for i in range(n):
+    if i == 0:                                        # จุดแรก → forward O(h²)
+        v = (-3*ys[0] + 4*ys[1] - ys[2]) / (2*h)
+    elif i == n - 1:                                  # จุดสุดท้าย → backward O(h²)
+        v = (3*ys[i] - 4*ys[i-1] + ys[i-2]) / (2*h)
+    else:                                             # จุดกลาง → central O(h²)
+        v = (ys[i+1] - ys[i-1]) / (2*h)
+    d.append(v)
+
+print(f"{'x':>6} {'y':>12} {'f\\'(x)':>12} {'สูตรที่ใช้':>12}")
+tags = ["forward"] + ["central"]*(n-2) + ["backward"]
+for x, y, v, t in zip(xs, ys, d, tags):
+    print(f"{x:6.1f} {y:12.6f} {v:12.6f}   {t}")`} height={340}/>
+            <NumTable
+              headers={["x", "y", "f′(x) ที่ได้", "สูตร", "ค่าจริง", "ε%"]}
+              rows={[
+                ["1.0", "0.000000", "1.046498", "forward O(h²)", "1.000000", "4.6498 %"],
+                ["1.5", "0.608198", "1.386294", "central O(h²)", "1.405465", "1.3640 %"],
+                ["2.0", "1.386294", "1.682529", "central O(h²)", "1.693147", "0.6271 %"],
+                ["2.5", "2.290727", "1.909543", "central O(h²)", "1.916291", "0.3521 %"],
+                ["3.0", "3.295837", "2.110897", "backward O(h²)", "2.098612", "0.5854 %"],
+              ]}
+            />
+            <p className="muted" style={{fontSize:'0.8rem'}}>ข้อมูลชุดนี้มาจาก <M>{`f(x)=x\\ln x`}</M> (<M>{`f'=\\ln x+1`}</M>) — ในข้อสอบจะ<b>ไม่บอกสูตร</b> คอลัมน์ “ค่าจริง” มีไว้ให้ตรวจตัวเองเท่านั้น · สังเกตว่า<b>จุดขอบ 2 จุดคลาดเคลื่อนมากที่สุด</b> (โดยเฉพาะ forward ที่จุดแรก 4.6%) เป็นเรื่องปกติของงานหาอนุพันธ์จากตาราง — และเป็นเหตุผลที่ต้องใช้ central ทุกครั้งที่ทำได้</p>
+          </div>
+        }>
+          จากการทดลองได้ข้อมูลระยะห่างเท่ากันดังนี้
+          <div style={{fontFamily:"var(--font-mono)", fontSize:'0.84rem', margin:"6px 0", padding:"6px 10px", background:"var(--bg-soft)", borderRadius:6, overflowX:"auto", whiteSpace:"pre"}}>{`x : 1.0       1.5       2.0       2.5       3.0
+y : 0.000000  0.608198  1.386294  2.290727  3.295837`}</div>
+          จงเขียนโปรแกรมหา <M>{`f'(x)`}</M> ที่<b>ทุกจุดในตาราง</b> โดยใช้สูตร <M>{`O(h^2)`}</M> และ<b>เลือกสูตร forward / central / backward ให้เหมาะกับตำแหน่งของจุดโดยอัตโนมัติ</b>
+        </Problem>
+
+        <Problem label="B3 (15 คะแนน) · ทำมือ · Integration — ข้อวัดมันสมอง" solution={
+          <div>
+            <p style={{marginTop:0}}><b>(ก) n = 1 พาราโบลา</b> ⇒ 2 ช่องย่อย, <M>{`h=0.5`}</M>, ใช้จุด 0, 0.5, 1</p>
+            <div style={{fontFamily:"var(--font-mono)", fontSize:'0.84rem', lineHeight:1.9, padding:"8px 12px", background:"var(--bg-soft)", borderRadius:6, margin:"8px 0"}}>
+              f(0) = e⁰ = 1.000000 · f(0.5) = e^(−0.25) = 0.778801 · f(1) = e^(−1) = 0.367879<br/>
+              I₁ = (0.5/3)[1.000000 + 4(0.778801) + 0.367879] = 0.166667 × 4.483084 = <b>0.747180</b>
+            </div>
+            <p><b>(ข) n = 2 พาราโบลา</b> ⇒ 4 ช่องย่อย, <M>{`h=0.25`}</M></p>
+            <NumTable
+              headers={["i", "xᵢ", "f(xᵢ) = e^(−xᵢ²)", "น้ำหนัก"]}
+              rows={[
+                [0, "0.00", "1.000000", "×1"],
+                [1, "0.25", "0.939413", "×4"],
+                [2, "0.50", "0.778801", "×2"],
+                [3, "0.75", "0.569783", "×4"],
+                [4, "1.00", "0.367879", "×1"],
+              ]}
+            />
+            <div style={{fontFamily:"var(--font-mono)", fontSize:'0.84rem', lineHeight:1.9, padding:"8px 12px", background:"var(--bg-soft)", borderRadius:6, margin:"8px 0"}}>
+              I₂ = (0.25/3)[1.000000 + 0.367879 + 4(0.939413 + 0.569783) + 2(0.778801)]<br/>
+              &nbsp;&nbsp;&nbsp;= 0.083333 × [1.367879 + 6.036784 + 1.557602] = <b style={{color:"var(--green)"}}>0.746855</b>
+            </div>
+            <p><b>(ค) ประมาณ error โดยไม่รู้ค่าจริง</b></p>
+            <Formula label="สูตรประมาณ error ของ Simpson (มาจาก O(h⁴))">
+              <MB>{`E_2 \\approx \\frac{I_2 - I_1}{15}`}</MB>
+            </Formula>
+            <Callout kind="tip" title="ที่มาของเลข 15 — ต้องอธิบายได้ ไม่ใช่ท่องอย่างเดียว">
+              <p style={{margin:0}}>Simpson มี error <M>{`E\\propto h^4`}</M> · พอลด <M>h</M> ครึ่งหนึ่ง error ลด <M>{`2^4=16`}</M> เท่า ⇒ <M>{`E_1\\approx 16E_2`}</M> · และค่าจริง <M>{`I = I_1+E_1 = I_2+E_2`}</M> ⇒ <M>{`I_2-I_1 = E_1-E_2 = 16E_2-E_2=15E_2`}</M> ⇒ <M>{`E_2=\\dfrac{I_2-I_1}{15}`}</M></p>
+            </Callout>
+            <div style={{fontFamily:"var(--font-mono)", fontSize:'0.84rem', lineHeight:1.9, padding:"8px 12px", background:"var(--bg-soft)", borderRadius:6, margin:"8px 0"}}>
+              E₂ ≈ (0.746855 − 0.747180) / 15 = −0.0000217<br/>
+              ⇒ ตอบ I ≈ <b style={{color:"var(--green)"}}>0.746855</b> โดยคาดว่าคลาดเคลื่อนราว <b>2×10⁻⁵</b>
+            </div>
+            <p className="muted" style={{fontSize:'0.8rem'}}>ตรวจย้อนหลัง: ค่าจริง (<M>{`\\tfrac{\\sqrt\\pi}{2}\\operatorname{erf}(1)`}</M>) = 0.746824 ⇒ error จริงของ <M>{`I_2`}</M> = 3.1×10⁻⁵ · การประมาณให้ค่า<b>อันดับเดียวกัน</b> ซึ่งคือสิ่งที่ต้องการ</p>
+          </div>
+        }>
+          <M>{`\\displaystyle\\int_0^1 e^{-x^2}dx`}</M> <b>หา antiderivative ไม่ได้</b> จงประมาณค่าด้วย Composite Simpson 1/3 โดย <b>(ก)</b> 1 พาราโบลา <b>(ข)</b> 2 พาราโบลา แล้ว <b>(ค)</b> <b>ประมาณค่าคลาดเคลื่อนของคำตอบข้อ (ข) โดยไม่ใช้ค่าจริง</b> พร้อมอธิบายที่มาของสูตรที่ใช้
+        </Problem>
+
+        <Problem label="B4 (15 คะแนน) · เขียนโปรแกรม · Root Finding" solution={
+          <div>
+            <PythonRunner code={`# B4 — เทียบจำนวนรอบ Newton vs Secant บน f(x) = cos x − x
+import math
+f  = lambda x: math.cos(x) - x
+fp = lambda x: -math.sin(x) - 1
+tol = 1e-8
+
+print("=== Newton (x0 = 1) ===")
+x = 1.0
+for i in range(1, 51):
+    xn = x - f(x)/fp(x)
+    print(f"i={i}  x={x:.10f} -> {xn:.10f}  |dx|={abs(xn-x):.2e}")
+    if abs(xn - x) < tol:
+        newton_i, newton_x = i, xn
+        break
+    x = xn
+
+print("\\n=== Secant (x0 = 0, x1 = 1) ===")
+x0, x1 = 0.0, 1.0
+for i in range(1, 51):
+    x2 = x1 - f(x1)*(x0 - x1)/(f(x0) - f(x1))
+    print(f"i={i}  x0={x0:.8f} x1={x1:.8f} -> {x2:.10f}  |dx|={abs(x2-x1):.2e}")
+    if abs(x2 - x1) < tol:
+        secant_i, secant_x = i, x2
+        break
+    x0, x1 = x1, x2                 # ⭐ เลื่อนตัวแปร
+
+print(f"\\nNewton: {newton_i} รอบ -> {newton_x:.10f}")
+print(f"Secant: {secant_i} รอบ -> {secant_x:.10f}")`} height={400}/>
+            <NumTable
+              headers={["วิธี", "จำนวนรอบ", "คำตอบ", "ต้องใช้ f′ ไหม"]}
+              rows={[
+                ["Newton-Raphson", "4", "0.7390851332", "ต้องใช้"],
+                ["Secant", "6", "0.7390851332", "ไม่ต้อง"],
+              ]}
+            />
+            <Callout kind="good" title="สรุปที่ต้องเขียนตอบ">
+              <p style={{margin:0}}>Newton เร็วกว่า (4 vs 6 รอบ) เพราะเป็น <b>quadratic convergence</b> (order 2) ส่วน Secant เป็น <b>super-linear</b> (order ≈ 1.618) · แต่ Newton ต้องรู้ <M>{`f'`}</M> ⇒ <b>ถ้า diff ได้ง่ายใช้ Newton ถ้า diff ยาก/ไม่ได้ใช้ Secant</b> — ต่างกันแค่ 2 รอบ แลกกับการไม่ต้อง diff เลย ถือว่าคุ้มมากในห้องสอบ</p>
+            </Callout>
+          </div>
+        }>
+          จงเขียนโปรแกรมหารากของ <M>{`f(x)=\\cos x - x`}</M> ด้วย <b>Newton-Raphson</b> (<M>{`x_0=1`}</M>) และ <b>Secant</b> (<M>{`x_0=0,\\ x_1=1`}</M>) โดยหยุดเมื่อ <M>{`|\\Delta x|<10^{-8}`}</M> แล้ว<b>รายงานว่าแต่ละวิธีใช้กี่รอบ</b> พร้อมอธิบายว่าทำไมถึงต่างกัน
+        </Problem>
+
+        <Problem label="B5 (15 คะแนน) · ทำมือ · Differentiation — ข้อวัดพลัง" solution={
+          <div>
+            <NumTable
+              headers={["x", "f(x) = x⁴ − 3x² + 2x"]}
+              rows={[
+                ["1.25", "0.253906"],
+                ["1.50", "1.312500"],
+                ["1.75", "3.691406"],
+                ["2.00", "8.000000"],
+                ["2.25", "14.941406"],
+              ]}
+            />
+            <Formula label="3 สูตรที่โจทย์สั่ง">
+              <MB>{`f''_{fwd,O(h)}=\\frac{f_{i+2}-2f_{i+1}+f_i}{h^2}\\qquad f''_{fwd,O(h^2)}=\\frac{-f_{i+3}+4f_{i+2}-5f_{i+1}+2f_i}{h^2}`}</MB>
+              <MB>{`f''_{ctr,O(h^2)}=\\frac{f_{i+1}-2f_i+f_{i-1}}{h^2}`}</MB>
+            </Formula>
+            <div style={{fontFamily:"var(--font-mono)", fontSize:'0.8rem', lineHeight:1.9, padding:"8px 12px", background:"var(--bg-soft)", borderRadius:6, margin:"8px 0"}}>
+              h² = 0.0625<br/><br/>
+              forward O(h)   = [8.000000 − 2(3.691406) + 1.312500] / 0.0625 = 1.929688 / 0.0625 = <b>30.875000</b><br/>
+              forward O(h²)  = [−14.941406 + 4(8.000000) − 5(3.691406) + 2(1.312500)] / 0.0625<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 1.226563 / 0.0625 = <b>19.625000</b><br/>
+              central O(h²)  = [3.691406 − 2(1.312500) + 0.253906] / 0.0625 = 1.320313 / 0.0625 = <b>21.125000</b>
+            </div>
+            <p><b>ค่าจริง:</b> <M>{`f''(x)=12x^2-6 \\Rightarrow f''(1.5)=12(2.25)-6=21.000000`}</M></p>
+            <NumTable
+              headers={["สูตร", "ค่าที่ได้", "ε%", "อันดับความแม่น"]}
+              rows={[
+                ["Forward O(h)", "30.875000", "47.023810 %", "แย่ที่สุด"],
+                ["Forward O(h²)", "19.625000", "6.547619 %", "ดีขึ้นมาก"],
+                ["Central O(h²)", "21.125000", "0.595238 %", "ดีที่สุด"],
+              ]}
+            />
+            <Callout kind="danger" title="บทเรียนของข้อนี้ — h = 0.25 ไม่ได้เล็ก และ forward O(h) พังยับ">
+              <p style={{margin:0}}>Forward O(h) คลาดถึง <b>47%</b> — ไม่ใช่คำนวณผิด แต่เป็นธรรมชาติของสูตรอันดับ 1 เมื่อ <M>h</M> ไม่เล็กพอ · <b>ถ้าข้อสอบไม่บังคับสูตร ให้เลือก central เสมอ</b> · และถ้าโจทย์เขียน “<M>{`O(h^2)`}</M>” มาให้ นั่นคือ<b>คำสั่งเลือกชุดสูตร</b> ไม่ใช่คำใบ้ — หยิบผิดชุด = 0</p>
+            </Callout>
+          </div>
+        }>
+          กำหนด <M>{`f(x)=x^4-3x^2+2x`}</M> จงหา <M>{`f''(1.5)`}</M> ด้วย <M>{`h=0.25`}</M> โดยใช้สูตร <b>forward O(h), forward O(h²) และ central O(h²)</b> พร้อมหา ε% ของแต่ละสูตรเทียบค่าจริง แล้ว<b>เรียงลำดับความแม่นและอธิบายเหตุผล</b>
+        </Problem>
+
+        <Problem label="B6 (15 คะแนน) · เขียนโปรแกรม · Integration ประยุกต์" solution={
+          <div>
+            <p style={{marginTop:0}}><b>แปลงโจทย์:</b> งาน = พื้นที่ใต้กราฟแรง ⇒ <M>{`W=\\displaystyle\\int_0^8 200x\\,e^{-x/3}\\,dx`}</M></p>
+            <PythonRunner code={`# B6 — งานจากแรงแปรผัน W = ∫₀⁸ 200x e^(−x/3) dx
+import math
+F = lambda x: 200 * x * math.exp(-x/3)
+a, b = 0.0, 8.0
+exact = 200 * (9 - 33*math.exp(-8/3))     # จาก ∫x e^(−x/3)dx = −3x e^(−x/3) − 9e^(−x/3)
+
+print(f"ค่าจริง = {exact:.6f} J\\n")
+print(f"{'n (พาราโบลา)':>14} {'ช่องย่อย':>9} {'W':>14} {'err%':>10}")
+for n in (2, 4, 8):
+    m = 2 * n
+    h = (b - a) / m
+    xs = [a + i*h for i in range(m+1)]
+    W = h/3 * (F(xs[0]) + F(xs[-1])
+               + sum((4 if i % 2 else 2)*F(xs[i]) for i in range(1, m)))
+    print(f"{n:14d} {m:9d} {W:14.6f} {abs(exact-W)/exact*100:10.6f}")`} height={320}/>
+            <NumTable
+              headers={["n (พาราโบลา)", "ช่องย่อย", "h", "W (J)", "ε%"]}
+              rows={[
+                [2, 4, "2.0", "1336.003795", "0.402966 %"],
+                [4, 8, "1.0", "1341.049486", "0.026818 %"],
+                [8, 16, "0.5", "1341.386375", "0.001703 %"],
+              ]}
+            />
+            <p><b>ค่าจริง</b> <M>{`W=200\\left(9-33e^{-8/3}\\right)=1341.409222`}</M> J</p>
+            <Callout kind="good" title="เช็คว่าคำตอบสมเหตุสมผลไหม (ทำใน 10 วินาที)">
+              <p style={{margin:0}}>แรงสูงสุดราว 220 N ที่ <M>{`x=3`}</M> และเฉลี่ยทั้งช่วงราว 165 N × 8 m ≈ 1320 J ⇒ คำตอบ ~1341 J <b>อยู่ในระดับที่ควรเป็น</b> · ถ้าได้เลขหลักร้อยหรือหลักหมื่นแปลว่า <M>h</M> หรือน้ำหนักผิด — <b>การประมาณคร่าว ๆ แบบนี้คือสิ่งที่ช่วยจับข้อผิดพลาดได้เร็วที่สุดในห้องสอบ</b></p>
+            </Callout>
+            <p className="muted" style={{fontSize:'0.8rem'}}>สังเกต: n เพิ่มเท่าตัว (h ลดครึ่ง) error ลดราว 16 เท่า — ยืนยันว่า Simpson เป็น <M>{`O(h^4)`}</M> จริง</p>
+          </div>
+        }>
+          แรงแปรผัน <M>{`F(x)=200x\\,e^{-x/3}`}</M> นิวตัน กระทำต่อวัตถุขณะเคลื่อนที่จาก <M>{`x=0`}</M> ถึง <M>{`x=8`}</M> เมตร จงเขียนโปรแกรมหา<b>งานที่ทำได้</b> ด้วย Composite Simpson 1/3 ที่ <M>{`n=2,4,8`}</M> พาราโบลา พร้อมเทียบกับค่าจริงและ<b>สรุปว่า error ลดลงอย่างไรเมื่อเพิ่ม n</b>
+        </Problem>
+
+        </TimedExam>
+
+        {/* ─────────── ชุด C ─────────── */}
+        <h3 style={{marginTop:28}}>ชุด C · “ไวและแม่น” — ข้อสั้นแต่พลาดง่าย เกณฑ์ผ่านสูงกว่าชุดอื่น</h3>
+        <TimedExam presets={[180, 135, 100]} label="ชุด C · 6 ข้อ · 90 คะแนน — ตั้งเป้าเสร็จก่อนเวลา แล้วเอาเวลาที่เหลือไปตรวจ">
+
+        <Problem label="C1 (15 คะแนน) · ทำมือ · Integration" solution={
+          <div>
+            <div style={{fontFamily:"var(--font-mono)", fontSize:'0.84rem', lineHeight:1.9, padding:"8px 12px", background:"var(--bg-soft)", borderRadius:6, margin:"8px 0"}}>
+              f(0) = 6 · f(1) = 1 − 4 + 6 = 3 · f(2) = 8 − 16 + 6 = −2<br/><br/>
+              <b>Single Trapezoidal</b> &nbsp; I = (b−a)/2 × [f(0) + f(2)] = (2/2)(6 − 2) = <b style={{color:"var(--yellow)"}}>4.000000</b><br/>
+              <b>Single Simpson 1/3</b> &nbsp; I = (b−a)/6 × [f(0) + 4f(1) + f(2)] = (2/6)(6 + 12 − 2) = <b style={{color:"var(--green)"}}>5.333333</b>
+            </div>
+            <p><b>ค่าจริง:</b> <M>{`\\left[\\tfrac{x^4}{4}-\\tfrac{4x^3}{3}+6x\\right]_0^2 = 4-\\tfrac{32}{3}+12 = \\tfrac{16}{3}=5.333333`}</M></p>
+            <NumTable
+              headers={["วิธี", "ค่าที่ได้", "ε%"]}
+              rows={[
+                ["Single Trapezoidal", "4.000000", "25.000000 %"],
+                ["Single Simpson 1/3", "5.333333", "0.000000 % ✓"],
+              ]}
+            />
+            <Callout kind="good" title="เหตุผลที่ต้องเขียนตอบ — Simpson แม่นเกินดีกรีของตัวเอง">
+              <p style={{margin:0}}>Simpson 1/3 สร้างจาก<b>พาราโบลา (ดีกรี 2)</b> แต่พจน์ error คือ <M>{`-\\dfrac{h^5}{90}f^{(4)}(\\xi)`}</M> ซึ่งขึ้นกับ <b>อนุพันธ์อันดับ 4</b> · โจทย์นี้ <M>{`f`}</M> เป็นพหุนาม<b>ดีกรี 3</b> ⇒ <M>{`f^{(4)}=0`}</M> ⇒ <b>error เป็นศูนย์พอดี</b> · นี่คือของแถมที่ทำให้ Simpson แม่นถึง<b>ดีกรี 3</b> ทั้งที่ใช้พาราโบลา</p>
+            </Callout>
+            <p className="muted" style={{fontSize:'0.8rem'}}>⚠︎ <b>ตอบ 16/3 = 0 คะแนน</b> ต้องเขียน 5.333333 — ข้อนี้เป็นข้อที่คนพลาดเพราะเลขออกมาสวยจนเผลอตอบเป็นเศษส่วน</p>
+          </div>
+        }>
+          จงหา <M>{`\\displaystyle\\int_0^2 (x^3-4x^2+6)\\,dx`}</M> ด้วย <b>Single Trapezoidal</b> และ <b>Single Simpson 1/3</b> พร้อมหา ε% ของทั้งสองวิธี แล้ว<b>อธิบายผลที่ได้</b>
+        </Problem>
+
+        <Problem label="C2 (15 คะแนน) · เขียนโปรแกรม · One-point Iteration" solution={
+          <div>
+            <PythonRunner code={`# C2 — One-point: ลอง g(x) สองรูป แล้วดูว่ารูปไหนใช้ได้
+import math
+x0 = 1.5
+forms = {
+    "g1 = sqrt(10/(4+x))":  lambda x: math.sqrt(10/(4+x)),
+    "g2 = (10 - x^3)/(4x)": lambda x: (10 - x**3)/(4*x),
+}
+
+for name, g in forms.items():
+    print(f"=== {name} ===")
+    x = x0
+    for i in range(1, 9):
+        try:
+            xn = g(x)
+        except (ValueError, ZeroDivisionError):
+            print("  พัง (รากติดลบ / หารศูนย์) -> ลู่ออก"); break
+        print(f"  i={i}  x={x:12.6f} -> {xn:12.6f}")
+        if abs(xn) > 1e6:
+            print("  ระเบิด -> ลู่ออก"); break
+        x = xn
+    print()`} height={340}/>
+            <NumTable
+              headers={["รอบ", "g₁ = √(10/(4+x))", "g₂ = (10 − x³)/(4x)"]}
+              rows={[
+                [1, "1.348400", "1.104167"],
+                [2, "1.367376", "1.959355"],
+                [3, "1.364957", "0.316162"],
+                [4, "1.365265", "7.882344"],
+                [5, "1.365226", "−15.215673"],
+                ["…", "→ 1.365230 ✓ ลู่เข้า", "→ ระเบิด ✗ ลู่ออก"],
+              ]}
+            />
+            <Callout kind="tip" title="เหตุผลที่ต้องเขียนตอบ — เช็คด้วย |g′(ราก)|">
+              <p style={{margin:"0 0 4px"}}>รากจริง <M>{`x^*=1.365230`}</M></p>
+              <ul style={{margin:0, paddingLeft:18}}>
+                <li><M>{`|g_1'(x^*)| = 0.127229 < 1`}</M> ⇒ <b>ลู่เข้า</b> (และเล็กมาก จึงลู่เร็ว)</li>
+                <li><M>{`|g_2'(x^*)| = 2.023923 > 1`}</M> ⇒ <b>ลู่ออก</b> ทุกรอบ error ขยายกว่า 2 เท่า</li>
+              </ul>
+              <p style={{margin:"6px 0 0"}}>สมการเดียวกัน จัดรูปคนละแบบ ⇒ <b>ผลต่างกันคนละโลก</b> · นี่คือเหตุผลที่ One-point ต้องเช็ค <M>{`|g'|`}</M> ก่อนเสมอ ต่างจาก Bisection ที่การันตีลู่เข้าแน่นอน</p>
+            </Callout>
+          </div>
+        }>
+          สมการ <M>{`x^3+4x^2-10=0`}</M> มีรากอยู่ในช่วง <M>{`[1,2]`}</M> · จงเขียนโปรแกรม One-point Iteration ที่ทดลอง <M>{`g_1(x)=\\sqrt{\\dfrac{10}{4+x}}`}</M> และ <M>{`g_2(x)=\\dfrac{10-x^3}{4x}`}</M> จาก <M>{`x_0=1.5`}</M> แล้ว<b>รายงานว่ารูปไหนลู่เข้า รูปไหนลู่ออก พร้อมเหตุผลเชิงคณิตศาสตร์</b>
+        </Problem>
+
+        <Problem label="C3 (15 คะแนน) · ทำมือ · Newton-Raphson" solution={
+          <div>
+            <p style={{marginTop:0}}><b>แปลงโจทย์:</b> <M>{`x=\\sqrt[3]{20}\\Rightarrow x^3=20\\Rightarrow f(x)=x^3-20`}</M>, <M>{`f'(x)=3x^2`}</M></p>
+            <NumTable
+              headers={["i", "xᵢ", "f(xᵢ)", "f′(xᵢ)", "xᵢ₊₁", "εₐ %"]}
+              rows={[
+                [1, "3.000000", "+7.000000", "27.000000", "2.740741", "9.459459"],
+                [2, "2.740741", "+0.587512", "22.534979", "2.714670", "0.960379"],
+                [3, "2.714670", "+0.005571", "22.108294", "2.714418", "0.009283"],
+              ]}
+            />
+            <p><b>ตอบ: <M>{`\\sqrt[3]{20}\\approx 2.714418`}</M></b> (ค่าจริง 2.7144176166 — ตรง 6 ตำแหน่งแล้วตั้งแต่รอบ 3)</p>
+            <Callout kind="danger" title="จุดตายของข้อนี้ — อย่าปัดกลางทาง">
+              <p style={{margin:0}}>ถ้ารอบ 2 จด <M>{`x_2 = 2.7147`}</M> (4 ตำแหน่ง) แล้วคำนวณต่อ <M>{`x_3`}</M> จะเพี้ยนที่ทศนิยมตำแหน่งที่ 5–6 ทันที · วิธีที่ถูกคือ<b>ปล่อยค่าไว้ในเครื่อง</b> — กด <Key>2</Key><Key>→</Key><Key>STO</Key><Key>x</Key> ครั้งเดียว แล้วพิมพ์ <code>x − (x³ − 20) ÷ (3x²)</code> จากนั้นกด <Key>↑</Key><Key>=</Key> ซ้ำ</p>
+            </Callout>
+            <p className="muted" style={{fontSize:'0.8rem'}}>สังเกต quadratic convergence: 9.46% → 0.96% → 0.0093% — จำนวนหลักที่ถูกเพิ่มเป็นเท่าตัวทุกรอบ</p>
+          </div>
+        }>
+          จงหา <M>{`\\sqrt[3]{20}`}</M> ด้วยวิธี Newton-Raphson โดย <M>{`x_0=3`}</M> ทำ <b>3 iterations</b> พร้อมคำนวณ ε% ทุกรอบ (ตอบทศนิยม 6 ตำแหน่ง)
+        </Problem>
+
+        <Problem label="C4 (15 คะแนน) · เขียนโปรแกรม · Integration" solution={
+          <div>
+            <PythonRunner code={`# C4 — เทียบ Composite Trapezoidal กับ Composite Simpson ที่จำนวนช่องเท่ากัน
+import math
+f = lambda x: 1/x
+a, b = 1.0, 4.0
+exact = math.log(4)
+
+print(f"ค่าจริง = ln 4 = {exact:.10f}\\n")
+print(f"{'ช่อง':>5} {'Trapezoidal':>14} {'err%':>10} {'Simpson':>14} {'err%':>10}")
+for m in (2, 4, 8, 16):
+    h = (b - a) / m
+    xs = [a + i*h for i in range(m+1)]
+    trap = h/2 * (f(xs[0]) + f(xs[-1]) + 2*sum(f(xs[i]) for i in range(1, m)))
+    simp = h/3 * (f(xs[0]) + f(xs[-1])
+                  + sum((4 if i % 2 else 2)*f(xs[i]) for i in range(1, m)))
+    print(f"{m:5d} {trap:14.8f} {abs(exact-trap)/exact*100:9.5f}% "
+          f"{simp:14.8f} {abs(exact-simp)/exact*100:9.5f}%")`} height={320}/>
+            <NumTable
+              headers={["ช่องย่อย", "Trapezoidal", "ε%", "Simpson (n พารา)", "ε%"]}
+              rows={[
+                [2, "1.53750000", "10.90718 %", "1.42500000 (n=1)", "2.79202 %"],
+                [4, "1.42809066", "3.01497 %", "1.39162088 (n=2)", "0.38423 %"],
+                [8, "1.39712625", "0.78136 %", "1.38680478 (n=4)", "0.03682 %"],
+                [16, "1.38903085", "0.19740 %", "1.38633238 (n=8)", "0.00274 %"],
+              ]}
+            />
+            <Callout kind="good" title="สรุปที่ต้องเขียนตอบ">
+              <p style={{margin:0}}>ที่จำนวนจุดเท่ากันทุกระดับ <b>Simpson แม่นกว่าเสมอ</b> · ช่องเพิ่มเท่าตัว → Trapezoidal error ลดราว <b>4 เท่า</b> (<M>{`O(h^2)`}</M>) ส่วน Simpson ลดราว <b>16 เท่า</b> (<M>{`O(h^4)`}</M>) · ที่ 16 ช่อง Simpson แม่นกว่าราว <b>72 เท่า</b> โดยใช้ข้อมูลชุดเดียวกันเป๊ะ ⇒ <b>ถ้าจำนวนช่องเป็นเลขคู่ ไม่มีเหตุผลที่จะเลือก Trapezoidal</b></p>
+            </Callout>
+          </div>
+        }>
+          จงเขียนโปรแกรมเปรียบเทียบ <b>Composite Trapezoidal</b> กับ <b>Composite Simpson 1/3</b> สำหรับ <M>{`\\displaystyle\\int_1^4 \\frac{dx}{x}`}</M> ที่จำนวนช่องย่อย <M>{`m=2,4,8,16`}</M> (เท่ากันทั้งสองวิธี) แสดง ε% ของทั้งคู่ แล้ว<b>สรุปว่าแต่ละวิธี error ลดลงกี่เท่าเมื่อเพิ่มช่องเป็นสองเท่า</b>
+        </Problem>
+
+        <Problem label="C5 (15 คะแนน) · ทำมือ · Differentiation จากตาราง" solution={
+          <div>
+            <p style={{marginTop:0}}><M>{`h=0.5`}</M> · จุดกลางคือ <M>{`x=2.0`}</M> (มีเพื่อนบ้านครบ 2 ข้าง ⇒ ใช้ central ได้ทั้ง <M>{`O(h^2)`}</M> และ <M>{`O(h^4)`}</M>)</p>
+            <Formula>
+              <MB>{`f'_{O(h^2)}=\\frac{f_{i+1}-f_{i-1}}{2h}\\qquad f''_{O(h^2)}=\\frac{f_{i+1}-2f_i+f_{i-1}}{h^2}`}</MB>
+              <MB>{`f'_{O(h^4)}=\\frac{-f_{i+2}+8f_{i+1}-8f_{i-1}+f_{i-2}}{12h}\\qquad f''_{O(h^4)}=\\frac{-f_{i+2}+16f_{i+1}-30f_i+16f_{i-1}-f_{i-2}}{12h^2}`}</MB>
+            </Formula>
+            <div style={{fontFamily:"var(--font-mono)", fontSize:'0.8rem', lineHeight:1.9, padding:"8px 12px", background:"var(--bg-soft)", borderRadius:6, margin:"8px 0"}}>
+              2h = 1.0 · h² = 0.25 · 12h = 6 · 12h² = 3<br/><br/>
+              f′ O(h²)  = (2.290727 − 0.608198) / 1.0 = <b>1.682529</b><br/>
+              f″ O(h²)  = [2.290727 − 2(1.386294) + 0.608198] / 0.25 = 0.126337 / 0.25 = <b>0.505348</b><br/><br/>
+              f′ O(h⁴)  = [−3.295837 + 8(2.290727) − 8(0.608198) + 0.000000] / 6<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= [−3.295837 + 18.325816 − 4.865584] / 6 = 10.164395 / 6 = <b>1.694066</b><br/>
+              f″ O(h⁴)  = [−3.295837 + 16(2.290727) − 30(1.386294) + 16(0.608198) − 0.000000] / 3<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= [−3.295837 + 36.651632 − 41.588820 + 9.731168] / 3 = 1.498143 / 3 = <b>0.499381</b>
+            </div>
+            <NumTable
+              headers={["ปริมาณ", "O(h²)", "O(h⁴)", "ค่าจริง", "ε% ของ O(h²)", "ε% ของ O(h⁴)"]}
+              rows={[
+                ["f′(2.0)", "1.682529", "1.694066", "1.693147", "0.6271 %", "0.0543 %"],
+                ["f″(2.0)", "0.505348", "0.499381", "0.500000", "1.0696 %", "0.1238 %"],
+              ]}
+            />
+            <p className="muted" style={{fontSize:'0.8rem'}}>ข้อมูลชุดนี้มาจาก <M>{`f(x)=x\\ln x`}</M> ⇒ <M>{`f'=\\ln x+1`}</M>, <M>{`f''=1/x`}</M> (ในข้อสอบจะไม่บอก — คอลัมน์ “ค่าจริง” มีไว้ตรวจตัวเอง) · <b>O(h⁴) แม่นกว่า O(h²) ราว 10 เท่าโดยใช้ตารางเดิมทุกตัว</b> แค่ยืมจุดเพิ่มอีกข้างละ 1 จุด — <M>{`h=0.5`}</M> ถือว่าหยาบ ยิ่งทำให้เห็นความต่างชัด</p>
+          </div>
+        }>
+          จากข้อมูลที่วัดได้ (ระยะห่างเท่ากัน)
+          <div style={{fontFamily:"var(--font-mono)", fontSize:'0.84rem', margin:"6px 0", padding:"6px 10px", background:"var(--bg-soft)", borderRadius:6, overflowX:"auto", whiteSpace:"pre"}}>{`x : 1.0       1.5       2.0       2.5       3.0
+y : 0.000000  0.608198  1.386294  2.290727  3.295837`}</div>
+          จงหา <M>{`f'(2.0)`}</M> และ <M>{`f''(2.0)`}</M> ด้วยสูตร <b>central O(h²) และ central O(h⁴)</b> (ตอบทศนิยม 6 ตำแหน่ง)
+        </Problem>
+
+        <Problem label="C6 (15 คะแนน) · เขียนโปรแกรม · Differentiation ประยุกต์" solution={
+          <div>
+            <PythonRunner code={`# C6 — หาความเร็วและความเร่งจากข้อมูลตำแหน่ง (central O(h²))
+ts = [0.0, 0.5, 1.0, 1.5, 2.0]
+ss = [2.000, 10.775, 17.100, 20.975, 22.400]
+h  = ts[1] - ts[0]
+i  = ts.index(1.0)                     # จุดที่โจทย์ถาม
+
+v = (ss[i+1] - ss[i-1]) / (2*h)                  # f'  central O(h²)
+a = (ss[i+1] - 2*ss[i] + ss[i-1]) / h**2         # f'' central O(h²)
+
+print(f"ที่ t = {ts[i]} s")
+print(f"  ความเร็ว v = {v:.6f} m/s   -> {'กำลังขึ้น' if v > 0 else 'กำลังลง'}")
+print(f"  ความเร่ง a = {a:.6f} m/s²  -> {'ลงเป็น g' if abs(a + 9.8) < 0.1 else '?'}")`} height={280}/>
+            <div style={{fontFamily:"var(--font-mono)", fontSize:'0.84rem', lineHeight:1.9, padding:"8px 12px", background:"var(--bg-soft)", borderRadius:6, margin:"8px 0"}}>
+              v(1.0) = (20.975 − 10.775) / (2×0.5) = 10.200 / 1.0 = <b style={{color:"var(--green)"}}>10.200000 m/s</b><br/>
+              a(1.0) = [20.975 − 2(17.100) + 10.775] / 0.25 = −2.450 / 0.25 = <b style={{color:"var(--green)"}}>−9.800000 m/s²</b>
+            </div>
+            <Callout kind="good" title="สิ่งที่ต้องตีความ (ข้อนี้ให้คะแนนตรงนี้)">
+              <ul style={{margin:0, paddingLeft:18}}>
+                <li><M>{`v>0`}</M> ⇒ ที่วินาทีที่ 1 ลูกบอล<b>ยังลอยขึ้น</b> ด้วยความเร็ว 10.2 m/s</li>
+                <li><M>{`a=-9.8`}</M> m/s² ⇒ คือ<b>ความเร่งโน้มถ่วง</b> พอดี (ติดลบ = ชี้ลง) — ยืนยันว่าข้อมูลเป็นการเคลื่อนที่แบบโพรเจกไทล์</li>
+              </ul>
+            </Callout>
+            <Callout kind="tip" title="ทำไมคำตอบถึงออกมา “กลม” เป๊ะ — ใช้ตรวจตัวเองได้">
+              <p style={{margin:0}}>ข้อมูลชุดนี้มาจาก <M>{`s(t)=-4.9t^2+20t+2`}</M> ซึ่งเป็น<b>พหุนามดีกรี 2</b> ⇒ <M>{`f'''=0`}</M> และ <M>{`f^{(4)}=0`}</M> ⇒ <b>สูตร central O(h²) ไม่มี error เลย</b> · ดังนั้นถ้าคำนวณแล้วไม่ได้ 10.200000 กับ −9.800000 เป๊ะ แปลว่า<b>กดเครื่องผิด ไม่ใช่วิธีผิด</b> — ข้อแบบนี้มีค่ามากตอนซ้อม เพราะบอกได้ทันทีว่าพลาดหรือไม่</p>
+            </Callout>
+          </div>
+        }>
+          เซนเซอร์บันทึกความสูงของลูกบอลที่ถูกโยนขึ้น ได้ข้อมูลดังนี้
+          <div style={{fontFamily:"var(--font-mono)", fontSize:'0.84rem', margin:"6px 0", padding:"6px 10px", background:"var(--bg-soft)", borderRadius:6, overflowX:"auto", whiteSpace:"pre"}}>{`t (s) : 0.0     0.5      1.0      1.5      2.0
+s (m) : 2.000   10.775   17.100   20.975   22.400`}</div>
+          จงเขียนโปรแกรมหา<b>ความเร็วและความเร่งที่ <M>{`t=1.0`}</M> วินาที</b> ด้วยสูตร central <M>{`O(h^2)`}</M> แล้ว<b>ตีความผลลัพธ์ทั้งสองค่า</b>
+        </Problem>
+
+        </TimedExam>
+      </Sect>
+
+      {/* ═══════════ 🎲 · สุ่มชุดสอบ ═══════════ */}
+      <Sect tag="🎲" title="สุ่มชุดสอบ — ฝึกกับสิ่งที่เราไม่รู้ คือ “บทไหนออกกี่ข้อ”">
+        <Callout kind="danger" title="ปัญหาจริงไม่ใช่ “ทำไม่เป็น” แต่คือ “ไม่รู้ว่าจะเจออะไร”">
+          <p style={{margin:"0 0 6px"}}>อาจารย์บอกแค่ <b>“ออกทุกเรื่องที่เรียน”</b> กับ <b>“โค้ดครึ่งหนึ่ง คำนวณครึ่งหนึ่ง”</b> — <b>ไม่เคยบอกว่าบทไหนกี่ข้อ</b> ⇒ เปิดข้อสอบมาอาจเจอ Integration 3 ข้อ หรืออาจไม่เจอเลยก็ได้</p>
+          <p style={{margin:0}}>ถ้าซ้อมด้วยชุดที่รู้ล่วงหน้าว่ามีอะไร จะไม่ได้ฝึกส่วนที่ยากที่สุดจริง ๆ คือ<b>การเปิดมาแล้วต้องจัดลำดับใหม่ทันที</b> · เครื่องนี้จึงล็อกแค่ <b>3 โค้ด + 3 มือ</b> (ตามที่อาจารย์บอก) แล้ว<b>ปล่อยสัดส่วนบทให้สุ่มล้วน</b> — ซ้อมหลายรอบแล้วจะชินกับทุกหน้าตาที่เป็นไปได้</p>
+        </Callout>
+        <RandomExamDraw/>
+        <Callout kind="tip" title="ใช้ยังไงให้ได้ผล">
+          <ol style={{margin:0, paddingLeft:20}}>
+            <li><b>สุ่ม → เริ่มจับเวลาทันที</b> อย่าเพิ่งเปิดดูโจทย์ก่อน (ในห้องสอบก็ไม่ได้ดูก่อน)</li>
+            <li>ใช้ <b>5 นาทีแรก</b> ไล่อ่านทั้ง 6 ข้อ แล้วเขียนลำดับที่จะทำ — นี่คือทักษะที่กำลังฝึก ไม่ใช่การคำนวณ</li>
+            <li>ทำเสร็จแล้วเทียบเฉลยเอง → กรอกสมุดพลาด → <b>สุ่มใหม่วันถัดไป</b></li>
+            <li>ซ้อม 3–4 รอบจะเริ่มเห็นว่า “สัดส่วนไหนก็เอาอยู่” — ความกลัวทำไม่ทันจะลดลงเพราะ<b>เคยเจอมาหมดแล้ว</b></li>
+          </ol>
+        </Callout>
+      </Sect>
+
+      {/* ═══════════ 🩺 · สมุดพลาด ═══════════ */}
+      <Sect tag="🩺" title="สมุดพลาด — บันทึกว่าพลาด “เพราะอะไร” ไม่ใช่แค่ผิดกี่ข้อ">
+        <Callout kind="danger" title="ทำไมต้องมี — เพราะเหลือเวลาแค่ไม่กี่วัน ต้องซ่อมให้ตรงจุด">
+          <p style={{margin:"0 0 6px"}}>ซ้อมแล้วรู้ว่า “ได้ 4 จาก 6” ไม่ช่วยอะไรเลย · สิ่งที่ช่วยคือรู้ว่า <b>2 ข้อที่เสียไปนั้นเสียเพราะอะไร</b> — เพราะแต่ละสาเหตุแก้คนละวิธี และใช้เวลาต่างกันมาก:</p>
+          <ul style={{margin:0, paddingLeft:18, fontSize:'0.84rem'}}>
+            <li><b>ปัดเลขกลางทาง</b> → แก้ได้ใน 10 นาที (เปลี่ยนวิธีกดเครื่อง) — คุ้มที่สุด ทำก่อนเลย</li>
+            <li><b>โครงโค้ดไม่แม่น</b> → ต้องซ้อมเขียน 2–3 วัน</li>
+            <li><b>ทำไม่ทัน</b> → ไม่ใช่ปัญหาความรู้เลย เป็นปัญหาการจัดลำดับข้อ ซ้อมได้ในรอบเดียว</li>
+          </ul>
+          <p style={{margin:"6px 0 0", fontSize:'0.84rem'}}>ถ้าไล่แก้มั่ว ๆ จะหมดเวลาไปกับเรื่องที่ไม่ใช่สาเหตุจริง</p>
+        </Callout>
+        <p>กรอกทุกข้อที่<b>ไม่ได้คะแนน</b>หลังซ้อมจบแต่ละรอบ (รวมข้อที่ทำไม่ทัน) — บันทึกอยู่ในเครื่องนี้เท่านั้น ปิดหน้าแล้วไม่หาย</p>
+        <ErrorLog/>
+        <Callout kind="tip" title="วิธีใช้ให้ได้ผลจริง">
+          <ol style={{margin:0, paddingLeft:20}}>
+            <li>ซ้อมชุด A จับเวลา → ตรวจ → กรอกทุกข้อที่พลาด <b>อย่าเข้าข้างตัวเอง</b> (เลขผิดตำแหน่งเดียวก็คือพลาด)</li>
+            <li>ดูแท่งสรุป → หยิบ <b>โรคอันดับ 1</b> มาแก้อย่างเดียวก่อนซ้อมชุดถัดไป</li>
+            <li>ซ้อมชุด B แล้วดูว่าโรคอันดับ 1 เดิม<b>ลดลงไหม</b> — ถ้าไม่ลด แปลว่าวิธีแก้ยังไม่ตรง ไม่ใช่ซ้อมน้อยไป</li>
+            <li>คืนวันที่ 19 เปิดหน้านี้ อ่านเฉพาะรายการในสมุด แล้วทำเฉพาะข้อพวกนั้นซ้ำ</li>
+          </ol>
+        </Callout>
+      </Sect>
+
       <Sect tag="❌" title="10 กับดักที่ทำให้เสียคะแนนฟรี — เฉพาะ 3 บทที่ออกสอบ">
         <NumTable
           headers={["#", "กับดัก", "วิธีกันไว้"]}
@@ -1064,11 +2204,24 @@ print(f"\\nแม่นขึ้น {abs(exact-d_h2)/abs(exact-d_h4):.1f} เท
       </Sect>
 
       {/* ═══════════ ✅ · เช็คลิสต์ ═══════════ */}
-      <Sect tag="✅" title="เช็คลิสต์คืนก่อนสอบ (19–20 ส.ค.)">
+      <Sect tag="✅" title="เช็คลิสต์คืนก่อนสอบ — อ่านให้จบภายในคืนวันที่ 19 ส.ค.">
+        <Callout kind="danger" title="⚠︎ ตารางสอบบังคับว่า “คืนก่อนสอบ” ใช้ไม่ได้">
+          <NumTable
+            headers={["วัน", "เวลา", "วิชา", "ห้อง"]}
+            rows={[
+              ["จ. 17 ส.ค.", "13:00–15:00", "Law in Daily Life", "อาคาร 63"],
+              ["พฤ. 20 ส.ค.", "16:30–19:30", "Selec Top in Comp Sci II", "78-1201 ชั้น 12"],
+              ["ศ. 21 ส.ค.", "09:00–12:00", "NUMERICAL METHOD", "78-318 ชั้น 3 · แถว 2 ลำดับ 4"],
+              ["ศ. 21 ส.ค.", "13:00–16:00", "Wireless Commu & Network", "78-318 (ห้องเดิม)"],
+            ]}
+          />
+          <p style={{margin:"8px 0 0"}}>วันที่ 20 สอบเลิกสามทุ่มครึ่ง ⇒ <b>ไม่มี “คืนก่อนสอบ” ให้อ่าน Numer</b> · และเช้าวันสอบมี Wireless ต่อบ่ายทันที ⇒ <b>Numer ต้องพร้อม 100% ภายในคืนวันที่ 19</b> วันที่ 20 เอาไว้ทวนเบา ๆ ตอนเช้าอย่างเดียว</p>
+        </Callout>
         <Callout kind="tip" title="ห้ามอ่านของใหม่ — ทวนของเดิมให้แน่นอย่างเดียว">
           <ul style={{margin:0, paddingLeft:18}}>
             <li>ไล่ <b>Cheat Sheet</b> ทั้งหน้า 1 รอบ ปิดตาแล้วเขียนสูตรทั้ง 4 วิธีของ Integration + ทั้ง 6 วิธีของ Root ให้ได้</li>
-            <li>ทำโจทย์ในหน้านี้<b>ซ้ำโดยไม่เปิดเฉลย</b> จับเวลา 120 นาที — เกณฑ์คือ <b>ถูก 7 ใน 10 ข้อ</b> (ไม่ใช่ทำครบ 10) เพราะกติกาคือผิดนิดเดียว = 0</li>
+            <li>ต้องผ่าน <b>ชุดสอบเสมือนจริง A/B/C</b> (หมวด 🎓) มาแล้วอย่างน้อยชุดละ 1 รอบ — ซ้อมวันที่ 14, 16, 18 ตามตารางในหมวดนั้น · เกณฑ์คือ <b>ถูก 4/6 ขึ้นไป</b> (ชุด C ต้อง 5/6) ไม่ใช่ทำครบ เพราะกติกาคือผิดนิดเดียว = 0</li>
+            <li>เปิด<b>สมุดพลาด</b> (หมวด 🩺) → ทำเฉพาะข้อที่เคยผิดซ้ำอีกรอบ ไม่ต้องไล่ทั้งหมด · อ่าน “โรคประจำตัว” 3 อันดับแรกให้ขึ้นใจก่อนเข้าห้องสอบ</li>
             <li>ท่องกติกา 5 ข้อ: รอบทำทิ้ง · สูตร ε ของแต่ละวิธี · ห้ามปัดกลางทาง · <b>ตอบเป็นทศนิยม ห้ามเศษส่วน</b> · Taylor ใช้ error สัมบูรณ์</li>
             <li>เช็คเครื่องคิดเลข: <b>ถ่านใหม่</b> · <b>ตั้ง Rad</b> · ลองกด Table + Ans-loop + STO + ↑= ให้คล่อง · กด <M>{`e^x`}</M>, <M>{`\\ln`}</M>, <M>{`\\sin`}</M> ให้ได้ค่าตรงกับตารางในหมวด 💡</li>
             <li>เตรียมของ: ปากกา 2 ด้าม · ดินสอ+ยางลบสำหรับตาราง · <b>นาฬิกา</b> (ไว้แบ่งเวลา 3 ก้อน)</li>

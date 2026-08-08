@@ -272,6 +272,10 @@ li::marker { color: var(--text-faint); }
 .callout.good { border-color: var(--green); background: rgba(131,193,103,0.06); }
 .callout.tip  { border-color: var(--yellow); background: rgba(255,214,107,0.06); }
 .callout-title { font-weight: 600; margin-bottom: 4px; }
+/* กฎห้องสอบ — พับเก็บได้ ให้ทุกบทมีเหมือนกันโดยไม่กินพื้นที่ */
+.exam-rules > summary::-webkit-details-marker { display: none; }
+.exam-rules > summary::before { content: "▸ "; color: var(--red); }
+.exam-rules[open] > summary::before { content: "▾ "; }
 
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: stretch; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch; }
@@ -621,6 +625,16 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--b
   min-height: 20px;
 }
 .py-output.error { color: var(--red); }
+/* matplotlib figures come back as white PNGs — keep the white plate so they look like what
+   the professor will see when he runs the same script. */
+.py-figs { margin-top: 8px; display: flex; flex-direction: column; gap: 10px; }
+.py-fig {
+  max-width: 100%;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px;
+}
 .py-status {
   font-family: var(--font-mono); font-size: 0.722rem; color: var(--text-faint);
 }

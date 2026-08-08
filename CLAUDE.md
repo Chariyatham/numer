@@ -49,6 +49,8 @@ User-facing copy is in **Thai**. Preserve that — UI labels, headings, and expl
 
 `PythonRunner` lazy-loads Pyodide from a CDN the first time the user clicks Run, then caches the promise. Cells are independently editable in-page. There is no server.
 
+Cells may import `numpy` / `matplotlib` — `run()` calls `loadPackagesFromImports` first (one-time ~10–15 MB download, so the toolbar shows a distinct "กำลังโหลดไลบรารี" status). matplotlib is pinned to the AGG backend, and every open figure is captured as a base64 PNG and rendered under the output, so lesson code can keep the `plt.show()` that students must submit. Keep plot labels in English — Pyodide's matplotlib has no Thai font and renders Thai as boxes.
+
 ### Persistence
 
 The app uses `localStorage` heavily — font size (`numer-fs`), per-chapter scroll position (`scroll-<id>`), and calculator state (`calc-vars`, `calc-hist`, `calc-ang`, `calc-pos`). When changing routing or chapter IDs, old scroll keys become orphaned but harmless.
