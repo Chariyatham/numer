@@ -46,6 +46,16 @@ function CheatLesson() {
       {/* CHEAT SHEET 2 — LINEAR SYSTEMS */}
       <Sect tag="02" title="Linear Systems · Cheat Sheet">
         <div className="cheat-card">
+          <h4>Cramer’s Rule <span className="tag green">สอน 8 ส.ค. · ออกแน่</span></h4>
+          <MB>{`x_i=\\frac{\\det A_i}{\\det A}\\quad\\text{โดย } A_i = A \\text{ ที่แทนคอลัมน์ที่ } i \\text{ ด้วย } b`}</MB>
+          <ul>
+            <li><b>ใช้ได้แค่ 2×2 กับ 3×3</b> (อาจารย์บอกเอง “4×4 ไม่ทำ · n×n ไม่ทำ”) · เมทริกซ์<b>ต้องจัตุรัส</b> ไม่งั้นหา det ไม่ได้ → ใช้ Gauss แทน</li>
+            <li><M>{`\\det A = 0`}</M> ⇒ หยุด ไม่มีคำตอบเดียว</li>
+            <li>det 2×2: <M>{`ad-bc`}</M> · det 3×3: กระจายแถวแรก <M>{`a_{11}M_{11}-a_{12}M_{12}+a_{13}M_{13}`}</M> (เครื่องหมาย + − +)</li>
+            <li><b>ใช้เครื่องคิดเลขหา det ได้</b> — แต่ต้องเขียนสูตร + เมทริกซ์ <M>{`A_i`}</M> ให้เห็น ไม่งั้นข้อ “จงแสดงวิธีทำ” ได้ 0</li>
+            <li>ตรวจฟรี: <M>{`\\det A = `}</M> ผลคูณตัวหลักหลังทำ Gauss</li>
+          </ul>
+
           <h4>Gauss Elimination</h4>
           <ol>
             <li>Forward: <M>{`R_i \\leftarrow R_i - (a_{ik}/a_{kk}) R_k`}</M> ทำทุก i &gt; k</li>

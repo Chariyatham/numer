@@ -383,21 +383,149 @@ function LinearSystemsLesson() {
         <p style={{margin:0, fontSize:'0.82rem', color:"var(--text-dim)"}}>อาจารย์ยังเดินตัวอย่าง 3×3 ต่อด้วย — โจทย์ <b>“Plate with surface heating” ด้วย Finite Difference method</b> ซึ่งแถวแรกคือ <M>{`4x_1-4x_2+0x_3=400`}</M> และเฉลยที่ไล่ในคาบคือ <M>{`x_1=450,\\ x_2=350`}</M> (แทนกลับ: <M>{`4(450)-4(350)=400`}</M> ✓) · <b>ระบบเต็มของสไลด์นั้นอ่านจากรูปถ่ายไม่ชัดพอ</b> — ถ้าได้สไลด์ตัวจริงจะเติมให้ครบ</p>
       </Callout>
 
-      <Sect tag="0" title="ทำไมต้องมี 2 family">
-        <p>มี 2 กลุ่มใหญ่:</p>
+      <Sect tag="0" title="เริ่มจากศูนย์ — ทำไมต้องมีบทนี้ และจะเรียนอะไรบ้าง">
+        <p>บทนี้ตอบคำถามเดียว: <b>“มีหลายสมการ หลายตัวแปร แล้วจะแก้ยังไงให้คอมพิวเตอร์ทำแทนได้”</b> · เดินตามลำดับที่อาจารย์สอนจริงในคาบ 8 ส.ค. ตั้งแต่ต้น</p>
+
+        <h3>ขั้นที่ 1 · โจทย์จริงไม่ได้มาเป็นสมการ — มันมาเป็นสถานการณ์</h3>
+        <Callout kind="tip" title="ตัวอย่างที่อาจารย์ยกในคาบ — ส้มกับแอปเปิ้ล">
+          <p style={{margin:"0 0 6px"}}>อาจารย์ถามว่า <i>“สมการเขียว ๆ พวกนี้ในชีวิตจริงมาจากไหน — อยู่ดี ๆ ก็โผล่มาเหรอ”</i> แล้วยกตัวอย่าง:</p>
+          <div style={{fontFamily:"var(--font-mono)", fontSize:'0.86rem', lineHeight:1.9, padding:"8px 12px", background:"var(--bg-soft)", borderRadius:6, margin:"6px 0"}}>
+            ซื้อส้ม 1 ลูก + แอปเปิ้ล 1 ลูก&nbsp; จ่าย 5 บาท<br/>
+            ซื้อส้ม 2 ลูก + แอปเปิ้ล 3 ลูก&nbsp; จ่าย 12 บาท<br/>
+            <span style={{color:"var(--text-dim)"}}>→ ส้มลูกละเท่าไร แอปเปิ้ลลูกละเท่าไร</span>
+          </div>
+          <p style={{margin:"6px 0 0"}}>ให้ <M>{`s`}</M> = ราคาส้ม, <M>{`a`}</M> = ราคาแอปเปิ้ล ⇒ <M>{`s+a=5`}</M> และ <M>{`2s+3a=12`}</M> ⇒ ได้ <b>ส้มลูกละ 3 บาท · แอปเปิ้ลลูกละ 2 บาท</b><br/>
+          <b>ประเด็นที่อาจารย์ย้ำ:</b> <i>“ตอนเรียนสมการมันโผล่มาให้ แต่ในชีวิตจริงคุณต้องนั่งตั้งสมการชุดนี้ออกมาให้ได้เอง”</i> ⇒ <b>ข้อสอบแนวประยุกต์จะให้สถานการณ์มา แล้วต้องตั้งสมการเอง</b></p>
+        </Callout>
+
+        <h3>ขั้นที่ 2 · แก้ด้วยมือได้ 2 วิธี — แต่ทั้งคู่เขียนโค้ดไม่ได้</h3>
+        <p>อาจารย์เดินให้ดูกับระบบ <M>{`2x+y=5`}</M> และ <M>{`3x-y=10`}</M>:</p>
         <div className="grid-2">
-          <Callout kind="good" title="Direct methods (กำจัดตรง ๆ)">
-            <p>Gauss Elimination, Gauss-Jordan, LU — <b>คำนวณจบในขั้นตอนตายตัว</b> เช่น <M>{`n^3/3`}</M> operations</p>
-            <p className="muted" style={{fontSize:'0.778rem', marginBottom:0}}>เหมาะกับ matrix เล็ก ๆ (n &lt; 1000) — แม่นยำเป๊ะ</p>
+          <Callout kind="good" title="วิธีที่ 1 · แทนค่า (Substitution)">
+            <div style={{fontFamily:"var(--font-mono)", fontSize:'0.82rem', lineHeight:1.85}}>
+              จาก ① : x = (5 − y)/2<br/>
+              แทนใน ② : 3(5 − y)/2 − y = 10<br/>
+              &nbsp;&nbsp;15 − 3y − 2y = 20<br/>
+              &nbsp;&nbsp;−5y = 5 → <b>y = −1</b><br/>
+              แทนกลับ : 2x + (−1) = 5 → <b>x = 3</b>
+            </div>
           </Callout>
-          <Callout kind="tip" title="Iterative methods (ทำซ้ำ)">
-            <p>Jacobi, Gauss-Seidel, Conjugate Gradient — <b>เดาคำตอบ + ปรับเข้าใกล้</b>เรื่อย ๆ</p>
-            <p className="muted" style={{fontSize:'0.778rem', marginBottom:0}}>เหมาะ matrix ใหญ่ + sparse (มีศูนย์เยอะ) — ประหยัด memory</p>
+          <Callout kind="good" title="วิธีที่ 2 · กำจัดตัวแปร (Elimination)">
+            <div style={{fontFamily:"var(--font-mono)", fontSize:'0.82rem', lineHeight:1.85}}>
+              สังเกตว่า y กับ −y หักกันพอดี<br/>
+              ① + ② : 5x = 15 → <b>x = 3</b><br/>
+              แทนกลับ : 2(3) + y = 5 → <b>y = −1</b><br/><br/>
+              <span style={{color:"var(--text-dim)"}}>ตรวจ: 3(3) − (−1) = 10 ✓</span>
+            </div>
+          </Callout>
+        </div>
+        <Callout kind="danger" title="คำถามที่เปลี่ยนทุกอย่าง — “2 วิธีนี้เขียนโค้ดได้มั้ย”">
+          <p style={{margin:0}}>ทั้งสองวิธีต้อง<b>“มอง”</b> ว่าตัวไหนหักกันได้ / ตัวไหนย้ายข้างง่าย — คอมพิวเตอร์<b>มองไม่เป็น</b> · สิ่งที่คอมพิวเตอร์ทำได้คือ<b>วนลูปตามตำแหน่ง</b> ⇒ เราต้องแปลงสมการให้กลายเป็นของที่<b>มีตำแหน่ง</b> นั่นคือ <b>เมทริกซ์</b></p>
+        </Callout>
+
+        <h3>ขั้นที่ 3 · แปลงเป็นเมทริกซ์ — Ax = B</h3>
+        <MB>{`\\underbrace{\\begin{bmatrix}2&1\\\\3&-1\\end{bmatrix}}_{A\\ (2\\times2)}\\underbrace{\\begin{Bmatrix}x\\\\y\\end{Bmatrix}}_{x\\ (2\\times1)}=\\underbrace{\\begin{Bmatrix}5\\\\10\\end{Bmatrix}}_{B\\ (2\\times1)}`}</MB>
+        <p>ทีนี้ทุกช่องมี<b>ที่อยู่</b>: <M>{`a_{11},a_{12},a_{21},a_{22}`}</M> ⇒ เขียน <code>for i … for j …</code> ไล่ได้ · ภาษาอังกฤษเรียกระบบแบบนี้ว่า <b>Linear Algebraic Equations</b></p>
+        <Callout kind="tip" title="Matrix ต่างจาก Vector ยังไง (อาจารย์ถามในคาบ)">
+          <p style={{margin:0}}><b>Vector คือเมทริกซ์ที่มีด้านใดด้านหนึ่งเป็น 1</b> — <M>{`A`}</M> ขนาด 2×2 = matrix · <M>{`x`}</M> กับ <M>{`B`}</M> ขนาด 2×1 = vector · เทียบกับภาษาโปรแกรม: vector = array 1 มิติ, matrix = array 2 มิติ</p>
+        </Callout>
+
+        <h3>ขั้นที่ 4 · แล้วมีวิธีแก้กี่แบบ — นี่คือแผนที่ของทั้งบท</h3>
+        <NumTable
+          headers={["#", "วิธี", "กลุ่ม", "ใช้ตอนไหน", "ปีนี้"]}
+          rows={[
+            ["1", "Cramer's Rule", "Direct", "เมทริกซ์เล็ก (2×2, 3×3) — ใช้ det ล้วน", "✅ สอนแล้ว 8 ส.ค."],
+            ["2", "Gauss Elimination", "Direct", "ใหญ่กว่านั้น หรือเมทริกซ์ไม่จัตุรัส", "✅ 19 ส.ค."],
+            ["3", "Gauss-Jordan", "Direct", "ทำต่อจนได้ I เลย ไม่ต้อง back-sub", "📮 อยู่ในการบ้าน"],
+            ["4", "Matrix Inversion", "Direct", "หา A⁻¹ ครั้งเดียว ใช้ซ้ำได้หลาย b", "📮 อยู่ในการบ้าน"],
+            ["5", "LU Decomposition", "Direct", "แตก A = L·U แล้วแก้สองต่อ", "📮 อยู่ในการบ้าน"],
+            ["6", "Cholesky", "Direct", "เฉพาะเมทริกซ์สมมาตร — เร็วกว่า LU เท่าตัว", "📮 อยู่ในการบ้าน"],
+            ["7–9", "Jacobi · Gauss-Seidel · Conjugate Gradient", "Iterative", "เมทริกซ์ใหญ่มากและมีศูนย์เยอะ", "อยู่ในสไลด์ ยังไม่สอน"],
+          ]}
+        />
+        <Callout kind="warn" title="อ่านบทนี้ยังไงให้จบในรอบเดียว">
+          <ol style={{margin:0, paddingLeft:20}}>
+            <li><b>อ่านเรียงหมวด 1 → 6</b> — ลำดับนี้ตรงกับทั้งที่อาจารย์สอนและข้อ 1.1–1.6 ในใบการบ้านเป๊ะ</li>
+            <li>แต่ละหมวดมีตัวอย่างของตัวเอง <b>ไม่ต้องจำเลข</b> — จำแค่ “วิธีนี้ทำอะไรกับเมทริกซ์”</li>
+            <li>อ่านครบแล้วไป <b>หมวด 📮</b> ซึ่งเอา<b>ระบบเดียวกัน</b>มาแก้ให้ดูทั้ง 6 วิธีเรียงกัน — ตรงนั้นคือจุดที่ทุกอย่างจะต่อกันติด และเป็นเฉลยการบ้านไปในตัว</li>
+            <li>หมวด 7–9 (iterative) <b>ข้ามไปก่อนได้</b> ถ้าเวลาไม่พอ — ยังไม่สอนและไม่อยู่ในใบการบ้าน</li>
+          </ol>
+        </Callout>
+
+        <h3>Direct กับ Iterative ต่างกันตรงไหน</h3>
+        <div className="grid-2">
+          <Callout kind="good" title="Direct methods (หมวด 1–6)">
+            <p>Cramer, Gauss, Gauss-Jordan, Inversion, LU, Cholesky — <b>คำนวณจบในขั้นตอนตายตัว</b> (ราว <M>{`n^3/3`}</M> operations)</p>
+            <p className="muted" style={{fontSize:'0.778rem', marginBottom:0}}>ได้คำตอบ<b>เป๊ะ</b> (ถ้าไม่มี round-off) — เหมาะ matrix เล็ก</p>
+          </Callout>
+          <Callout kind="tip" title="Iterative methods (หมวด 7–9)">
+            <p>Jacobi, Gauss-Seidel, Conjugate Gradient — <b>เดาคำตอบแล้วปรับเข้าใกล้</b>เรื่อย ๆ เหมือน Root Finding</p>
+            <p className="muted" style={{fontSize:'0.778rem', marginBottom:0}}>ไม่เคยได้คำตอบเป๊ะ แต่<b>เข้าใกล้พอ</b> — เหมาะ matrix ใหญ่ + มีศูนย์เยอะ</p>
           </Callout>
         </div>
       </Sect>
 
-      <Sect tag="1" title="Gauss Elimination — Direct method พื้นฐาน">
+      <Sect tag="1" title="Cramer's Rule — กฎคราเมอร์">
+        <h3>แนวคิด · ใช้ determinant ล้วน ๆ</h3>
+        <p>ถ้า <M>{`\\det(A) \\neq 0`}</M> ระบบ <M>Ax=b</M> มีคำตอบเดียว และ:</p>
+        <Formula label="Cramer's Rule">
+          <MB>{`x_i = \\frac{\\det(A_i)}{\\det(A)}`}</MB>
+          <p style={{fontSize:'0.778rem', color:"var(--text-dim)", margin:"6px 0 0"}}>โดย <M>A_i</M> คือ matrix A ที่<b>แทนคอลัมน์ที่ i ด้วย b</b></p>
+        </Formula>
+
+        <Callout kind="warn" title="ข้อจำกัด — ทำได้แต่ matrix เล็ก ๆ">
+          <p>ต้องคำนวณ <M>n+1</M> determinant ขนาด <M>n \times n</M> — ค่าใช้จ่าย <M>O((n+1) \cdot n!)</M> สำหรับวิธี cofactor — ใหญ่กว่า n=4 ก็ไม่ไหวแล้ว</p>
+          <p style={{margin:0}}>แต่ <b>ออกข้อสอบบ่อย</b> เพราะแสดงแนวคิด matrix det ได้ชัด</p>
+        </Callout>
+
+        <h3>ตัวอย่างทำมือ — 3×3</h3>
+        <p>ระบบ <M>{`A x = b`}</M>:</p>
+        <MB>{`A = \\begin{bmatrix} -2 & 3 & 1 \\\\ 3 & 4 & -5 \\\\ 1 & -2 & 1 \\end{bmatrix}, \\quad b = \\begin{bmatrix} 9 \\\\ 0 \\\\ -4 \\end{bmatrix}`}</MB>
+        <p>คำนวณ <M>{`\\det(A)`}</M> ก่อน → แล้วสลับคอลัมน์ทีละคอลัมน์เพื่อหา <M>{`\\det(A_1), \\det(A_2), \\det(A_3)`}</M></p>
+        <CramerViz A0={[[-2,3,1],[3,4,-5],[1,-2,1]]} b0={[9,0,-4]}/>
+
+        <h3>fx-991CW · ใช้เครื่องช่วยหา det</h3>
+        <Callout title="วิธีกดเครื่อง">
+          <CalcSteps steps={[
+            <span><Key>HOME</Key> → <Key>Matrix</Key> → <Key>Define Matrix</Key> → เลือก MatA</span>,
+            <span>ขนาด 3×3 → กรอกค่า A</span>,
+            <span>กลับมาหน้าคำนวณ → <Key>OPTN</Key> → <Key>Matrix Calc</Key> → <Key>det(</Key> → <Key>MatA</Key> → <Key>=</Key></span>,
+            <span>เก็บลงตัวแปร: <Key>STO</Key> → A (เก็บ det(A) ไว้)</span>,
+            <span>กลับ Define Matrix → MatB = A แต่แทนคอลัมน์ที่ 1 ด้วย b → หา det → หาร A → ได้ x₁</span>,
+            <span>ทำซ้ำกับคอลัมน์ 2, 3</span>,
+          ]}/>
+        </Callout>
+
+        <h3>Python — Cramer ครบสูตร</h3>
+        <PythonRunner code={`import numpy as np
+
+def cramer(A, b):
+    A = np.array(A, dtype=float)
+    b = np.array(b, dtype=float)
+    D = np.linalg.det(A)
+    print(f"det(A) = {D:.6f}")
+    if abs(D) < 1e-12:
+        raise ValueError("det(A) = 0 — ไม่มีคำตอบเดียว")
+    n = len(b)
+    x = []
+    for i in range(n):
+        Ai = A.copy()
+        Ai[:, i] = b
+        Di = np.linalg.det(Ai)
+        xi = Di / D
+        print(f"det(A_{i+1}) = {Di:.6f}  →  x_{i+1} = {xi:.6f}")
+        x.append(xi)
+    return x
+
+A = [[-2,3,1],[3,4,-5],[1,-2,1]]
+b = [9, 0, -4]
+print("\\nx =", cramer(A, b))`} height={240}/>
+
+        <h3>Interactive</h3>
+        <DirectSolverShell method="cramer" title="Cramer's Rule — Solver"/>
+      </Sect>
+
+      <Sect tag="2" title="Gauss Elimination — Direct method พื้นฐาน">
         <h3>แนวคิด · ทำให้ matrix เป็น Upper Triangular</h3>
         <p>เป้าหมาย: ทำให้ matrix อยู่ในรูป <em>สามเหลี่ยมบน</em> เพื่อจะ back-substitute หาค่า x ได้ง่าย</p>
 
@@ -522,7 +650,7 @@ print(f"\\nx = {[round(v, 6) for v in x]}")`} height={280}/>
         <DirectSolverShell method="gauss" title="Gauss Elimination — Solver"/>
       </Sect>
 
-      <Sect tag="2" title="Gauss-Jordan — Forward + Backward Elimination">
+      <Sect tag="3" title="Gauss-Jordan — Forward + Backward Elimination">
         <p>คล้าย Gauss แต่<em>ลบทั้งบนและล่าง pivot</em> + หารแถว pivot ด้วย <M>{`a_{kk}`}</M> → ได้ matrix <b>เอกลักษณ์</b></p>
 
         <Formula label="ก่อน vs หลัง Gauss-Jordan">
@@ -568,65 +696,6 @@ print("x =", [round(v,6) for v in gauss_jordan(A, b)])`} height={220}/>
         <DirectSolverShell method="gauss-jordan" title="Gauss-Jordan — Solver"/>
       </Sect>
 
-      <Sect tag="3" title="Cramer's Rule — กฎคราเมอร์">
-        <h3>แนวคิด · ใช้ determinant ล้วน ๆ</h3>
-        <p>ถ้า <M>{`\\det(A) \\neq 0`}</M> ระบบ <M>Ax=b</M> มีคำตอบเดียว และ:</p>
-        <Formula label="Cramer's Rule">
-          <MB>{`x_i = \\frac{\\det(A_i)}{\\det(A)}`}</MB>
-          <p style={{fontSize:'0.778rem', color:"var(--text-dim)", margin:"6px 0 0"}}>โดย <M>A_i</M> คือ matrix A ที่<b>แทนคอลัมน์ที่ i ด้วย b</b></p>
-        </Formula>
-
-        <Callout kind="warn" title="ข้อจำกัด — ทำได้แต่ matrix เล็ก ๆ">
-          <p>ต้องคำนวณ <M>n+1</M> determinant ขนาด <M>n \times n</M> — ค่าใช้จ่าย <M>O((n+1) \cdot n!)</M> สำหรับวิธี cofactor — ใหญ่กว่า n=4 ก็ไม่ไหวแล้ว</p>
-          <p style={{margin:0}}>แต่ <b>ออกข้อสอบบ่อย</b> เพราะแสดงแนวคิด matrix det ได้ชัด</p>
-        </Callout>
-
-        <h3>ตัวอย่างทำมือ — 3×3</h3>
-        <p>ระบบ <M>{`A x = b`}</M>:</p>
-        <MB>{`A = \\begin{bmatrix} -2 & 3 & 1 \\\\ 3 & 4 & -5 \\\\ 1 & -2 & 1 \\end{bmatrix}, \\quad b = \\begin{bmatrix} 9 \\\\ 0 \\\\ -4 \\end{bmatrix}`}</MB>
-        <p>คำนวณ <M>{`\\det(A)`}</M> ก่อน → แล้วสลับคอลัมน์ทีละคอลัมน์เพื่อหา <M>{`\\det(A_1), \\det(A_2), \\det(A_3)`}</M></p>
-        <CramerViz A0={[[-2,3,1],[3,4,-5],[1,-2,1]]} b0={[9,0,-4]}/>
-
-        <h3>fx-991CW · ใช้เครื่องช่วยหา det</h3>
-        <Callout title="วิธีกดเครื่อง">
-          <CalcSteps steps={[
-            <span><Key>HOME</Key> → <Key>Matrix</Key> → <Key>Define Matrix</Key> → เลือก MatA</span>,
-            <span>ขนาด 3×3 → กรอกค่า A</span>,
-            <span>กลับมาหน้าคำนวณ → <Key>OPTN</Key> → <Key>Matrix Calc</Key> → <Key>det(</Key> → <Key>MatA</Key> → <Key>=</Key></span>,
-            <span>เก็บลงตัวแปร: <Key>STO</Key> → A (เก็บ det(A) ไว้)</span>,
-            <span>กลับ Define Matrix → MatB = A แต่แทนคอลัมน์ที่ 1 ด้วย b → หา det → หาร A → ได้ x₁</span>,
-            <span>ทำซ้ำกับคอลัมน์ 2, 3</span>,
-          ]}/>
-        </Callout>
-
-        <h3>Python — Cramer ครบสูตร</h3>
-        <PythonRunner code={`import numpy as np
-
-def cramer(A, b):
-    A = np.array(A, dtype=float)
-    b = np.array(b, dtype=float)
-    D = np.linalg.det(A)
-    print(f"det(A) = {D:.6f}")
-    if abs(D) < 1e-12:
-        raise ValueError("det(A) = 0 — ไม่มีคำตอบเดียว")
-    n = len(b)
-    x = []
-    for i in range(n):
-        Ai = A.copy()
-        Ai[:, i] = b
-        Di = np.linalg.det(Ai)
-        xi = Di / D
-        print(f"det(A_{i+1}) = {Di:.6f}  →  x_{i+1} = {xi:.6f}")
-        x.append(xi)
-    return x
-
-A = [[-2,3,1],[3,4,-5],[1,-2,1]]
-b = [9, 0, -4]
-print("\\nx =", cramer(A, b))`} height={240}/>
-
-        <h3>Interactive</h3>
-        <DirectSolverShell method="cramer" title="Cramer's Rule — Solver"/>
-      </Sect>
 
       <Sect tag="4" title="Matrix Inversion — แก้ผ่าน A⁻¹">
         <h3>แนวคิด · หา A⁻¹ แล้วคูณ b</h3>
@@ -1374,6 +1443,105 @@ for name, fn in [("1.1 Cramer", cramer), ("1.2 Gauss", gauss),
 x = gauss(A, b)
 print("\\nตรวจ A·x =", [round(sum(A[i][j]*x[j] for j in range(n)), 6) for i in range(n)],
       " ควรเท่ากับ b =", b)`} height={520}/>
+      </Sect>
+
+      {/* ═══════════ 🎯 · โจทย์ประยุกต์ ═══════════ */}
+      <Sect tag="🎯" title="โจทย์ประยุกต์ — แบบที่ข้อสอบชอบออก (ต้องตั้งสมการเอง)">
+        <p>อาจารย์ย้ำในคาบว่า <i>“ตอนเรียนสมการมันโผล่มาให้ แต่ในชีวิตจริงคุณต้องนั่งตั้งสมการชุดนี้ออกมาให้ได้เอง”</i> ⇒ ข้อสอบแนวประยุกต์จะให้<b>สถานการณ์</b> ไม่ใช่เมทริกซ์ · <b>ขั้นที่ยากที่สุดคือขั้นแรก</b> — ตั้งตัวแปรและเขียนสมการ ที่เหลือคือวิธีที่เรียนมาแล้วทั้งนั้น</p>
+
+        <Callout kind="tip" title="สูตรตั้งสมการ 3 ขั้น (ใช้ได้กับทุกโจทย์ประยุกต์ในบทนี้)">
+          <ol style={{margin:0, paddingLeft:20}}>
+            <li><b>ตั้งตัวแปรให้สิ่งที่โจทย์ถามหา</b> — เขียนกำกับหน่วยด้วย (บาท/ชิ้น, °C, แอมป์)</li>
+            <li><b>หา “เหตุการณ์” ให้ครบเท่าจำนวนตัวแปร</b> — 3 ตัวแปรต้องมี 3 เหตุการณ์อิสระ ไม่งั้นแก้ไม่ได้</li>
+            <li><b>เรียงตัวแปรให้ตรงคอลัมน์กันทุกบรรทัด</b> ก่อนแปลงเป็นเมทริกซ์ — ตัวไหนไม่มีให้ใส่ 0 อย่าเว้นว่าง</li>
+          </ol>
+        </Callout>
+
+        <Problem label="ประยุกต์ 1 · ทำมือด้วย Cramer — ร้านกาแฟ" solution={
+          <div>
+            <p style={{marginTop:0}}><b>ขั้นที่ 1 · ตั้งตัวแปร</b> — ให้ <M>{`x_1`}</M> = ราคากาแฟ/แก้ว, <M>{`x_2`}</M> = ราคาชา/แก้ว, <M>{`x_3`}</M> = ราคาขนม/ชิ้น (บาท)</p>
+            <p><b>ขั้นที่ 2 · เขียน 3 เหตุการณ์</b></p>
+            <MB>{`\\begin{cases}2x_1+1x_2+1x_3=145\\\\1x_1+3x_2+2x_3=195\\\\3x_1+2x_2+4x_3=330\\end{cases}\\;\\Rightarrow\\;\\begin{bmatrix}2&1&1\\\\1&3&2\\\\3&2&4\\end{bmatrix}\\begin{Bmatrix}x_1\\\\x_2\\\\x_3\\end{Bmatrix}=\\begin{Bmatrix}145\\\\195\\\\330\\end{Bmatrix}`}</MB>
+            <p><b>ขั้นที่ 3 · Cramer</b></p>
+            <div style={{fontFamily:"var(--font-mono)", fontSize:'0.84rem', lineHeight:1.9, padding:"8px 12px", background:"var(--bg-soft)", borderRadius:6, margin:"8px 0"}}>
+              det A = 2(3·4 − 2·2) − 1(1·4 − 2·3) + 1(1·2 − 3·3)<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 2(8) − 1(−2) + 1(−7) = 16 + 2 − 7 = <b>11</b>
+            </div>
+            <NumTable
+              headers={["ตัวแปร", "det (แทนคอลัมน์ด้วย b)", "x = det/11", "ความหมาย"]}
+              rows={[
+                [<M>{`x_1`}</M>, "440", <b>40.000000</b>, "กาแฟแก้วละ 40 บาท"],
+                [<M>{`x_2`}</M>, "275", <b>25.000000</b>, "ชาแก้วละ 25 บาท"],
+                [<M>{`x_3`}</M>, "440", <b>40.000000</b>, "ขนมชิ้นละ 40 บาท"],
+              ]}
+            />
+            <Callout kind="good" title="แทนกลับตรวจ — ต้องลงตัวทั้ง 3 บรรทัด">
+              <div style={{fontFamily:"var(--font-mono)", fontSize:'0.84rem', lineHeight:1.8}}>
+                2(40) + 25 + 40 = 145 ✓<br/>
+                40 + 3(25) + 2(40) = 195 ✓<br/>
+                3(40) + 2(25) + 4(40) = 330 ✓
+              </div>
+            </Callout>
+            <p className="muted" style={{fontSize:'0.8rem'}}>⚠︎ ตอบ <b>40.000000 / 25.000000 / 40.000000</b> — ห้ามเขียน <M>{`\\tfrac{440}{11}`}</M> ทิ้งไว้ กติกาห้ามเศษส่วน</p>
+          </div>
+        }>
+          ร้านกาแฟไม่มีป้ายราคา แต่เก็บใบเสร็จไว้ 3 ใบ
+          <div style={{fontFamily:"var(--font-mono)", fontSize:'0.84rem', margin:"6px 0", padding:"6px 10px", background:"var(--bg-soft)", borderRadius:6, overflowX:"auto", whiteSpace:"pre"}}>{`ใบที่ 1 : กาแฟ 2 แก้ว · ชา 1 แก้ว · ขนม 1 ชิ้น   =  145 บาท
+ใบที่ 2 : กาแฟ 1 แก้ว · ชา 3 แก้ว · ขนม 2 ชิ้น   =  195 บาท
+ใบที่ 3 : กาแฟ 3 แก้ว · ชา 2 แก้ว · ขนม 4 ชิ้น   =  330 บาท`}</div>
+          จงหา<b>ราคาต่อหน่วยของทั้ง 3 อย่าง</b> ด้วย <b>Cramer’s Rule</b> พร้อมแสดงวิธีทำและแทนค่ากลับตรวจคำตอบ (ตอบทศนิยม 6 ตำแหน่ง)
+        </Problem>
+
+        <Problem label="ประยุกต์ 2 · เขียนโปรแกรม — อุณหภูมิในแท่งโลหะ (แนวเดียวกับตัวอย่างในคาบ)" solution={
+          <div>
+            <p style={{marginTop:0}}><b>ที่มาของสมการ</b> — จากบท Differentiation: อนุพันธ์อันดับสองแบบ central คือ <M>{`T''\\approx\\dfrac{T_{i-1}-2T_i+T_{i+1}}{h^2}`}</M> · สมดุลความร้อนคือ <M>{`T''=0`}</M> (ไม่มีแหล่งความร้อน) ⇒ คูณ <M>{`-h^2`}</M> ทั้งสองข้าง:</p>
+            <MB>{`-T_{i-1}+2T_i-T_{i+1}=0`}</MB>
+            <p>เขียนที่จุด <M>{`i=1,2,3`}</M> แล้วย้ายค่าที่รู้ (<M>{`T_0=100`}</M>, <M>{`T_4=20`}</M>) ไปฝั่งขวา:</p>
+            <MB>{`\\begin{bmatrix}2&-1&0\\\\-1&2&-1\\\\0&-1&2\\end{bmatrix}\\begin{Bmatrix}T_1\\\\T_2\\\\T_3\\end{Bmatrix}=\\begin{Bmatrix}100\\\\0\\\\20\\end{Bmatrix}`}</MB>
+            <NumTable
+              headers={["กรณี", "b", "คำตอบ T₁, T₂, T₃", "รูปร่าง"]}
+              rows={[
+                ["(ก) ไม่มีแหล่งความร้อน", "(100, 0, 20)", "80.000000 · 60.000000 · 40.000000", "ไล่เป็นเส้นตรง"],
+                ["(ข) มีแหล่งความร้อน S = 40", "(140, 40, 60)", "140.000000 · 140.000000 · 100.000000", "โก่งขึ้น (ร้อนกว่าปลายทั้งสอง)"],
+              ]}
+            />
+            <Callout kind="good" title="⭐ ข้อนี้ตรวจคำตอบได้โดยไม่ต้องแทนกลับ — ใช้ฟิสิกส์ตรวจ">
+              <p style={{margin:0}}>กรณี (ก) ไม่มีแหล่งความร้อน ⇒ อุณหภูมิต้อง<b>ไล่เป็นเส้นตรง</b>จาก 100 ลง 20 · ช่วงละ <M>{`(100-20)/4=20`}</M> ⇒ ต้องได้ <b>80, 60, 40</b> พอดี · <b>ถ้าโปรแกรมให้ตัวเลขที่ไม่เรียงเป็นเส้นตรง แปลว่าเมทริกซ์ผิด</b> — นี่คือแบบทดสอบที่ควรรันก่อนเสมอก่อนใส่เคสจริง</p>
+            </Callout>
+            <PythonRunner code={`# ประยุกต์ 2 — อุณหภูมิในแท่งโลหะด้วย Finite Difference + Gauss Elimination
+# −T(i−1) + 2·T(i) − T(i+1) = S   ที่จุดภายใน i = 1, 2, 3
+from fractions import Fraction as F
+
+def gauss(A, b):
+    n = len(A)
+    M = [[F(A[i][j]) for j in range(n)] + [F(b[i])] for i in range(n)]
+    for k in range(n - 1):                      # forward elimination
+        for i in range(k + 1, n):
+            m = M[i][k] / M[k][k]
+            for j in range(k, n + 1):
+                M[i][j] -= m * M[k][j]
+    x = [F(0)] * n                              # back substitution
+    for i in reversed(range(n)):
+        x[i] = (M[i][n] - sum(M[i][j]*x[j] for j in range(i+1, n))) / M[i][i]
+    return [float(v) for v in x]
+
+T0, T4 = 100.0, 20.0                            # อุณหภูมิปลายทั้งสองข้าง (รู้ค่า)
+A = [[2, -1, 0],
+     [-1, 2, -1],
+     [0, -1, 2]]
+
+for S, name in [(0, "ไม่มีแหล่งความร้อน"), (40, "มีแหล่งความร้อน S=40")]:
+    b = [S + T0, S, S + T4]                     # ย้ายค่าที่รู้ไปฝั่งขวา
+    T = gauss(A, b)
+    print(f"{name}:")
+    print(f"  T0={T0:.1f}  T1={T[0]:.6f}  T2={T[1]:.6f}  T3={T[2]:.6f}  T4={T4:.1f}")
+    step = [round(T[0]-T0, 6), round(T[1]-T[0], 6), round(T[2]-T[1], 6), round(T4-T[2], 6)]
+    print(f"  ผลต่างแต่ละช่วง = {step}  -> {'เส้นตรง' if len(set(step)) == 1 else 'โค้ง'}\\n")`} height={420}/>
+          </div>
+        }>
+          แท่งโลหะยาว 4 หน่วย ปลายซ้ายถูกตรึงที่ <b>100 °C</b> ปลายขวาที่ <b>20 °C</b> · แบ่งแท่งเป็น 4 ช่วงเท่ากัน ได้จุดภายใน 3 จุด (<M>{`T_1,T_2,T_3`}</M>) · สมดุลความร้อนที่จุดภายในแต่ละจุดคือ <M>{`-T_{i-1}+2T_i-T_{i+1}=S`}</M> เมื่อ <M>S</M> คือความร้อนที่ป้อนเข้า<br/>
+          จงเขียนโปรแกรมหาอุณหภูมิทั้ง 3 จุดด้วย <b>Gauss Elimination</b> สำหรับ <b>(ก)</b> <M>{`S=0`}</M> และ <b>(ข)</b> <M>{`S=40`}</M> แล้วอธิบายว่ารูปร่างอุณหภูมิต่างกันอย่างไร
+        </Problem>
       </Sect>
 
       <Sect tag="7" title="Jacobi Iteration — เริ่ม Iterative">
