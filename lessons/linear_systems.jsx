@@ -324,6 +324,23 @@ function LinearSystemsLesson() {
         meta={["Direct method", "Iterative methods", "Convergence", "fx-991CW Equation"]}
       />
 
+      <Callout kind="warn" title="📮 การบ้านชุดนี้ · ระบบเดียว 6 วิธี — เฉลยครบอยู่ในหมวด 📮 ท้ายกลุ่ม Direct">
+        <p style={{margin:"0 0 6px"}}>ใบงาน <code>Gauss Elimination Method.pdf</code> ให้ระบบมา<b>ระบบเดียว</b> แล้วสั่งแก้ด้วย <b>6 วิธี</b> — โครงเดียวกับการบ้าน 4 (bisection/false position) และการบ้าน 5 (iteration) เป๊ะ</p>
+        <MB>{`\\begin{cases}-2x_1+3x_2+x_3=9\\\\ 3x_1+4x_2-5x_3=0\\\\ x_1-2x_2+x_3=-4\\end{cases}`}</MB>
+        <NumTable
+          headers={["ข้อ", "วิธี", "ต้องส่ง"]}
+          rows={[
+            ["1.1", "Cramer's Rule", "แสดงวิธีทำ + เขียนโปรแกรม"],
+            ["1.2", "Gauss Elimination", "เขียนโปรแกรม (ต้องมีวิธีทำมาแสดงด้วย)"],
+            ["1.3", "Gauss-Jordan", "เขียนโปรแกรม (ต้องมีวิธีทำมาแสดงด้วย)"],
+            ["1.4", "Matrix Inversion", "เขียนโปรแกรม (ต้องมีวิธีทำมาแสดงด้วย)"],
+            ["1.5", "LU Decomposition", "เขียนโปรแกรม (ต้องมีวิธีทำมาแสดงด้วย)"],
+            ["1.6", "Cholesky Decomposition", "เขียนโปรแกรม (ต้องมีวิธีทำมาแสดงด้วย)"],
+          ]}
+        />
+        <p style={{margin:"8px 0 0", fontSize:'0.84rem'}}>⭐ <b>คำตอบของทั้ง 6 ข้อคือตัวเดียวกัน: <M>{`x_1=-1,\\ x_2=2,\\ x_3=1`}</M></b> — เป็น<b>จำนวนเต็มพอดี</b> ⇒ แทนกลับในสมการเดิมแล้วต้องลงตัวเป๊ะทั้ง 3 บรรทัด <b>ถ้าไม่ลงตัว = คำนวณผิด รู้ทันทีในห้องสอบ</b></p>
+      </Callout>
+
       <Sect tag="0" title="ทำไมต้องมี 2 family">
         <p>มี 2 กลุ่มใหญ่:</p>
         <div className="grid-2">
@@ -734,7 +751,8 @@ print("\\nตรวจ: numpy =", np.linalg.solve(A, b))`} height={260}/>
         </Formula>
 
         <h3>ตัวอย่างทำมือ · แตก A 3×3 ทีละช่อง (Doolittle)</h3>
-        <p>ใช้ระบบ: <MB>{`A = \\begin{pmatrix} 4 & 3 & 0 \\\\ 8 & 8 & 1 \\\\ 4 & 11 & -1 \\end{pmatrix},\\ b = \\begin{pmatrix} 7 \\\\ 21 \\\\ 14 \\end{pmatrix}`}</MB></p>
+        <p style={{marginBottom:4}}>ใช้ระบบ:</p>
+        <MB>{`A = \\begin{pmatrix} 4 & 3 & 0 \\\\ 8 & 8 & 1 \\\\ 4 & 11 & -1 \\end{pmatrix},\\ b = \\begin{pmatrix} 7 \\\\ 21 \\\\ 14 \\end{pmatrix}`}</MB>
         <window.HandWalkthrough steps={[
           { title: "ตั้งโครงสร้าง L, U (Doolittle: L มี 1 บน diag)",
             body: `L = | 1   0   0 |    U = | u₁₁  u₁₂  u₁₃ |
@@ -1100,6 +1118,220 @@ print("\\nx =", np.round(x, 6), "  (ควรได้ (3, -6, 1))")
 
 # ตรวจ
 print("\\nA·x =", np.round(A @ x, 6).tolist(), "  (เทียบกับ B =", B.tolist(), ")")`} height={260}/>
+      </Sect>
+
+      {/* ═══════════ 📮 · การบ้าน 6 วิธี ═══════════ */}
+      <Sect tag="📮" title="การบ้าน · ระบบเดียว 6 วิธี — เฉลยเต็มทั้ง 6 ข้อ">
+        <p>ทั้ง 6 ข้อใช้ระบบเดียวกัน ⇒ <b>เขียนเมทริกซ์ครั้งเดียวใช้ได้ทั้งใบ</b> · ที่ต่างกันคือ “ทางเดิน” ไม่ใช่คำตอบ — ทุกวิธีต้องลงที่ <M>{`(-1,\\,2,\\,1)`}</M> เหมือนกันหมด ถ้าวิธีไหนได้ไม่ตรง แปลว่าวิธีนั้นคำนวณพลาด</p>
+
+        <Callout kind="tip" title="ตรวจก่อนลงมือ — 10 วินาทีที่กันพังทั้งใบ">
+          <p style={{margin:"0 0 4px"}}>หา <M>{`\\det A`}</M> ก่อนเสมอ:</p>
+          <MB>{`\\det A=\\begin{vmatrix}-2&3&1\\\\3&4&-5\\\\1&-2&1\\end{vmatrix}`}</MB>
+          <MB>{`=-2(4-10)-3(3+5)+1(-6-4)=12-24-10=-22`}</MB>
+          <p style={{margin:"4px 0 0"}}><M>{`\\det A=-22\\neq 0`}</M> ⇒ <b>มีคำตอบเดียว</b> ทุกวิธีใช้ได้ · ถ้าได้ 0 ต้องหยุดแล้วเขียนว่าระบบไม่มีคำตอบเดียว (Cramer/Inversion จะพังทันที)</p>
+        </Callout>
+
+        <h3>ข้อ 1.1 · Cramer’s Rule</h3>
+        <p>แทนคอลัมน์ที่ <M>i</M> ด้วยเวกเตอร์ <M>b</M> แล้วหาร <M>{`\\det A`}</M></p>
+        <NumTable
+          headers={["ตัวแปร", "เมทริกซ์ที่แทนคอลัมน์", "det", "x = det/det A"]}
+          rows={[
+            [<M>{`x_1`}</M>, "แทนคอลัมน์ 1 ด้วย (9, 0, −4)", "+22", <span><M>{`\\dfrac{22}{-22}=`}</M> <b>−1</b></span>],
+            [<M>{`x_2`}</M>, "แทนคอลัมน์ 2 ด้วย (9, 0, −4)", "−44", <span><M>{`\\dfrac{-44}{-22}=`}</M> <b>2</b></span>],
+            [<M>{`x_3`}</M>, "แทนคอลัมน์ 3 ด้วย (9, 0, −4)", "−22", <span><M>{`\\dfrac{-22}{-22}=`}</M> <b>1</b></span>],
+          ]}
+        />
+        <Callout kind="danger" title="⚠︎ ข้อนี้ต้อง “แสดงวิธีทำ” ด้วย — และเป็นข้อเดียวในใบที่สั่งชัด">
+          <p style={{margin:0}}>ต้องกาง <M>{`\\det`}</M> ทั้ง 4 ตัวให้เห็น (ตัวแม่ + 3 ตัวแทนคอลัมน์) · <b>ตอบเป็นทศนิยม −1.000000 / 2.000000 / 1.000000</b> อย่าเขียนทิ้งไว้เป็น <M>{`22/-22`}</M> — กติกาห้ามตอบเศษส่วน</p>
+        </Callout>
+
+        <h3 style={{marginTop:22}}>ข้อ 1.2 · Gauss Elimination</h3>
+        <p><b>รอบที่ 1 — กำจัดหลักที่ 1</b> (ตัวหลัก <M>{`a_{11}=-2\\neq 0`}</M> ⇒ ไม่ต้องสลับแถว)</p>
+        <div style={{fontFamily:"var(--font-mono)", fontSize:'0.84rem', lineHeight:1.9, padding:"8px 12px", background:"var(--bg-soft)", borderRadius:6, margin:"8px 0"}}>
+          m₂₁ = 3 / (−2) = −3/2 &nbsp;→&nbsp; R₂ ← R₂ − (−3/2)R₁<br/>
+          m₃₁ = 1 / (−2) = −1/2 &nbsp;→&nbsp; R₃ ← R₃ − (−1/2)R₁
+        </div>
+        <MB>{`\\left[\\begin{array}{ccc|c}-2&3&1&9\\\\0&\\tfrac{17}{2}&-\\tfrac{7}{2}&\\tfrac{27}{2}\\\\0&-\\tfrac{1}{2}&\\tfrac{3}{2}&\\tfrac{1}{2}\\end{array}\\right]`}</MB>
+        <p><b>รอบที่ 2 — กำจัดหลักที่ 2</b> &nbsp; <M>{`m_{32}=\\dfrac{-1/2}{17/2}=-\\dfrac{1}{17}`}</M></p>
+        <MB>{`\\left[\\begin{array}{ccc|c}-2&3&1&9\\\\0&\\tfrac{17}{2}&-\\tfrac{7}{2}&\\tfrac{27}{2}\\\\0&0&\\tfrac{22}{17}&\\tfrac{22}{17}\\end{array}\\right]`}</MB>
+        <p><b>Back substitution</b> (จากล่างขึ้นบน)</p>
+        <div style={{fontFamily:"var(--font-mono)", fontSize:'0.84rem', lineHeight:1.9, padding:"8px 12px", background:"var(--bg-soft)", borderRadius:6, margin:"8px 0"}}>
+          x₃ = (22/17) ÷ (22/17) = <b style={{color:"var(--green)"}}>1</b><br/>
+          x₂ = [27/2 − (−7/2)(1)] ÷ (17/2) = (34/2) ÷ (17/2) = <b style={{color:"var(--green)"}}>2</b><br/>
+          x₁ = [9 − 3(2) − 1(1)] ÷ (−2) = 2 ÷ (−2) = <b style={{color:"var(--green)"}}>−1</b>
+        </div>
+        <Callout kind="tip" title="เดินด้วยเศษส่วนตลอด — ข้อนี้คือตัวอย่างว่าทำไม">
+          <p style={{margin:0}}>ตัวหลักรอบ 3 คือ <M>{`\\tfrac{22}{17}=1.294117647\\ldots`}</M> ทศนิยมไม่จบ · ถ้าปัดเป็น 1.2941 แล้วหารต่อ <M>{`x_3`}</M> จะได้ 0.99999… แทน 1 พอดี แล้วลามไป <M>{`x_2,x_1`}</M> — ในขณะที่เดินด้วยเศษส่วนได้ <b>1 เป๊ะ</b> · สังเกตด้วยว่า <M>{`\\det A = -2\\times\\tfrac{17}{2}\\times\\tfrac{22}{17}=-22`}</M> ตรงกับที่หาไว้ตอนแรก (ผลคูณตัวหลัก = det) — <b>ใช้ตรวจงานตัวเองได้ฟรี</b></p>
+        </Callout>
+
+        <h3 style={{marginTop:22}}>ข้อ 1.3 · Gauss-Jordan</h3>
+        <p>ต่างจาก Gauss ตรงที่<b>กำจัดทั้งบนและล่าง</b> และหารแถวให้ตัวหลักเป็น 1 ⇒ จบแล้วได้ <M>I</M> เลย ไม่ต้อง back substitution</p>
+        <NumTable
+          headers={["รอบ", "ทำอะไร", "ผลลัพธ์"]}
+          rows={[
+            [1, <span>R₁ ÷ (−2) แล้วกำจัดคอลัมน์ 1 ออกจาก R₂, R₃</span>, <span><M>{`[1,-\\tfrac32,-\\tfrac12\\,|\\,-\\tfrac92]`}</M>, <M>{`[0,\\tfrac{17}2,-\\tfrac72\\,|\\,\\tfrac{27}2]`}</M>, <M>{`[0,-\\tfrac12,\\tfrac32\\,|\\,\\tfrac12]`}</M></span>],
+            [2, <span>R₂ ÷ (17/2) แล้วกำจัดคอลัมน์ 2 ออกจาก R₁, R₃</span>, <span><M>{`[1,0,-\\tfrac{19}{17}\\,|\\,-\\tfrac{36}{17}]`}</M>, <M>{`[0,1,-\\tfrac7{17}\\,|\\,\\tfrac{27}{17}]`}</M>, <M>{`[0,0,\\tfrac{22}{17}\\,|\\,\\tfrac{22}{17}]`}</M></span>],
+            [3, <span>R₃ ÷ (22/17) แล้วกำจัดคอลัมน์ 3 ออกจาก R₁, R₂</span>, <span><b>[1,0,0 | −1], [0,1,0 | 2], [0,0,1 | 1]</b></span>],
+          ]}
+        />
+        <p>อ่านคำตอบจากคอลัมน์ขวาได้เลย: <b>(−1, 2, 1)</b></p>
+
+        <h3 style={{marginTop:22}}>ข้อ 1.4 · Matrix Inversion</h3>
+        <p>ทำ Gauss-Jordan บน <M>{`[A\\,|\\,I]`}</M> จนซ้ายเป็น <M>I</M> แล้วขวาคือ <M>{`A^{-1}`}</M></p>
+        <MB>{`A^{-1}=\\frac{1}{22}\\begin{bmatrix}6&5&19\\\\8&3&7\\\\10&1&17\\end{bmatrix}=\\begin{bmatrix}0.272727&0.227273&0.863636\\\\0.363636&0.136364&0.318182\\\\0.454545&0.045455&0.772727\\end{bmatrix}`}</MB>
+        <div style={{fontFamily:"var(--font-mono)", fontSize:'0.84rem', lineHeight:1.9, padding:"8px 12px", background:"var(--bg-soft)", borderRadius:6, margin:"8px 0"}}>
+          x = A⁻¹b:<br/>
+          x₁ = 0.272727(9) + 0.227273(0) + 0.863636(−4) = 2.454545 − 3.454545 = <b style={{color:"var(--green)"}}>−1</b><br/>
+          x₂ = 0.363636(9) + 0.136364(0) + 0.318182(−4) = 3.272727 − 1.272727 = <b style={{color:"var(--green)"}}>2</b><br/>
+          x₃ = 0.454545(9) + 0.045455(0) + 0.772727(−4) = 4.090909 − 3.090909 = <b style={{color:"var(--green)"}}>1</b>
+        </div>
+        <Callout kind="tip" title="ตัวส่วนเป็น 22 ทุกช่อง — ไม่ใช่เรื่องบังเอิญ">
+          <p style={{margin:0}}><M>{`A^{-1}=\\dfrac{1}{\\det A}\\,\\text{adj}(A)`}</M> และ <M>{`\\det A=-22`}</M> ⇒ ทุกช่องต้องมีตัวส่วน 22 (หรือ 11 เมื่อทอนแล้ว) · <b>ถ้าคำนวณแล้วได้ตัวส่วนอื่น แปลว่าพลาดแน่นอน</b> — ใช้เช็คได้เร็วมาก</p>
+        </Callout>
+
+        <h3 style={{marginTop:22}}>ข้อ 1.5 · LU Decomposition (Doolittle)</h3>
+        <p><b>ของแถม:</b> <M>L</M> คือตัวคูณ <M>{`m_{ij}`}</M> จากข้อ 1.2 และ <M>U</M> คือเมทริกซ์สามเหลี่ยมบนที่ได้ตอนจบ ⇒ <b>ถ้าทำข้อ 1.2 แล้ว ข้อนี้แทบไม่ต้องคำนวณใหม่</b></p>
+        <MB>{`L=\\begin{bmatrix}1&0&0\\\\-\\tfrac32&1&0\\\\-\\tfrac12&-\\tfrac1{17}&1\\end{bmatrix}\\qquad U=\\begin{bmatrix}-2&3&1\\\\0&\\tfrac{17}2&-\\tfrac72\\\\0&0&\\tfrac{22}{17}\\end{bmatrix}`}</MB>
+        <div style={{fontFamily:"var(--font-mono)", fontSize:'0.84rem', lineHeight:1.9, padding:"8px 12px", background:"var(--bg-soft)", borderRadius:6, margin:"8px 0"}}>
+          <b>ขั้นที่ 1 · Ly = b</b> (forward substitution)<br/>
+          y₁ = 9<br/>
+          y₂ = 0 − (−3/2)(9) = 27/2 = 13.5<br/>
+          y₃ = −4 − (−1/2)(9) − (−1/17)(27/2) = 22/17 = 1.294118<br/><br/>
+          <b>ขั้นที่ 2 · Ux = y</b> (backward substitution) → ได้ <b style={{color:"var(--green)"}}>(−1, 2, 1)</b> เหมือนข้อ 1.2 เป๊ะ
+        </div>
+
+        <h3 style={{marginTop:22}}>ข้อ 1.6 · Cholesky Decomposition</h3>
+        <Callout kind="danger" title="⚠︎ กับดักของข้อนี้ — ใช้กับ A ตรง ๆ ไม่ได้">
+          <p style={{margin:"0 0 6px"}}>Cholesky ต้องการเมทริกซ์ <b>สมมาตร</b> (<M>{`A=A^T`}</M>) และ <b>positive definite</b> · เมทริกซ์นี้<b>หลอกตามาก</b> — ไล่เช็คทีละคู่: <M>{`a_{12}=a_{21}=3`}</M> ✓ · <M>{`a_{13}=a_{31}=1`}</M> ✓ · แต่ <M>{`a_{23}=-5`}</M> ขณะที่ <M>{`a_{32}=-2`}</M> ✗ ⇒ <b>ไม่สมมาตร</b> · <b>2 ใน 3 คู่ตรงกัน ถ้าเช็คไม่ครบจะเผลอลุยเลย</b> แล้วไปเจอถอดรากของจำนวนลบกลางทาง</p>
+          <p style={{margin:0}}><b>ทางแก้ที่อาจารย์ให้ (ชีท Final p.11):</b> คูณ <M>{`A^T`}</M> ทั้งสองข้าง — <M>{`A^TAx=A^Tb`}</M> · เมทริกซ์ <M>{`A^TA`}</M> <b>สมมาตรเสมอ</b> และ positive definite เมื่อ <M>{`\\det A\\neq0`}</M> ⇒ Cholesky ใช้ได้</p>
+        </Callout>
+        <MB>{`A^TA=\\begin{bmatrix}14&4&-16\\\\4&29&-19\\\\-16&-19&27\\end{bmatrix}\\qquad A^Tb=\\begin{bmatrix}-22\\\\35\\\\5\\end{bmatrix}`}</MB>
+        <div style={{fontFamily:"var(--font-mono)", fontSize:'0.84rem', lineHeight:1.9, padding:"8px 12px", background:"var(--bg-soft)", borderRadius:6, margin:"8px 0"}}>
+          <b>L (Cholesky ของ AᵀA)</b><br/>
+          l₁₁ = √14 = 3.741657<br/>
+          l₂₁ = 4/3.741657 = 1.069045 &nbsp;&nbsp; l₂₂ = √(29 − 1.069045²) = 5.277987<br/>
+          l₃₁ = −16/3.741657 = −4.276180 &nbsp;&nbsp; l₃₂ = (−19 − (1.069045)(−4.276180))/5.277987 = −2.733726<br/>
+          l₃₃ = √(27 − (−4.276180)² − (−2.733726)²) = 1.114013<br/><br/>
+          <b>Ly = Aᵀb</b> → y = (−5.879747, 7.822247, 1.114013)<br/>
+          <b>Lᵀx = y</b> → x = <b style={{color:"var(--green)"}}>(−1.000000, 2.000000, 1.000000)</b> ✓ ตรงกับอีก 5 วิธี
+        </div>
+
+        <h3 style={{marginTop:22}}>โปรแกรมเดียว ตอบครบทั้ง 6 ข้อ</h3>
+        <Callout kind="tip" title="ใบงานสั่ง “เขียนโปรแกรม” ทั้ง 6 ข้อ — เขียนแยกกันไม่ได้แปลว่าต้องเขียน 6 ไฟล์">
+          <p style={{margin:0}}>ทั้ง 6 วิธีใช้ <code>A</code> กับ <code>b</code> ชุดเดียวกัน ⇒ เขียนเป็น 6 ฟังก์ชันในไฟล์เดียว แล้วเรียกทีละตัวพร้อม<b>ตรวจว่าได้คำตอบเดียวกัน</b> — ส่งแบบนี้อ่านง่ายกว่าและโชว์ว่าเข้าใจว่าทุกวิธีตอบเท่ากัน</p>
+        </Callout>
+        <PythonRunner code={`# การบ้าน · ระบบเดียว 6 วิธี — เขียนเองทุกวิธี ไม่ใช้ numpy.linalg.solve
+from fractions import Fraction as F
+import math
+
+A = [[-2, 3, 1], [3, 4, -5], [1, -2, 1]]
+b = [9, 0, -4]
+n = 3
+
+def det3(M):
+    return (M[0][0]*(M[1][1]*M[2][2] - M[1][2]*M[2][1])
+          - M[0][1]*(M[1][0]*M[2][2] - M[1][2]*M[2][0])
+          + M[0][2]*(M[1][0]*M[2][1] - M[1][1]*M[2][0]))
+
+# ── 1.1 Cramer ───────────────────────────────────────────────
+def cramer(A, b):
+    D = det3(A)
+    if D == 0: return None
+    out = []
+    for k in range(n):
+        Ak = [row[:] for row in A]
+        for i in range(n): Ak[i][k] = b[i]
+        out.append(det3(Ak) / D)
+    return out
+
+# ── 1.2 Gauss Elimination ────────────────────────────────────
+def gauss(A, b):
+    M = [[F(A[i][j]) for j in range(n)] + [F(b[i])] for i in range(n)]
+    for k in range(n - 1):
+        for i in range(k + 1, n):
+            m = M[i][k] / M[k][k]
+            for j in range(k, n + 1):
+                M[i][j] -= m * M[k][j]
+    x = [F(0)] * n
+    for i in reversed(range(n)):
+        x[i] = (M[i][n] - sum(M[i][j]*x[j] for j in range(i+1, n))) / M[i][i]
+    return [float(v) for v in x]
+
+# ── 1.3 Gauss-Jordan ─────────────────────────────────────────
+def gauss_jordan(A, b):
+    M = [[F(A[i][j]) for j in range(n)] + [F(b[i])] for i in range(n)]
+    for k in range(n):
+        p = M[k][k]
+        M[k] = [e / p for e in M[k]]
+        for i in range(n):
+            if i != k and M[i][k] != 0:
+                f = M[i][k]
+                M[i] = [M[i][j] - f*M[k][j] for j in range(n+1)]
+    return [float(M[i][n]) for i in range(n)]
+
+# ── 1.4 Matrix Inversion ─────────────────────────────────────
+def inverse(A):
+    M = [[F(A[i][j]) for j in range(n)] + [F(1) if i == j else F(0) for j in range(n)]
+         for i in range(n)]
+    for k in range(n):
+        p = M[k][k]
+        M[k] = [e / p for e in M[k]]
+        for i in range(n):
+            if i != k and M[i][k] != 0:
+                f = M[i][k]
+                M[i] = [M[i][j] - f*M[k][j] for j in range(2*n)]
+    return [[M[i][n+j] for j in range(n)] for i in range(n)]
+
+def solve_inv(A, b):
+    Ai = inverse(A)
+    return [float(sum(Ai[i][j]*b[j] for j in range(n))) for i in range(n)]
+
+# ── 1.5 LU (Doolittle) ───────────────────────────────────────
+def lu(A, b):
+    L = [[F(1) if i == j else F(0) for j in range(n)] for i in range(n)]
+    U = [[F(0)]*n for _ in range(n)]
+    for i in range(n):
+        for j in range(i, n):
+            U[i][j] = F(A[i][j]) - sum(L[i][k]*U[k][j] for k in range(i))
+        for j in range(i+1, n):
+            L[j][i] = (F(A[j][i]) - sum(L[j][k]*U[k][i] for k in range(i))) / U[i][i]
+    y = [F(0)]*n
+    for i in range(n):
+        y[i] = F(b[i]) - sum(L[i][k]*y[k] for k in range(i))
+    x = [F(0)]*n
+    for i in reversed(range(n)):
+        x[i] = (y[i] - sum(U[i][k]*x[k] for k in range(i+1, n))) / U[i][i]
+    return [float(v) for v in x]
+
+# ── 1.6 Cholesky (ต้องแปลงเป็น AᵀA ก่อน เพราะ A ไม่สมมาตร) ───
+def cholesky(A, b):
+    AT  = [[A[j][i] for j in range(n)] for i in range(n)]
+    ATA = [[sum(AT[i][k]*A[k][j] for k in range(n)) for j in range(n)] for i in range(n)]
+    ATb = [sum(AT[i][k]*b[k] for k in range(n)) for i in range(n)]
+    L = [[0.0]*n for _ in range(n)]
+    for i in range(n):
+        for j in range(i+1):
+            s = sum(L[i][k]*L[j][k] for k in range(j))
+            L[i][j] = math.sqrt(ATA[i][i] - s) if i == j else (ATA[i][j] - s) / L[j][j]
+    y = [0.0]*n
+    for i in range(n):
+        y[i] = (ATb[i] - sum(L[i][k]*y[k] for k in range(i))) / L[i][i]
+    x = [0.0]*n
+    for i in reversed(range(n)):
+        x[i] = (y[i] - sum(L[k][i]*x[k] for k in range(i+1, n))) / L[i][i]
+    return x
+
+print(f"det A = {det3(A)}\\n")
+for name, fn in [("1.1 Cramer", cramer), ("1.2 Gauss", gauss),
+                 ("1.3 Gauss-Jordan", gauss_jordan), ("1.4 Inversion", solve_inv),
+                 ("1.5 LU", lu), ("1.6 Cholesky", cholesky)]:
+    x = fn(A, b)
+    print(f"{name:18s} x = " + "  ".join(f"{v:9.6f}" for v in x))
+
+# ตรวจคำตอบ: แทนกลับในสมการเดิม ต้องได้ b เป๊ะ
+x = gauss(A, b)
+print("\\nตรวจ A·x =", [round(sum(A[i][j]*x[j] for j in range(n)), 6) for i in range(n)],
+      " ควรเท่ากับ b =", b)`} height={520}/>
       </Sect>
 
       <Sect tag="7" title="Jacobi Iteration — เริ่ม Iterative">
