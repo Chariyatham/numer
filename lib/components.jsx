@@ -640,8 +640,39 @@ function ExamRules({ open = false }) {
   );
 }
 
+// ===== ทางลัดของแต่ละบท =====
+// เหลือ 13 วันและยังไม่ได้อ่านอะไรเลย ⇒ ปัญหาไม่ใช่ "เนื้อหาไม่พอ" แต่คือ
+// "ไม่รู้ว่าต้องอ่านแค่ไหน" · กล่องนี้บอกเส้นทางสั้นที่สุดที่ยังทำข้อสอบได้
+function FastPath({ minutes, must, skip, check }) {
+  const total = must.reduce((s, m) => s + m.min, 0);
+  return (
+    <div className="callout good" style={{marginBottom:18}}>
+      <div className="callout-title">⏱ ทางลัดของบทนี้ — ถ้าเวลาน้อย อ่านแค่นี้ก่อน (รวม ~{minutes || Math.round(total/5)*5} นาที)</div>
+      <p style={{margin:"0 0 8px", fontSize:'0.84rem', color:"var(--text-dim)"}}>
+        บทนี้ยาวโดยตั้งใจ — แต่<b>ไม่ต้องอ่านหมดก่อนถึงจะทำโจทย์ได้</b> · เดินตามตารางนี้ก่อน แล้วค่อยกลับมาเก็บส่วนที่เหลือถ้ามีเวลา
+      </p>
+      <NumTable
+        headers={["ลำดับ", "อ่านหมวด", "~นาที", "ทำไมต้องอ่าน"]}
+        rows={must.map((m, i) => [i + 1, m.s, m.min, m.why])}
+      />
+      {skip && skip.length > 0 && (
+        <>
+          <p style={{margin:"10px 0 4px"}}><b>ข้ามไปก่อนได้ถ้าเวลาไม่พอ</b> (ไม่ได้ไร้ประโยชน์ แค่ไม่ใช่ทางหลัก):</p>
+          <ul style={{margin:0, paddingLeft:18, fontSize:'0.84rem'}}>
+            {skip.map((s, i) => <li key={i}><b>{s.s}</b> — {s.why}</li>)}
+          </ul>
+        </>
+      )}
+      <p style={{margin:"10px 0 4px"}}><b>เช็คตัวเองก่อนไปบทถัดไป</b> — ถ้าตอบได้ทุกข้อ ถือว่าผ่าน:</p>
+      <ul style={{margin:0, paddingLeft:18, fontSize:'0.84rem'}}>
+        {check.map((c, i) => <li key={i}>{c}</li>)}
+      </ul>
+    </div>
+  );
+}
+
 Object.assign(window, {
-  TeX, M, MB, useKaTeXReady,
+  TeX, M, MB, useKaTeXReady, FastPath,
   CodeBlock, PythonRunner, loadPyodide,
   Problem, TimedExam, Sect, Callout, Hero, ConvergenceStrip, NumTable, Formula,
   Key, CalcSteps, ExamRules,
