@@ -469,12 +469,25 @@ function CalcSteps({ steps }) {
 }
 
 // ===== SECTION HEADER =====
-function Sect({ tag, title, children }) {
+// read="must"  → ป้ายเขียว "อ่านตอนนี้" + เวลาโดยประมาณ
+// read="later" → ป้ายเทา "ข้ามไปก่อนได้" + เหตุผล
+// ไม่ใส่ = ไม่มีป้าย (บทที่ไม่ได้อยู่ในขอบเขตสอบ)
+function Sect({ tag, title, children, read, min, why }) {
   return (
     <section className="sect">
       <div className="sect-head">
         {tag && <span className="step-tag">{tag}</span>}
         <h2 style={{margin:0}}>{title}</h2>
+        {read === "must" && (
+          <span className="read-badge must" title={why || ""}>
+            ✅ อ่านตอนนี้{min ? ` · ~${min} นาที` : ""}
+          </span>
+        )}
+        {read === "later" && (
+          <span className="read-badge later" title={why || ""}>
+            ⬜ ข้ามไปก่อนได้{why ? ` · ${why}` : ""}
+          </span>
+        )}
       </div>
       {children}
     </section>
@@ -648,25 +661,35 @@ function FastPath({ minutes, must, skip, check }) {
   return (
     <div className="callout good" style={{marginBottom:18}}>
       <div className="callout-title">⏱ ทางลัดของบทนี้ — ถ้าเวลาน้อย อ่านแค่นี้ก่อน (รวม ~{minutes || Math.round(total/5)*5} นาที)</div>
-      <p style={{margin:"0 0 8px", fontSize:'0.84rem', color:"var(--text-dim)"}}>
-        <b style={{color:"var(--yellow)"}}>⚠︎ กล่องนี้คือ “แผนที่” ไม่ใช่เนื้อหา</b> — มันบอกว่าให้ไปอ่าน<b>หมวดไหนบ้าง</b> ส่วนเนื้อหาจริงอยู่ในหมวดที่ระบุ <b>ต้องเลื่อนลงไปอ่านตามนั้น</b> (กระโดดไปแต่ละหมวดได้จากสารบัญ “ในบทนี้” ทางขวา) · เลขนาทีคือเวลาอ่าน<b>หมวดนั้น</b> ไม่ใช่เวลาอ่านกล่องนี้
+      <div style={{fontSize:'1rem', lineHeight:2, padding:"10px 14px", background:"var(--bg-soft)",
+                   borderRadius:8, margin:"0 0 10px"}}>
+        <b>วิธีอ่านบทนี้ — ง่าย ๆ แค่นี้:</b><br/>
+        เลื่อนลงไปเรื่อย ๆ · หัวข้อไหนมีป้าย <span className="read-badge must">✅ อ่านตอนนี้</span> ให้<b>อ่าน</b><br/>
+        หัวข้อไหนมีป้าย <span className="read-badge later">⬜ ข้ามไปก่อนได้</span> ให้<b>เลื่อนผ่านไปเลย</b>
+      </div>
+      <p style={{margin:"0 0 10px", fontSize:'0.84rem', color:"var(--text-dim)"}}>
+        ไม่ต้องจำ emoji หน้าหัวข้อ (มันเป็นแค่เลขที่ของหมวด) · <b>ดูแค่สีของป้ายพอ</b> — เขียว = อ่าน, เทา = ข้าม · อ่านครบทุกป้ายเขียวแล้วถือว่าจบบทนี้สำหรับตอนนี้
       </p>
-      <p style={{margin:"0 0 8px", fontSize:'0.84rem', color:"var(--text-dim)"}}>
-        บทนี้ยาวโดยตั้งใจ — แต่<b>ไม่ต้องอ่านหมดก่อนถึงจะทำโจทย์ได้</b> · เดินตามตารางนี้ก่อน แล้วค่อยกลับมาเก็บส่วนที่เหลือถ้ามีเวลา
-      </p>
-      <NumTable
-        headers={["ลำดับ", "อ่านหมวด", "~นาที", "ทำไมต้องอ่าน"]}
-        rows={must.map((m, i) => [i + 1, m.s, m.min, m.why])}
-      />
-      {skip && skip.length > 0 && (
-        <>
-          <p style={{margin:"10px 0 4px"}}><b>ข้ามไปก่อนได้ถ้าเวลาไม่พอ</b> (ไม่ได้ไร้ประโยชน์ แค่ไม่ใช่ทางหลัก):</p>
-          <ul style={{margin:0, paddingLeft:18, fontSize:'0.84rem'}}>
-            {skip.map((s, i) => <li key={i}><b>{s.s}</b> — {s.why}</li>)}
-          </ul>
-        </>
-      )}
-      <p style={{margin:"10px 0 4px"}}><b>เช็คตัวเองก่อนไปบทถัดไป</b> — ถ้าตอบได้ทุกข้อ ถือว่าผ่าน:</p>
+      <details style={{margin:"0 0 10px"}}>
+        <summary style={{cursor:"pointer", fontSize:'0.84rem', color:"var(--text-dim)"}}>
+          ดูรายการหมวดที่ต้องอ่าน + เหตุผล (ไม่เปิดก็ได้)
+        </summary>
+        <div style={{marginTop:8}}>
+          <NumTable
+            headers={["ลำดับ", "อ่านหมวด", "~นาที", "ทำไมต้องอ่าน"]}
+            rows={must.map((m, i) => [i + 1, m.s, m.min, m.why])}
+          />
+          {skip && skip.length > 0 && (
+            <>
+              <p style={{margin:"10px 0 4px"}}><b>ที่ข้ามไปก่อน — ไม่ได้ไร้ประโยชน์ แค่ไม่ใช่ทางหลักตอนนี้:</b></p>
+              <ul style={{margin:0, paddingLeft:18, fontSize:'0.84rem'}}>
+                {skip.map((s, i) => <li key={i}><b>{s.s}</b> — {s.why}</li>)}
+              </ul>
+            </>
+          )}
+        </div>
+      </details>
+      <p style={{margin:"10px 0 4px"}}><b>อ่านป้ายเขียวครบแล้ว เช็คตัวเอง 3 ข้อนี้ก่อนไปบทถัดไป:</b></p>
       <ul style={{margin:0, paddingLeft:18, fontSize:'0.84rem'}}>
         {check.map((c, i) => <li key={i}>{c}</li>)}
       </ul>

@@ -587,7 +587,7 @@ function RootFindingLesson() {
         </ul>
       </Callout>
 
-      <Sect tag="0" title="ทำไมต้องเรียน">
+      <Sect tag="0" title="ทำไมต้องเรียน" read="must" min={5}>
         <p>ลองดูสมการนี้: <M>{`x^3 - x - 2 = 0`}</M> — คุณรู้ไหมว่า x เท่ากับเท่าไหร่?</p>
         <p>มันไม่มีสูตรลัดเหมือนสมการกำลังสอง ที่มี <M>{`x = \\frac{-b\\pm\\sqrt{b^2-4ac}}{2a}`}</M> สมการกำลัง 3, 4, 5 หรือสมการที่มี <M>{`\\sin, \\cos, e^x, \\ln`}</M> ผสมกัน — ส่วนใหญ่ <em>แก้ด้วยมือไม่ได้</em></p>
         <p>วิธีเชิงตัวเลข = <b style={{color:"var(--blue)"}}>เดาคำตอบให้ใกล้เคียงเข้าไปเรื่อย ๆ จนเหลือ error น้อยที่สุด</b></p>
@@ -605,7 +605,7 @@ function RootFindingLesson() {
       </Sect>
 
       {/* ============= METHOD 1: GRAPHICAL ============= */}
-      <Sect tag="1" title="Method 1 · Graphical Method">
+      <Sect tag="1" title="Method 1 · Graphical Method" read="must" min={8}>
         <p>วิธีแรกสุดง่ายมาก: <b>วาดกราฟ แล้วดูตา ๆ ว่าตัดแกน x ตรงไหน</b></p>
 
         <Callout title="วิธี modified Graphical (ที่ใช้จริงในข้อสอบ)">
@@ -699,7 +699,7 @@ print(f"\\nตรวจ: 180/43 = {180/43:.6f}")`} height={300}/>
       </Sect>
 
       {/* ============= METHOD 2: BISECTION ============= */}
-      <Sect tag="2" title="Method 2 · Bisection Method">
+      <Sect tag="2" title="Method 2 · Bisection Method" read="must" min={20}>
         <h3>แนวคิด</h3>
         <p>คล้าย Graphical แต่ฉลาดกว่า: แทนที่จะ scan ทีละนิด เรา<b>หารครึ่งช่วง</b>แล้วเลือกครึ่งที่มีราก เรื่อย ๆ จนช่วงเล็กพอ</p>
 
@@ -885,7 +885,7 @@ print(f"{m:.4f}    (Bisection · {iters} iterations)")`} height={300}/>
       </Sect>
 
       {/* ============= METHOD 3: FALSE POSITION ============= */}
-      <Sect tag="3" title="Method 3 · False Position (Regula Falsi)">
+      <Sect tag="3" title="Method 3 · False Position (Regula Falsi)" read="must" min={15}>
         <p>คล้าย Bisection แต่แทนที่จะหารครึ่งช่วง เราใช้ "เส้นตรง" ลากผ่าน <M>{`(x_l, f(x_l))`}</M> และ <M>{`(x_r, f(x_r))`}</M> แล้วหาจุดที่มันตัดแกน x</p>
 
         <Formula label="สูตร False Position — รูปที่อาจารย์ให้ (การบ้าน 4 ข้อ 3)">
@@ -1061,7 +1061,7 @@ print(f"{m:.4f}    (False Position · {iters} iterations)")`} height={300}/>
       </Sect>
 
       {/* ============= METHOD 4: ONE-POINT ============= */}
-      <Sect tag="4" title="Method 4 · One-point Iteration (Fixed Point)">
+      <Sect tag="4" title="Method 4 · One-point Iteration (Fixed Point)" read="must" min={20}>
         <p>แทนที่จะเขียน <M>{`f(x) = 0`}</M> ให้ <em>จัดรูปเป็น</em> <M>{`x = g(x)`}</M> แล้วเริ่มจากค่าหนึ่งใส่เข้าไปเรื่อย ๆ</p>
 
         <Formula>
@@ -1333,7 +1333,7 @@ print(f"\\n√7 ≈ {xn:.6f}   (หยุดที่รอบ {i})")`} height={
       </Sect>
 
       {/* ============= METHOD 5: NEWTON-RAPHSON ============= */}
-      <Sect tag="5" title="Method 5 · Newton-Raphson">
+      <Sect tag="5" title="Method 5 · Newton-Raphson" read="must" min={20}>
         <p>วิธีที่<b>เร็วที่สุด</b>ในบทนี้ — ใช้เส้นสัมผัส (tangent) ของกราฟแทนเส้น secant</p>
 
         <Formula>
@@ -1544,7 +1544,7 @@ plt.show()`} height={420}/>
       </Sect>
 
       {/* ============= METHOD 6: SECANT ============= */}
-      <Sect tag="6" title="Method 6 · Secant Method">
+      <Sect tag="6" title="Method 6 · Secant Method" read="must" min={15}>
         <p>เหมือน Newton แต่ <b>ไม่ต้องรู้ <M>{`f'(x)`}</M></b> — ใช้เส้น secant ผ่าน 2 จุดก่อนหน้าแทน tangent</p>
 
         <Formula>
@@ -1812,7 +1812,7 @@ plt.show()`} height={440}/>
       </Sect>
 
       {/* ============= TAYLOR SERIES ============= */}
-      <Sect tag="7" title="Method 7 · Taylor Series (Approximation)">
+      <Sect tag="7" title="Method 7 · Taylor Series (Approximation)" read="later" why="ไม่ใช่วิธีหาราก">
         <p>Taylor series ใช้<b>ประมาณค่าฟังก์ชัน</b>โดยใช้พหุนาม ที่จุดอ้างอิง <M>{`x_0`}</M></p>
 
         <Formula label="Taylor expansion around x₀">
@@ -1926,7 +1926,7 @@ for n in range(0, 6):
       </Sect>
 
       {/* ============= โจทย์ประยุกต์ ============= */}
-      <Sect tag="🏗️" title="โจทย์ประยุกต์ — แบบที่ข้อสอบชอบออก">
+      <Sect tag="🏗️" title="โจทย์ประยุกต์ — แบบที่ข้อสอบชอบออก" read="later" why="เป็นโจทย์ ยกไปเฟส 2">
         <Callout kind="warn" title="ขั้นที่ยากที่สุดคือขั้นแรก">
           <p style={{margin:0}}>การบ้านให้ <M>{`f(x)`}</M> มาแล้ว แต่<b>ข้อสอบเล่าเป็นสถานการณ์</b> — สิ่งที่ต้องทำเป็นอย่างแรกเสมอคือ <b>ย้ายทุกอย่างไปข้างเดียวให้เหลือ <M>{`f(x)=0`}</M></b> แล้วสแกนหาช่วงที่คร่อมราก · 2 ข้อนี้มีทั้งส่วนทำมือและส่วนโปรแกรม ตามสัดส่วนข้อสอบจริงที่อาจารย์บอกว่า “มีโค้ดครึ่งหนึ่ง มีคำนวณครึ่งหนึ่ง”</p>
         </Callout>
@@ -2071,7 +2071,7 @@ print(f"Secant  -> i = {x2:.8f}  = {x2*100:.5f}% ต่อเดือน")`} he
       </Sect>
 
       {/* ============= QUICK REF ============= */}
-      <Sect tag="∑" title="Quick Reference · เปรียบเทียบทุก method">
+      <Sect tag="∑" title="Quick Reference · เปรียบเทียบทุก method" read="must" min={15}>
         <NumTable
           headers={["Method", "ต้องการ", "Convergence", "เร็ว", "เสี่ยงพัง"]}
           rows={[
@@ -2096,7 +2096,7 @@ print(f"Secant  -> i = {x2:.8f}  = {x2*100:.5f}% ต่อเดือน")`} he
       </Sect>
 
       {/* ============= MOCK EXAM ============= */}
-      <Sect tag="✸" title="ข้อสอบจำลอง · ระดับ Final">
+      <Sect tag="✸" title="ข้อสอบจำลอง · ระดับ Final" read="later" why="เป็นโจทย์ ยกไปเฟส 3">
         <Problem label="ข้อ 1 · 12 คะแนน" solution={
           <div>
             <p><b>1.1</b> ใช้ Bisection ในช่วง <M>{`[2, 3]`}</M> 4 รอบ:</p>

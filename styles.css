@@ -530,6 +530,17 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--b
   flex-wrap: wrap;
 }
 .sect-head h2 { margin: 0; flex: 1; min-width: 0; }
+/* ป้ายบอกว่าหมวดนี้ต้องอ่านตอนนี้หรือข้ามไปก่อนได้ — ติดที่หัวข้อเลย
+   จะได้ไม่ต้องเอาตารางไปเทียบกับชื่อหมวด */
+.read-badge {
+  flex: 0 0 auto;
+  font-size: 0.76rem; font-weight: 600;
+  padding: 3px 10px; border-radius: 999px;
+  white-space: nowrap;
+}
+.read-badge.must  { background: rgba(131,193,103,0.16); color: var(--green); border: 1px solid var(--green); }
+.read-badge.later { background: var(--bg-soft); color: var(--text-faint); border: 1px solid var(--border); }
+@media (max-width: 640px) { .read-badge { font-size: 0.7rem; padding: 2px 8px; } }
 /* step marker — a small instrument chip; works for "01" or an emoji */
 .sect-head .step-tag {
   font-family: var(--font-mono);
