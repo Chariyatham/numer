@@ -217,6 +217,126 @@ function PlanChecklist() {
   );
 }
 
+// ─── เครื่องสุ่มชุดสอบ ───────────────────────────────────────────────────────
+// อาจารย์ไม่บอกว่าออกบทละกี่ข้อ ⇒ วิธีฝึกที่ตรงที่สุดคือซ้อมกับสัดส่วนที่ "สุ่ม"
+// ทุกครั้ง จะได้ชินกับการเปิดข้อสอบมาแล้วเจอสัดส่วนที่ไม่ได้เตรียมใจไว้
+const DRAW_KEY = "numer-lastdraw";
+
+const CH = { integ: "Integration", diff: "Differentiation", root: "Root Finding", lin: "Linear Systems" };
+
+const POOL = [
+  // ชุดสอบเสมือน A/B/C (หน้านี้ หมวด 🎓)
+  { id:"A1", ch:"integ", t:"hand", w:"หมวด 🎓 ชุด A" }, { id:"A2", ch:"root",  t:"code", w:"หมวด 🎓 ชุด A" },
+  { id:"A3", ch:"diff",  t:"hand", w:"หมวด 🎓 ชุด A" }, { id:"A4", ch:"integ", t:"code", w:"หมวด 🎓 ชุด A" },
+  { id:"A5", ch:"root",  t:"hand", w:"หมวด 🎓 ชุด A" }, { id:"A6", ch:"diff",  t:"code", w:"หมวด 🎓 ชุด A" },
+  { id:"B1", ch:"root",  t:"hand", w:"หมวด 🎓 ชุด B" }, { id:"B2", ch:"diff",  t:"code", w:"หมวด 🎓 ชุด B" },
+  { id:"B3", ch:"integ", t:"hand", w:"หมวด 🎓 ชุด B" }, { id:"B4", ch:"root",  t:"code", w:"หมวด 🎓 ชุด B" },
+  { id:"B5", ch:"diff",  t:"hand", w:"หมวด 🎓 ชุด B" }, { id:"B6", ch:"integ", t:"code", w:"หมวด 🎓 ชุด B" },
+  { id:"C1", ch:"integ", t:"hand", w:"หมวด 🎓 ชุด C" }, { id:"C2", ch:"root",  t:"code", w:"หมวด 🎓 ชุด C" },
+  { id:"C3", ch:"root",  t:"hand", w:"หมวด 🎓 ชุด C" }, { id:"C4", ch:"integ", t:"code", w:"หมวด 🎓 ชุด C" },
+  { id:"C5", ch:"diff",  t:"hand", w:"หมวด 🎓 ชุด C" }, { id:"C6", ch:"diff",  t:"code", w:"หมวด 🎓 ชุด C" },
+  // ชุดโจทย์ยาก 10 ข้อ (หน้านี้ หมวด 🔥)
+  { id:"ยาก 1",  ch:"integ", t:"hand", w:"หมวด 🔥" }, { id:"ยาก 2",  ch:"integ", t:"hand", w:"หมวด 🔥" },
+  { id:"ยาก 3",  ch:"integ", t:"hand", w:"หมวด 🔥" }, { id:"ยาก 4",  ch:"diff",  t:"hand", w:"หมวด 🔥" },
+  { id:"ยาก 5",  ch:"root",  t:"hand", w:"หมวด 🔥" }, { id:"ยาก 6",  ch:"root",  t:"hand", w:"หมวด 🔥" },
+  { id:"ยาก 7",  ch:"root",  t:"hand", w:"หมวด 🔥" }, { id:"ยาก 8",  ch:"root",  t:"hand", w:"หมวด 🔥" },
+  { id:"ยาก 9",  ch:"integ", t:"hand", w:"หมวด 🔥" }, { id:"ยาก 10", ch:"diff",  t:"hand", w:"หมวด 🔥" },
+  // การบ้าน 6 วิธี (หน้า Gauss & Iteration หมวด 📮)
+  { id:"L1 Cramer",       ch:"lin", t:"hand", w:"#linear หมวด 📮" },
+  { id:"L2 Gauss Elim",   ch:"lin", t:"hand", w:"#linear หมวด 📮" },
+  { id:"L3 Gauss-Jordan", ch:"lin", t:"hand", w:"#linear หมวด 📮" },
+  { id:"L4 Inversion",    ch:"lin", t:"code", w:"#linear หมวด 📮" },
+  { id:"L5 LU",           ch:"lin", t:"code", w:"#linear หมวด 📮" },
+  { id:"L6 Cholesky",     ch:"lin", t:"code", w:"#linear หมวด 📮" },
+  // ดริลเขียนโค้ดจากหัว (หน้า #code)
+  { id:"กระดาษเปล่า 1", ch:"root",  t:"code", w:"#code หมวด 3" },
+  { id:"กระดาษเปล่า 2", ch:"root",  t:"code", w:"#code หมวด 3" },
+  { id:"กระดาษเปล่า 3", ch:"integ", t:"code", w:"#code หมวด 3" },
+  { id:"กระดาษเปล่า 4", ch:"diff",  t:"code", w:"#code หมวด 3" },
+];
+
+function pick(arr, n) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a.slice(0, n);
+}
+
+function RandomExamDraw() {
+  const [draw, setDraw] = React.useState(() => {
+    try { return JSON.parse(localStorage.getItem(DRAW_KEY) || "null"); } catch { return null; }
+  });
+  const [left, setLeft] = React.useState(180 * 60);
+  const [running, setRunning] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!running) return;
+    const t = setInterval(() => setLeft(s => (s <= 1 ? (setRunning(false), 0) : s - 1)), 1000);
+    return () => clearInterval(t);
+  }, [running]);
+
+  const roll = () => {
+    // อาจารย์บอก "โค้ดครึ่งหนึ่ง คำนวณครึ่งหนึ่ง" ⇒ ล็อก 3 โค้ด + 3 มือ
+    // ส่วนบทไหนกี่ข้อ ปล่อยสุ่มล้วน เพราะนั่นคือสิ่งที่เราไม่รู้จริง ๆ
+    const items = [...pick(POOL.filter(p => p.t === "code"), 3),
+                   ...pick(POOL.filter(p => p.t === "hand"), 3)];
+    const order = pick(items, 6);
+    const brain = Math.floor(Math.random() * 6);
+    const next = { order, brain, at: new Date().toLocaleString("th-TH") };
+    setDraw(next);
+    localStorage.setItem(DRAW_KEY, JSON.stringify(next));
+    setLeft(180 * 60); setRunning(false);
+  };
+
+  const mmss = (s) => `${String(Math.floor(s/3600)).padStart(2,"0")}:${String(Math.floor(s/60)%60).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`;
+  const dist = draw ? Object.keys(CH).map(k => ({ k, n: draw.order.filter(o => o.ch === k).length })) : [];
+
+  return (
+    <div className="card" style={{padding:"14px 16px"}}>
+      <div style={{display:"flex", gap:10, alignItems:"center", flexWrap:"wrap"}}>
+        <button className="btn small primary" onClick={roll}>🎲 สุ่มชุดสอบใหม่</button>
+        {draw && <>
+          <span style={{fontFamily:"var(--font-mono)", fontSize:'1.4rem', fontWeight:700,
+                        color: left < 15*60 ? "var(--red)" : "var(--green)"}}>{mmss(left)}</span>
+          <button className="btn small" onClick={() => setRunning(r => !r)}>{running ? "⏸ พัก" : "▶ เริ่มจับเวลา"}</button>
+          <button className="btn small ghost" onClick={() => { setLeft(180*60); setRunning(false); }}>↺ รีเซ็ตเวลา</button>
+        </>}
+      </div>
+
+      {!draw ? (
+        <p className="muted" style={{margin:"12px 0 0", fontSize:'0.84rem'}}>กดปุ่มเพื่อสุ่ม — จะได้ <b>6 ข้อ (3 โค้ด + 3 มือ)</b> แต่<b>สัดส่วนบทสุ่มทุกครั้ง</b> เหมือนตอนเปิดข้อสอบจริงที่ไม่รู้ว่าบทไหนมากี่ข้อ</p>
+      ) : (
+        <>
+          <p style={{margin:"12px 0 6px", fontSize:'0.82rem', color:"var(--text-dim)"}}>สุ่มเมื่อ {draw.at} — เปิดหน้าใหม่ก็ยังเป็นชุดเดิมจนกว่าจะกดสุ่มใหม่</p>
+          <NumTable
+            headers={["ข้อ", "โจทย์", "บท", "ประเภท", "อยู่ที่"]}
+            rows={draw.order.map((o, i) => [
+              i + 1,
+              <span>{o.id}{i === draw.brain && <span className="tag" style={{marginLeft:6, borderColor:"var(--red)", color:"var(--red)"}}>ข้อวัดสมอง</span>}</span>,
+              CH[o.ch],
+              o.t === "code" ? "เขียนโปรแกรม" : "คำนวณมือ",
+              o.w,
+            ])}
+          />
+          <p style={{margin:"8px 0 0", fontSize:'0.86rem'}}>
+            <b>สัดส่วนบทที่สุ่มได้รอบนี้:</b>{" "}
+            {dist.filter(d => d.n > 0).map(d => `${CH[d.k]} ${d.n} ข้อ`).join(" · ")}
+          </p>
+          <Callout kind="warn" title="กติกาของรอบนี้">
+            <ul style={{margin:0, paddingLeft:18, fontSize:'0.86rem'}}>
+              <li><b>ข้อที่ติดป้าย “ข้อวัดสมอง” ให้ทิ้ง</b> — ทำอีก 5 ข้อให้ครบใน 180 นาที (36 นาที/ข้อ) เหลือเวลาค่อยกลับมาแตะ</li>
+              <li>เปิดเฉพาะ<b>โจทย์</b>ตามที่ตารางบอก อย่าเผลออ่านเฉลยข้าง ๆ</li>
+              <li>จบแล้วกรอก<b>สมุดพลาด</b> (หมวด 🩺) ทุกข้อที่ไม่ได้คะแนน รวมข้อที่ทำไม่ทัน</li>
+            </ul>
+          </Callout>
+        </>
+      )}
+    </div>
+  );
+}
+
 function MidtermLesson() {
   return (
     <div>
@@ -2023,6 +2143,23 @@ s (m) : 2.000   10.775   17.100   20.975   22.400`}</div>
         </Problem>
 
         </TimedExam>
+      </Sect>
+
+      {/* ═══════════ 🎲 · สุ่มชุดสอบ ═══════════ */}
+      <Sect tag="🎲" title="สุ่มชุดสอบ — ฝึกกับสิ่งที่เราไม่รู้ คือ “บทไหนออกกี่ข้อ”">
+        <Callout kind="danger" title="ปัญหาจริงไม่ใช่ “ทำไม่เป็น” แต่คือ “ไม่รู้ว่าจะเจออะไร”">
+          <p style={{margin:"0 0 6px"}}>อาจารย์บอกแค่ <b>“ออกทุกเรื่องที่เรียน”</b> กับ <b>“โค้ดครึ่งหนึ่ง คำนวณครึ่งหนึ่ง”</b> — <b>ไม่เคยบอกว่าบทไหนกี่ข้อ</b> ⇒ เปิดข้อสอบมาอาจเจอ Integration 3 ข้อ หรืออาจไม่เจอเลยก็ได้</p>
+          <p style={{margin:0}}>ถ้าซ้อมด้วยชุดที่รู้ล่วงหน้าว่ามีอะไร จะไม่ได้ฝึกส่วนที่ยากที่สุดจริง ๆ คือ<b>การเปิดมาแล้วต้องจัดลำดับใหม่ทันที</b> · เครื่องนี้จึงล็อกแค่ <b>3 โค้ด + 3 มือ</b> (ตามที่อาจารย์บอก) แล้ว<b>ปล่อยสัดส่วนบทให้สุ่มล้วน</b> — ซ้อมหลายรอบแล้วจะชินกับทุกหน้าตาที่เป็นไปได้</p>
+        </Callout>
+        <RandomExamDraw/>
+        <Callout kind="tip" title="ใช้ยังไงให้ได้ผล">
+          <ol style={{margin:0, paddingLeft:20}}>
+            <li><b>สุ่ม → เริ่มจับเวลาทันที</b> อย่าเพิ่งเปิดดูโจทย์ก่อน (ในห้องสอบก็ไม่ได้ดูก่อน)</li>
+            <li>ใช้ <b>5 นาทีแรก</b> ไล่อ่านทั้ง 6 ข้อ แล้วเขียนลำดับที่จะทำ — นี่คือทักษะที่กำลังฝึก ไม่ใช่การคำนวณ</li>
+            <li>ทำเสร็จแล้วเทียบเฉลยเอง → กรอกสมุดพลาด → <b>สุ่มใหม่วันถัดไป</b></li>
+            <li>ซ้อม 3–4 รอบจะเริ่มเห็นว่า “สัดส่วนไหนก็เอาอยู่” — ความกลัวทำไม่ทันจะลดลงเพราะ<b>เคยเจอมาหมดแล้ว</b></li>
+          </ol>
+        </Callout>
       </Sect>
 
       {/* ═══════════ 🩺 · สมุดพลาด ═══════════ */}

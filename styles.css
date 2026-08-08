@@ -272,6 +272,10 @@ li::marker { color: var(--text-faint); }
 .callout.good { border-color: var(--green); background: rgba(131,193,103,0.06); }
 .callout.tip  { border-color: var(--yellow); background: rgba(255,214,107,0.06); }
 .callout-title { font-weight: 600; margin-bottom: 4px; }
+/* กฎห้องสอบ — พับเก็บได้ ให้ทุกบทมีเหมือนกันโดยไม่กินพื้นที่ */
+.exam-rules > summary::-webkit-details-marker { display: none; }
+.exam-rules > summary::before { content: "▸ "; color: var(--red); }
+.exam-rules[open] > summary::before { content: "▾ "; }
 
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: stretch; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch; }

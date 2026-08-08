@@ -509,6 +509,8 @@ function RootFindingLesson() {
         meta={["6 methods", "Animation ทุก method", "fx-991CW SOLVE", "Python complete"]}
       />
 
+      <ExamRules/>
+
       <Callout kind="warn" title="📮 การบ้าน 4 · เช็กลิสต์ 5 ข้อ (เฉลย + โปรแกรมอยู่ครบในหน้านี้)">
         <NumTable
           headers={["ข้อ", "โจทย์", "ต้องส่งอะไร", "อยู่หัวข้อ"]}

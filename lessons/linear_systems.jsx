@@ -324,6 +324,8 @@ function LinearSystemsLesson() {
         meta={["Direct method", "Iterative methods", "Convergence", "fx-991CW Equation"]}
       />
 
+      <ExamRules/>
+
       <Callout kind="warn" title="📮 การบ้านชุดนี้ · ระบบเดียว 6 วิธี — เฉลยครบอยู่ในหมวด 📮 ท้ายกลุ่ม Direct">
         <p style={{margin:"0 0 6px"}}>ใบงาน <code>Gauss Elimination Method.pdf</code> ให้ระบบมา<b>ระบบเดียว</b> แล้วสั่งแก้ด้วย <b>6 วิธี</b> — โครงเดียวกับการบ้าน 4 (bisection/false position) และการบ้าน 5 (iteration) เป๊ะ</p>
         <MB>{`\\begin{cases}-2x_1+3x_2+x_3=9\\\\ 3x_1+4x_2-5x_3=0\\\\ x_1-2x_2+x_3=-4\\end{cases}`}</MB>

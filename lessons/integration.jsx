@@ -28,6 +28,8 @@ function IntegrationLesson() {
         meta={["Trapezoidal", "Composite Trap", "Simpson 1/3", "Composite Simpson"]}
       />
 
+      <ExamRules/>
+
       <Callout kind="tip" title="🎙️ บทนี้มาจากเลคเชอร์จริงของอาจารย์">
         <p style={{margin:"0 0 6px"}}>ปีนี้อาจารย์<b>ย้าย Integration มาเป็นบทแรก</b>ของคอร์ส (เพราะเป็นเรื่องที่<b>เข้าใจง่าย</b> เหมาะวอร์มก่อนบทอื่น) และบอกว่า “วันนี้เราเรียนกัน <b>4 โค้ด</b>” — คือ 4 วิธีที่ต้องเขียนโปรแกรมได้ทั้งหมด:</p>
         <ol style={{margin:"0 0 6px 18px"}}>
