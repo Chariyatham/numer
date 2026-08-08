@@ -4,6 +4,119 @@
 //                      ทริกเก็บคะแนน + ทริกเครื่องคิดเลข + ข้อสอบยากจับเวลา
 // เลขทุกตัวในหน้านี้ยืนยันด้วยโปรแกรมแล้ว (เศษส่วน/full precision)
 
+// ─── สมุดพลาด ───────────────────────────────────────────────────────────────
+// เก็บว่าซ้อมรอบไหนผิดข้อไหน "เพราะอะไร" แล้วสรุปเป็นโรคประจำตัว — เพราะกติกาตรวจ
+// แค่คำตอบ การรู้ว่าตัวเองพลาดแบบไหนบ่อยสุดมีค่ากว่าการรู้ว่าทำผิดกี่ข้อ
+const ERR_LOG_KEY = "numer-errlog";
+
+const ERR_KINDS = [
+  { id: "read",  label: "อ่านโจทย์ผิด / ตีความผิด", color: "var(--red)",
+    fix: "ก่อนลงมือทุกข้อ ขีดเส้นใต้ 3 อย่าง: (1) หาอะไร (2) บังคับวิธีไหน (3) กี่รอบ / เกณฑ์หยุดอะไร — ใช้เวลา 20 วินาที แต่กันเสียทั้งข้อ" },
+  { id: "round", label: "ปัดเลขกลางทาง", color: "var(--yellow)",
+    fix: "ห้ามจดเลขแล้วพิมพ์กลับเข้าเครื่อง — เดินต่อด้วย Ans / STO / ↑= ให้จบในเครื่อง แล้วค่อยปัดตอนเขียนคำตอบสุดท้ายครั้งเดียว" },
+  { id: "code",  label: "โครงโค้ด / เลื่อนตัวแปรพลาด", color: "var(--blue)",
+    fix: "ไปหน้า “เขียนโค้ดจากหัว” (#code) ทำดริลกระดาษเปล่าซ้ำจนเขียน 4 โครงได้โดยไม่คิด — จุดตายคือ x0, x1 = x1, x2 กับบรรทัดเงื่อนไขหยุด" },
+  { id: "stop",  label: "เงื่อนไขหยุด / สูตร error ผิด", color: "var(--green)",
+    fix: "ท่องตารางกติกาเดินตาราง (หมวด ⭐ ด้านบน) — แยกให้ออกว่าโจทย์ขอ absolute |Δx| หรือ relative ε และวิธีไหนมี “รอบทำทิ้ง”" },
+  { id: "calc",  label: "กดเครื่อง / เลขคณิตพลาด", color: "var(--purple, #b18cff)",
+    fix: "เช็ค Rad/Deg ก่อนทุกครั้งที่มี sin/cos · และประมาณคำตอบคร่าว ๆ ในหัวก่อนกด ถ้าผลต่างจากที่คาดเป็นสิบเท่าแปลว่ากดผิด" },
+  { id: "time",  label: "ทำไม่ทัน (ไม่ใช่ทำผิด)", color: "var(--text-dim)",
+    fix: "ปัญหาการจัดลำดับ ไม่ใช่ความรู้ — ซ้อมอ่านครบ 6 ข้อใน 5 นาทีแรกแล้วเรียงตามความชัวร์ · ข้อที่ทำครึ่งเดียวได้ 0 เท่ากับไม่ทำ" },
+];
+
+function ErrorLog() {
+  const [rows, setRows] = React.useState(() => {
+    try { return JSON.parse(localStorage.getItem(ERR_LOG_KEY) || "[]"); } catch { return []; }
+  });
+  const [set, setSet] = React.useState("A");
+  const [no, setNo] = React.useState("1");
+  const [kind, setKind] = React.useState(ERR_KINDS[0].id);
+  const [note, setNote] = React.useState("");
+
+  const persist = (next) => { setRows(next); localStorage.setItem(ERR_LOG_KEY, JSON.stringify(next)); };
+  const add = () => persist([...rows, { k: Date.now(), set, no, kind, note: note.trim() }]);
+  const del = (k) => persist(rows.filter(r => r.k !== k));
+
+  const counts = ERR_KINDS
+    .map(k => ({ ...k, n: rows.filter(r => r.kind === k.id).length }))
+    .filter(k => k.n > 0)
+    .sort((a, b) => b.n - a.n);
+  const max = counts.length ? counts[0].n : 0;
+
+  const ctl = { background:"var(--screen)", color:"var(--text)", border:"1px solid var(--border)",
+                borderRadius:6, padding:"5px 8px", fontFamily:"var(--font-mono)", fontSize:'0.78rem' };
+
+  return (
+    <div className="card" style={{padding:"14px 16px"}}>
+      <div style={{display:"flex", gap:8, flexWrap:"wrap", alignItems:"center"}}>
+        <select style={ctl} value={set} onChange={e => setSet(e.target.value)}>
+          {["A", "B", "C", "โจทย์ยาก 10 ข้อ", "การบ้าน", "อื่น ๆ"].map(s => <option key={s} value={s}>ชุด {s}</option>)}
+        </select>
+        <select style={ctl} value={no} onChange={e => setNo(e.target.value)}>
+          {["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"].map(n => <option key={n} value={n}>ข้อ {n}</option>)}
+        </select>
+        <select style={{...ctl, flex:"1 1 220px"}} value={kind} onChange={e => setKind(e.target.value)}>
+          {ERR_KINDS.map(k => <option key={k.id} value={k.id}>{k.label}</option>)}
+        </select>
+        <input style={{...ctl, flex:"1 1 200px"}} placeholder="โน้ตสั้น ๆ (ไม่ใส่ก็ได้)"
+          value={note} onChange={e => setNote(e.target.value)}
+          onKeyDown={e => { if (e.key === "Enter") { add(); setNote(""); } }}/>
+        <button className="btn small primary" onClick={() => { add(); setNote(""); }}>+ บันทึก</button>
+      </div>
+
+      {rows.length === 0 ? (
+        <p className="muted" style={{margin:"12px 0 0", fontSize:'0.82rem'}}>ยังไม่มีบันทึก — ซ้อมเสร็จรอบหนึ่งแล้วมากรอกทุกข้อที่ไม่ได้คะแนน <b>รวมถึงข้อที่ทำไม่ทันด้วย</b></p>
+      ) : (
+        <>
+          <div style={{marginTop:14, display:"flex", flexDirection:"column", gap:5}}>
+            {counts.map(c => (
+              <div key={c.id} style={{display:"flex", alignItems:"center", gap:8, fontSize:'0.8rem'}}>
+                <span style={{flex:"0 0 190px"}}>{c.label}</span>
+                <span style={{flex:1, height:14, background:"var(--bg-soft)", borderRadius:3, overflow:"hidden"}}>
+                  <span style={{display:"block", height:"100%", width:`${(c.n / max) * 100}%`, background:c.color}}/>
+                </span>
+                <b style={{flex:"0 0 28px", textAlign:"right", fontFamily:"var(--font-mono)"}}>{c.n}</b>
+              </div>
+            ))}
+          </div>
+
+          <div style={{marginTop:14}}>
+            <b style={{fontSize:'0.86rem'}}>🩺 โรคประจำตัว — แก้ตามลำดับนี้</b>
+            <ol style={{margin:"6px 0 0", paddingLeft:20, fontSize:'0.82rem', lineHeight:1.7}}>
+              {counts.slice(0, 3).map(c => (
+                <li key={c.id} style={{marginBottom:6}}>
+                  <b style={{color:c.color}}>{c.label} ({c.n} ครั้ง)</b> — {c.fix}
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          <details style={{marginTop:12}}>
+            <summary style={{cursor:"pointer", fontSize:'0.8rem', color:"var(--text-dim)"}}>
+              ดูรายการทั้งหมด ({rows.length})
+            </summary>
+            <div style={{marginTop:8, display:"flex", flexDirection:"column", gap:4}}>
+              {rows.map(r => {
+                const k = ERR_KINDS.find(x => x.id === r.kind);
+                return (
+                  <div key={r.k} style={{display:"flex", gap:8, alignItems:"center", fontSize:'0.78rem',
+                                         fontFamily:"var(--font-mono)", padding:"3px 6px",
+                                         background:"var(--bg-soft)", borderRadius:4}}>
+                    <span style={{flex:"0 0 130px"}}>ชุด {r.set} · ข้อ {r.no}</span>
+                    <span style={{flex:"0 0 190px", color:k ? k.color : "var(--text)"}}>{k ? k.label : r.kind}</span>
+                    <span style={{flex:1, color:"var(--text-dim)"}}>{r.note}</span>
+                    <button className="btn small ghost" onClick={() => del(r.k)}>✕</button>
+                  </div>
+                );
+              })}
+            </div>
+          </details>
+        </>
+      )}
+    </div>
+  );
+}
+
 function MidtermLesson() {
   return (
     <div>
@@ -1771,6 +1884,29 @@ s (m) : 2.000   10.775   17.100   20.975   22.400`}</div>
         </TimedExam>
       </Sect>
 
+      {/* ═══════════ 🩺 · สมุดพลาด ═══════════ */}
+      <Sect tag="🩺" title="สมุดพลาด — บันทึกว่าพลาด “เพราะอะไร” ไม่ใช่แค่ผิดกี่ข้อ">
+        <Callout kind="danger" title="ทำไมต้องมี — เพราะเหลือเวลาแค่ไม่กี่วัน ต้องซ่อมให้ตรงจุด">
+          <p style={{margin:"0 0 6px"}}>ซ้อมแล้วรู้ว่า “ได้ 4 จาก 6” ไม่ช่วยอะไรเลย · สิ่งที่ช่วยคือรู้ว่า <b>2 ข้อที่เสียไปนั้นเสียเพราะอะไร</b> — เพราะแต่ละสาเหตุแก้คนละวิธี และใช้เวลาต่างกันมาก:</p>
+          <ul style={{margin:0, paddingLeft:18, fontSize:'0.84rem'}}>
+            <li><b>ปัดเลขกลางทาง</b> → แก้ได้ใน 10 นาที (เปลี่ยนวิธีกดเครื่อง) — คุ้มที่สุด ทำก่อนเลย</li>
+            <li><b>โครงโค้ดไม่แม่น</b> → ต้องซ้อมเขียน 2–3 วัน</li>
+            <li><b>ทำไม่ทัน</b> → ไม่ใช่ปัญหาความรู้เลย เป็นปัญหาการจัดลำดับข้อ ซ้อมได้ในรอบเดียว</li>
+          </ul>
+          <p style={{margin:"6px 0 0", fontSize:'0.84rem'}}>ถ้าไล่แก้มั่ว ๆ จะหมดเวลาไปกับเรื่องที่ไม่ใช่สาเหตุจริง</p>
+        </Callout>
+        <p>กรอกทุกข้อที่<b>ไม่ได้คะแนน</b>หลังซ้อมจบแต่ละรอบ (รวมข้อที่ทำไม่ทัน) — บันทึกอยู่ในเครื่องนี้เท่านั้น ปิดหน้าแล้วไม่หาย</p>
+        <ErrorLog/>
+        <Callout kind="tip" title="วิธีใช้ให้ได้ผลจริง">
+          <ol style={{margin:0, paddingLeft:20}}>
+            <li>ซ้อมชุด A จับเวลา → ตรวจ → กรอกทุกข้อที่พลาด <b>อย่าเข้าข้างตัวเอง</b> (เลขผิดตำแหน่งเดียวก็คือพลาด)</li>
+            <li>ดูแท่งสรุป → หยิบ <b>โรคอันดับ 1</b> มาแก้อย่างเดียวก่อนซ้อมชุดถัดไป</li>
+            <li>ซ้อมชุด B แล้วดูว่าโรคอันดับ 1 เดิม<b>ลดลงไหม</b> — ถ้าไม่ลด แปลว่าวิธีแก้ยังไม่ตรง ไม่ใช่ซ้อมน้อยไป</li>
+            <li>คืนวันที่ 19 เปิดหน้านี้ อ่านเฉพาะรายการในสมุด แล้วทำเฉพาะข้อพวกนั้นซ้ำ</li>
+          </ol>
+        </Callout>
+      </Sect>
+
       <Sect tag="❌" title="10 กับดักที่ทำให้เสียคะแนนฟรี — เฉพาะ 3 บทที่ออกสอบ">
         <NumTable
           headers={["#", "กับดัก", "วิธีกันไว้"]}
@@ -1807,7 +1943,7 @@ s (m) : 2.000   10.775   17.100   20.975   22.400`}</div>
           <ul style={{margin:0, paddingLeft:18}}>
             <li>ไล่ <b>Cheat Sheet</b> ทั้งหน้า 1 รอบ ปิดตาแล้วเขียนสูตรทั้ง 4 วิธีของ Integration + ทั้ง 6 วิธีของ Root ให้ได้</li>
             <li>ต้องผ่าน <b>ชุดสอบเสมือนจริง A/B/C</b> (หมวด 🎓) มาแล้วอย่างน้อยชุดละ 1 รอบ — ซ้อมวันที่ 14, 16, 18 ตามตารางในหมวดนั้น · เกณฑ์คือ <b>ถูก 4/6 ขึ้นไป</b> (ชุด C ต้อง 5/6) ไม่ใช่ทำครบ เพราะกติกาคือผิดนิดเดียว = 0</li>
-            <li>เปิด<b>สมุดพลาด</b>ที่จดไว้ตอนซ้อม → ทำเฉพาะข้อที่เคยผิดซ้ำอีกรอบ ไม่ต้องไล่ทั้งหมด</li>
+            <li>เปิด<b>สมุดพลาด</b> (หมวด 🩺) → ทำเฉพาะข้อที่เคยผิดซ้ำอีกรอบ ไม่ต้องไล่ทั้งหมด · อ่าน “โรคประจำตัว” 3 อันดับแรกให้ขึ้นใจก่อนเข้าห้องสอบ</li>
             <li>ท่องกติกา 5 ข้อ: รอบทำทิ้ง · สูตร ε ของแต่ละวิธี · ห้ามปัดกลางทาง · <b>ตอบเป็นทศนิยม ห้ามเศษส่วน</b> · Taylor ใช้ error สัมบูรณ์</li>
             <li>เช็คเครื่องคิดเลข: <b>ถ่านใหม่</b> · <b>ตั้ง Rad</b> · ลองกด Table + Ans-loop + STO + ↑= ให้คล่อง · กด <M>{`e^x`}</M>, <M>{`\\ln`}</M>, <M>{`\\sin`}</M> ให้ได้ค่าตรงกับตารางในหมวด 💡</li>
             <li>เตรียมของ: ปากกา 2 ด้าม · ดินสอ+ยางลบสำหรับตาราง · <b>นาฬิกา</b> (ไว้แบ่งเวลา 3 ก้อน)</li>
