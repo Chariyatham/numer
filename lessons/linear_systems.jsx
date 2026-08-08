@@ -404,7 +404,7 @@ function LinearSystemsLesson() {
         <p style={{margin:0, fontSize:'0.82rem', color:"var(--text-dim)"}}>อาจารย์ยังเดินตัวอย่าง 3×3 ต่อด้วย — โจทย์ <b>“Plate with surface heating” ด้วย Finite Difference method</b> ซึ่งแถวแรกคือ <M>{`4x_1-4x_2+0x_3=400`}</M> และเฉลยที่ไล่ในคาบคือ <M>{`x_1=450,\\ x_2=350`}</M> (แทนกลับ: <M>{`4(450)-4(350)=400`}</M> ✓) · <b>ระบบเต็มของสไลด์นั้นอ่านจากรูปถ่ายไม่ชัดพอ</b> — ถ้าได้สไลด์ตัวจริงจะเติมให้ครบ</p>
       </Callout>
 
-      <Sect tag="0" title="เริ่มจากศูนย์ — ทำไมต้องมีบทนี้ และจะเรียนอะไรบ้าง">
+      <Sect tag="0" title="เริ่มจากศูนย์ — ทำไมต้องมีบทนี้ และจะเรียนอะไรบ้าง" read="must" min={15}>
         <p>บทนี้ตอบคำถามเดียว: <b>“มีหลายสมการ หลายตัวแปร แล้วจะแก้ยังไงให้คอมพิวเตอร์ทำแทนได้”</b> · เดินตามลำดับที่อาจารย์สอนจริงในคาบ 8 ส.ค. ตั้งแต่ต้น</p>
 
         <h3>ขั้นที่ 1 · โจทย์จริงไม่ได้มาเป็นสมการ — มันมาเป็นสถานการณ์</h3>
@@ -486,7 +486,7 @@ function LinearSystemsLesson() {
         </div>
       </Sect>
 
-      <Sect tag="1" title="Cramer's Rule — กฎคราเมอร์">
+      <Sect tag="1" title="Cramer's Rule — กฎคราเมอร์" read="must" min={20}>
         <h3>แนวคิด · ใช้ determinant ล้วน ๆ</h3>
         <p>ถ้า <M>{`\\det(A) \\neq 0`}</M> ระบบ <M>Ax=b</M> มีคำตอบเดียว และ:</p>
         <Formula label="Cramer's Rule">
@@ -546,7 +546,7 @@ print("\\nx =", cramer(A, b))`} height={240}/>
         <DirectSolverShell method="cramer" title="Cramer's Rule — Solver"/>
       </Sect>
 
-      <Sect tag="2" title="Gauss Elimination — Direct method พื้นฐาน">
+      <Sect tag="2" title="Gauss Elimination — Direct method พื้นฐาน" read="must" min={20}>
         <h3>แนวคิด · ทำให้ matrix เป็น Upper Triangular</h3>
         <p>เป้าหมาย: ทำให้ matrix อยู่ในรูป <em>สามเหลี่ยมบน</em> เพื่อจะ back-substitute หาค่า x ได้ง่าย</p>
 
@@ -671,7 +671,7 @@ print(f"\\nx = {[round(v, 6) for v in x]}")`} height={280}/>
         <DirectSolverShell method="gauss" title="Gauss Elimination — Solver"/>
       </Sect>
 
-      <Sect tag="3" title="Gauss-Jordan — Forward + Backward Elimination">
+      <Sect tag="3" title="Gauss-Jordan — Forward + Backward Elimination" read="must" min={8}>
         <p>คล้าย Gauss แต่<em>ลบทั้งบนและล่าง pivot</em> + หารแถว pivot ด้วย <M>{`a_{kk}`}</M> → ได้ matrix <b>เอกลักษณ์</b></p>
 
         <Formula label="ก่อน vs หลัง Gauss-Jordan">
@@ -718,7 +718,7 @@ print("x =", [round(v,6) for v in gauss_jordan(A, b)])`} height={220}/>
       </Sect>
 
 
-      <Sect tag="4" title="Matrix Inversion — แก้ผ่าน A⁻¹">
+      <Sect tag="4" title="Matrix Inversion — แก้ผ่าน A⁻¹" read="must" min={6}>
         <h3>แนวคิด · หา A⁻¹ แล้วคูณ b</h3>
         <p>ถ้ารู้ <M>A^{`-1`}</M> ก็แก้ <M>Ax=b</M> ได้ทันที:</p>
         <Formula><MB>{`x = A^{-1} b`}</MB></Formula>
@@ -859,7 +859,7 @@ print("\\nตรวจ: numpy =", np.linalg.solve(A, b))`} height={260}/>
         <DirectSolverShell method="inverse" title="Matrix Inversion — Solver"/>
       </Sect>
 
-      <Sect tag="5" title="LU Decomposition — Doolittle / Crout">
+      <Sect tag="5" title="LU Decomposition — Doolittle / Crout" read="must" min={6}>
         <h3>แนวคิด · แตก A เป็น L · U</h3>
         <p>แทนที่จะทำ Gauss ใหม่ทุกครั้งที่ b เปลี่ยน — เราแตก <M>A=LU</M> ครั้งเดียว:</p>
         <Formula label="Doolittle (L มี 1 บน diagonal)">
@@ -1054,7 +1054,7 @@ print("x =", [round(v,6) for v in x])`} height={300}/>
         <DirectSolverShell method="lu" title="LU Decomposition — Solver"/>
       </Sect>
 
-      <Sect tag="6" title="Cholesky Decomposition — สำหรับ Symmetric Positive Definite">
+      <Sect tag="6" title="Cholesky Decomposition — สำหรับ Symmetric Positive Definite" read="must" min={6}>
         <h3>เมื่อไหร่ใช้ได้?</h3>
         <p>เฉพาะเมื่อ matrix A เป็น <b>symmetric positive definite</b> (SPD):</p>
         <ul>
@@ -1253,7 +1253,7 @@ print("\\nA·x =", np.round(A @ x, 6).tolist(), "  (เทียบกับ B =
       </Sect>
 
       {/* ═══════════ 📮 · การบ้าน 6 วิธี ═══════════ */}
-      <Sect tag="📮" title="ใบงานตัวเก็ง · ระบบเดียว 6 วิธี — เฉลยเต็มทั้ง 6 ข้อ">
+      <Sect tag="📮" title="ใบงานตัวเก็ง · ระบบเดียว 6 วิธี — เฉลยเต็มทั้ง 6 ข้อ" read="must" min={20}>
         <p>ทั้ง 6 ข้อใช้ระบบเดียวกัน ⇒ <b>เขียนเมทริกซ์ครั้งเดียวใช้ได้ทั้งใบ</b> · ที่ต่างกันคือ “ทางเดิน” ไม่ใช่คำตอบ — ทุกวิธีต้องลงที่ <M>{`(-1,\\,2,\\,1)`}</M> เหมือนกันหมด ถ้าวิธีไหนได้ไม่ตรง แปลว่าวิธีนั้นคำนวณพลาด</p>
 
         <Callout kind="tip" title="ตรวจก่อนลงมือ — 10 วินาทีที่กันพังทั้งใบ">
@@ -1467,7 +1467,7 @@ print("\\nตรวจ A·x =", [round(sum(A[i][j]*x[j] for j in range(n)), 6) f
       </Sect>
 
       {/* ═══════════ 🔲 · เมทริกซ์ไม่จัตุรัส ═══════════ */}
-      <Sect tag="🔲" title="เมทริกซ์ไม่จัตุรัส — สมการไม่เท่ากับตัวแปร (อาจารย์บอกว่าจะสอน 19 ส.ค.)">
+      <Sect tag="🔲" title="เมทริกซ์ไม่จัตุรัส — สมการไม่เท่ากับตัวแปร (อาจารย์บอกว่าจะสอน 19 ส.ค.)" read="later" why="ยังไม่สอน กลับมาหลัง 19 ส.ค.">
         <Callout kind="warn" title="⚠︎ หมวดนี้ยังไม่ได้เรียน — เตรียมไว้ล่วงหน้า">
           <p style={{margin:0}}>ในคาบ 8 ส.ค. อาจารย์พูดถึงเรื่องนี้ไว้แต่ยังไม่ได้สอน: <i>“ถ้าเป็น 4 คูณ 5 เราจะไปใช้ Gauss Eliminate … ตอนที่คุณเรียน Gauss Eliminate คุณจะเรียนแค่ matrix เท่ากัน <b>แต่เวอร์ชันนี้คุณจะเรียน matrix ที่มันไม่เท่ากันด้วย</b>”</i> ⇒ เนื้อหาหมวดนี้ผมเตรียมจากหลักการมาตรฐาน <b>ยังไม่ได้ยืนยันกับที่อาจารย์สอนจริง</b> — พอเรียนวันที่ 19 แล้วจะมาปรับให้ตรง</p>
         </Callout>
@@ -1588,7 +1588,7 @@ for label, A, b in tests:
       </Sect>
 
       {/* ═══════════ 🎯 · โจทย์ประยุกต์ ═══════════ */}
-      <Sect tag="🎯" title="โจทย์ประยุกต์ — แบบที่ข้อสอบชอบออก (ต้องตั้งสมการเอง)">
+      <Sect tag="🎯" title="โจทย์ประยุกต์ — แบบที่ข้อสอบชอบออก (ต้องตั้งสมการเอง)" read="later" why="เป็นโจทย์ ยกไปเฟส 2">
         <p>อาจารย์ย้ำในคาบว่า <i>“ตอนเรียนสมการมันโผล่มาให้ แต่ในชีวิตจริงคุณต้องนั่งตั้งสมการชุดนี้ออกมาให้ได้เอง”</i> ⇒ ข้อสอบแนวประยุกต์จะให้<b>สถานการณ์</b> ไม่ใช่เมทริกซ์ · <b>ขั้นที่ยากที่สุดคือขั้นแรก</b> — ตั้งตัวแปรและเขียนสมการ ที่เหลือคือวิธีที่เรียนมาแล้วทั้งนั้น</p>
 
         <Callout kind="tip" title="สูตรตั้งสมการ 3 ขั้น (ใช้ได้กับทุกโจทย์ประยุกต์ในบทนี้)">
@@ -1686,7 +1686,7 @@ for S, name in [(0, "ไม่มีแหล่งความร้อน"), (
         </Problem>
       </Sect>
 
-      <Sect tag="7" title="Jacobi Iteration — เริ่ม Iterative">
+      <Sect tag="7" title="Jacobi Iteration — เริ่ม Iterative" read="later" why="ยังไม่สอน">
         <h3>แนวคิด</h3>
         <p>จัดสมการให้แยก <M>x_i</M> ออกมา → เดาค่าเริ่ม → คำนวณ x ใหม่ → วน loop</p>
 
@@ -1752,7 +1752,7 @@ ans = jacobi(A, b, [0,0,0,0])
 print(f"\\nคำตอบ ≈ {[round(v,4) for v in ans]}")`} height={260}/>
       </Sect>
 
-      <Sect tag="8" title="Gauss-Seidel — Jacobi ฉบับ Upgrade">
+      <Sect tag="8" title="Gauss-Seidel — Jacobi ฉบับ Upgrade" read="later" why="ยังไม่สอน">
         <p>เหมือน Jacobi เป๊ะ ๆ ยกเว้น: <b>ใช้ค่า x ใหม่ทันทีในรอบเดียวกัน</b></p>
 
         <Formula>
@@ -1808,7 +1808,7 @@ b = [12,17,14,7]
 ans = gauss_seidel(A, b, [0,0,0,0])`} height={220}/>
       </Sect>
 
-      <Sect tag="9" title="Quick Reference & Decision Tree">
+      <Sect tag="9" title="Quick Reference & Decision Tree" read="later" why="ไว้ทวนก่อนสอบ">
         <NumTable
           headers={["Method", "Type", "Cost", "เหมาะกับ", "ออกข้อสอบบ่อย"]}
           rows={[
@@ -1871,7 +1871,7 @@ ans = gauss_seidel(A, b, [0,0,0,0])`} height={220}/>
         </Callout>
       </Sect>
 
-      <Sect tag="✸" title="ข้อสอบจำลอง">
+      <Sect tag="✸" title="ข้อสอบจำลอง" read="later" why="เป็นโจทย์ ยกไปเฟส 3">
         <Problem label="ข้อ 0 · Cramer + LU + Cholesky (จากสไลด์อาจารย์)" solution={
           <div>
             <p>ระบบนี้แก้ได้ทุก method — ตรวจคำตอบ x = (1, 0, 1)<sup>T</sup></p>
