@@ -11,6 +11,7 @@ const smoothScrollTo = (el) => {
 const CHAPTERS = [
   { group: "เริ่มต้น", items: [
     { id: "intro", num: "00", title: "ปฐมนิเทศ · How to use", comp: "IntroLesson" },
+    { id: "plan", num: "🗓", title: "แผนเตรียมสอบ 13 วัน", comp: "PlanLesson" },
     { id: "map", num: "🗺", title: "แผนที่คอนเซปต์ทั้งคอร์ส", comp: "ConceptMapLesson" },
   ]},
   { group: "Part 1 · แคลคูลัส (บทแรกปีนี้)", items: [
