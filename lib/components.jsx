@@ -649,6 +649,9 @@ function FastPath({ minutes, must, skip, check }) {
     <div className="callout good" style={{marginBottom:18}}>
       <div className="callout-title">⏱ ทางลัดของบทนี้ — ถ้าเวลาน้อย อ่านแค่นี้ก่อน (รวม ~{minutes || Math.round(total/5)*5} นาที)</div>
       <p style={{margin:"0 0 8px", fontSize:'0.84rem', color:"var(--text-dim)"}}>
+        <b style={{color:"var(--yellow)"}}>⚠︎ กล่องนี้คือ “แผนที่” ไม่ใช่เนื้อหา</b> — มันบอกว่าให้ไปอ่าน<b>หมวดไหนบ้าง</b> ส่วนเนื้อหาจริงอยู่ในหมวดที่ระบุ <b>ต้องเลื่อนลงไปอ่านตามนั้น</b> (กระโดดไปแต่ละหมวดได้จากสารบัญ “ในบทนี้” ทางขวา) · เลขนาทีคือเวลาอ่าน<b>หมวดนั้น</b> ไม่ใช่เวลาอ่านกล่องนี้
+      </p>
+      <p style={{margin:"0 0 8px", fontSize:'0.84rem', color:"var(--text-dim)"}}>
         บทนี้ยาวโดยตั้งใจ — แต่<b>ไม่ต้องอ่านหมดก่อนถึงจะทำโจทย์ได้</b> · เดินตามตารางนี้ก่อน แล้วค่อยกลับมาเก็บส่วนที่เหลือถ้ามีเวลา
       </p>
       <NumTable
