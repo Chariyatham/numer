@@ -347,6 +347,21 @@ function LinearSystemsLesson() {
         ]}
       />
 
+      <Callout kind="danger" title="🎯 ขอบเขต midterm ของบทนี้ — อ่านแค่ 3 หมวดพอ">
+        <p style={{margin:"0 0 6px"}}>อาจารย์บอกว่าออก “<b>ของทุกเรื่องที่เรียน</b>” ⇒ บทนี้จะออกได้แค่<b>เท่าที่สอนทัน</b> · ตอนนี้สอนไปแล้วแค่ <b>Cramer</b> (8 ส.ค.) และเหลือคาบเดียวคือ <b>19 ส.ค.</b> ซึ่งอาจารย์บอกว่าจะสอน <b>Gauss Elimination</b></p>
+        <NumTable
+          headers={["หมวด", "สถานะ", "อ่านมั้ยสำหรับ midterm"]}
+          rows={[
+            ["0 · เริ่มจากศูนย์", "ปูพื้น", "✅ อ่าน"],
+            ["1 · Cramer’s Rule", "สอนแล้ว 8 ส.ค.", "✅ อ่าน — ออกแน่"],
+            ["2 · Gauss Elimination", "จะสอน 19 ส.ค.", "✅ อ่าน"],
+            ["3–6 · Jordan / Inversion / LU / Cholesky", "ยังไม่สอน · เหลือคาบเดียว", "⬜ ข้าม — น่าจะสอนไม่ทัน"],
+            ["7–9 · Jacobi / Gauss-Seidel / CG", "ยังไม่สอน", "⬜ ข้าม"],
+          ]}
+        />
+        <p style={{margin:"8px 0 0"}}><b>ถ้าคาบ 19 ส.ค. อาจารย์แตะหมวด 3–6 ด้วย</b> ให้ส่งไฟล์เสียงมาทันที ผมจะเปลี่ยนป้ายให้ใหม่ในวันนั้นเลย · ระหว่างนี้<b>อย่าเสียเวลากับ 4 วิธีนั้น</b> เอาเวลาไปทำ Cramer กับ Gauss ให้แม่นดีกว่า</p>
+      </Callout>
+
       <Callout kind="warn" title="📮 ใบงาน “ระบบเดียว 6 วิธี” (ของปีที่แล้ว) — ตัวเก็งที่แม่นที่สุดของบทนี้">
         <p style={{margin:"0 0 6px"}}>⚠︎ <b>ใบนี้เป็นเอกสารปีที่แล้ว</b> (<code>uploads/Gauss Elimination Method.pdf</code>) — <b>ยังไม่ใช่การบ้านที่อาจารย์สั่งปีนี้</b> · แต่ให้ระบบมา<b>ระบบเดียว</b> แล้วสั่งแก้ด้วย <b>6 วิธี</b> ซึ่งเป็นโครงเดียวกับการบ้าน 4 และ 5 ของปีนี้เป๊ะ ⇒ <b>ใช้เก็งได้แม่นมาก</b> ว่าใบของปีนี้ (ถ้าสั่ง) กับข้อสอบจะหน้าตาแบบนี้</p>
         <MB>{`\\begin{cases}-2x_1+3x_2+x_3=9\\\\ 3x_1+4x_2-5x_3=0\\\\ x_1-2x_2+x_3=-4\\end{cases}`}</MB>
@@ -671,7 +686,7 @@ print(f"\\nx = {[round(v, 6) for v in x]}")`} height={280}/>
         <DirectSolverShell method="gauss" title="Gauss Elimination — Solver"/>
       </Sect>
 
-      <Sect tag="3" title="Gauss-Jordan — Forward + Backward Elimination" read="must" min={8}>
+      <Sect tag="3" title="Gauss-Jordan — Forward + Backward Elimination" read="later" why="ยังไม่สอน · เกินขอบเขต midterm">
         <p>คล้าย Gauss แต่<em>ลบทั้งบนและล่าง pivot</em> + หารแถว pivot ด้วย <M>{`a_{kk}`}</M> → ได้ matrix <b>เอกลักษณ์</b></p>
 
         <Formula label="ก่อน vs หลัง Gauss-Jordan">
@@ -718,7 +733,7 @@ print("x =", [round(v,6) for v in gauss_jordan(A, b)])`} height={220}/>
       </Sect>
 
 
-      <Sect tag="4" title="Matrix Inversion — แก้ผ่าน A⁻¹" read="must" min={6}>
+      <Sect tag="4" title="Matrix Inversion — แก้ผ่าน A⁻¹" read="later" why="ยังไม่สอน · เกินขอบเขต midterm">
         <h3>แนวคิด · หา A⁻¹ แล้วคูณ b</h3>
         <p>ถ้ารู้ <M>A^{`-1`}</M> ก็แก้ <M>Ax=b</M> ได้ทันที:</p>
         <Formula><MB>{`x = A^{-1} b`}</MB></Formula>
@@ -859,7 +874,7 @@ print("\\nตรวจ: numpy =", np.linalg.solve(A, b))`} height={260}/>
         <DirectSolverShell method="inverse" title="Matrix Inversion — Solver"/>
       </Sect>
 
-      <Sect tag="5" title="LU Decomposition — Doolittle / Crout" read="must" min={6}>
+      <Sect tag="5" title="LU Decomposition — Doolittle / Crout" read="later" why="ยังไม่สอน · เกินขอบเขต midterm">
         <h3>แนวคิด · แตก A เป็น L · U</h3>
         <p>แทนที่จะทำ Gauss ใหม่ทุกครั้งที่ b เปลี่ยน — เราแตก <M>A=LU</M> ครั้งเดียว:</p>
         <Formula label="Doolittle (L มี 1 บน diagonal)">
@@ -1054,7 +1069,7 @@ print("x =", [round(v,6) for v in x])`} height={300}/>
         <DirectSolverShell method="lu" title="LU Decomposition — Solver"/>
       </Sect>
 
-      <Sect tag="6" title="Cholesky Decomposition — สำหรับ Symmetric Positive Definite" read="must" min={6}>
+      <Sect tag="6" title="Cholesky Decomposition — สำหรับ Symmetric Positive Definite" read="later" why="ยังไม่สอน · เกินขอบเขต midterm">
         <h3>เมื่อไหร่ใช้ได้?</h3>
         <p>เฉพาะเมื่อ matrix A เป็น <b>symmetric positive definite</b> (SPD):</p>
         <ul>
@@ -1253,7 +1268,7 @@ print("\\nA·x =", np.round(A @ x, 6).tolist(), "  (เทียบกับ B =
       </Sect>
 
       {/* ═══════════ 📮 · การบ้าน 6 วิธี ═══════════ */}
-      <Sect tag="📮" title="ใบงานตัวเก็ง · ระบบเดียว 6 วิธี — เฉลยเต็มทั้ง 6 ข้อ" read="must" min={20}>
+      <Sect tag="📮" title="ใบงานตัวเก็ง · ระบบเดียว 6 วิธี — เฉลยเต็มทั้ง 6 ข้อ" read="must" min={10}>
         <p>ทั้ง 6 ข้อใช้ระบบเดียวกัน ⇒ <b>เขียนเมทริกซ์ครั้งเดียวใช้ได้ทั้งใบ</b> · ที่ต่างกันคือ “ทางเดิน” ไม่ใช่คำตอบ — ทุกวิธีต้องลงที่ <M>{`(-1,\\,2,\\,1)`}</M> เหมือนกันหมด ถ้าวิธีไหนได้ไม่ตรง แปลว่าวิธีนั้นคำนวณพลาด</p>
 
         <Callout kind="tip" title="ตรวจก่อนลงมือ — 10 วินาทีที่กันพังทั้งใบ">
