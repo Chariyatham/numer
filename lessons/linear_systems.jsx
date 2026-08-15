@@ -347,19 +347,19 @@ function LinearSystemsLesson() {
         ]}
       />
 
-      <Callout kind="danger" title="🎯 ขอบเขต midterm ของบทนี้ — อ่านแค่ 3 หมวดพอ">
-        <p style={{margin:"0 0 6px"}}>อาจารย์บอกว่าออก “<b>ของทุกเรื่องที่เรียน</b>” ⇒ บทนี้จะออกได้แค่<b>เท่าที่สอนทัน</b> · ตอนนี้สอนไปแล้วแค่ <b>Cramer</b> (8 ส.ค.) และเหลือคาบเดียวคือ <b>19 ส.ค.</b> ซึ่งอาจารย์บอกว่าจะสอน <b>Gauss Elimination</b></p>
+      <Callout kind="danger" title="🎯 ขอบเขตบทนี้ — คาบสุดท้ายจบไปแล้ว และเราไม่มีไฟล์เสียง">
+        <p style={{margin:"0 0 6px"}}>คาบสุดท้ายของวิชานี้ผ่านไปแล้วและ kim ไม่ได้เข้า · <b>ไม่มีทั้งเสียงและสไลด์</b> ⇒ ต้องเดาขอบเขตจากสิ่งที่อาจารย์<b>ประกาศไว้เองในคาบ 8 ส.ค.</b> ว่าจะสอนอะไรต่อ</p>
         <NumTable
-          headers={["หมวด", "สถานะ", "อ่านมั้ยสำหรับ midterm"]}
+          headers={["หมวด", "หลักฐาน", "ทำยังไง"]}
           rows={[
-            ["0 · เริ่มจากศูนย์", "ปูพื้น", "✅ อ่าน"],
-            ["1 · Cramer’s Rule", "สอนแล้ว 8 ส.ค.", "✅ อ่าน — ออกแน่"],
-            ["2 · Gauss Elimination", "จะสอน 19 ส.ค.", "✅ อ่าน"],
-            ["3–6 · Jordan / Inversion / LU / Cholesky", "ยังไม่สอน · เหลือคาบเดียว", "⬜ ข้าม — น่าจะสอนไม่ทัน"],
-            ["7–9 · Jacobi / Gauss-Seidel / CG", "ยังไม่สอน", "⬜ ข้าม"],
+            ["1 · Cramer’s Rule", "สอนจริงคาบ 8 ส.ค. (มีไฟล์เสียง)", "✅ แน่นอนที่สุด — ทำให้แม่นก่อนเพื่อน"],
+            ["2 · Gauss Elimination", "อาจารย์ประกาศเองว่า “สัปดาห์หน้าเรียน Gauss Eliminate”", "✅ เกือบแน่ — ให้น้ำหนักเท่า Cramer"],
+            ["🔲 · เมทริกซ์ไม่จัตุรัส", "อาจารย์พูดเองว่า “เวอร์ชันนี้จะเรียน matrix ที่ไม่เท่ากันด้วย”", "✅ อ่าน — เขาตั้งใจสอนแน่"],
+            ["3–6 · Jordan / Inversion / LU / Cholesky", "อยู่ในสไลด์แผนที่คอร์ส + ใบงานปีที่แล้ว แต่ไม่รู้ว่าคาบสุดท้ายแตะหรือเปล่า", "⚠️ อ่านเร็ว ๆ ให้รู้ว่าแต่ละอันทำอะไร ไม่ต้องท่องสูตร"],
           ]}
         />
-        <p style={{margin:"8px 0 0"}}><b>ถ้าคาบ 19 ส.ค. อาจารย์แตะหมวด 3–6 ด้วย</b> ให้ส่งไฟล์เสียงมาทันที ผมจะเปลี่ยนป้ายให้ใหม่ในวันนั้นเลย · ระหว่างนี้<b>อย่าเสียเวลากับ 4 วิธีนั้น</b> เอาเวลาไปทำ Cramer กับ Gauss ให้แม่นดีกว่า</p>
+        <p style={{margin:"8px 0 0"}}><b>ทางลัดสำหรับหมวด 3–6:</b> ไม่ต้องอ่านทีละหมวด — <b>ข้ามไปหมวด 📮 เลย</b> ตรงนั้นเอา<b>ระบบเดียว</b>มาแก้ให้ดูทั้ง 6 วิธีเรียงกัน เห็นภาพรวมได้ใน 20 นาที คุ้มกว่าอ่านแยกทีละหมวดมาก</p>
+        <p style={{margin:"6px 0 0", fontSize:'0.84rem', color:"var(--text-faint)"}}>ถ้าขอสไลด์/รูปจดจากเพื่อนที่เข้าเรียนคาบสุดท้ายได้ ส่งมาเลย — จะปรับขอบเขตให้แม่นขึ้นทันที</p>
       </Callout>
 
       <Callout kind="warn" title="📮 ใบงาน “ระบบเดียว 6 วิธี” (ของปีที่แล้ว) — ตัวเก็งที่แม่นที่สุดของบทนี้">
@@ -686,7 +686,7 @@ print(f"\\nx = {[round(v, 6) for v in x]}")`} height={280}/>
         <DirectSolverShell method="gauss" title="Gauss Elimination — Solver"/>
       </Sect>
 
-      <Sect tag="3" title="Gauss-Jordan — Forward + Backward Elimination" read="later" why="ยังไม่สอน · เกินขอบเขต midterm">
+      <Sect tag="3" title="Gauss-Jordan — Forward + Backward Elimination" read="must" min={8}>
         <p>คล้าย Gauss แต่<em>ลบทั้งบนและล่าง pivot</em> + หารแถว pivot ด้วย <M>{`a_{kk}`}</M> → ได้ matrix <b>เอกลักษณ์</b></p>
 
         <Formula label="ก่อน vs หลัง Gauss-Jordan">
@@ -733,7 +733,7 @@ print("x =", [round(v,6) for v in gauss_jordan(A, b)])`} height={220}/>
       </Sect>
 
 
-      <Sect tag="4" title="Matrix Inversion — แก้ผ่าน A⁻¹" read="later" why="ยังไม่สอน · เกินขอบเขต midterm">
+      <Sect tag="4" title="Matrix Inversion — แก้ผ่าน A⁻¹" read="must" min={6}>
         <h3>แนวคิด · หา A⁻¹ แล้วคูณ b</h3>
         <p>ถ้ารู้ <M>A^{`-1`}</M> ก็แก้ <M>Ax=b</M> ได้ทันที:</p>
         <Formula><MB>{`x = A^{-1} b`}</MB></Formula>
@@ -874,7 +874,7 @@ print("\\nตรวจ: numpy =", np.linalg.solve(A, b))`} height={260}/>
         <DirectSolverShell method="inverse" title="Matrix Inversion — Solver"/>
       </Sect>
 
-      <Sect tag="5" title="LU Decomposition — Doolittle / Crout" read="later" why="ยังไม่สอน · เกินขอบเขต midterm">
+      <Sect tag="5" title="LU Decomposition — Doolittle / Crout" read="must" min={6}>
         <h3>แนวคิด · แตก A เป็น L · U</h3>
         <p>แทนที่จะทำ Gauss ใหม่ทุกครั้งที่ b เปลี่ยน — เราแตก <M>A=LU</M> ครั้งเดียว:</p>
         <Formula label="Doolittle (L มี 1 บน diagonal)">
@@ -1069,7 +1069,7 @@ print("x =", [round(v,6) for v in x])`} height={300}/>
         <DirectSolverShell method="lu" title="LU Decomposition — Solver"/>
       </Sect>
 
-      <Sect tag="6" title="Cholesky Decomposition — สำหรับ Symmetric Positive Definite" read="later" why="ยังไม่สอน · เกินขอบเขต midterm">
+      <Sect tag="6" title="Cholesky Decomposition — สำหรับ Symmetric Positive Definite" read="must" min={6}>
         <h3>เมื่อไหร่ใช้ได้?</h3>
         <p>เฉพาะเมื่อ matrix A เป็น <b>symmetric positive definite</b> (SPD):</p>
         <ul>
@@ -1482,7 +1482,7 @@ print("\\nตรวจ A·x =", [round(sum(A[i][j]*x[j] for j in range(n)), 6) f
       </Sect>
 
       {/* ═══════════ 🔲 · เมทริกซ์ไม่จัตุรัส ═══════════ */}
-      <Sect tag="🔲" title="เมทริกซ์ไม่จัตุรัส — สมการไม่เท่ากับตัวแปร (อาจารย์บอกว่าจะสอน 19 ส.ค.)" read="later" why="ยังไม่สอน กลับมาหลัง 19 ส.ค.">
+      <Sect tag="🔲" title="เมทริกซ์ไม่จัตุรัส — สมการไม่เท่ากับตัวแปร" read="must" min={15}>
         <Callout kind="warn" title="⚠︎ หมวดนี้ยังไม่ได้เรียน — เตรียมไว้ล่วงหน้า">
           <p style={{margin:0}}>ในคาบ 8 ส.ค. อาจารย์พูดถึงเรื่องนี้ไว้แต่ยังไม่ได้สอน: <i>“ถ้าเป็น 4 คูณ 5 เราจะไปใช้ Gauss Eliminate … ตอนที่คุณเรียน Gauss Eliminate คุณจะเรียนแค่ matrix เท่ากัน <b>แต่เวอร์ชันนี้คุณจะเรียน matrix ที่มันไม่เท่ากันด้วย</b>”</i> ⇒ เนื้อหาหมวดนี้ผมเตรียมจากหลักการมาตรฐาน <b>ยังไม่ได้ยืนยันกับที่อาจารย์สอนจริง</b> — พอเรียนวันที่ 19 แล้วจะมาปรับให้ตรง</p>
         </Callout>
