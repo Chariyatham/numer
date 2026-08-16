@@ -235,7 +235,7 @@ const INT_CARDS = [
 // ────────── ชุดที่ 3 · Differentiation ──────────
 const DIF_CARDS = [
   { id: "dt1", q: "⭐ ตารางชุด “ธรรมดา” O(h) — ครบ f′ ถึง f⁗ (12 สูตร)",
-    hint: "สังเกตสัมประสิทธิ์เป็นสามเหลี่ยมปาสกาลสลับเครื่องหมาย",
+    hint: "⚠︎ ท่องจริงแค่ 2 แถวบน (f′, f″) — แถว f‴/f⁗ แค่รู้ว่ามี",
     a: <><NumTable
         headers={["อนุพันธ์", "Forward", "Backward", "Central"]}
         rows={[
@@ -252,7 +252,7 @@ const DIF_CARDS = [
         </ul>
       </Callout></> },
   { id: "dt2", q: "⭐ ตารางชุด “ละเอียด” — ครบ f′ ถึง f⁗ (อีก 12 สูตร)",
-    hint: "โจทย์เขียน O(h²) = สั่งให้ใช้ตารางนี้",
+    hint: "⚠︎ ท่องจริงแค่ 2 แถวบน · โจทย์เขียน O(h²) = สั่งให้ใช้ตารางนี้",
     a: <><NumTable
         headers={["อนุพันธ์", "Forward O(h²)", "Backward O(h²)", "Central O(h⁴)"]}
         rows={[
@@ -463,8 +463,22 @@ function MemorizeLesson() {
       <Deck id="int" title="ชุดที่ 2 · Integration — 4 สูตร"
         subtitle="บทที่อาจารย์บอกเองว่าง่ายที่สุด ⇒ ห้ามพลาด" cards={INT_CARDS}/>
 
-      <Deck id="dif" title="ชุดที่ 3 · Differentiation — ตารางสูตร"
-        subtitle="ไม่ต้องท่องครบ 24 สูตร — ท่อง 7 ใบนี้แล้วไล่เอาเองได้" cards={DIF_CARDS}/>
+      <Callout kind="warn" title="⚠︎ ชุด Differentiation — ท่องจริงแค่ 2 แถว ไม่ใช่ 24 สูตร">
+        <p style={{margin:"0 0 6px"}}>ไล่ดูแบบฝึกหัดกับการบ้านจริงแล้วพบว่า:</p>
+        <NumTable
+          headers={["ถามอะไร", "อยู่ในใบไหน", "ต้องท่องมั้ย"]}
+          rows={[
+            [<b>f′ · forward/backward O(h) · central O(h²)</b>, "แบบฝึกหัด 2 ข้อ 1–2", "🔴 ท่องให้ขึ้นใจ"],
+            [<b>f″ · forward/backward O(h²) · central O(h⁴)</b>, "การบ้าน 3 ข้อ 2", "🔴 ท่องให้ขึ้นใจ"],
+            [<span>พิสูจน์ว่าทำไม backward เป็น O(h) · central เป็น O(h²)</span>, "แบบฝึกหัด 2 ข้อ 3", "🔴 ดูใบ Taylor"],
+            ["f‴ และ f⁗", <b>ไม่เคยถูกถามเลย</b>, "⬜ แค่รู้ว่ามีในตาราง"],
+          ]}
+        />
+        <p style={{margin:"8px 0 0"}}>⇒ ในตาราง 2 ใบข้างล่าง <b>ท่องแค่ 2 แถวบน (f′ กับ f″)</b> · แถว f‴/f⁗ เก็บไว้เผื่อเจอ แต่<b>อย่าเสียเวลาท่อง</b></p>
+      </Callout>
+
+      <Deck id="dif" title="ชุดที่ 3 · Differentiation — เน้น f′ กับ f″"
+        subtitle="ตาราง 2 ใบแรกมีครบ 24 สูตร แต่ท่องจริงแค่ 2 แถวบนของแต่ละตาราง" cards={DIF_CARDS}/>
 
       <Deck id="root" title="ชุดที่ 4 · Root Finding — 6 วิธี + กติกาเดินตาราง"
         subtitle="บทที่ใหญ่ที่สุดและมีวิธีเยอะสุด — ใบที่ 6, 7, 8 คือกติกาที่ทำให้ตารางไม่หลุด" cards={ROOT_CARDS}/>
