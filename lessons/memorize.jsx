@@ -374,18 +374,6 @@ const LIN_CARDS = [
         <p style={{margin:"6px 0 4px"}}><b>② Back substitution</b> ไล่จากล่างขึ้นบน</p>
         <MB>{`x_i=\\frac{b_i-\\sum_{j>i}a_{ij}x_j}{a_{ii}}`}</MB>
         <p style={{margin:0}}>ตรวจฟรี: <b>ผลคูณตัวหลัก = det A</b></p></> },
-  { id: "l5", q: "ทั้ง 6 วิธีบนระบบเดียวกัน — ของแถมที่ทำให้ประหยัดแรง ⭐",
-    hint: "ถ้าข้อสอบสั่งวิธีที่เราไม่แม่น ใบนี้ช่วยได้",
-    a: <>
-      <p style={{margin:"0 0 6px"}}>ระบบตัวอย่างในบท: <M>{`-2x_1+3x_2+x_3=9,\ 3x_1+4x_2-5x_3=0,\ x_1-2x_2+x_3=-4`}</M> ⇒ <b>ทุกวิธีลงที่ <M>{`(-1,\,2,\,1)`}</M> เหมือนกันหมด</b></p>
-      <ul style={{margin:0, paddingLeft:18, lineHeight:1.8}}>
-        <li><b>ทำ Gauss เสร็จ = ได้ LU ฟรี</b> — <M>L</M> คือตัวคูณ <M>{`m_{ij}`}</M> ที่ใช้กำจัด · <M>U</M> คือเมทริกซ์สามเหลี่ยมบนที่ได้ตอนจบ</li>
-        <li><b>ผลคูณตัวหลักหลัง Gauss = det A</b> ⇒ เอาไปตรวจข้อ Cramer ได้ฟรี</li>
-        <li><b>Gauss-Jordan = Gauss ที่ทำต่อ</b> จนได้ <M>I</M> ⇒ อ่านคำตอบจากคอลัมน์ขวาเลย ไม่ต้อง back-substitution</li>
-        <li><b>Matrix Inversion = Gauss-Jordan บน <M>{`[A\,|\,I]`}</M></b> ⇒ ทุกช่องของ <M>{`A^{-1}`}</M> มีตัวส่วนเป็น det A</li>
-      </ul>
-      <p style={{margin:"6px 0 0"}}>⇒ <b>จริง ๆ ต้องแม่นแค่ Gauss วิธีเดียว</b> อีก 3 วิธีต่อยอดจากมันหมด</p>
-    </> },
   { id: "l4", q: "เมทริกซ์ไม่จัตุรัส (สมการ ≠ ตัวแปร) → อ่านผลยังไง",
     a: <NumTable
         headers={["แถวสุดท้ายหลังทำ Gauss", "แปลว่า"]}
@@ -450,7 +438,7 @@ function MemorizeLesson() {
             { x: "สูตร 4 บท", w: 50 },
             { x: "กฎ + ค่ากดเครื่อง", w: 20 },
           ],
-          result: "37",
+          result: "36",
           note: "ใบทั้งหมด — ท่องวันละ 10–15 นาที ทุกวันจนถึงวันสอบ",
         }}
         meta={["การ์ดพลิก", "กรองเฉพาะที่ยังไม่ได้", "จำสถานะไว้ในเครื่อง", "โค้ดเต็มไม่ใช่แค่โครง"]}
@@ -464,11 +452,11 @@ function MemorizeLesson() {
             ["2 · Integration", "6 ใบ", "สรุป Final น.20–21 (ปีนี้ย้ายมาเป็นบทแรก)"],
             ["3 · Differentiation", "6 ใบ", "สรุป Final น.22–25 · ตาราง 24 สูตรครบตามที่อาจารย์นับ"],
             ["4 · Root Finding", "10 ใบ", "ติว mid น.1–7 (graphical → secant + Taylor)"],
-            ["5 · Linear", "5 ใบ", "อาจารย์บอกเองว่าออกถึง Cramer + Gauss (เท่ากัน/ไม่เท่ากัน) เท่านั้น"],
+            ["5 · Linear", "4 ใบ", "อาจารย์บอกเองว่าออกถึง Cramer + Gauss (เท่ากัน/ไม่เท่ากัน) เท่านั้น"],
             ["6 · กฎห้องสอบ", "4 ใบ", "ถอดจากไฟล์เสียงคาบ 5 + 8 ส.ค."],
           ]}
         />
-        <p style={{margin:"8px 0 0", fontSize:'0.84rem'}}><b>ตัดออกแล้ว:</b> Gauss-Jordan · Matrix Inversion · LU · Cholesky (อาจารย์บอกว่าออกถึงแค่ Cramer/Gauss) · Jacobi · Gauss-Seidel · Conjugate Gradient · Interpolation · Spline · Regression · Romberg · Gauss-Legendre · Richardson — ทั้งหมดอยู่ใน “สรุป Final” ส่วนที่เป็น<b>เนื้อหาหลังมิดเทอม</b> หรือไม่ปรากฏในไฟล์เสียงเลย</p>
+        <p style={{margin:"8px 0 0", fontSize:'0.84rem'}}><b>ตัดออกแล้ว:</b> Gauss-Jordan · Matrix Inversion · LU · Cholesky (อาจารย์บอกว่าออกถึงแค่ Cramer/Gauss — รวมใบ “ทั้ง 6 วิธีบนระบบเดียวกัน” ที่ตัดออก 16 ส.ค.) · Jacobi · Gauss-Seidel · Conjugate Gradient · Interpolation · Spline · Regression · Romberg · Gauss-Legendre · Richardson — ทั้งหมดอยู่ใน “สรุป Final” ส่วนที่เป็น<b>เนื้อหาหลังมิดเทอม</b> หรือไม่ปรากฏในไฟล์เสียงเลย</p>
       </Callout>
 
       <Callout kind="tip" title="วิธีใช้ให้ได้ผลจริง — อย่าแค่ “อ่านผ่าน”">
