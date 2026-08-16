@@ -9,37 +9,33 @@ const smoothScrollTo = (el) => {
 };
 
 const CHAPTERS = [
-  { group: "เริ่มต้น", items: [
-    { id: "intro", num: "00", title: "ปฐมนิเทศ · How to use", comp: "IntroLesson" },
-    { id: "plan", num: "🗓", title: "แผนเตรียมสอบ", comp: "PlanLesson" },
+  { group: "① เริ่มที่นี่", items: [
+    { id: "plan", num: "🗓", title: "แผนเตรียมสอบ — ทำอะไรวันไหน", comp: "PlanLesson" },
+    { id: "intro", num: "00", title: "ปฐมนิเทศ · วิธีใช้เว็บนี้", comp: "IntroLesson" },
+  ]},
+  { group: "② อ่าน 4 บทนี้ (ตามลำดับ)", items: [
+    { id: "integ", num: "1", title: "Integration", comp: "IntegrationLesson" },
+    { id: "diff", num: "2", title: "Differentiation", comp: "DifferentiationLesson" },
+    { id: "root", num: "3", title: "Root Finding", comp: "RootFindingLesson" },
+    { id: "linear", num: "4", title: "Linear Systems (Cramer · Gauss)", comp: "LinearSystemsLesson" },
+  ]},
+  { group: "③ ท่องให้ขึ้นใจ", items: [
     { id: "memo", num: "🧠", title: "ท่องก่อนสอบ · ทุกอย่างหน้าเดียว", comp: "MemorizeLesson" },
-    { id: "map", num: "🗺", title: "แผนที่คอนเซปต์ทั้งคอร์ส", comp: "ConceptMapLesson" },
+    { id: "cheat", num: "⚡", title: "Cheat Sheet · ทวนคืนก่อนสอบ", comp: "CheatLesson" },
+    { id: "calc", num: "📟", title: "Calculator Master · fx-991CW", comp: "CalculatorLesson" },
   ]},
-  { group: "Part 1 · แคลคูลัส (บทแรกปีนี้)", items: [
-    { id: "integ", num: "01", title: "Integration", comp: "IntegrationLesson" },
-    { id: "diff", num: "02", title: "Differentiation", comp: "DifferentiationLesson" },
-  ]},
-  { group: "Part 2 · สมการไม่เชิงเส้น", items: [
-    { id: "root", num: "03", title: "Root Finding", comp: "RootFindingLesson" },
-  ]},
-  { group: "Part 3 · ระบบสมการเชิงเส้น", items: [
-    { id: "linear", num: "04", title: "Gauss & Iteration", comp: "LinearSystemsLesson" },
-    { id: "conjugate", num: "05", title: "Conjugate Gradient", comp: "ConjugateLesson" },
-  ]},
-  { group: "Part 4 · การประมาณค่า", items: [
-    { id: "interp", num: "06", title: "Interpolation", comp: "InterpolationLesson" },
-    { id: "spline", num: "07", title: "Spline Interpolation", comp: "SplineLesson" },
-    { id: "regression", num: "08", title: "Least-Squares Regression", comp: "RegressionLesson" },
-  ]},
-  { group: "เครื่องมือ", items: [
-    { id: "calc", num: "★", title: "Calculator Master · fx-991CW", comp: "CalculatorLesson" },
-    { id: "cheat", num: "⚡", title: "Cheat Sheet & Speed Tricks", comp: "CheatLesson" },
-  ]},
-  { group: "ฝึกฝน", items: [
-    { id: "midterm", num: "✸", title: "ห้องสอบ · Midterm", comp: "MidtermLesson" },
-    { id: "code", num: "⌨", title: "เขียนโค้ดจากหัว", comp: "CodeDrillLesson" },
+  { group: "④ ซ้อมทำข้อสอบ", items: [
+    { id: "code", num: "⌨", title: "เขียนโค้ดจากหัว · 5 โครง", comp: "CodeDrillLesson" },
+    { id: "midterm", num: "✸", title: "ห้องสอบ · สุ่มชุด + สมุดพลาด", comp: "MidtermLesson" },
     { id: "problems", num: "★", title: "Problem Bank · 40+ ข้อ", comp: "ProblemsLesson" },
-    { id: "exam", num: "✸", title: "Mock Final Exam", comp: "ExamLesson" },
+  ]},
+  { group: "นอกขอบเขต midterm", items: [
+    { id: "map", num: "🗺", title: "แผนที่คอนเซปต์ทั้งคอร์ส", comp: "ConceptMapLesson" },
+    { id: "conjugate", num: "—", title: "Conjugate Gradient", comp: "ConjugateLesson" },
+    { id: "interp", num: "—", title: "Interpolation", comp: "InterpolationLesson" },
+    { id: "spline", num: "—", title: "Spline Interpolation", comp: "SplineLesson" },
+    { id: "regression", num: "—", title: "Least-Squares Regression", comp: "RegressionLesson" },
+    { id: "exam", num: "—", title: "Mock Final Exam", comp: "ExamLesson" },
   ]},
 ];
 
