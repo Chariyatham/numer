@@ -25,7 +25,7 @@ const CHAPTERS = [
     { id: "calc", num: "📟", title: "Calculator Master · fx-991CW", comp: "CalculatorLesson" },
   ]},
   { group: "④ ซ้อมทำข้อสอบ", items: [
-    { id: "code", num: "⌨", title: "เขียนโค้ดจากหัว · 5 โครง", comp: "CodeDrillLesson" },
+    { id: "code", num: "⌨", title: "เขียนโค้ดจากหัว · 6 โครง", comp: "CodeDrillLesson" },
     { id: "midterm", num: "✸", title: "ห้องสอบ · สุ่มชุด + สมุดพลาด", comp: "MidtermLesson" },
     { id: "problems", num: "★", title: "Problem Bank · 40+ ข้อ", comp: "ProblemsLesson" },
   ]},

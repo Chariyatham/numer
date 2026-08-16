@@ -689,7 +689,7 @@ function FastPath({ minutes, must, skip, check }) {
           )}
         </div>
       </details>
-      <p style={{margin:"10px 0 4px"}}><b>อ่านป้ายเขียวครบแล้ว เช็คตัวเอง 3 ข้อนี้ก่อนไปบทถัดไป:</b></p>
+      <p style={{margin:"10px 0 4px"}}><b>อ่านป้ายเขียวครบแล้ว เช็คตัวเอง {check.length} ข้อนี้ก่อนไปบทถัดไป:</b></p>
       <ul style={{margin:0, paddingLeft:18, fontSize:'0.84rem'}}>
         {check.map((c, i) => <li key={i}>{c}</li>)}
       </ul>

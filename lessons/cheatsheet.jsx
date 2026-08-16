@@ -7,11 +7,12 @@ function CheatLesson() {
         kicker="⚡ · Speed Tricks"
         title="Cheat Sheet & Speed Tricks"
         lead="สรุปสูตรครบทุกบทในหน้าเดียว + Decision tree เลือก method + กับดักที่ออกข้อสอบบ่อย"
-        meta={["8 cheat sheets", "Decision tree", "Top 20 mistakes", "Print-ready"]}
+        meta={["4 บทที่ออกสอบอยู่บนสุด", "Decision tree", "Top 22 mistakes", "Print-ready"]}
       />
 
-      <Callout kind="tip" title="วิธีใช้">
-        <p>กด <Key>Ctrl/Cmd</Key> + <Key>P</Key> เพื่อพิมพ์ออกมาทบทวนก่อนสอบ (CSS ปรับให้อ่านได้บนกระดาษ)</p>
+      <Callout kind="good" title="📍 เรียงใหม่แล้ว — 4 บทที่ออกมิดเทอมอยู่บนสุด (01–04)">
+        <p style={{margin:"0 0 6px"}}><b>01 Integration → 02 Differentiation → 03 Root Finding → 04 Linear</b> เรียงตามลำดับเดียวกับเมนูซ้ายเป๊ะ · ตามด้วยกับดัก + speed tricks + เช็คลิสต์ก่อนเข้าห้องสอบ · <b>ของนอกขอบเขตถูกดันลงไปท้ายหน้าหมดแล้ว</b> (เดิมแทรกอยู่ตรงกลางทำให้ต้องเลื่อนผ่าน)</p>
+        <p style={{margin:0}}>กด <Key>Ctrl/Cmd</Key> + <Key>P</Key> เพื่อพิมพ์ออกมาทบทวนก่อนสอบ (CSS ปรับให้อ่านได้บนกระดาษ) · <span style={{color:"var(--yellow)"}}>แต่<b>เอากระดาษเข้าห้องสอบไม่ได้</b> — พิมพ์ไว้ทวนก่อนเข้าเท่านั้น</span></p>
       </Callout>
 
       {/* DECISION TREE */}
@@ -19,142 +20,7 @@ function CheatLesson() {
         <DecisionTree/>
       </Sect>
 
-      {/* CHEAT SHEET 1 — ROOT FINDING */}
-      <Sect tag="01" title="Root Finding · Cheat Sheet">
-        <div className="cheat-card">
-          <h4>สูตรหลัก</h4>
-          <NumTable headers={["Method","สูตร", "Convergence"]} rows={[
-            ["Bisection", "xₘ = (xₗ + xᵣ)/2", "Linear (1/2)"],
-            ["False Position", "xₘ = xᵣ − f(xᵣ)(xₗ−xᵣ)/(f(xₗ)−f(xᵣ))", "Super-linear"],
-            ["One-point", "x_{n+1} = g(x_n)", "Linear ถ้า |g'|<1"],
-            ["Newton", "x_{n+1} = x_n − f(x_n)/f'(x_n)", "Quadratic ≈ 2x"],
-            ["Secant", "x_{n+1} = x_n − f(x_n)(x_{n-1}−x_n)/(f(x_{n-1})−f(x_n))", "Super-linear ≈ 1.618"],
-          ]}/>
-          <h4>Error สำหรับทุก method</h4>
-          <MB>{`\\varepsilon_a = \\left|\\frac{x_{\\text{new}} - x_{\\text{old}}}{x_{\\text{new}}}\\right| \\times 100\\%`}</MB>
-          <h4>เลือก method</h4>
-          <ul>
-            <li>โจทย์ให้ <b>ช่วง [a, b]</b> + <code>f(a)·f(b) &lt; 0</code> → Bisection / False Position</li>
-            <li>โจทย์ให้ <b>x₀ + f'(x)</b> → Newton</li>
-            <li>โจทย์ให้ <b>x₀, x₁</b> สองจุด → Secant</li>
-            <li>โจทย์ให้ <b>x = g(x)</b> → One-point</li>
-            <li>โจทย์ <b>scan ทีละ...</b> → Graphical</li>
-          </ul>
-        </div>
-      </Sect>
-
-      {/* CHEAT SHEET 2 — LINEAR SYSTEMS */}
-      <Sect tag="02" title="Linear Systems · Cheat Sheet">
-        <div className="cheat-card">
-          <h4>Cramer’s Rule <span className="tag green">สอน 8 ส.ค. · ออกแน่</span></h4>
-          <MB>{`x_i=\\frac{\\det A_i}{\\det A}\\quad\\text{โดย } A_i = A \\text{ ที่แทนคอลัมน์ที่ } i \\text{ ด้วย } b`}</MB>
-          <ul>
-            <li><b>ใช้ได้แค่ 2×2 กับ 3×3</b> (อาจารย์บอกเอง “4×4 ไม่ทำ · n×n ไม่ทำ”) · เมทริกซ์<b>ต้องจัตุรัส</b> ไม่งั้นหา det ไม่ได้ → ใช้ Gauss แทน</li>
-            <li><M>{`\\det A = 0`}</M> ⇒ หยุด ไม่มีคำตอบเดียว</li>
-            <li>det 2×2: <M>{`ad-bc`}</M> · det 3×3: กระจายแถวแรก <M>{`a_{11}M_{11}-a_{12}M_{12}+a_{13}M_{13}`}</M> (เครื่องหมาย + − +)</li>
-            <li><b>ใช้เครื่องคิดเลขหา det ได้</b> — แต่ต้องเขียนสูตร + เมทริกซ์ <M>{`A_i`}</M> ให้เห็น ไม่งั้นข้อ “จงแสดงวิธีทำ” ได้ 0</li>
-            <li>ตรวจฟรี: <M>{`\\det A = `}</M> ผลคูณตัวหลักหลังทำ Gauss</li>
-          </ul>
-
-          <h4>Gauss Elimination</h4>
-          <ol>
-            <li>Forward: <M>{`R_i \\leftarrow R_i - (a_{ik}/a_{kk}) R_k`}</M> ทำทุก i &gt; k</li>
-            <li>Back-sub: <M>{`x_i = (b_i - \\sum_{j>i} a_{ij}x_j)/a_{ii}`}</M></li>
-          </ol>
-
-          <h4>Jacobi (ใช้ค่าเก่าทั้งหมด)</h4>
-          <MB>{`x_i^{(k+1)} = \\frac{1}{a_{ii}}\\left(b_i - \\sum_{j \\neq i} a_{ij} x_j^{(k)}\\right)`}</MB>
-
-          <h4>Gauss-Seidel (ใช้ค่าใหม่ทันที — เร็วกว่า ~2 เท่า)</h4>
-          <MB>{`x_i^{(k+1)} = \\frac{1}{a_{ii}}\\left(b_i - \\sum_{j<i} a_{ij} x_j^{(k+1)} - \\sum_{j>i} a_{ij} x_j^{(k)}\\right)`}</MB>
-
-          <h4>เงื่อนไขลู่เข้า</h4>
-          <p>Diagonal dominance: <M>{`|a_{ii}| \\geq \\sum_{j \\neq i} |a_{ij}|`}</M></p>
-        </div>
-      </Sect>
-
-      {/* CHEAT SHEET 3 — CG */}
-      <Sect tag="03" title="Conjugate Gradient · Cheat Sheet">
-        <div className="cheat-card">
-          <h4>Initial (k = 0)</h4>
-          <MB>{`r^{(0)} = Ax^{(0)} - b, \\quad d^{(0)} = -r^{(0)}`}</MB>
-
-          <h4>วน loop</h4>
-          <MB>{`\\alpha_k = -\\frac{r^T d}{d^T A d}, \\quad x^{(k+1)} = x^{(k)} + \\alpha_k d^{(k)}`}</MB>
-          <MB>{`r^{(k+1)} = Ax^{(k+1)} - b, \\quad \\beta_k = \\frac{r^{(k+1) T} A d^{(k)}}{d^{(k) T} A d^{(k)}}`}</MB>
-          <MB>{`d^{(k+1)} = -r^{(k+1)} + \\beta_k d^{(k)}`}</MB>
-
-          <p><b>ต้องการ:</b> A สมมาตร + positive definite | <b>หยุดเมื่อ:</b> <M>{`\\|r\\| < \\text{tol}`}</M> | <b>ลู่เข้าใน:</b> n iterations</p>
-        </div>
-      </Sect>
-
-      {/* CHEAT SHEET 4 — INTERP */}
-      <Sect tag="04" title="Interpolation · Cheat Sheet">
-        <div className="cheat-card">
-          <h4>Newton's Divided Difference</h4>
-          <MB>{`f(x) = c_0 + c_1(x-x_0) + c_2(x-x_0)(x-x_1) + \\cdots`}</MB>
-          <p>ค่าสัมประสิทธิ์ <M>c_i</M> อ่านจาก<b>คอลัมน์บนสุด</b>ของตาราง DD</p>
-
-          <h4>Lagrange</h4>
-          <MB>{`f(x) = \\sum_i L_i(x) y_i, \\quad L_i(x) = \\prod_{j \\neq i} \\frac{x - x_j}{x_i - x_j}`}</MB>
-          <p><b>ทริค:</b> "ตัวบน = x ตรงข้าม, ตัวล่าง = ตัวเรา"</p>
-
-          <h4>n+1 จุด → polynomial degree n สูงสุด</h4>
-          <ul>
-            <li>2 จุด → linear</li>
-            <li>3 จุด → quadratic</li>
-            <li>n+1 จุด → degree n (มี polynomial เดียว — Newton = Lagrange)</li>
-          </ul>
-        </div>
-      </Sect>
-
-      {/* CHEAT SHEET 5 — SPLINE */}
-      <Sect tag="05" title="Spline · Cheat Sheet">
-        <div className="cheat-card">
-          <h4>Linear Spline</h4>
-          <MB>{`f_i(x) = y_i + m_i(x - x_i), \\quad m_i = \\frac{y_{i+1} - y_i}{x_{i+1} - x_i}`}</MB>
-
-          <h4>Quadratic Spline (n ช่วง → 3n unknowns)</h4>
-          <p>เงื่อนไข: ผ่านจุด (2n) + slope ต่อเนื่อง (n−1) + ปิด a₁ = 0 (1) = 3n สมการ</p>
-
-          <h4>Cubic Spline (n ช่วง → 4n unknowns)</h4>
-          <p>เงื่อนไข: ผ่านจุด (2n) + slope (n−1) + curvature (n−1) + Natural f''(x₀) = f''(xₙ) = 0 (2) = 4n สมการ</p>
-
-          <Callout title="ทริคจำ continuity">
-            <ul>
-              <li>Linear: C⁰ (ต่อเนื่องค่าเท่านั้น)</li>
-              <li>Quadratic: C¹ (ค่า + slope)</li>
-              <li>Cubic: C² (ค่า + slope + curvature)</li>
-            </ul>
-          </Callout>
-        </div>
-      </Sect>
-
-      {/* CHEAT SHEET 6 — REGRESSION */}
-      <Sect tag="06" title="Regression · Cheat Sheet">
-        <div className="cheat-card">
-          <h4>Linear: <M>{`y = a_0 + a_1 x`}</M></h4>
-          <MB>{`a_1 = \\frac{n\\sum xy - \\sum x \\sum y}{n\\sum x^2 - (\\sum x)^2}, \\quad a_0 = \\frac{\\sum y - a_1 \\sum x}{n}`}</MB>
-
-          <h4>Polynomial degree m</h4>
-          <p>Normal Equations: matrix (m+1)×(m+1)</p>
-          <MB>{`A_{ij} = \\sum x^{i+j-2},\\quad b_i = \\sum x^{i-1} y`}</MB>
-
-          <h4>R² (coefficient of determination)</h4>
-          <MB>{`R^2 = 1 - \\frac{SS_{\\text{res}}}{SS_{\\text{tot}}} = 1 - \\frac{\\sum(y_i - \\hat y_i)^2}{\\sum(y_i - \\bar y)^2}`}</MB>
-          <p>R² ใกล้ 1 → fit ดี, ใกล้ 0 → fit แย่</p>
-
-          <h4>Linearization tricks</h4>
-          <ul>
-            <li><M>{`y = a e^{bx}`}</M> → <M>{`\\ln y = \\ln a + bx`}</M> (linear in (x, ln y))</li>
-            <li><M>{`y = a x^b`}</M> → <M>{`\\ln y = \\ln a + b \\ln x`}</M> (linear in (ln x, ln y))</li>
-            <li><M>{`y = 1/(a + bx)`}</M> → <M>{`1/y = a + bx`}</M></li>
-          </ul>
-        </div>
-      </Sect>
-
-      {/* CHEAT SHEET 7 — INTEG */}
-      <Sect tag="07" title="Integration · Cheat Sheet">
+      <Sect tag="01" title="Integration · Cheat Sheet">
         <div className="cheat-card">
           <h4>Trapezoidal (single)</h4>
           <MB>{`I = \\frac{h}{2}[f(a) + f(b)], \\quad h = b - a`}</MB>
@@ -178,8 +44,7 @@ function CheatLesson() {
         </div>
       </Sect>
 
-      {/* CHEAT SHEET 8 — DIFF */}
-      <Sect tag="08" title="Differentiation · Cheat Sheet">
+      <Sect tag="02" title="Differentiation · Cheat Sheet">
         <div className="cheat-card">
           <h4>First Derivative · ชุดธรรมดา</h4>
           <table className="tbl mono">
@@ -221,7 +86,66 @@ function CheatLesson() {
         </div>
       </Sect>
 
-      {/* COMMON MISTAKES */}
+      <Sect tag="03" title="Root Finding · Cheat Sheet">
+        <div className="cheat-card">
+          <h4>สูตรหลัก</h4>
+          <NumTable headers={["Method","สูตร", "Convergence"]} rows={[
+            ["Bisection", "xₘ = (xₗ + xᵣ)/2", "Linear (1/2)"],
+            ["False Position", "xₘ = xᵣ − f(xᵣ)(xₗ−xᵣ)/(f(xₗ)−f(xᵣ))", "Super-linear"],
+            ["One-point", "x_{n+1} = g(x_n)", "Linear ถ้า |g'|<1"],
+            ["Newton", "x_{n+1} = x_n − f(x_n)/f'(x_n)", "Quadratic ≈ 2x"],
+            ["Secant", "x_{n+1} = x_n − f(x_n)(x_{n-1}−x_n)/(f(x_{n-1})−f(x_n))", "Super-linear ≈ 1.618"],
+          ]}/>
+          <h4>Error สำหรับทุก method</h4>
+          <MB>{`\\varepsilon_a = \\left|\\frac{x_{\\text{new}} - x_{\\text{old}}}{x_{\\text{new}}}\\right| \\times 100\\%`}</MB>
+          <h4>เลือก method</h4>
+          <ul>
+            <li>โจทย์ให้ <b>ช่วง [a, b]</b> + <code>f(a)·f(b) &lt; 0</code> → Bisection / False Position</li>
+            <li>โจทย์ให้ <b>x₀ + f'(x)</b> → Newton</li>
+            <li>โจทย์ให้ <b>x₀, x₁</b> สองจุด → Secant</li>
+            <li>โจทย์ให้ <b>x = g(x)</b> → One-point</li>
+            <li>โจทย์ <b>scan ทีละ...</b> → Graphical</li>
+          </ul>
+        </div>
+      </Sect>
+
+      <Sect tag="04" title="Linear Systems · Cheat Sheet">
+        <div className="cheat-card">
+          <h4>Cramer’s Rule <span className="tag green">สอน 8 ส.ค. · ออกแน่</span></h4>
+          <MB>{`x_i=\\frac{\\det A_i}{\\det A}\\quad\\text{โดย } A_i = A \\text{ ที่แทนคอลัมน์ที่ } i \\text{ ด้วย } b`}</MB>
+          <ul>
+            <li><b>ใช้ได้แค่ 2×2 กับ 3×3</b> (อาจารย์บอกเอง “4×4 ไม่ทำ · n×n ไม่ทำ”) · เมทริกซ์<b>ต้องจัตุรัส</b> ไม่งั้นหา det ไม่ได้ → ใช้ Gauss แทน</li>
+            <li><M>{`\\det A = 0`}</M> ⇒ หยุด ไม่มีคำตอบเดียว</li>
+            <li>det 2×2: <M>{`ad-bc`}</M> · det 3×3: กระจายแถวแรก <M>{`a_{11}M_{11}-a_{12}M_{12}+a_{13}M_{13}`}</M> (เครื่องหมาย + − +)</li>
+            <li><b>ใช้เครื่องคิดเลขหา det ได้</b> — แต่ต้องเขียนสูตร + เมทริกซ์ <M>{`A_i`}</M> ให้เห็น ไม่งั้นข้อ “จงแสดงวิธีทำ” ได้ 0</li>
+            <li>ตรวจฟรี: <M>{`\\det A = `}</M> ผลคูณตัวหลักหลังทำ Gauss</li>
+          </ul>
+
+          <h4>Gauss Elimination <span className="tag green">อาจารย์บอกเอง · ออกแน่</span></h4>
+          <ol>
+            <li>Forward: <M>{`R_i \\leftarrow R_i - (a_{ik}/a_{kk}) R_k`}</M> ทำทุก i &gt; k → ได้ Upper Triangular</li>
+            <li>Back-sub: <M>{`x_i = (b_i - \\sum_{j>i} a_{ij}x_j)/a_{ii}`}</M> ไล่จากแถวล่างขึ้นบน</li>
+          </ol>
+          <ul>
+            <li><b>pivot = 0 ต้องสลับแถวก่อน</b> ไม่งั้นหารด้วยศูนย์</li>
+            <li><M>{`\\det A=(-1)^{k}\\times`}</M> ผลคูณตัวหลัก · <M>k</M> = จำนวนครั้งที่สลับแถว — <b>ลืม <M>{`(-1)^k`}</M> = เครื่องหมายผิด</b></li>
+            <li>ใช้ได้ทุกขนาด <b>และเมทริกซ์ไม่จัตุรัส</b> ต่างจาก Cramer</li>
+            <li>โค้ด: จุดตายคือ <code>for j in range(k, <b>n+1</b>)</code> — ลืม +1 คอลัมน์ <M>b</M> ไม่อัปเดต</li>
+          </ul>
+
+          <h4>เมทริกซ์ไม่จัตุรัส (สมการ ≠ ตัวแปร) <span className="tag green">ออกแน่</span></h4>
+          <ul>
+            <li><b>สมการน้อยกว่าตัวแปร</b> → คำตอบไม่จำกัด ⇒ ตอบเป็นรูป parametric (ให้ตัวแปรอิสระ)</li>
+            <li><b>สมการมากกว่าตัวแปร</b> → มักไม่มีคำตอบ (ขัดกันเอง) ⇒ Gauss จะโผล่แถว <M>{`0=c`}</M> ที่ <M>{`c\\neq0`}</M></li>
+            <li>หา det ไม่ได้ ⇒ <b>Cramer / LU / Cholesky ใช้ไม่ได้ทั้งหมด</b> เหลือแต่ Gauss</li>
+          </ul>
+        </div>
+
+        <Callout kind="warn" title="ตัดออกจาก cheat sheet นี้แล้ว — อาจารย์บอกว่าไม่ออก">
+          <p style={{margin:0}}>Gauss-Jordan · Matrix Inversion · LU · Cholesky · <b>Jacobi · Gauss-Seidel</b> (สองตัวหลังเคยอยู่ตรงนี้ ย้ายออกแล้ว) — ทั้งหมดเป็นเนื้อหาหลังมิดเทอมหรือถูกตัดออกจากขอบเขต · สูตรเต็มยังอยู่ในบท <a href="#linear">Linear Systems</a> ถ้าอยากดู</p>
+        </Callout>
+      </Sect>
+
       <Sect tag="❌" title="Top 22 พลาดบ่อย — อย่าทำซ้ำ!">
         <div className="grid-2">
           <Callout kind="danger" title="Root Finding">
@@ -337,6 +261,88 @@ function CheatLesson() {
           <p style={{fontSize:'0.889rem', marginBottom:0}}>ขอให้สอบผ่านสบายเลยครับ 🎓✨</p>
         </Callout>
       </Sect>
+
+
+      <Callout kind="warn" title="⬇︎ ข้างล่างนี้ไม่ออกมิดเทอม — ข้ามได้ถ้าเหลือเวลาน้อย">
+        <p style={{margin:0}}>4 บทข้างบนคือขอบเขตมิดเทอมทั้งหมด · ที่เหลือ (Conjugate Gradient · Interpolation · Spline · Regression) เป็น<b>เนื้อหาหลังมิดเทอม</b> เก็บไว้ตอนเตรียมไฟนอล — <b>คืนวันที่ 19 ให้อ่านแค่ 4 บทบนเท่านั้น</b></p>
+      </Callout>
+
+      <Sect tag="—" title="Conjugate Gradient · Cheat Sheet">
+        <div className="cheat-card">
+          <h4>Initial (k = 0)</h4>
+          <MB>{`r^{(0)} = Ax^{(0)} - b, \\quad d^{(0)} = -r^{(0)}`}</MB>
+
+          <h4>วน loop</h4>
+          <MB>{`\\alpha_k = -\\frac{r^T d}{d^T A d}, \\quad x^{(k+1)} = x^{(k)} + \\alpha_k d^{(k)}`}</MB>
+          <MB>{`r^{(k+1)} = Ax^{(k+1)} - b, \\quad \\beta_k = \\frac{r^{(k+1) T} A d^{(k)}}{d^{(k) T} A d^{(k)}}`}</MB>
+          <MB>{`d^{(k+1)} = -r^{(k+1)} + \\beta_k d^{(k)}`}</MB>
+
+          <p><b>ต้องการ:</b> A สมมาตร + positive definite | <b>หยุดเมื่อ:</b> <M>{`\\|r\\| < \\text{tol}`}</M> | <b>ลู่เข้าใน:</b> n iterations</p>
+        </div>
+      </Sect>
+
+      <Sect tag="—" title="Interpolation · Cheat Sheet">
+        <div className="cheat-card">
+          <h4>Newton's Divided Difference</h4>
+          <MB>{`f(x) = c_0 + c_1(x-x_0) + c_2(x-x_0)(x-x_1) + \\cdots`}</MB>
+          <p>ค่าสัมประสิทธิ์ <M>c_i</M> อ่านจาก<b>คอลัมน์บนสุด</b>ของตาราง DD</p>
+
+          <h4>Lagrange</h4>
+          <MB>{`f(x) = \\sum_i L_i(x) y_i, \\quad L_i(x) = \\prod_{j \\neq i} \\frac{x - x_j}{x_i - x_j}`}</MB>
+          <p><b>ทริค:</b> "ตัวบน = x ตรงข้าม, ตัวล่าง = ตัวเรา"</p>
+
+          <h4>n+1 จุด → polynomial degree n สูงสุด</h4>
+          <ul>
+            <li>2 จุด → linear</li>
+            <li>3 จุด → quadratic</li>
+            <li>n+1 จุด → degree n (มี polynomial เดียว — Newton = Lagrange)</li>
+          </ul>
+        </div>
+      </Sect>
+
+      <Sect tag="—" title="Spline · Cheat Sheet">
+        <div className="cheat-card">
+          <h4>Linear Spline</h4>
+          <MB>{`f_i(x) = y_i + m_i(x - x_i), \\quad m_i = \\frac{y_{i+1} - y_i}{x_{i+1} - x_i}`}</MB>
+
+          <h4>Quadratic Spline (n ช่วง → 3n unknowns)</h4>
+          <p>เงื่อนไข: ผ่านจุด (2n) + slope ต่อเนื่อง (n−1) + ปิด a₁ = 0 (1) = 3n สมการ</p>
+
+          <h4>Cubic Spline (n ช่วง → 4n unknowns)</h4>
+          <p>เงื่อนไข: ผ่านจุด (2n) + slope (n−1) + curvature (n−1) + Natural f''(x₀) = f''(xₙ) = 0 (2) = 4n สมการ</p>
+
+          <Callout title="ทริคจำ continuity">
+            <ul>
+              <li>Linear: C⁰ (ต่อเนื่องค่าเท่านั้น)</li>
+              <li>Quadratic: C¹ (ค่า + slope)</li>
+              <li>Cubic: C² (ค่า + slope + curvature)</li>
+            </ul>
+          </Callout>
+        </div>
+      </Sect>
+
+      <Sect tag="—" title="Regression · Cheat Sheet">
+        <div className="cheat-card">
+          <h4>Linear: <M>{`y = a_0 + a_1 x`}</M></h4>
+          <MB>{`a_1 = \\frac{n\\sum xy - \\sum x \\sum y}{n\\sum x^2 - (\\sum x)^2}, \\quad a_0 = \\frac{\\sum y - a_1 \\sum x}{n}`}</MB>
+
+          <h4>Polynomial degree m</h4>
+          <p>Normal Equations: matrix (m+1)×(m+1)</p>
+          <MB>{`A_{ij} = \\sum x^{i+j-2},\\quad b_i = \\sum x^{i-1} y`}</MB>
+
+          <h4>R² (coefficient of determination)</h4>
+          <MB>{`R^2 = 1 - \\frac{SS_{\\text{res}}}{SS_{\\text{tot}}} = 1 - \\frac{\\sum(y_i - \\hat y_i)^2}{\\sum(y_i - \\bar y)^2}`}</MB>
+          <p>R² ใกล้ 1 → fit ดี, ใกล้ 0 → fit แย่</p>
+
+          <h4>Linearization tricks</h4>
+          <ul>
+            <li><M>{`y = a e^{bx}`}</M> → <M>{`\\ln y = \\ln a + bx`}</M> (linear in (x, ln y))</li>
+            <li><M>{`y = a x^b`}</M> → <M>{`\\ln y = \\ln a + b \\ln x`}</M> (linear in (ln x, ln y))</li>
+            <li><M>{`y = 1/(a + bx)`}</M> → <M>{`1/y = a + bx`}</M></li>
+          </ul>
+        </div>
+      </Sect>
+
 
       <style>{`
         .cheat-card {

@@ -470,7 +470,8 @@ print(f"R² = {R2:.4f}")`} height={300}/>
   },
 
   // ============ NEW: LU / Cramer / Cholesky / Inverse ============
-  { id: "L05", topic: "linear", diff: "medium", title: "Cramer's Rule 3×3",
+  // ⚠︎ id เดิมเป็น L05-L08 ซึ่งชนกับชุดบน ทำให้ React ทิ้งข้อไปเงียบ ๆ — เปลี่ยนเป็น L10-L13 แล้ว (16 ส.ค.)
+  { id: "L14", topic: "linear", diff: "medium", title: "Cramer's Rule 3×3 ⭐ ออกสอบ",
     q: <p>ใช้ Cramer's Rule แก้ <MB>{`\\begin{cases} 2x + y - z = 8 \\\\ -3x - y + 2z = -11 \\\\ -2x + y + 2z = -3 \\end{cases}`}</MB></p>,
     a: <div>
       <p>det(A) = 2(−1·2 − 2·1) − 1(−3·2 − 2·(−2)) + (−1)(−3·1 − (−1)(−2)) = 2(−4) − 1(−2) + (−1)(−5) = −8 + 2 + 5 = −1</p>
@@ -480,24 +481,25 @@ print(f"R² = {R2:.4f}")`} height={300}/>
       <p>คำตอบ: x = 2, y = 3, z = −1</p>
     </div>
   },
-  { id: "L06", topic: "linear", diff: "medium", title: "LU Decomposition (Doolittle)",
+  { id: "L11", topic: "linear", diff: "medium", title: "LU Decomposition (Doolittle) — ไม่ออกมิดเทอม",
     q: <p>แตก A เป็น LU ของ <MB>{`A = \\begin{pmatrix} 4 & 3 \\\\ 6 & 3 \\end{pmatrix}`}</MB> แล้วแก้ระบบ <M>{`Ax = (10, 12)^T`}</M></p>,
     a: <div>
       <p>L = [[1,0],[1.5,1]], U = [[4,3],[0,-1.5]]</p>
       <p>Ly = b → y = (10, -3)</p>
-      <p>Ux = y → x = (3.25, 2)</p>
-      <p>ตรวจ: 4(3.25) + 3(2) = 13 + 6 = 19? เช็คอีกครั้ง — แท้จริง 4·1.75 + 3·1 = 10 ✓</p>
+      <p>Ux = y → −1.5x₂ = −3 ⇒ x₂ = 2 · แล้ว 4x₁ + 3(2) = 10 ⇒ <b>x₁ = 1</b></p>
+      <p><b>คำตอบ: x = (1, 2)</b></p>
+      <p>ตรวจ: 4(1) + 3(2) = 10 ✓ · 6(1) + 3(2) = 12 ✓</p>
     </div>
   },
-  { id: "L07", topic: "linear", diff: "hard", title: "Cholesky Decomposition",
+  { id: "L12", topic: "linear", diff: "hard", title: "Cholesky Decomposition — ไม่ออกมิดเทอม",
     q: <p>ตรวจว่า matrix <MB>{`A = \\begin{pmatrix} 4 & 12 & -16 \\\\ 12 & 37 & -43 \\\\ -16 & -43 & 98 \\end{pmatrix}`}</MB> เป็น SPD หรือไม่ แล้วหา Cholesky factor L</p>,
     a: <div>
       <p>ตรวจ symmetry ✓ ตรวจ leading mins: 4, 4·37−144=4, det = 36 — ทั้งหมด &gt;0 → SPD ✓</p>
       <p>L = [[2,0,0],[6,1,0],[-8,5,3]]</p>
-      <p>ตรวจ LLᵀ = A: L[2,2] = 0·0 + 0·0 + 3·3 = 9? ผิด — A[2,2]=37 → L[2,2]·L[2,2] = 1 (ตำแหน่ง L[1][1]) → ใช่ ✓</p>
+      <p>ตรวจ LLᵀ = A ทีละช่อง: (2)(2)=4 ✓ · (6)(2)=12 ✓ · 6²+1²=37 ✓ · (−8)(2)=−16 ✓ · (−8)(6)+(5)(1)=−43 ✓ · (−8)²+5²+3²=98 ✓</p>
     </div>
   },
-  { id: "L08", topic: "linear", diff: "hard", title: "Matrix Inversion",
+  { id: "L13", topic: "linear", diff: "hard", title: "Matrix Inversion — ไม่ออกมิดเทอม",
     q: <p>หา A⁻¹ ของ <MB>{`A = \\begin{pmatrix} 1 & 2 \\\\ 3 & 7 \\end{pmatrix}`}</MB> โดย Gauss-Jordan บน [A | I]</p>,
     a: <div>
       <p>[1 2 | 1 0; 3 7 | 0 1] → R2 ← R2 − 3R1: [1 2 | 1 0; 0 1 | -3 1]</p>
@@ -508,7 +510,7 @@ print(f"R² = {R2:.4f}")`} height={300}/>
   },
 
   // ============ NEW: Taylor Series ============
-  { id: "R10", topic: "root", diff: "medium", title: "Taylor Series · sin(x) at x₀=0",
+  { id: "R30", topic: "root", diff: "medium", title: "Taylor Series · sin(x) at x₀=0",
     q: <p>ประมาณค่า sin(1) โดย Taylor series รอบ <M>{`x_0 = 0`}</M> สำหรับ n = 1, 3, 5, 7 พร้อม error vs ค่าจริง sin(1) ≈ 0.8414710</p>,
     a: <div>
       <p>sin(x) ≈ x − x³/6 + x⁵/120 − x⁷/5040</p>
@@ -526,7 +528,7 @@ print(f"R² = {R2:.4f}")`} height={300}/>
   },
 
   // ============ NEW: Newton Forward / Backward ============
-  { id: "I04", topic: "interp", diff: "easy", title: "Newton Forward Difference",
+  { id: "I30", topic: "interp", diff: "easy", title: "Newton Forward Difference",
     q: <p>สร้างตาราง Δ จากข้อมูล x = [0,1,2,3], y = [1,3,9,27]; หา P(0.5) ด้วย Newton Forward formula</p>,
     a: <div>
       <StepTable headers={["x","y","Δy","Δ²y","Δ³y"]} rows={[
@@ -539,13 +541,13 @@ print(f"R² = {R2:.4f}")`} height={300}/>
       <p>P(0.5) = 1 + 0.5·2 + (0.5·-0.5)/2 · 4 + (0.5·-0.5·-1.5)/6 · 8 = 1 + 1 − 0.5 + 0.5 = 2.0</p>
     </div>
   },
-  { id: "I05", topic: "interp", diff: "medium", title: "Newton Backward · ค่าใกล้ปลายตาราง",
+  { id: "I31", topic: "interp", diff: "medium", title: "Newton Backward · ค่าใกล้ปลายตาราง",
     q: <p>ข้อมูล x = [0.1, 0.2, 0.3, 0.4, 0.5], y = [1.105, 1.221, 1.350, 1.492, 1.649] — ประมาณ y(0.46) ด้วย Newton Backward</p>,
     a: <p>s = (0.46 − 0.5)/0.1 = −0.4. y(0.46) ≈ 1.649 + (−0.4)(0.157) + ... ≈ 1.5841</p>
   },
 
   // ============ NEW: Linearization ============
-  { id: "G04", topic: "regression", diff: "medium", title: "Exponential fit",
+  { id: "G30", topic: "regression", diff: "medium", title: "Exponential fit",
     q: <p>ข้อมูล x = [1,2,3,4,5], y = [2.5, 4.1, 6.8, 11.2, 18.5] — fit <M>{`y = a e^{bx}`}</M></p>,
     a: <div>
       <p>take ln y: [0.916, 1.411, 1.917, 2.416, 2.918]</p>
@@ -559,7 +561,7 @@ print(f"R² = {R2:.4f}")`} height={300}/>
   },
 
   // ============ NEW: Romberg / Gauss-Legendre ============
-  { id: "N04", topic: "integ", diff: "medium", title: "Romberg Integration",
+  { id: "N30", topic: "integ", diff: "medium", title: "Romberg Integration",
     q: <p>ใช้ Romberg ระดับ 3 (n = 1, 2, 4) คำนวณ <M>{`\\int_0^1 \\frac{1}{1+x^2} dx`}</M> เทียบ π/4 ≈ 0.7853982</p>,
     a: <div>
       <p>R[0][0] = Trap n=1 = 0.5(1+0.5)·1 = 0.75</p>
@@ -570,7 +572,7 @@ print(f"R² = {R2:.4f}")`} height={300}/>
       <p>R[2][2] = (16·0.7854 − 0.7833)/15 = 0.7854 ✓ (ใกล้ค่าจริงมาก)</p>
     </div>
   },
-  { id: "N05", topic: "integ", diff: "medium", title: "Gauss-Legendre 2-point",
+  { id: "N31", topic: "integ", diff: "medium", title: "Gauss-Legendre 2-point",
     q: <p>ใช้ Gauss-Legendre 2 จุดบน [0, 2] คำนวณ <M>{`\\int_0^2 e^x dx`}</M> เทียบ e²−1 ≈ 6.3891</p>,
     a: <div>
       <p>map [−1, 1] → [0, 2]: x = 1 + t, dx = dt</p>
@@ -586,7 +588,7 @@ print(f"R² = {R2:.4f}")`} height={300}/>
   },
 
   // ============ NEW: Richardson ============
-  { id: "D03", topic: "diff", diff: "medium", title: "Richardson Extrapolation",
+  { id: "D30", topic: "diff", diff: "medium", title: "Richardson Extrapolation",
     q: <p>คำนวณ f'(1) ของ <M>{`f(x) = \\ln x`}</M> โดย: (a) Central h=0.2; (b) Central h=0.1; (c) Richardson — เทียบกับค่าจริง 1.0</p>,
     a: <div>
       <p>(a) D(0.2) = (ln 1.2 − ln 0.8)/0.4 = 1.01366</p>

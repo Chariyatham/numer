@@ -2164,7 +2164,7 @@ print(f"{nth_root(1265256, 12, 0, 1000):.4f}")  # 3.2249`} height={220}/>
       </Sect>
 
       <Callout kind="good" title="✓ บทนี้จบแล้ว — บทถัดไป">
-        <p>ไป <a href="#linear">Linear Systems → Gauss & Iteration</a> เพื่อเรียนวิธีแก้ระบบสมการเชิงเส้น Ax = b</p>
+        <p>ไป <a href="#linear">Linear Systems (Cramer · Gauss)</a> เพื่อเรียนวิธีแก้ระบบสมการเชิงเส้น Ax = b</p>
       </Callout>
     </div>
   );
