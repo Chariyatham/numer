@@ -348,13 +348,6 @@ const LIN_CARDS = [
       </ul>
       <p style={{margin:"6px 0 0"}}>⇒ <b>จริง ๆ ต้องแม่นแค่ Gauss วิธีเดียว</b> อีก 3 วิธีต่อยอดจากมันหมด</p>
     </> },
-  { id: "l6", q: "Cholesky กับเมทริกซ์ที่ไม่สมมาตร — ทำยังไง",
-    hint: "กับดักของใบงาน",
-    a: <>
-      <p style={{margin:"0 0 6px"}}>Cholesky ต้องการเมทริกซ์<b>สมมาตร</b> · ถ้า <M>{`A\neq A^T`}</M> ให้คูณ <M>{`A^T`}</M> ทั้งสองข้าง:</p>
-      <MB>{`A^TA\,x=A^Tb`}</MB>
-      <p style={{margin:0}}><M>{`A^TA`}</M> <b>สมมาตรเสมอ</b> และ positive definite เมื่อ <M>{`\det A\neq0`}</M> ⇒ ใช้ Cholesky ได้ · <b>ต้องไล่เช็คสมมาตรให้ครบทุกคู่</b> — เมทริกซ์ในใบงานมี 2 ใน 3 คู่ที่ตรงกัน หลอกตามาก</p>
-    </> },
   { id: "l4", q: "เมทริกซ์ไม่จัตุรัส (สมการ ≠ ตัวแปร) → อ่านผลยังไง",
     a: <NumTable
         headers={["แถวสุดท้ายหลังทำ Gauss", "แปลว่า"]}
@@ -363,9 +356,6 @@ const LIN_CARDS = [
           [<M>{`[\\,0\\ 0\\ 0\\,|\\,0\\,]`}</M>, "มีคำตอบไม่จำกัด (มีตัวแปรอิสระ)"],
           ["มีตัวหลักครบทุกคอลัมน์", "คำตอบเดียว"],
         ]}/> },
-  { id: "l7", q: "LU Decomposition (Doolittle) — สูตรหา L, U",
-    a: <><MB>{`u_{ij}=a_{ij}-\\sum_{k<i}l_{ik}u_{kj}\\qquad l_{ji}=\\frac{a_{ji}-\\sum_{k<i}l_{jk}u_{ki}}{u_{ii}}`}</MB>
-      <p style={{margin:"4px 0 0"}}>Doolittle: <M>{`l_{ii}=1`}</M> · แก้ 2 ต่อ: <b>① Ly = b</b> (forward) → <b>② Ux = y</b> (backward)</p></> },
 ];
 
 // ────────── ชุดที่ 6 · กฎห้องสอบ + ค่ากดเครื่อง ──────────
@@ -436,11 +426,11 @@ function MemorizeLesson() {
             ["2 · Integration", "6 ใบ", "สรุป Final น.20–21 (ปีนี้ย้ายมาเป็นบทแรก)"],
             ["3 · Differentiation", "6 ใบ", "สรุป Final น.22–25 · ตาราง 24 สูตรครบตามที่อาจารย์นับ"],
             ["4 · Root Finding", "10 ใบ", "ติว mid น.1–7 (graphical → secant + Taylor)"],
-            ["5 · Linear", "7 ใบ", "ติว mid น.8–14 · เน้น Cramer + Gauss (เท่ากัน/ไม่เท่ากัน)"],
+            ["5 · Linear", "5 ใบ", "อาจารย์บอกเองว่าออกถึง Cramer + Gauss (เท่ากัน/ไม่เท่ากัน) เท่านั้น"],
             ["6 · กฎห้องสอบ", "4 ใบ", "ถอดจากไฟล์เสียงคาบ 5 + 8 ส.ค."],
           ]}
         />
-        <p style={{margin:"8px 0 0", fontSize:'0.84rem'}}><b>ตัดออกแล้ว:</b> Jacobi · Gauss-Seidel · Conjugate Gradient · Interpolation · Spline · Regression · Romberg · Gauss-Legendre · Richardson — ทั้งหมดอยู่ใน “สรุป Final” ส่วนที่เป็น<b>เนื้อหาหลังมิดเทอม</b> หรือไม่ปรากฏในไฟล์เสียงเลย</p>
+        <p style={{margin:"8px 0 0", fontSize:'0.84rem'}}><b>ตัดออกแล้ว:</b> Gauss-Jordan · Matrix Inversion · LU · Cholesky (อาจารย์บอกว่าออกถึงแค่ Cramer/Gauss) · Jacobi · Gauss-Seidel · Conjugate Gradient · Interpolation · Spline · Regression · Romberg · Gauss-Legendre · Richardson — ทั้งหมดอยู่ใน “สรุป Final” ส่วนที่เป็น<b>เนื้อหาหลังมิดเทอม</b> หรือไม่ปรากฏในไฟล์เสียงเลย</p>
       </Callout>
 
       <Callout kind="tip" title="วิธีใช้ให้ได้ผลจริง — อย่าแค่ “อ่านผ่าน”">
@@ -484,7 +474,7 @@ function MemorizeLesson() {
         subtitle="บทที่ใหญ่ที่สุดและมีวิธีเยอะสุด — ใบที่ 6, 7, 8 คือกติกาที่ทำให้ตารางไม่หลุด" cards={ROOT_CARDS}/>
 
       <Deck id="lin" title="ชุดที่ 5 · Linear Systems"
-        subtitle="บทที่เพิ่งเรียน — เน้น Cramer กับ Gauss ก่อน" cards={LIN_CARDS}/>
+        subtitle="อาจารย์บอกเองว่าออกถึงแค่ Cramer กับ Gauss — Jordan/Inversion/LU/Cholesky ตัดออกแล้ว" cards={LIN_CARDS}/>
 
       <Deck id="rule" title="ชุดที่ 6 · กฎห้องสอบ + ค่ากดเครื่อง"
         subtitle="ชุดนี้ไม่ใช่เนื้อหา แต่เป็นตัวกันเสียคะแนนฟรี — ท่องพร้อมกับสูตร" cards={RULE_CARDS}/>

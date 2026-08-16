@@ -347,18 +347,22 @@ function LinearSystemsLesson() {
         ]}
       />
 
-      <Callout kind="danger" title="🎯 ขอบเขตบทนี้ — เน้น Cramer กับ Gauss (เท่ากัน + ไม่เท่ากัน)">
+      <Callout kind="danger" title="🎯 ขอบเขตบทนี้ — อาจารย์บอกเองว่า “ออกถึง Cramer กับ Gauss”">
+        <p style={{margin:"0 0 8px"}}><b>นี่คือหลักฐานที่หนักที่สุดที่มี</b> — คำจากอาจารย์โดยตรง (kim จำได้และยืนยัน) ⇒ ไม่ต้องเดาจากเอกสารปีที่แล้วอีก</p>
         <NumTable
-          headers={["หมวด", "น้ำหนัก", "เหตุผล"]}
+          headers={["หมวด", "ออกสอบ?", "ทำยังไง"]}
           rows={[
-            [<b>1 · Cramer’s Rule</b>, "🔴 สูงสุด", "สอนจริงคาบ 8 ส.ค. (มีไฟล์เสียง) + kim จำได้ว่าอาจารย์เน้น"],
-            [<b>2 · Gauss Elimination</b>, "🔴 สูงสุด", "อาจารย์ประกาศเองว่าจะสอน + kim จำได้ว่าเน้น"],
-            [<b>🔲 · เมทริกซ์ไม่จัตุรัส</b>, "🔴 สูงสุด", "อาจารย์พูดเอง “เวอร์ชันนี้จะเรียน matrix ที่ไม่เท่ากันด้วย” — kim ยืนยันว่าจำได้ว่าออกทั้งเท่ากันและไม่เท่ากัน"],
-            ["3–6 · Jordan / Inversion / LU / Cholesky", "🟡 รอง", "อยู่ในเอกสารติวมิดเทอมปีที่แล้ว (น.10–14) แต่ปีนี้ไม่มีหลักฐานว่าสอนทัน"],
-            ["7–9 · Jacobi / Gauss-Seidel / CG", "⬜ ตัด", "อยู่ใน “สรุป Final” น.1–5 = เนื้อหาหลังมิดเทอม"],
+            [<b>1 · Cramer’s Rule</b>, "✅ ออก", "ทำให้แม่นที่สุด — สอนจริงคาบ 8 ส.ค. ด้วย"],
+            [<b>2 · Gauss Elimination</b>, "✅ ออก", "ทำให้แม่นที่สุด"],
+            [<b>🔲 · เมทริกซ์ไม่จัตุรัส</b>, "✅ ออก", "อาจารย์ย้ำเรื่อง “matrix เท่ากันกับไม่เท่ากัน”"],
+            ["3 · Gauss-Jordan", "❌ ไม่ออก", "ข้ามได้เลย"],
+            ["4 · Matrix Inversion", "❌ ไม่ออก", "ข้ามได้เลย"],
+            ["5 · LU Decomposition", "❌ ไม่ออก", "ข้ามได้เลย"],
+            ["6 · Cholesky", "❌ ไม่ออก", "ข้ามได้เลย"],
+            ["7–9 · Jacobi / Gauss-Seidel / CG", "❌ ไม่ออก", "เนื้อหาหลังมิดเทอม"],
           ]}
         />
-        <p style={{margin:"8px 0 0"}}><b>ลำดับที่คุ้มที่สุด:</b> หมวด 0 → 1 → 2 → 🔲 ให้แม่นก่อน (นี่คือ 90% ของโอกาสออก) · แล้วค่อยไป<b>หมวด 📮</b> ที่เอาระบบเดียวมาแก้ด้วยทั้ง 6 วิธี — <b>20 นาทีก็ครอบหมวด 3–6 หมดแล้ว</b> ไม่ต้องอ่านแยกทีละหมวด</p>
+        <p style={{margin:"8px 0 0"}}><b>⇒ บทนี้เหลืออ่านแค่ 4 หมวด: 0 · 1 · 2 · 🔲 ≈ 70 นาที</b> (เดิมผมเคยให้อ่านครบ 6 วิธี — ตัดออกแล้วตามที่อาจารย์บอก) · หมวด 📮 ยังเปิดดูได้ถ้าอยากเห็นภาพรวม แต่<b>ไม่ต้องท่อง</b></p>
       </Callout>
 
       <Callout kind="warn" title="📮 ใบงาน “ระบบเดียว 6 วิธี” (ของปีที่แล้ว) — ตัวเก็งที่แม่นที่สุดของบทนี้">
@@ -685,7 +689,7 @@ print(f"\\nx = {[round(v, 6) for v in x]}")`} height={280}/>
         <DirectSolverShell method="gauss" title="Gauss Elimination — Solver"/>
       </Sect>
 
-      <Sect tag="3" title="Gauss-Jordan — Forward + Backward Elimination" read="later" why="รอง — ดูผ่านหมวด 📮 พอ">
+      <Sect tag="3" title="Gauss-Jordan — Forward + Backward Elimination" read="later" why="อาจารย์บอกว่าไม่ออก — ข้ามได้">
         <p>คล้าย Gauss แต่<em>ลบทั้งบนและล่าง pivot</em> + หารแถว pivot ด้วย <M>{`a_{kk}`}</M> → ได้ matrix <b>เอกลักษณ์</b></p>
 
         <Formula label="ก่อน vs หลัง Gauss-Jordan">
@@ -732,7 +736,7 @@ print("x =", [round(v,6) for v in gauss_jordan(A, b)])`} height={220}/>
       </Sect>
 
 
-      <Sect tag="4" title="Matrix Inversion — แก้ผ่าน A⁻¹" read="later" why="รอง — ดูผ่านหมวด 📮 พอ">
+      <Sect tag="4" title="Matrix Inversion — แก้ผ่าน A⁻¹" read="later" why="อาจารย์บอกว่าไม่ออก — ข้ามได้">
         <h3>แนวคิด · หา A⁻¹ แล้วคูณ b</h3>
         <p>ถ้ารู้ <M>A^{`-1`}</M> ก็แก้ <M>Ax=b</M> ได้ทันที:</p>
         <Formula><MB>{`x = A^{-1} b`}</MB></Formula>
@@ -873,7 +877,7 @@ print("\\nตรวจ: numpy =", np.linalg.solve(A, b))`} height={260}/>
         <DirectSolverShell method="inverse" title="Matrix Inversion — Solver"/>
       </Sect>
 
-      <Sect tag="5" title="LU Decomposition — Doolittle / Crout" read="later" why="รอง — ดูผ่านหมวด 📮 พอ">
+      <Sect tag="5" title="LU Decomposition — Doolittle / Crout" read="later" why="อาจารย์บอกว่าไม่ออก — ข้ามได้">
         <h3>แนวคิด · แตก A เป็น L · U</h3>
         <p>แทนที่จะทำ Gauss ใหม่ทุกครั้งที่ b เปลี่ยน — เราแตก <M>A=LU</M> ครั้งเดียว:</p>
         <Formula label="Doolittle (L มี 1 บน diagonal)">
@@ -1068,7 +1072,7 @@ print("x =", [round(v,6) for v in x])`} height={300}/>
         <DirectSolverShell method="lu" title="LU Decomposition — Solver"/>
       </Sect>
 
-      <Sect tag="6" title="Cholesky Decomposition — สำหรับ Symmetric Positive Definite" read="later" why="รอง — ดูผ่านหมวด 📮 พอ">
+      <Sect tag="6" title="Cholesky Decomposition — สำหรับ Symmetric Positive Definite" read="later" why="อาจารย์บอกว่าไม่ออก — ข้ามได้">
         <h3>เมื่อไหร่ใช้ได้?</h3>
         <p>เฉพาะเมื่อ matrix A เป็น <b>symmetric positive definite</b> (SPD):</p>
         <ul>
@@ -1267,7 +1271,7 @@ print("\\nA·x =", np.round(A @ x, 6).tolist(), "  (เทียบกับ B =
       </Sect>
 
       {/* ═══════════ 📮 · การบ้าน 6 วิธี ═══════════ */}
-      <Sect tag="📮" title="ใบงานตัวเก็ง · ระบบเดียว 6 วิธี — เฉลยเต็มทั้ง 6 ข้อ" read="must" min={10}>
+      <Sect tag="📮" title="ใบงานตัวเก็ง · ระบบเดียว 6 วิธี — เฉลยเต็มทั้ง 6 ข้อ" read="later" why="อ่านเฉพาะข้อ 1.1 Cramer กับ 1.2 Gauss พอ">
         <p>ทั้ง 6 ข้อใช้ระบบเดียวกัน ⇒ <b>เขียนเมทริกซ์ครั้งเดียวใช้ได้ทั้งใบ</b> · ที่ต่างกันคือ “ทางเดิน” ไม่ใช่คำตอบ — ทุกวิธีต้องลงที่ <M>{`(-1,\\,2,\\,1)`}</M> เหมือนกันหมด ถ้าวิธีไหนได้ไม่ตรง แปลว่าวิธีนั้นคำนวณพลาด</p>
 
         <Callout kind="tip" title="ตรวจก่อนลงมือ — 10 วินาทีที่กันพังทั้งใบ">
