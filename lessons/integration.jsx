@@ -294,29 +294,43 @@ P2 (x2,x3,x4):  h/3(            f2 + 4f3 + f4 )
 
       {/* ═══════════════ 📟 · เครื่องคิดเลข ═══════════════ */}
       <Sect tag="📟" title="fx-991CW · กดเครื่องคิดเลขให้เร็วและไม่พลาด" read="must" min={15}>
-        <p>ข้อสอบให้ทำ Trapezoidal/Simpson <b>ทีละขั้น</b> เครื่องคิดเลขช่วย 2 อย่าง: (1) โหมด <b>Table</b> ดึง <M>{`f(x_i)`}</M> ทุกจุดในครั้งเดียว (2) ปุ่ม <b>∫dx</b> ไว้<u>ตรวจ</u>คำตอบ</p>
+        <p>ข้อสอบให้ทำ Trapezoidal/Simpson <b>ทีละขั้น</b> เครื่องคิดเลขช่วย 2 อย่าง: (1) โหมด <b>Table</b> ดึง <M>{`f(x_i)`}</M> ทุกจุดในครั้งเดียว (2) คำสั่ง <b>∫</b> ใน CATALOG ไว้<u>ตรวจ</u>คำตอบ</p>
+        <p style={{fontSize:'0.82rem', color:"var(--text-dim)", margin:"0 0 10px"}}>ลำดับปุ่มข้างล่างตรวจกับคู่มือ CASIO fx-991CW ฉบับไทย (บทที่ 4, §2.7) และฉบับอังกฤษแล้วทีละขั้น — เวอร์ชันก่อนหน้าของหน้านี้ลอกลำดับปุ่มรุ่นเก่ามาใส่ กดจริงไม่ได้</p>
 
         <Callout title="1. โหมด Table — ได้ f(xᵢ) ครบทุกจุดในตารางเดียว (ตัวช่วยหลัก!)">
           <CalcSteps steps={[
-            <span><Key>HOME</Key> → เลือก <Key>Table</Key></span>,
-            <span>พิมพ์ <code>f(x)</code> เช่น <code>4x⁵−3x⁴+x³−6x+2</code> → <Key>=</Key> / <Key>OK</Key></span>,
-            <span>กรอก <b>Start</b> = <M>a</M>, <b>End</b> = <M>b</M>, <b>Step</b> = <M>h</M> (Trap: <M>{`(b-a)/n`}</M> · Simpson: <M>{`(b-a)/2n`}</M>)</span>,
-            <span>กด <Key>=</Key> → ได้คอลัมน์ <M>{`x`}</M> กับ <M>{`f(x)`}</M> ครบทุกจุด — ลอกมาใส่สูตรได้เลย</span>,
+            <span><Key>HOME</Key> → เลื่อนไปไอคอน <code>Table</code> → <Key>OK</Key></span>,
+            <span>กด <Key>FUNCTION</Key> → เลื่อนแถบดำไปที่ <b><code>Define f(x)</code></b> (บรรทัดที่ 3) → <Key>OK</Key></span>,
+            <span>จอขึ้น <code>f(x)=</code> → พิมพ์ <code>4x⁵−3x⁴+x³−6x+2</code> → <Key>EXE</Key></span>,
+            <span>กด <Key>TOOLS</Key> → เลือก <code>Table Range</code> → <Key>OK</Key></span>,
+            <span>พิมพ์ <b>Start</b> = <M>a</M> → <Key>EXE</Key> → <b>End</b> = <M>b</M> → <Key>EXE</Key> → <b>Step</b> = <M>h</M> → <Key>EXE</Key> <span className="muted">(Trap: <M>{`h=(b-a)/n`}</M> · Simpson: <M>{`h=(b-a)/2n`}</M>)</span></span>,
+            <span>แถบดำไปหยุดที่ <code>▸Execute</code> → <Key>EXE</Key> → ได้คอลัมน์ <M>{`x`}</M> กับ <M>{`f(x)`}</M> ครบทุกจุด</span>,
             <span>ใส่น้ำหนัก: Trap → ปลาย ×1 ในกลาง ×2 ; Simpson → 1·4·2·4·…·1 แล้วคูณ <M>{`h/2`}</M> หรือ <M>{`h/3`}</M></span>,
           ]}/>
+          <p style={{margin:"6px 0 0", fontSize:'0.8rem'}}><b>ตั้งก่อนเริ่ม:</b> <Key>TOOLS</Key> → <code>Table Type</code> → <code>f(x)</code> — ไม่งั้นเครื่องโชว์คอลัมน์ <code>g(x)</code> ที่ขึ้น <code>ERROR</code> รกจอ และตารางจำกัดแค่ <b>30 แถว</b> แทนที่จะเป็น 45</p>
         </Callout>
 
-        <Callout title="2. เก็บผลรวมถ่วงน้ำหนักด้วย STO แล้วคูณทีเดียว">
-          <p style={{margin:0}}>เก็บ <M>h</M> ไว้ในตัวแปร: พิมพ์ค่า → <Key>STO</Key> → <Key>A</Key> จากนั้นพิมพ์ทั้งก้อน เช่น <code>A÷2×(f0 + f4 + 2×(f1+f2+f3))</code> กด <Key>=</Key> ครั้งเดียว — เร็วและพลาดยาก · หรือใช้โหมด <b>Spreadsheet</b> ทำคอลัมน์ <M>{`f(x_i)\\times`}</M>น้ำหนัก แล้ว Sum</p>
+        <Callout title="2. เก็บผลรวมถ่วงน้ำหนักไว้ในตัวแปร แล้วคูณทีเดียว">
+          <p style={{margin:"0 0 4px"}}>เก็บ <M>h</M> ลงตัวแปร: กด <Key>VARIABLE</Key> → เลื่อนไป <code>[A=]</code> → พิมพ์ค่า → <Key>EXE</Key> <span className="muted">(fx-991CW ไม่มีปุ่ม STO — ปุ่มนี้ชื่อ VARIABLE)</span></p>
+          <p style={{margin:0}}>จากนั้นพิมพ์ทั้งก้อนรวดเดียว เช่น <code>A÷2×(f0 + f4 + 2×(f1+f2+f3))</code> โดยเรียก <code>A</code> ด้วย <Key>SHIFT</Key> <Key>4</Key> แล้วกด <Key>EXE</Key> ครั้งเดียว — เร็วและพลาดยาก</p>
         </Callout>
 
-        <Callout title="3. ปุ่ม ∫dx — หาค่าจริงไว้ตรวจ (ห้ามใช้เป็นคำตอบ)">
+        <Callout kind="good" title="3. ท่าลับ: ใช้ Σ พิมพ์สูตร Trapezoidal ทั้งก้อนในบรรทัดเดียว">
+          <p style={{margin:"0 0 6px"}}>ก้อน <M>{`\\sum_{i=1}^{n-1} f(a+ih)`}</M> พิมพ์ลงเครื่องได้ตรง ๆ: <Key>CATALOG</Key> → <code>Func Analysis</code> → <code>Summation(Σ)</code> → <Key>OK</Key></p>
+          <p style={{margin:0}}>เช่น <M>{`\\int_0^4 9x^2dx`}</M> ด้วย Trapezoid <M>{`n=4`}</M> (<M>{`h=1`}</M>): พิมพ์ <code>1÷2×( 9(0)² + 9(4)² + 2Σ(9x², 1, 3) )</code> → <Key>EXE</Key> จบในครั้งเดียว</p>
+          <p style={{margin:"6px 0 0", fontSize:'0.8rem'}}><b>เงื่อนไข:</b> ขอบล่าง/ขอบบนของ Σ ต้องเป็น<b>จำนวนเต็ม</b> ⇒ ถ้า <M>h</M> ไม่ใช่ 1 ต้องเขียนพจน์เป็น <M>{`f(a+xh)`}</M> โดยให้ <M>x</M> เป็นตัววิ่ง 1…n−1</p>
+        </Callout>
+
+        <Callout title="4. คำสั่ง ∫ — หาค่าจริงไว้ตรวจ (ห้ามใช้เป็นคำตอบ)">
+          <p style={{margin:"0 0 6px", fontSize:'0.85rem'}}><b>fx-991CW ไม่มีปุ่ม ∫dx บนแป้น</b> — คู่มือ §2.7 ระบุทางเข้าไว้ทางเดียว:</p>
           <CalcSteps steps={[
-            <span><Key>HOME</Key> → <Key>Calculate</Key> → กด <Key>∫dx</Key> (หรือ <Key>CATALOG</Key> → Integral)</span>,
-            <span>พิมพ์ฟังก์ชัน ใส่ขอบล่าง <M>a</M> ขอบบน <M>b</M> → <Key>=</Key></span>,
-            <span>ได้ค่า integral จริง (เครื่องใช้ Gauss-Kronrod ภายใน) → เอาไปเป็น “ค่าจริง” ตอนคำนวณ error</span>,
+            <span><Key>HOME</Key> → <code>Calculate</code> → <Key>OK</Key></span>,
+            <span><Key>CATALOG</Key> → <code>Func Analysis</code> → <Key>OK</Key> → <Key>▼</Key> ไปที่ <code>Integration(∫)</code> → <Key>OK</Key></span>,
+            <span><Key>▼</Key> → พิมพ์<b>ขอบล่าง</b> <M>a</M> → <Key>▲</Key> → พิมพ์<b>ขอบบน</b> <M>b</M></span>,
+            <span><Key>▶</Key> ออกมาที่ตัวฟังก์ชัน → พิมพ์ <M>{`f(x)`}</M> → <Key>EXE</Key></span>,
+            <span>ได้ค่า integral จริง → เอาไปเป็น “ค่าจริง” ตอนคำนวณ <M>{`\\varepsilon_t`}</M></span>,
           ]}/>
-          <p style={{margin:"6px 0 0", fontSize:'0.8rem'}}><b>ระวัง:</b> โจทย์ให้ “ทำ Trapezoidal/Simpson” ต้องโชว์ขั้นตอน — ปุ่ม ∫dx ใช้แค่<u>เช็คว่าคำตอบใกล้เคียงไหม</u></p>
+          <p style={{margin:"6px 0 0", fontSize:'0.8rem'}}><b>ระวัง:</b> โจทย์ให้ “ทำ Trapezoidal/Simpson” ต้องโชว์ขั้นตอน — คำสั่ง ∫ ใช้แค่<u>เช็คว่าคำตอบใกล้เคียงไหม</u> · คู่มือไม่ได้บอกว่าเครื่องใช้อัลกอริทึมอะไรข้างใน จึงอ้างเรื่องนั้นไม่ได้</p>
         </Callout>
       </Sect>
 

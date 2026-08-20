@@ -471,35 +471,44 @@ False`}</pre>
 
         <h4>Trick ที่จะใช้บ่อย:</h4>
 
-        <Callout title="1. SOLVE หาคำตอบสมการ">
-          พิมพ์สมการ เช่น <code>x^3-x-2=0</code> → <Key>OK</Key> → <Key>SHIFT</Key> <Key>CALC</Key> (SOLVE) → ใส่ค่าเริ่มต้น เครื่องจะหา root ให้
-          <br/><b>หมายเหตุ:</b> SOLVE ใช้ Newton-Raphson ในเครื่อง ดังนั้นใช้เช็คคำตอบที่ทำมือได้
+        <Callout title="1. Solver หาคำตอบสมการ (อยู่ในแอป Equation — ไม่ใช่ปุ่มลัด)">
+          <CalcSteps steps={[
+            <span><Key>HOME</Key> → <code>Equation</code> → <Key>OK</Key> → เลือก <code>Solver</code> → <Key>OK</Key></span>,
+            <span>พิมพ์สมการ เช่น <code>x³−x−2=0</code> (เครื่องหมาย <code>=</code> อยู่ที่ <Key>CATALOG</Key> → <code>Equation</code> → <code>[=]</code>) → <Key>EXE</Key></span>,
+            <span>หน้า <code>Solve Target</code> ยืนยัน <code>[x]</code> → <Key>OK</Key></span>,
+            <span>ใส่ค่าเริ่มต้น → <Key>EXE</Key> → เลื่อนไป <code>▸Execute</code> → <Key>EXE</Key></span>,
+          ]}/>
+          <p style={{margin:"6px 0 0"}}><b>หมายเหตุ:</b> คู่มือบอกเองว่า Solver ใช้ Newton&rsquo;s method ⇒ มีหลายรากก็คืนตัวเดียว และค่าเริ่มต้นไม่ดีอาจไม่ลู่เข้า — ใช้<b>เช็ค</b>คำตอบที่ทำมือ ไม่ใช่ใช้ตอบ</p>
         </Callout>
 
         <Callout title="2. TABLE ใช้ทำ Bisection / Graphical method">
           <CalcSteps steps={[
-            <span><Key>HOME</Key> เลือก <Key>Table</Key></span>,
-            <span>พิมพ์ <code>f(x)</code> → <Key>OK</Key></span>,
-            <span>กรอก Start = a, End = b, Step = h</span>,
-            <span>กด <Key>=</Key> → ได้ตาราง x, f(x) ทันที</span>,
+            <span><Key>HOME</Key> → <code>Table</code> → <Key>OK</Key></span>,
+            <span><Key>FUNCTION</Key> → เลื่อนไป <b><code>Define f(x)</code></b> → <Key>OK</Key> → พิมพ์ <M>{`f(x)`}</M> → <Key>EXE</Key></span>,
+            <span><Key>TOOLS</Key> → <code>Table Range</code> → กรอก Start = a <Key>EXE</Key>, End = b <Key>EXE</Key>, Step = h <Key>EXE</Key></span>,
+            <span>เลื่อนไป <code>▸Execute</code> → <Key>EXE</Key> → ได้ตาราง x, f(x) ทันที</span>,
             <span>ดูว่า <b>f(x)</b> เปลี่ยนเครื่องหมายที่ช่วงไหน → ช่วงนั้นมีราก</span>,
           ]}/>
         </Callout>
 
         <Callout title="3. STAT ใช้กับ Linear/Polynomial Regression">
           <CalcSteps steps={[
-            <span><Key>HOME</Key> → <Key>Statistics</Key></span>,
-            <span>เลือก <code>y = a + bx</code> สำหรับ Linear, หรือ <code>y = a + bx + cx²</code> สำหรับ Quadratic</span>,
-            <span>ใส่ตาราง x, y</span>,
-            <span><Key>OK</Key> → ดูค่า <code>a, b, c</code> ในเมนู Regression Calc</span>,
+            <span><Key>HOME</Key> → <code>Statistics</code> → <Key>OK</Key> → เลือก <code>2-Variable</code> → <Key>OK</Key></span>,
+            <span>กรอกคอลัมน์ x คั่นด้วย <Key>EXE</Key> → เลื่อนไปหัวคอลัมน์ y ด้วย <Key>▼</Key> <Key>▶</Key> → กรอก y</span>,
+            <span>กด <Key>OK</Key> → เลือก <code>Reg Results</code> → <Key>OK</Key></span>,
+            <span>เลือกทรงสมการ: <code>y = a + bx</code> (Linear) หรือ <code>y = a + bx + cx²</code> (Quadratic) → <Key>OK</Key></span>,
             <span>ระวัง: เครื่องนี้ใช้ <b>a</b> เป็น intercept และ <b>b</b> เป็นความชัน (ตรงข้ามกับสไลด์อาจารย์บางสไลด์ที่ใช้ a₀, a₁)</span>,
           ]}/>
         </Callout>
 
-        <Callout title="4. ตัวแปร A–F, x, y ช่วยตอน iteration">
-          เก็บค่าใส่ตัวแปร: พิมพ์ค่า → <Key>STO</Key> → กดตัวแปรที่อยากเก็บ (เช่น A)<br/>
-          เรียกค่า: กดตัวแปรเลย เช่น <Key>A</Key> = ใช้แทนค่า A
-          <br/><b>ตัวอย่างใช้ Newton:</b> เก็บ x₀ ใน A → พิมพ์สูตร <code>A - f(A)/f'(A)</code> → กด = → เก็บผลลัพธ์ใส่ A → กด = ซ้ำ ๆ เป็น iteration
+        <Callout title="4. ตัวแปร A–F, x, y, z ช่วยตอน iteration">
+          <p style={{margin:"0 0 6px"}}><b>fx-991CW ไม่มีปุ่ม STO</b> — ปุ่มเก็บตัวแปรชื่อ <Key>VARIABLE</Key> และต้องเลือกจากเมนู</p>
+          <CalcSteps steps={[
+            <span>เก็บ<b>ผลลัพธ์ที่เพิ่งคำนวณ</b>: <Key>EXE</Key> → <Sto v="A"/></span>,
+            <span>เก็บ<b>ตัวเลขที่พิมพ์เอง</b> (เร็วกว่า): <Key>VARIABLE</Key> → เลื่อนไป <code>[A=]</code> → พิมพ์เลข → <Key>EXE</Key></span>,
+            <span>เรียกใช้ในสูตร: <Key>SHIFT</Key> + ปุ่มที่มีตัวอักษรนั้นพิมพ์อยู่ (เช่น <Key>SHIFT</Key> <Key>4</Key> = A)</span>,
+          ]}/>
+          <p style={{margin:"6px 0 0"}}><b>ตัวอย่างใช้ Newton:</b> เก็บ x₀ ใน x → พิมพ์สูตร <code>x − f(x)÷f&rsquo;(x)</code> → <Key>EXE</Key> → เก็บผลกลับใส่ x → กด <Key>◀</Key> <Key>EXE</Key> ซ้ำ ๆ เป็น iteration</p>
         </Callout>
       </Sect>
 

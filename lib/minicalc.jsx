@@ -1,6 +1,8 @@
 // Mini fx-991CW-style calculator — floating widget accessible across all lessons
 // Supports: +, -, *, /, ^, ( ), trig (sin/cos/tan), inverse (asin/acos/atan),
-// log/ln/exp, sqrt, pi, e, abs, variables A-F + x + y, Ans, PreAns, STO/RCL.
+// log/ln/exp, sqrt, pi, e, abs, variables A-F + x + y, Ans, PreAns, เก็บ/เรียกตัวแปร.
+// หมายเหตุ: บนเครื่องจริง fx-991CW ไม่มีปุ่ม STO/RCL — ปุ่มนี้ชื่อ VARIABLE แล้วเลือก [A=] > [Store] / [Recall]
+// วิดเจ็ตนี้ย่อให้เป็นปุ่มเดียวเพื่อความเร็วในการซ้อม แต่ป้ายชื่อใช้คำเดียวกับเครื่องจริง
 
 const { useState: useCalcS, useRef: useCalcR, useEffect: useCalcE } = React;
 
@@ -163,8 +165,8 @@ function MiniCalc({ onClose }) {
           {error ? <span style={{color:"var(--red)"}}>{error}</span>
                  : (output ? <>= <b style={{color:"var(--yellow)"}}>{output}</b></> : <span style={{color:"var(--text-faint)"}}>—</span>)}
         </div>
-        {pendingSto && <div className="mc-prompt">STO → กดตัวแปร (A-F, x, y)</div>}
-        {pendingRcl && <div className="mc-prompt">RCL → กดตัวแปร</div>}
+        {pendingSto && <div className="mc-prompt">VARIABLE▸Store → กดตัวแปร (A-F, x, y) · บนเครื่องจริงคือ VARIABLE → [A=] → [Store]</div>}
+        {pendingRcl && <div className="mc-prompt">VARIABLE▸Recall → กดตัวแปร</div>}
       </div>
 
       {/* Function row */}
@@ -183,8 +185,8 @@ function MiniCalc({ onClose }) {
 
         {K("(", () => append("("), "op")}
         {K(")", () => append(")"), "op")}
-        {K("STO", startSto, pendingSto ? "primary" : "op")}
-        {K("RCL", startRcl, pendingRcl ? "primary" : "op")}
+        {K("VAR▸Sto", startSto, pendingSto ? "primary" : "op")}
+        {K("VAR▸Rcl", startRcl, pendingRcl ? "primary" : "op")}
         {K("Ans", insertAns, "op")}
 
         {/* Variables */}
@@ -230,7 +232,7 @@ function MiniCalc({ onClose }) {
               <b>{k}</b> = {typeof v === "number" ? Number(v.toFixed(6)).toString() : v}
             </span>
           ))}
-          {Object.keys(vars).length === 0 && <span className="muted" style={{fontSize:'0.722rem'}}>ว่างเปล่า — STO เก็บค่าได้</span>}
+          {Object.keys(vars).length === 0 && <span className="muted" style={{fontSize:'0.722rem'}}>ว่างเปล่า — กด VAR▸Sto เพื่อเก็บค่า</span>}
         </div>
       </div>
     </div>

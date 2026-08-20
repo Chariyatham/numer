@@ -141,10 +141,11 @@ print(f"\\nคำตอบ x = {x.round(6)}")`} height={300}/>
             <li><M>{`(D^{(k)})^T R^{(k)}`}</M> หรือ <M>{`(R^{(k+1)})^T A D^{(k)}`}</M> (scalar) — ตัวเศษ</li>
           </ul>
           <CalcSteps steps={[
-            <span><Key>HOME</Key> → <Key>Matrix</Key> → <Key>Define Matrix</Key> → <Key>MatA</Key> (เก็บ A, ขนาด n×n)</span>,
+            <span><Key>HOME</Key> → <code>Matrix</code> → <Key>OK</Key> → <Key>TOOLS</Key> → <code>[MatA:]</code> → ใส่ขนาด n×n → <code>[Confirm]</code> (เก็บ A)</span>,
             <span>เก็บ <Key>MatB</Key> = <M>{`D^{(k)}`}</M> เป็น column vector n×1</span>,
             <span>เก็บ <Key>MatC</Key> = <M>{`R^{(k)}`}</M> เป็น column vector n×1</span>,
-            <span><Key>OPTN</Key> → <Key>Matrix Calc</Key> → พิมพ์ <code>MatA × MatB</code> → ได้ AD (เก็บ <Key>MatD</Key>)</span>,
+            <span><Key>CATALOG</Key> → <code>Matrix</code> → เลือก <code>MatA</code> แล้ว <code>MatB</code> ให้เป็น <code>MatA×MatB</code> → <Key>EXE</Key> → ผลออกมาเป็น <code>MatAns</code></span>,
+            <span>คัดผลไปเก็บเป็น MatD: ตอนอยู่หน้า <code>MatAns</code> กด <Key>TOOLS</Key> → <code>[Store]</code> → <code>[MatD]</code> <span className="muted">(EN น.118)</span></span>,
             <span>พิมพ์ <code>Trn(MatB) × MatD</code> → ได้ scalar DᵀAD</span>,
             <span>พิมพ์ <code>Trn(MatB) × MatC</code> → ได้ scalar DᵀR → ตัวเศษ λₖ</span>,
             <span>กดสูตร <M>{`\\lambda_k = -D^T R / D^T A D`}</M> ใน Calculate mode ทันที</span>,

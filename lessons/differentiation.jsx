@@ -414,34 +414,35 @@ f″(−2.5) = [−f(−2.3) + 16f(−2.4) − 30f(−2.5) + 16f(−2.6) − f(�
 
         <Callout title="1. โหมด Table = หัวใจ — ได้ f(xᵢ) ครบทุกจุดในครั้งเดียว">
           <CalcSteps steps={[
-            <span><Key>HOME</Key> → <Key>Table</Key> → พิมพ์ <code>f(x)</code> ของโจทย์ → <Key>OK</Key></span>,
+            <span><Key>HOME</Key> → <code>Table</code> → <Key>OK</Key> → <Key>FUNCTION</Key> → <b><code>Define f(x)</code></b> → <Key>OK</Key> → พิมพ์ <M>{`f(x)`}</M> ของโจทย์ → <Key>EXE</Key></span>,
+            <span><Key>TOOLS</Key> → <code>Table Range</code> — และตั้ง <Key>TOOLS</Key> → <code>Table Type</code> → <code>f(x)</code> ไว้ก่อน จะได้ 45 แถวและไม่มีคอลัมน์ ERROR</span>,
             <span>ตั้งช่วงให้<b>ครอบทุกจุดที่สูตรใช้</b>: <b>Start</b> = จุดซ้ายสุด, <b>End</b> = จุดขวาสุด, <b>Step</b> = <M>h</M></span>,
             <span>สูตรธรรมดา f′: Start = <M>{`x-h`}</M>, End = <M>{`x+h`}</M> (3 แถว — ใช้ได้ทั้ง fwd/bwd/ctr)</span>,
             <span>สูตรละเอียด f″: Start = <M>{`x-3h`}</M>, End = <M>{`x+3h`}</M> (7 แถว — ใช้ได้<b>ทั้ง 3 ข้อย่อย</b> เหมือน ex.8)</span>,
-            <span>จดตารางลงกระดาษ (ข้อสอบต้องโชว์) แล้วค่อยประกอบสูตร</span>,
+            <span>เลื่อนไป <code>▸Execute</code> → <Key>EXE</Key> → จดตารางลงกระดาษ (ข้อสอบต้องโชว์) แล้วค่อยประกอบสูตร</span>,
           ]}/>
           <p style={{margin:"6px 0 0", fontSize:'0.8rem'}}><b>จุดที่คนพลาด:</b> โหมด Table ของ 991CW แสดงทศนิยมตามจอ — กดที่ค่าแล้วดูบรรทัดล่างเพื่อจดให้ครบ 9 หลัก อย่าปัดเองกลางทาง (error เราเล็กระดับ 0.01% ปัดพลาดคือคำตอบเพี้ยน)</p>
         </Callout>
 
-        <Callout title="2. เก็บค่า f ใส่ตัวแปร A–E → ประกอบสูตรก้อนเดียว กด = ทีเดียว">
+        <Callout title="2. เก็บค่า f ใส่ตัวแปร A–E → ประกอบสูตรก้อนเดียว กด EXE ทีเดียว">
           <CalcSteps steps={[
-            <span>จากโหมด Calculate: คำนวณ/พิมพ์ค่า <M>{`f(x_{i-2})`}</M> → <Key>STO</Key> <Key>A</Key>, <M>{`f(x_{i-1})`}</M> → <Key>B</Key>, <M>{`f(x_i)`}</M> → <Key>C</Key></span>,
-            <span>ต่อด้วย <M>{`f(x_{i+1})`}</M> → <Key>D</Key>, <M>{`f(x_{i+2})`}</M> → <Key>E</Key> (จุดไม่ครบ 5 ก็เก็บเท่าที่ใช้)</span>,
-            <span>Central O(h²): <code>(D − B) ÷ (2×0.25)</code> → <Key>=</Key></span>,
-            <span>Central O(h⁴): <code>(−E + 8D − 8B + A) ÷ (12×0.25)</code> → <Key>=</Key></span>,
-            <span>f″ Central: <code>(D − 2C + B) ÷ 0.25²</code> → <Key>=</Key></span>,
+            <span>จากโหมด Calculate: คำนวณ/พิมพ์ค่า <M>{`f(x_{i-2})`}</M> → <Sto v="A"/>, <M>{`f(x_{i-1})`}</M> → <Sto v="B"/>, <M>{`f(x_i)`}</M> → <Sto v="C"/></span>,
+            <span>ต่อด้วย <M>{`f(x_{i+1})`}</M> → <Sto v="D"/>, <M>{`f(x_{i+2})`}</M> → <Sto v="E"/> (จุดไม่ครบ 5 ก็เก็บเท่าที่ใช้) · เรียกตัวแปรในสูตรด้วย <Key>SHIFT</Key> + ปุ่มที่มีตัวอักษรนั้น</span>,
+            <span>Central O(h²): <code>(D − B) ÷ (2×0.25)</code> → <Key>EXE</Key></span>,
+            <span>Central O(h⁴): <code>(−E + 8D − 8B + A) ÷ (12×0.25)</code> → <Key>EXE</Key></span>,
+            <span>f″ Central: <code>(D − 2C + B) ÷ 0.25²</code> → <Key>EXE</Key></span>,
           ]}/>
-          <p style={{margin:"6px 0 0", fontSize:'0.8rem'}}>พิมพ์ก้อนเดียวแล้วกด = ครั้งเดียว <b>เร็วกว่าและพลาดยากกว่า</b>กดทีละท่อน — ถ้าตัวเลขเพี้ยนก็ไล่ดูสูตรบนจอได้ทั้งบรรทัด</p>
+          <p style={{margin:"6px 0 0", fontSize:'0.8rem'}}>พิมพ์ก้อนเดียวแล้วกด EXE ครั้งเดียว <b>เร็วกว่าและพลาดยากกว่า</b>กดทีละท่อน — ถ้าตัวเลขเพี้ยนก็ไล่ดูสูตรบนจอได้ทั้งบรรทัด</p>
         </Callout>
 
-        <Callout title="3. หา “ค่าจริง” ไวด้วยปุ่ม d/dx (ไว้คิด error)">
+        <Callout title="3. หา “ค่าจริง” ไวด้วยคำสั่ง d/dx (ไว้คิด error)">
           <CalcSteps steps={[
-            <span><Key>HOME</Key> → <Key>Calculate</Key> → <Key>CATALOG/OPTN</Key> → เลือก <code>d/dx</code></span>,
-            <span>พิมพ์ <code>d/dx( eˣ ) | x=2</code> → <Key>=</Key> → ได้ 7.389056099 ทันที → <Key>STO</Key> <Key>X</Key></span>,
+            <span><Key>HOME</Key> → <code>Calculate</code> → <Key>OK</Key> → <Key>CATALOG</Key> → <code>Func Analysis</code> → <Key>OK</Key> → <code>Derivative(d/dx)</code> (บรรทัดแรก) → <Key>OK</Key></span>,
+            <span>พิมพ์ <code>eˣ</code> → <Key>▶</Key> ไปช่อง <M>{`|_{x=}`}</M> → พิมพ์ <code>2</code> → <Key>EXE</Key> → ได้ 7.389056099 ทันที → <Sto v="x"/></span>,
             <span>error: <code>|X − Ans| ÷ X × 100</code> (ใช้ Ans จากค่าประมาณล่าสุด)</span>,
-            <span>อนุพันธ์อันดับ 2 เครื่องไม่มีปุ่มตรง ๆ → ดิฟมือหาสูตร <M>{`f''`}</M> แล้วกดแทนค่า (เช่น ex.8: <code>e^(2.5÷3)÷9+2</code>)</span>,
+            <span>อนุพันธ์อันดับ 2 เครื่องไม่มีคำสั่งตรง ๆ → ดิฟมือหาสูตร <M>{`f''`}</M> แล้วกดแทนค่า (เช่น ex.8: <code>e^(2.5÷3)÷9+2</code>)</span>,
           ]}/>
-          <p style={{margin:"6px 0 0", fontSize:'0.8rem'}}><b>ระวัง:</b> d/dx ของเครื่องเป็น numerical (central) — ใช้เป็นค่าจริงตอนหา error ได้เพราะแม่นมาก แต่<b>ห้ามใช้แทนคำตอบ</b> โจทย์สั่ง forward/backward ต้องโชว์สูตรนั้นจริง ๆ</p>
+          <p style={{margin:"6px 0 0", fontSize:'0.8rem'}}><b>ระวัง:</b> คู่มือไม่ได้บอกว่าคำสั่ง d/dx ใช้อัลกอริทึมอะไรข้างใน (จึงอ้างไม่ได้ว่าเป็น central) รู้แค่ว่าค่าที่ได้แม่นพอจะใช้เป็น “ค่าจริง” ตอนคิด error แต่<b>ห้ามใช้แทนคำตอบ</b> โจทย์สั่ง forward/backward ต้องโชว์สูตรนั้นจริง ๆ</p>
         </Callout>
 
         <Callout kind="tip" title="งบเวลา 2 นาที/ข้อ (ซ้อมจนเป็นกล้ามเนื้อ)">

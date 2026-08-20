@@ -28,6 +28,10 @@ function HandWalkthrough({ steps }) {
     <div style={{background:"linear-gradient(135deg, rgba(131,193,103,0.04), rgba(88,196,221,0.04))",
                  border:"1px solid var(--green-dim)", borderRadius:10, padding:"14px 18px", margin:"14px 0"}}>
       <div className="kicker" style={{color:"var(--green)", marginBottom:8}}>✍️ เขียนมือทีละขั้น (สไตล์เฉลยอาจารย์) · กด ▶ ให้เฉลยค่อย ๆ ขึ้นทีละขั้น</div>
+      <div style={{fontSize:'0.72rem', color:"var(--text-dim)", marginBottom:8, lineHeight:1.7}}>
+        📟 = ลำดับปุ่ม fx-991CW · <b>VAR▸A</b> หมายถึงกด <b>VARIABLE</b> แล้วเลือก <b>[A=] &gt; [Store]</b> (เครื่องรุ่นนี้ไม่มีปุ่ม STO) ·
+        <b> ◀ EXE</b> = Replay ดึงสูตรเดิมกลับมารันซ้ำ
+      </div>
       <StepPlayer steps={steps.length} stepDuration={1700} height={90} label={(s) => `ขั้น ${s+1}/${steps.length}`}>
         {({ step }) => (
           <div>{steps.slice(0, step+1).map((s, i) => renderStep(s, i, i === step))}</div>
@@ -506,7 +510,7 @@ function RootFindingLesson() {
           result: "1.521380",
           note: "แต่ละรอบจำนวนหลักที่ถูกต้องเพิ่มเป็นเท่าตัว — ลู่เข้าเร็วมาก (quadratic)",
         }}
-        meta={["6 methods", "Animation ทุก method", "fx-991CW SOLVE", "Python complete"]}
+        meta={["6 methods", "Animation ทุก method", "fx-991CW Equation▸Solver", "Python complete"]}
       />
 
       <ExamRules/>
@@ -646,11 +650,11 @@ print(f"f(root) = {f(best[1]):.6f}")`} height={220}/>
 
         <Callout kind="tip" title="fx-991CW · ใช้โหมด Table">
           <CalcSteps steps={[
-            <span><Key>HOME</Key> → เลือก <Key>Table</Key></span>,
-            <span>พิมพ์ <code>4x³ − 180</code> → <Key>OK</Key></span>,
-            <span>Start = 0, End = 10, Step = 1</span>,
+            <span><Key>HOME</Key> → <code>Table</code> → <Key>OK</Key> · ตั้ง <Key>TOOLS</Key> → <code>Table Type</code> → <code>f(x)</code> ก่อน (ได้ 45 แถว ไม่มีคอลัมน์ ERROR)</span>,
+            <span><Key>FUNCTION</Key> → เลื่อนไป <b><code>Define f(x)</code></b> → <Key>OK</Key> → พิมพ์ <code>4x³ − 180</code> → <Key>EXE</Key></span>,
+            <span><Key>TOOLS</Key> → <code>Table Range</code> → Start <code>0</code> <Key>EXE</Key> · End <code>10</code> <Key>EXE</Key> · Step <code>1</code> <Key>EXE</Key> → <code>▸Execute</code> <Key>EXE</Key></span>,
             <span>ดูที่ค่า f(x) เปลี่ยนเครื่องหมาย → ระหว่าง <b>x = 3 (f=−72)</b> และ <b>x = 4 (f=76)</b></span>,
-            <span>กลับมาตั้ง Start = 3.5, End = 3.6, Step = 0.01 → ดูช่วงใหม่ → ตั้ง Step เล็กลงเรื่อย ๆ</span>,
+            <span>กลับไป <Key>TOOLS</Key> → <code>Table Range</code> ตั้ง Start = 3.5, End = 3.6, Step = 0.01 → ดูช่วงใหม่ → ตั้ง Step เล็กลงเรื่อย ๆ</span>,
           ]}/>
         </Callout>
 
@@ -725,31 +729,31 @@ x⁴ − 13 = 0  ← นี่คือ f(x)
             body: `f(1.5) = (1.5)⁴ − 13 = 5.0625 − 13 = −7.9375  (ลบ)
 f(2.0) = (2.0)⁴ − 13 = 16 − 13 = +3  (บวก)
 f(1.5)·f(2.0) = (−7.9375)(3) = −23.81 < 0  ✓ มีรากในช่วง`,
-            calc: "1.5  x^y  4  −  13  =  → STO A  (ได้ −7.9375 → เก็บใน A)" },
+            calc: "1.5  ^  4  −  13  EXE  → VAR▸A  (ได้ −7.9375 → เก็บใน A)" },
           { title: "Iteration 1 · หา xm = (a + b)/2",
             body: `xm₁ = (1.5 + 2.0) / 2 = 3.5 / 2 = 1.75
 f(xm₁) = (1.75)⁴ − 13 = 9.378906 − 13 = −3.621094  (ลบ)
 f(a)·f(m) = (−7.937500)(−3.621094) = +28.74 > 0  → ราก<b>ไม่</b>อยู่ซ้าย → a ← m
 ดังนั้น: a = 1.75, b = 2.0`,
-            calc: "(1.5 + 2) ÷ 2 = → STO C   |   C^4 − 13 = (ดูเครื่องหมาย ลบ) → C → STO A" },
+            calc: "(1.5 + 2) ÷ 2 EXE → VAR▸C   |   C^4 − 13 EXE (ดูเครื่องหมาย: ลบ) → C → VAR▸A" },
           { title: "Iteration 2",
             body: `xm₂ = (1.75 + 2.0) / 2 = 1.875
 f(xm₂) = (1.875)⁴ − 13 = 12.359619 − 13 = −0.640381  (ลบ)
 f(a)·f(m) = (−3.621094)(−0.640381) = +2.32 > 0  → a ← m
 a = 1.875, b = 2.0`,
-            calc: "(A + B) ÷ 2 = → STO C   |   C^4 − 13 =  ลบ → C → STO A" },
+            calc: "(A + B) ÷ 2 EXE → VAR▸C   |   C^4 − 13 EXE → ลบ → C → VAR▸A" },
           { title: "Iteration 3",
             body: `xm₃ = (1.875 + 2.0) / 2 = 1.9375
 f(xm₃) = (1.9375)⁴ − 13 = 14.091812 − 13 = +1.091812  (บวก)
 f(a)·f(m) = (−0.640381)(1.091812) = −0.699 < 0  → ราก<b>อยู่ซ้าย</b> → b ← m
 a = 1.875, b = 1.9375`,
-            calc: "(A + B) ÷ 2 = → STO C   |   C^4 − 13 = บวก → C → STO B" },
+            calc: "(A + B) ÷ 2 EXE → VAR▸C   |   C^4 − 13 EXE → บวก → C → VAR▸B" },
           { title: "Iteration 4 + คำนวณ error",
             body: `xm₄ = (1.875 + 1.9375) / 2 = 1.90625
 f(xm₄) = (1.90625)⁴ − 13 = 13.204423 − 13 = +0.204423  (บวก)
 f(a)·f(m) = (−0.640381)(0.204423) < 0 → b ← m → a = 1.875, b = 1.90625
 εₐ = |xm₄ − xm₃| / |xm₄| = |1.90625 − 1.9375| / 1.90625 = 0.03125 / 1.90625 ≈ 0.0164 = 1.64%`,
-            calc: "(C − D) ÷ C · 100 =  (โดย D คือ xm รอบก่อน)" },
+            calc: "(C − D) ÷ C · 100 EXE  (โดย D คือ xm รอบก่อน)" },
           { title: "สรุป",
             body: `หลัง 4 iterations: ⁴√13 ≈ 1.90625  (ค่าจริง = 1.898829...)
 ถ้าต้องการนิ่งทศนิยม 6 ตำแหน่ง ต้อง iterate ต่อจนกว่า xm สองรอบติดกันต่างกัน < 10⁻⁶ ≈ 19–20 รอบ (ดูโปรแกรมข้อ 1.2)` },
@@ -778,12 +782,12 @@ f(a)·f(m) = (−0.640381)(0.204423) < 0 → b ← m → a = 1.875, b = 1.90625
         <h3>fx-991CW · กดเครื่อง</h3>
         <Callout title="วิธีกดเครื่องคิดเลขแบบไว ใช้ตัวแปร A, B, C">
           <CalcSteps steps={[
-            <span>เก็บค่าเริ่มต้น: <Key>1.5</Key> <Key>→</Key> <Key>STO</Key> <Key>A</Key> (a=1.5)</span>,
-            <span><Key>2</Key> <Key>→</Key> <Key>STO</Key> <Key>B</Key> (b=2)</span>,
-            <span>คำนวณ m: <Key>(</Key><Key>A</Key><Key>+</Key><Key>B</Key><Key>)</Key><Key>÷</Key><Key>2</Key> <Key>→</Key> <Key>STO</Key> <Key>C</Key></span>,
-            <span>หา f(m): <Key>C</Key><Key>^</Key><Key>4</Key><Key>−</Key><Key>13</Key> <Key>=</Key> ดูเครื่องหมาย</span>,
-            <span>เป็นลบ → ราก<b>อยู่ขวา</b> → <Key>C</Key> <Key>→</Key> <Key>STO</Key> <Key>A</Key> (a←m)</span>,
-            <span>เป็นบวก → ราก<b>อยู่ซ้าย</b> → <Key>C</Key> <Key>→</Key> <Key>STO</Key> <Key>B</Key> (b←m)</span>,
+            <span>เก็บค่าเริ่มต้น: <Key>1.5</Key> <Sto v="A"/> (a=1.5)</span>,
+            <span><Key>2</Key> <Sto v="B"/> (b=2)</span>,
+            <span>คำนวณ m: <Key>(</Key><Key>A</Key><Key>+</Key><Key>B</Key><Key>)</Key><Key>÷</Key><Key>2</Key> <Key>EXE</Key> <Sto v="C"/> <span className="muted">(ตัวอักษร A/B พิมพ์ด้วย <Key>SHIFT</Key> + ปุ่มที่มีตัวนั้นอยู่ — A = <Key>SHIFT</Key> <Key>4</Key>, B = <Key>SHIFT</Key> <Key>5</Key>)</span></span>,
+            <span>หา f(m): <Key>C</Key><Key>^</Key><Key>4</Key><Key>−</Key><Key>13</Key> <Key>EXE</Key> ดูเครื่องหมาย</span>,
+            <span>เป็นลบ → ราก<b>อยู่ขวา</b> → <Key>C</Key> <Sto v="A"/> (a←m)</span>,
+            <span>เป็นบวก → ราก<b>อยู่ซ้าย</b> → <Key>C</Key> <Sto v="B"/> (b←m)</span>,
             <span>วน step 3-5 จนกว่าค่า C จะไม่เปลี่ยนใน 6 ตำแหน่ง</span>,
           ]}/>
         </Callout>
@@ -928,7 +932,7 @@ print(f"{m:.4f}    (Bisection · {iters} iterations)")`} height={300}/>
    = 20.375000 / 10.937500 = 1.862857
 f(x₁) = 1.862857⁴ − 13 = −0.957457  (ลบ — เครื่องหมายเดียวกับ f(xL))
 → xL ← 1.862857   (xR ยังเป็น 2.0)`,
-            calc: "( 1.5×3 − 2×(−7.9375) ) ÷ ( 3 + 7.9375 ) =   → STO A" },
+            calc: "( 1.5×3 − 2×(−7.9375) ) ÷ ( 3 + 7.9375 ) EXE   → VAR▸A" },
           { title: "Iteration 2",
             body: `x₁ = [1.862857(3) − 2(−0.957457)] / [3 + 0.957457]
    = (5.588571 + 1.914914) / 3.957457
@@ -1113,7 +1117,7 @@ x₃ = e^(−0.3678794) = 0.6922006    |Δx| = 0.3243212
 x₄ = e^(−0.6922006) = 0.5004735    |Δx| = 0.1917271
 
 สังเกต: ค่าเด้งสลับ สูง-ต่ำ-สูง-ต่ำ คร่อมรากไปเรื่อย ๆ`,
-            calc: "กด 0 = แล้วพิมพ์ e^(−Ans) = จากนั้นกด = รัว ๆ (Ans-loop)" },
+            calc: "กด 0 EXE แล้วพิมพ์ e^(−Ans) EXE จากนั้นกด ◀ EXE ◀ EXE รัว ๆ (Ans-loop)" },
           { title: "เดินต่อจนเข้าเกณฑ์ |Δx| < 0.001 ของอาจารย์",
             body: `x₅  = 0.6062435   x₆  = 0.5453958   x₇  = 0.5796123
 x₈  = 0.5601155   x₉  = 0.5711431   x₁₀ = 0.5648793
@@ -1163,7 +1167,7 @@ x(x + 1) = 7 + x
           { title: "รอบ 2",
             body: `x₂ = (7 + x₁)/(x₁ + 1) = (7 + 7)/(7 + 1) = 14/8 = 1.75
 ε = |x₂ − x₁| / x₂ = |1.75 − 7| / 1.75 = 3        ← error โตขึ้น! (นี่แหละ “แกว่ง”)`,
-            calc: "( 7 + Ans ) ÷ ( Ans + 1 ) = แล้วกด = ซ้ำได้เลย" },
+            calc: "( 7 + Ans ) ÷ ( Ans + 1 ) EXE แล้วกด ◀ EXE ซ้ำได้เลย" },
           { title: "รอบ 3–8 (เดินต่อจนเห็นว่าลู่เข้าจริง)",
             body: `x₃ = 3.1818182   ε = 0.4500000
 x₄ = 2.4347826   ε = 0.3068182
@@ -1364,25 +1368,25 @@ Newton: x_{n+1} = x_n − f(x_n) / f'(x_n)
 f'(2) = 2(2) = 4
 x₁ = 2 − (−3) / 4 = 2 + 0.75 = 2.75
 εₐ = |2.75 − 2| / 2.75 = 0.75/2.75 ≈ 0.2727 = 27.27%`,
-            calc: "ตั้ง: 2 → STO x   |   พิมพ์สูตร: x − (x² − 7) ÷ (2x) =   |   ผลเก็บ → STO x   (กด ↑ = ↑ = ↑ = ซ้ำ)" },
+            calc: "ตั้ง: 2 → VAR▸x   |   พิมพ์สูตร: x − (x² − 7) ÷ (2x) EXE   |   ผลเก็บ → VAR▸x   (เรียกสูตรเดิมด้วย ◀ หรือ ▲ แล้ว EXE ซ้ำ)" },
           { title: "Iteration 2",
             body: `f(2.75) = 7.5625 − 7 = 0.5625        (= 9/16)
 f'(2.75) = 5.5
 x₂ = 2.75 − 0.5625/5.5 = 2.75 − 0.1022727 = 2.6477273     (= 233/88)
 εₐ = |2.6477273 − 2.75| / 2.6477273 = 0.1022727/2.6477273 ≈ 3.862661%   (= 9/233)`,
-            calc: "กดลูกศรขึ้น (↑) เพื่อเรียกสูตรเดิม → = (จะใช้ค่า x ใหม่ที่เก็บไว้)" },
+            calc: "เรียกสูตรเดิมด้วย ◀ (Replay) หรือ ▲ (ประวัติ) → EXE (จะใช้ค่า x ใหม่ที่เก็บไว้)" },
           { title: "Iteration 3",
             body: `f(2.6477273) = 7.0104597 − 7 = 0.0104597      (= 81/7744 — อย่าใช้ 2.6477 ตัวปัด!)
 f'(2.6477273) = 5.2954545
 x₃ = 2.6477273 − 0.0104597/5.2954545 = 2.6477273 − 0.0019752 = 2.6457520   (= 108497/41008)
 εₐ = 0.0019752/2.6457520 ≈ 0.074656%   (= 81/108497)`,
-            calc: "↑ = ซ้ำ (ตอนนี้ x = 2.6477273 อยู่แล้ว — เก็บทศนิยมให้ครบ อย่าจดแค่ 4 ตำแหน่ง)" },
+            calc: "◀ EXE ซ้ำ (ตอนนี้ x = 2.6477273 อยู่แล้ว — เก็บทศนิยมให้ครบ อย่าจดแค่ 4 ตำแหน่ง)" },
           { title: "Iteration 4",
             body: `f(2.6457520) = 0.0000039
 f'(2.6457520) = 5.2915041
 x₄ = 2.6457520 − 0.0000039/5.2915041 = 2.6457513
 εₐ ≈ 0.000028%  ✓ หยุดได้`,
-            calc: "↑ = → ดูว่าค่าไม่เปลี่ยนใน 6 ทศนิยมแล้ว = stop" },
+            calc: "◀ EXE → ดูว่าค่าไม่เปลี่ยนใน 6 ทศนิยมแล้ว ⇒ stop" },
           { title: "สรุป + เปรียบเทียบ",
             body: `√7 ≈ 2.6457513  (ค่าจริง = 2.6457513110...)
 สังเกต quadratic convergence: error ลด ~ยกกำลัง 2 ทุกรอบ
@@ -1419,11 +1423,11 @@ Newton ใช้ 4 iter ได้ความแม่น 6 ทศนิยม �
         <h3>fx-991CW · ใช้ตัวแปร X</h3>
         <Callout title="กดเครื่อง — Newton ใช้ 1 บรรทัด">
           <CalcSteps steps={[
-            <span>เก็บค่าเริ่ม: <Key>2</Key> <Key>→</Key> <Key>STO</Key> <Key>x</Key></span>,
+            <span>เก็บค่าเริ่ม: <Key>2</Key> <Sto v="x"/></span>,
             <span>พิมพ์สูตร Newton: <code>x − (x² − 7) ÷ (2x)</code></span>,
-            <span>กด <Key>=</Key> → ได้ x₁ = 2.75</span>,
-            <span>กด <Key>→</Key> <Key>STO</Key> <Key>x</Key> (เก็บกลับใส่ x)</span>,
-            <span>กด <Key>↑</Key> <Key>=</Key> (เรียกคำสั่งเก่า + คำนวณ) → ได้ x₂</span>,
+            <span>กด <Key>EXE</Key> → ได้ x₁ = 2.75</span>,
+            <span>กด <Sto v="x"/> (เก็บกลับใส่ x)</span>,
+            <span>เรียกสูตรเดิม: <Key>◀</Key> (ผลยังค้างจอ) หรือ <Key>▲</Key> (เลื่อนประวัติ ถ้าจอโล่งแล้ว) → <Key>EXE</Key> → ได้ x₂</span>,
             <span>กดซ้ำ ๆ จนเลขไม่เปลี่ยน</span>,
           ]}/>
         </Callout>
@@ -1901,12 +1905,12 @@ for n in range(0, 6):
         <Callout kind="tip" title="fx-991CW · เก็บ derivatives ใน A–D แล้วประกอบสูตร">
           <p>วิธีเร็วในห้องสอบ — สำหรับ Taylor n=3 รอบ <M>{`x_0`}</M>:</p>
           <CalcSteps steps={[
-            <span>คำนวณ <M>{`f(x_0)`}</M> → <Key>STO</Key> <Key>A</Key></span>,
-            <span>คำนวณ <M>{`f'(x_0)`}</M> (ใช้ <code>d/dx</code> ในเครื่อง) → <Key>STO</Key> <Key>B</Key></span>,
-            <span>คำนวณ <M>{`f''(x_0)`}</M> (ทำ d/dx ของ d/dx หรือคำนวณด้วยสูตรเอง) → <Key>STO</Key> <Key>C</Key></span>,
-            <span>คำนวณ <M>{`f'''(x_0)`}</M> → <Key>STO</Key> <Key>D</Key></span>,
+            <span>คำนวณ <M>{`f(x_0)`}</M> → <Sto v="A"/></span>,
+            <span>คำนวณ <M>{`f'(x_0)`}</M> (ใช้ <code>d/dx</code> ในเครื่อง) → <Sto v="B"/></span>,
+            <span>คำนวณ <M>{`f''(x_0)`}</M> (ทำ d/dx ของ d/dx หรือคำนวณด้วยสูตรเอง) → <Sto v="C"/></span>,
+            <span>คำนวณ <M>{`f'''(x_0)`}</M> → <Sto v="D"/></span>,
             <span>ประกอบสูตร: <code>A + B(X−x₀) + C÷2·(X−x₀)² + D÷6·(X−x₀)³</code></span>,
-            <span>กำหนด <Key>X</Key> = ค่า x ที่อยากหา → กด <Key>=</Key> → ได้ T₃(x) ทันที</span>,
+            <span>กำหนด <Key>X</Key> = ค่า x ที่อยากหา → กด <Key>EXE</Key> → ได้ T₃(x) ทันที</span>,
           ]}/>
           <p style={{margin:"8px 0 4px"}}><b>ตัวอย่างกับ <M>{`f(x) = \\ln x`}</M>, <M>{`x_0 = 2`}</M>:</b></p>
           <NumTable

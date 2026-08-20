@@ -53,7 +53,7 @@ f[x₁, x₂] = (1.7918 − 1.3863) / (6 − 4) = 0.4055 / 2 = 0.20275
 f[x₀, x₁, x₂] = (0.20275 − 0.4621) / (6 − 1) = −0.25935 / 5 = −0.05187
 
 สัมประสิทธิ์: c₀ = 0, c₁ = 0.4621, c₂ = −0.05187`,
-            calc: "(1.3863 − 0) ÷ 3 → STO A   |   (1.7918 − 1.3863) ÷ 2 → STO B   |   (B − A) ÷ 5 → STO C" },
+            calc: "(1.3863 − 0) ÷ 3 → VAR▸A   |   (1.7918 − 1.3863) ÷ 2 → VAR▸B   |   (B − A) ÷ 5 → VAR▸C" },
           { title: "สร้างพหุนาม P(x)",
             body: `P(x) = c₀ + c₁(x − x₀) + c₂(x − x₀)(x − x₁)
 P(x) = 0 + 0.4621·(x − 1) + (−0.05187)·(x − 1)(x − 4)` },
@@ -100,7 +100,7 @@ P(x) = 0 + 0.4621·(x − 1) + (−0.05187)·(x − 1)(x − 4)` },
             <span>คำนวณ <M>{`f[x_1,x_0]`}</M>: <code>(E−D) ÷ (B−A)</code> → เก็บใส่ <code>x</code></span>,
             <span>คำนวณ <M>{`f[x_2,x_1]`}</M>: <code>(F−E) ÷ (C−B)</code> → เก็บใส่ <code>y</code></span>,
             <span>คำนวณ <M>{`f[x_2,x_1,x_0]`}</M>: <code>(y − x) ÷ (C−A)</code></span>,
-            <span><b>แนะนำ:</b> ใช้โหมด <Key>Spreadsheet</Key> สร้างตารางได้ทั้งตารางในเครื่อง</span>,
+            <span><b>แนะนำ:</b> ใช้โหมด <code>Spreadsheet</code> สร้างตารางได้ทั้งตารางในเครื่อง (5 คอลัมน์ A–E × 45 แถว)</span>,
           ]}/>
         </Callout>
 
@@ -183,10 +183,10 @@ print(f"\\nf(4.5) = {ans:.6f}")`} height={220}/>
         <h3>fx-991CW · กด Lagrange ทีละ Lᵢ</h3>
         <Callout title="เก็บ x ในตัวแปร แล้วประกอบทีละพจน์">
           <CalcSteps steps={[
-            <span>เก็บค่า x ที่จะหา (เช่น 4.5) ใน <Key>STO</Key> <Key>x</Key> — ใช้ซ้ำได้ทุกพจน์</span>,
-            <span>คำนวณ <M>{`L_0`}</M>: พิมพ์ <code>(x−x₁)(x−x₂)…÷((x₀−x₁)(x₀−x₂)…)</code> → <Key>=</Key> → <Key>STO</Key> <Key>A</Key></span>,
+            <span>เก็บค่า x ที่จะหา (เช่น 4.5) ใน <Sto v="x"/> — ใช้ซ้ำได้ทุกพจน์</span>,
+            <span>คำนวณ <M>{`L_0`}</M>: พิมพ์ <code>(x−x₁)(x−x₂)…÷((x₀−x₁)(x₀−x₂)…)</code> → <Key>EXE</Key> → <Sto v="A"/></span>,
             <span>ทำซ้ำได้ <M>{`L_1, L_2, \\ldots`}</M> เก็บใน B, C, …</span>,
-            <span>รวมคำตอบ: <code>A·y₀ + B·y₁ + C·y₂ + …</code> → <Key>=</Key></span>,
+            <span>รวมคำตอบ: <code>A·y₀ + B·y₁ + C·y₂ + …</code> → <Key>EXE</Key></span>,
             <span><b>ตรวจเร็ว:</b> <M>{`L_0 + L_1 + \\cdots = 1`}</M> เสมอ — ถ้าบวกกันไม่ได้ 1 แปลว่ากดผิด</span>,
           ]}/>
         </Callout>
@@ -224,12 +224,12 @@ print(f"\\nf(4.5) = {ans:.6f}")`} height={220}/>
 
         <Callout title="fx-991CW · สร้างตาราง Δ ด้วยโหมด Spreadsheet">
           <CalcSteps steps={[
-            <span><Key>HOME</Key> → <Key>Spreadsheet</Key></span>,
+            <span><Key>HOME</Key> → <code>Spreadsheet</code> → <Key>OK</Key> <span className="muted">(สูตรจะถูกลบทิ้งเมื่อออกจากโหมดหรือปิดเครื่อง — ต้องทำจนจบข้อรวดเดียว)</span></span>,
             <span>คอลัมน์ A = ค่า <M>{`f_i`}</M> (พิมพ์ลงทีละแถว)</span>,
-            <span>คอลัมน์ B = <M>{`\\Delta f`}</M>: ที่ B1 พิมพ์สูตร <code>=A2−A1</code> แล้ว Fill ลงล่าง</span>,
-            <span>คอลัมน์ C = <M>{`\\Delta^2 f`}</M>: <code>=B2−B1</code> Fill ลง · ทำ D, E ต่อสำหรับ <M>{`\\Delta^3, \\Delta^4`}</M></span>,
+            <span>คอลัมน์ B = <M>{`\\Delta f`}</M>: ที่ B1 พิมพ์สูตร <code>=A2−A1</code> แล้ว <Key>TOOLS</Key> → <code>Fill Formula</code> คัดลงล่าง</span>,
+            <span>คอลัมน์ C = <M>{`\\Delta^2 f`}</M>: <code>=B2−B1</code> แล้ว Fill Formula ลง · ทำ D, E ต่อสำหรับ <M>{`\\Delta^3, \\Delta^4`}</M></span>,
             <span>อ่าน <b>แถวบนสุด</b>ของแต่ละคอลัมน์ = <M>{`\\Delta f_0, \\Delta^2 f_0, \\ldots`}</M> ที่ใช้ในสูตร Forward</span>,
-            <span>หา s = <code>(x−x₀)÷h</code> เก็บใน <Key>STO</Key> <Key>A</Key> แล้วแทนในสูตร Newton Forward</span>,
+            <span>หา s = <code>(x−x₀)÷h</code> เก็บใน <Sto v="A"/> แล้วแทนในสูตร Newton Forward</span>,
           ]}/>
         </Callout>
 

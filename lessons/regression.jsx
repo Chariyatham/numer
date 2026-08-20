@@ -75,10 +75,10 @@ function RegressionLesson() {
         <h3>fx-991CW · เร็วที่สุดในโลก</h3>
         <Callout title="ใช้โหมด Statistics">
           <CalcSteps steps={[
-            <span><Key>HOME</Key> → <Key>Statistics</Key></span>,
-            <span>เลือก <code>y = a + bx</code></span>,
-            <span>กรอกตาราง X, Y</span>,
-            <span><Key>OK</Key> → ดู Stats Calc → เลือก <code>a</code> (= a₀) และ <code>b</code> (= a₁)</span>,
+            <span><Key>HOME</Key> → <code>Statistics</code> → <Key>OK</Key> → เลือก <code>2-Variable</code> → <Key>OK</Key></span>,
+            <span>กรอกคอลัมน์ <code>x</code> คั่นด้วย <Key>EXE</Key> → เลื่อนไปหัวคอลัมน์ <code>y</code> ด้วย <Key>▼</Key> <Key>▶</Key> แล้วกรอก <code>y</code></span>,
+            <span>กรอกครบกด <Key>OK</Key> → เลือก <code>Reg Results</code> → <Key>OK</Key></span>,
+            <span>เลือกทรง <code>y = a + bx</code> → <Key>OK</Key> → อ่าน <code>a</code> (= a₀), <code>b</code> (= a₁), <code>r</code></span>,
             <span><b>คำเตือน:</b> เครื่องนี้ใช้ a = intercept, b = slope (กลับกับสไลด์อาจารย์ที่ใช้ a₀, a₁ — ตรวจให้ดี!)</span>,
           ]}/>
         </Callout>
@@ -125,11 +125,11 @@ print(f"R² = {r2:.4f}")`} height={260}/>
         <h3>fx-991CW · Quadratic Regression ในตัว (degree 2)</h3>
         <Callout title="โหมด Statistics ทำ y = a + bx + cx² ให้ทันที">
           <CalcSteps steps={[
-            <span><Key>HOME</Key> → <Key>Statistics</Key></span>,
-            <span>เลือกโมเดล <code>y = a + bx + cx²</code> (Quadratic Regression)</span>,
-            <span>กรอกคอลัมน์ x และ y ให้ครบทุกจุด</span>,
-            <span><Key>OK</Key> → เมนู Regression Calc → อ่านค่า <code>a, b, c</code> = <M>{`a_0, a_1, a_2`}</M></span>,
-            <span><b>degree 3 ขึ้นไป:</b> เครื่องไม่มีให้ตรง ๆ → ต้องตั้ง Normal Equations เองแล้วใช้ <Key>Equation</Key> → <Key>Simul Equation</Key></span>,
+            <span><Key>HOME</Key> → <code>Statistics</code> → <Key>OK</Key> → เลือก <code>2-Variable</code> → <Key>OK</Key></span>,
+            <span>กรอกคอลัมน์ x และ y ให้ครบทุกจุด (คั่นด้วย <Key>EXE</Key>)</span>,
+            <span>กด <Key>OK</Key> → เลือก <code>Reg Results</code> → <Key>OK</Key></span>,
+            <span><b>เลือกโมเดลตรงนี้</b> (ไม่ใช่ตอนเข้าโหมด): <code>y = a + bx + cx²</code> → <Key>OK</Key> → อ่านค่า <code>a, b, c</code> = <M>{`a_0, a_1, a_2`}</M></span>,
+            <span><b>degree 3 ขึ้นไป:</b> เครื่องไม่มีให้ตรง ๆ → ต้องตั้ง Normal Equations เองแล้วใช้ <code>Equation</code> → <code>Simul Equation</code></span>,
           ]}/>
         </Callout>
 
@@ -320,7 +320,7 @@ print(f"RMSE = {rmse:.4f}")`} height={300}/>
             <li>คำนวณ Σx_k, Σx_k², Σx_ix_j, Σx_ky <b>ทีละคู่</b> ใน <Key>Stat</Key> mode (เลือก 1-var หรือ 2-var)
               <br/><span style={{fontSize:'0.75rem', color:"var(--text-faint)"}}>เช่น ใส่ list x₁ กับ x₂ → ได้ Σx₁, Σx₂, Σx₁², Σx₂², Σx₁x₂</span></li>
             <li>ประกอบ matrix 4×4 ในกระดาษ (ใช้ค่าที่ออกมาทุกตัว)</li>
-            <li>ไปที่ <Key>HOME</Key> → <Key>Equation</Key> → <Key>Simul Equation</Key> → เลือก <b>4 unknowns</b> → ใส่ matrix 4×4 + RHS → กด <Key>=</Key> ได้ <M>{`a_0, a_1, a_2, a_3`}</M> ทันที</li>
+            <li>ไปที่ <Key>HOME</Key> → <code>Equation</code> → <code>Simul Equation</code> → เลือก <b>4 Unknowns</b> → ใส่ matrix 4×4 + RHS → กด <Key>EXE</Key> ได้ <M>{`a_0, a_1, a_2, a_3`}</M> ทันที</li>
           </ol>
           <p style={{margin:"6px 0 0", fontSize:'0.778rem'}}>fx-991CW รองรับ Simul Equation สูงสุด <b>4×4</b> — พอดีกับ Multiple Linear 3 ตัวแปร (4 unknowns)</p>
         </Callout>

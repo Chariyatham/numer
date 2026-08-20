@@ -527,11 +527,11 @@ function LinearSystemsLesson() {
         <h3>fx-991CW · ใช้เครื่องช่วยหา det</h3>
         <Callout title="วิธีกดเครื่อง">
           <CalcSteps steps={[
-            <span><Key>HOME</Key> → <Key>Matrix</Key> → <Key>Define Matrix</Key> → เลือก MatA</span>,
-            <span>ขนาด 3×3 → กรอกค่า A</span>,
-            <span>กลับมาหน้าคำนวณ → <Key>OPTN</Key> → <Key>Matrix Calc</Key> → <Key>det(</Key> → <Key>MatA</Key> → <Key>=</Key></span>,
-            <span>เก็บลงตัวแปร: <Key>STO</Key> → A (เก็บ det(A) ไว้)</span>,
-            <span>กลับ Define Matrix → MatB = A แต่แทนคอลัมน์ที่ 1 ด้วย b → หา det → หาร A → ได้ x₁</span>,
+            <span><Key>HOME</Key> → <code>Matrix</code> → <Key>OK</Key> → <Key>TOOLS</Key> → เลือก <code>[MatA:]</code> → <Key>OK</Key></span>,
+            <span>ใส่ <code>Row</code> = 3, <code>Columns</code> = 3 → เลื่อนไป <code>[Confirm]</code> → <Key>OK</Key> → กรอกสมาชิกทีละช่องคั่นด้วย <Key>OK</Key> → <Key>AC</Key></span>,
+            <span><Key>CATALOG</Key> → <code>Matrix</code> → <code>Matrix Calc</code> → <code>Determinant</code> → <Key>OK</Key> · แล้ว <Key>CATALOG</Key> → <code>Matrix</code> → <code>MatA</code> → <Key>OK</Key> → <code>)</code> → <Key>EXE</Key></span>,
+            <span>เก็บลงตัวแปร: <Sto v="A"/> (เก็บ det(A) ไว้เป็นตัวหารของทุก <M>{`x_i`}</M>)</span>,
+            <span>กลับไป <Key>TOOLS</Key> → <code>[MatA:]</code> แก้เฉพาะคอลัมน์ที่ 1 เป็นเวกเตอร์ b → หา det ใหม่ → หารด้วย A → ได้ x₁</span>,
             <span>ทำซ้ำกับคอลัมน์ 2, 3</span>,
           ]}/>
         </Callout>
@@ -617,7 +617,7 @@ R₃ ← R₃ − 0.1·R₁:
 | 3.0   −0.1     −0.2  |  7.85    |
 | 0      7.0033  −0.2933 | −19.5617 |
 | 0     −0.19    10.02  |  70.615  |`,
-            calc: "เก็บค่า m: 0.1 ÷ 3 → STO A (= 0.03333)   |   0.3 ÷ 3 → STO B (= 0.1)" },
+            calc: "เก็บค่า m: 0.1 ÷ 3 → VAR▸A (= 0.03333)   |   0.3 ÷ 3 → VAR▸B (= 0.1)" },
           { title: "Forward Elim · กำจัดคอลัมน์ 2 (pivot = 7.0033)",
             body: `m₃₂ = −0.19 / 7.0033 = −0.02713
 R₃ ← R₃ − (−0.02713)·R₂  = R₃ + 0.02713·R₂:
@@ -639,16 +639,16 @@ x₁ = (7.85 − (−0.1)(−2.5001) − (−0.2)(7.0000)) / 3
     = 9.0000 / 3 = 3.0000
 
 คำตอบ: x = (3, −2.5, 7)`,
-            calc: "x₃: 70.0843 ÷ 10.012 → STO C   |   x₂: (−19.5617 + 0.2933 × C) ÷ 7.0033 → STO B   |   x₁: (7.85 + 0.1B + 0.2C) ÷ 3 → STO A" },
+            calc: "x₃: 70.0843 ÷ 10.012 → VAR▸C   |   x₂: (−19.5617 + 0.2933 × C) ÷ 7.0033 → VAR▸B   |   x₁: (7.85 + 0.1B + 0.2C) ÷ 3 → VAR▸A" },
         ]}/>
 
         <h3>fx-991CW · ใช้โหมด Equation</h3>
         <Callout title="วิธีไวที่สุด — เครื่องคิดเลข">
           <CalcSteps steps={[
-            <span><Key>HOME</Key> → <Key>Equation</Key> → เลือก <Key>Simul Equation</Key></span>,
-            <span>เลือกจำนวนตัวแปร (2 / 3 / 4)</span>,
-            <span>กรอกค่า <M>a_{11}</M>, <M>a_{12}</M>, ... , <M>b_n</M></span>,
-            <span>กด <Key>=</Key> → เครื่องแสดง x₁, x₂, x₃ ทันที</span>,
+            <span><Key>HOME</Key> → <code>Equation</code> → <Key>OK</Key> → เลือก <code>Simul Equation</code> → <Key>OK</Key></span>,
+            <span>เลือก <code>2 / 3 / 4 Unknowns</code> → <Key>OK</Key></span>,
+            <span>กรอกค่า <M>a_{11}</M>, <M>a_{12}</M>, ... , <M>b_n</M> ทีละช่อง คั่นด้วย <Key>EXE</Key> ทุกช่อง</span>,
+            <span>กรอกครบแล้วกด <Key>EXE</Key> → ได้ x₁ · กด <Key>▼</Key> ดู x₂, x₃ ต่อ</span>,
             <span><b>แต่</b> — ข้อสอบมักให้แสดง <em>ขั้นตอนการ eliminate</em> ดังนั้นต้องทำมือเป็นด้วย</span>,
           ]}/>
         </Callout>
@@ -919,7 +919,7 @@ u₁₃ = 0` },
             body: `จาก A: aᵢ₁ = lᵢ₁ · u₁₁ → lᵢ₁ = aᵢ₁ / u₁₁
 l₂₁ = 8 / 4 = 2
 l₃₁ = 4 / 4 = 1`,
-            calc: "8 ÷ 4 → STO A   |   4 ÷ 4 → STO B" },
+            calc: "8 ÷ 4 → VAR▸A   |   4 ÷ 4 → VAR▸B" },
           { title: "แถวที่ 2 ของ U",
             body: `u₂ⱼ = a₂ⱼ − l₂₁·u₁ⱼ
 u₂₂ = a₂₂ − l₂₁·u₁₂ = 8 − 2·3 = 2
@@ -928,7 +928,7 @@ u₂₃ = a₂₃ − l₂₁·u₁₃ = 1 − 2·0 = 1` },
             body: `a₃₂ = l₃₁·u₁₂ + l₃₂·u₂₂
 11 = 1·3 + l₃₂·2
 l₃₂ = (11 − 3) / 2 = 4`,
-            calc: "(11 − 3) ÷ 2 = 4 → STO C" },
+            calc: "(11 − 3) ÷ 2 EXE → ได้ 4 → VAR▸C" },
           { title: "ตำแหน่ง u₃₃",
             body: `a₃₃ = l₃₁·u₁₃ + l₃₂·u₂₃ + u₃₃
 −1 = 1·0 + 4·1 + u₃₃
@@ -1169,7 +1169,7 @@ print("x =", [round(v,6) for v in solve_cholesky(L, b)])`} height={260}/>
 AᵀA = |  4   2  14 |
       |  2  17  -5 |
       | 14  -5  83 |`,
-            calc: "Matrix mode: STO MatA = A → คำนวณ Trn(MatA)×MatA → STO MatB" },
+            calc: "Matrix mode: TOOLS▸[MatA:] กรอก A → คำนวณ Trn(MatA)×MatA → ผลอยู่ใน MatAns → TOOLS▸[Store]▸[MatB]" },
           { title: "Step 4 · คำนวณ AᵀB ทีละแถว",
             body: `(AᵀB)₁ = (0)(27) + (0)(5) + (2)(7)    =  14
 (AᵀB)₂ = (-4)(27) + (0)(5) + (1)(7)   = -101
@@ -1731,14 +1731,14 @@ for S, name in [(0, "ไม่มีแหล่งความร้อน"), (
         <IterativeSolver method="jacobi"/>
 
         <h3>fx-991CW · วน iteration ด้วยตัวแปร A, B, C</h3>
-        <Callout title="เก็บ x แต่ละตัวในตัวแปร แล้วกด = ซ้ำ ๆ">
+        <Callout title="เก็บ x แต่ละตัวในตัวแปร แล้ววนซ้ำด้วย Replay (◀ EXE)">
           <CalcSteps steps={[
-            <span>ตั้งค่าเริ่ม: <code>0</code> <Key>STO</Key> <Key>A</Key>, <code>0</code> <Key>STO</Key> <Key>B</Key>, <code>0</code> <Key>STO</Key> <Key>C</Key> (= x₁,x₂,x₃ เริ่มต้น)</span>,
-            <span>คำนวณ x₁ ใหม่: พิมพ์ <code>(7−B−C)÷5</code> → <Key>=</Key> → <Key>STO</Key> <Key>A</Key></span>,
-            <span>x₂ ใหม่: <code>(7−A−C)÷5</code> → <Key>=</Key> → <Key>STO</Key> <Key>B</Key></span>,
-            <span>x₃ ใหม่: <code>(7−A−B)÷5</code> → <Key>=</Key> → <Key>STO</Key> <Key>C</Key> — ครบ 1 รอบ</span>,
-            <span>กดลำดับ 3 บรรทัดนี้ซ้ำ → ค่า A, B, C ลู่เข้าหา (1, 1, 1)</span>,
-            <span><b>Jacobi vs Gauss-Seidel:</b> ถ้าใช้ A, B, C ที่ <em>เพิ่ง STO ในรอบนี้</em> = Gauss-Seidel (เร็วกว่า); ถ้าอยากเป๊ะแบบ Jacobi ต้องเก็บค่าเก่าไว้อีกชุด (D, E, F) ก่อนอัปเดต</span>,
+            <span>ตั้งค่าเริ่ม: <code>0</code> <Sto v="A"/>, <code>0</code> <Sto v="B"/>, <code>0</code> <Sto v="C"/> (= x₁,x₂,x₃ เริ่มต้น)</span>,
+            <span>คำนวณ x₁ ใหม่: พิมพ์ <code>(7−B−C)÷5</code> → <Key>EXE</Key> → <Sto v="A"/></span>,
+            <span>x₂ ใหม่: <code>(7−A−C)÷5</code> → <Key>EXE</Key> → <Sto v="B"/></span>,
+            <span>x₃ ใหม่: <code>(7−A−B)÷5</code> → <Key>EXE</Key> → <Sto v="C"/> — ครบ 1 รอบ</span>,
+            <span>กดลำดับ 3 บรรทัดนี้ซ้ำ (ดึงสูตรเดิมกลับมาด้วย <Key>◀</Key>) → ค่า A, B, C ลู่เข้าหา (1, 1, 1)</span>,
+            <span><b>Jacobi vs Gauss-Seidel:</b> ถ้าใช้ A, B, C ที่ <em>เพิ่งเก็บทับในรอบนี้</em> = Gauss-Seidel (เร็วกว่า); ถ้าอยากเป๊ะแบบ Jacobi ต้องเก็บค่าเก่าไว้อีกชุด (D, E, F) ก่อนอัปเดต</span>,
           ]}/>
         </Callout>
 

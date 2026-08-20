@@ -455,6 +455,17 @@ function TimedExam({ presets = [15, 25, 36], label, children }) {
 // ===== CALCULATOR KEYSTROKES =====
 function Key({ children }) { return <span className="calc-key">{children}</span>; }
 
+// เก็บค่าลงตัวแปรบน fx-991CW — เครื่องรุ่นนี้ "ไม่มีปุ่ม STO"
+// ลำดับจริง (คู่มือ EN น.36): คำนวณให้ได้ผล → EXE → VARIABLE → เลือก [A=] → [Store]
+// ทางลัดเมื่อค่าที่จะเก็บเป็นตัวเลขที่พิมพ์เอง (EN น.37): VARIABLE → เลื่อนไป [A=] → พิมพ์เลข → EXE
+function Sto({ v }) {
+  return (
+    <span className="calc-key" title={`fx-991CW ไม่มีปุ่ม STO — กด VARIABLE แล้วเลือก [${v}=] > [Store]`}>
+      VARIABLE▸{v}▸Store
+    </span>
+  );
+}
+
 function CalcSteps({ steps }) {
   return (
     <div className="calc-steps">
@@ -617,7 +628,7 @@ const EXAM_RULES = [
     d: "เป็นวิธีเดียวที่รู้ได้ว่าถูกจริงในเมื่อไม่มีคะแนนขั้นตอน · เวลาที่เหลือให้ตรวจซ้ำ ไม่ใช่เริ่มข้อใหม่",
     src: "คาบ 8 ส.ค." },
   { t: "ห้ามคำนวณต่อจากเลขที่ปัดแล้ว",
-    d: "เดินต่อด้วย Ans / STO / ↑= ให้จบในเครื่อง แล้วค่อยปัดตอนเขียนคำตอบครั้งเดียว",
+    d: "เดินต่อในเครื่องด้วย Ans + Replay (กด ◀ แล้ว EXE) หรือเก็บลงตัวแปรด้วย VARIABLE▸[x=]▸Store แล้วค่อยปัดตอนเขียนคำตอบครั้งเดียว",
     src: "เอกสารติว + คาบ 5 ส.ค." },
   { t: "เงื่อนไขหยุดในโปรแกรม = absolute |Δx| < tol (ปกติ tol = 0.001)",
     d: "คนละตัวกับ ε relative ที่ใช้รายงานในตาราง — และถ้าโจทย์เขียน “ทศนิยม n ตำแหน่งไม่เปลี่ยน” ก็เป็นเกณฑ์ที่สามอีกแบบ อ่านให้ตรงคำสั่ง",
@@ -625,8 +636,8 @@ const EXAM_RULES = [
   { t: "กรอบ 3 ขั้นของ open method (อาจารย์สั่งให้จด)",
     d: "① Initial Value ② Iteration Form ③ เงื่อนไขการหยุด — เขียนตามนี้ทั้งตอนทำมือและตอนเขียนโปรแกรม",
     src: "คาบ 5 ส.ค." },
-  { t: "ปุ่ม SOLVE / ∫dx ลอกไปตอบไม่ได้",
-    d: "มันให้ “ค่าจริง” แต่ข้อสอบถาม “ค่าประมาณ ณ รอบที่กำหนด” — คนละเลข · ใช้ได้แค่เช็คว่าคำตอบเราเข้าใกล้รากจริงมั้ย",
+  { t: "Equation▸Solver / CATALOG▸∫ ลอกไปตอบไม่ได้",
+    d: "มันให้ “ค่าจริง” แต่ข้อสอบถาม “ค่าประมาณ ณ รอบที่กำหนด” — คนละเลข · ใช้ได้แค่เช็คว่าคำตอบเราเข้าใกล้รากจริงมั้ย (fx-991CW ไม่มีปุ่ม SOLVE และไม่มีปุ่ม ∫dx บนแป้น)",
     src: "kim (เคยสอบมาแล้ว)" },
 ];
 
@@ -701,5 +712,5 @@ Object.assign(window, {
   TeX, M, MB, useKaTeXReady, FastPath,
   CodeBlock, PythonRunner, loadPyodide,
   Problem, TimedExam, Sect, Callout, Hero, ConvergenceStrip, NumTable, Formula,
-  Key, CalcSteps, ExamRules,
+  Key, Sto, CalcSteps, ExamRules,
 });

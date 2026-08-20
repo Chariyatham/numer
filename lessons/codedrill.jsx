@@ -44,7 +44,7 @@ function CodeDrillLesson() {
           <p style={{margin:0}}>ทุกโครงข้างล่างวางตาม ① <b>Initial Value</b> ② <b>Iteration Form</b> ③ <b>เงื่อนไขหยุด</b> · เงื่อนไขหยุดใช้ <b>absolute</b> <code>abs(ค่าใหม่ − ค่าเก่า) &lt; tol</code> โดยอาจารย์ตั้ง <code>tol = 0.001</code> เว้นแต่โจทย์สั่งเอง</p>
         </Callout>
 
-        <h3>โครง A · Bracketing — Bisection &amp; False Position</h3>
+        <h3>โครง A · <span style={{color:"var(--signal)"}}>[บท Root Finding]</span> Bracketing — Bisection &amp; False Position</h3>
         <p style={{margin:"0 0 6px", fontSize:'0.86rem'}}>สองวิธีนี้<b>ต่างกันแค่บรรทัดเดียว</b> คือบรรทัดที่คำนวณ <M>{`x_m`}</M> — ที่เหลือเหมือนกันเป๊ะ</p>
         <CodeBlock code={`def f(x):
     return x**4 - 13                 # ★ เปลี่ยนตามโจทย์
@@ -75,7 +75,7 @@ print(round(xm, 6))                  # ตอบเป็นทศนิยม`}
           </ul>
         </Callout>
 
-        <h3 style={{marginTop:22}}>โครง B · Open Method — One-point &amp; Newton</h3>
+        <h3 style={{marginTop:22}}>โครง B · <span style={{color:"var(--signal)"}}>[บท Root Finding]</span> Open Method — One-point &amp; Newton</h3>
         <p style={{margin:"0 0 6px", fontSize:'0.86rem'}}>ใช้ค่าเริ่มตัวเดียว · ต่างกันแค่<b>บรรทัด Iteration Form</b></p>
         <CodeBlock code={`import math
 
@@ -96,7 +96,7 @@ while True:
 
 print(round(xn, 6))`}/>
 
-        <h3 style={{marginTop:22}}>โครง B′ · Secant — เหมือน B แต่มีค่าเริ่ม 2 ตัว</h3>
+        <h3 style={{marginTop:22}}>โครง B′ · <span style={{color:"var(--signal)"}}>[บท Root Finding]</span> Secant — เหมือน B แต่มีค่าเริ่ม 2 ตัว</h3>
         <Callout kind="danger" title="⭐ บรรทัดที่อาจารย์ใช้เวลาอธิบายนานที่สุดอยู่ในโครงนี้">
           <p style={{margin:0}}>คือบรรทัด <code>x0, x1 = x1, x2</code> — ที่อาจารย์พูดว่า “x1 มันจะกลายเป็น x0 ปะ · x2 มันจะกลายเป็น x1 ปะ” · <b>ถ้าลืมบรรทัดนี้ โปรแกรมจะวนค่าเดิมไม่รู้จบ · ถ้าเลื่อนผิดจะกลายเป็น False Position</b></p>
         </Callout>
@@ -114,7 +114,7 @@ while True:
 
 print(round(x2, 6))`}/>
 
-        <h3 style={{marginTop:22}}>โครง C · Summation — Composite Trapezoidal &amp; Simpson</h3>
+        <h3 style={{marginTop:22}}>โครง C · <span style={{color:"var(--signal)"}}>[บท Integration]</span> Composite Trapezoidal &amp; Simpson</h3>
         <p style={{margin:"0 0 6px", fontSize:'0.86rem'}}>ไม่มีเงื่อนไขหยุด (ไม่ใช่วิธีวนซ้ำ) — วนตามจำนวนช่องที่โจทย์กำหนด · ต่างกัน <b>2 จุด</b>: น้ำหนักในลูป กับตัวคูณข้างนอก</p>
         <CodeBlock code={`def f(x):
     return 2*x**3 - 5*x**2 + 3*x + 1      # ★ เปลี่ยนตามโจทย์
@@ -141,7 +141,7 @@ print(round(I, 6))`}/>
           <p style={{margin:"6px 0 0"}}>ตัวหาร (2 หรือ 3) <b>ตรงกับตัวเลขที่ใหญ่ที่สุดลบหนึ่ง</b> ในรูปแบบน้ำหนัก — Trap มี 2 → หาร 2 · Simpson มี 4 → หาร 3 (จำเป็นคู่ไว้ก็ได้)</p>
         </Callout>
 
-        <h3 style={{marginTop:22}}>โครง D · Finite Difference — ไม่มีลูปเลย</h3>
+        <h3 style={{marginTop:22}}>โครง D · <span style={{color:"var(--signal)"}}>[บท Differentiation]</span> Finite Difference — ไม่มีลูปเลย</h3>
         <p style={{margin:"0 0 6px", fontSize:'0.86rem'}}>ข้อ Differentiation คือการ<b>แทนค่าลงสูตรตรง ๆ</b> — สั้นที่สุดในสี่โครง แต่ต้องจำสัมประสิทธิ์ให้แม่น</p>
         <CodeBlock code={`import math
 
@@ -165,7 +165,7 @@ print(round(d2_h2, 7), round(d2_h4, 7))`}/>
           <p style={{margin:0}}><b>บวกสัมประสิทธิ์ทั้งหมดต้องได้ 0 เสมอ</b> — <M>{`1-2+1=0`}</M> ✓ · <M>{`-1+8-8+1=0`}</M> ✓ · <M>{`-1+16-30+16-1=0`}</M> ✓ · ถ้าบวกแล้วไม่เป็นศูนย์แสดงว่าจำผิด อย่าเพิ่งเขียนลงกระดาษ</p>
         </Callout>
 
-        <h3 style={{marginTop:22}}>โครง E · Linear Systems — Gauss Elimination &amp; Cramer</h3>
+        <h3 style={{marginTop:22}}>โครง E · <span style={{color:"var(--signal)"}}>[บท Linear Systems]</span> Gauss Elimination &amp; Cramer</h3>
         <Callout kind="danger" title="⭐ โครงนี้เพิ่งเพิ่ม — บท Linear อยู่ในขอบเขตแต่เดิมไม่มีโครงให้ท่อง">
           <p style={{margin:0}}>อาจารย์บอกเองว่าข้อสอบออกถึงแค่ <b>Cramer</b> กับ <b>Gauss Elimination</b> ⇒ โค้ดของบทนี้มีแค่ 2 ตัว · <b>Gauss เป็นโครงหลัก</b> เพราะทำได้ทุกขนาด ส่วน Cramer สั้นกว่าแต่ติดที่ต้องเขียน <code>det</code> เอง และใช้ได้แค่ 2×2 / 3×3</p>
         </Callout>

@@ -200,8 +200,8 @@ function CheatLesson() {
       {/* SPEED TRICKS */}
       <Sect tag="⚡" title="Speed Tricks · ทำเร็วกว่าเดิม 3 เท่า">
         <Callout kind="tip" title="🎯 Trick 1 — Iteration ในเครื่อง Calculator">
-          <p>หลังพิมพ์สูตรแล้วได้คำตอบ — กด <Key>↑</Key> <Key>=</Key> ซ้ำ ๆ เพื่อทำ iter ถัดไปทันที</p>
-          <p>เช่น Newton: <code>Ans − (Ans² − 7)/(2·Ans)</code> → กด <Key>=</Key> 4 ครั้ง = 4 iterations</p>
+          <p>หลังพิมพ์สูตรแล้วได้คำตอบ — กด <Key>◀</Key> <Key>EXE</Key> ซ้ำ ๆ เพื่อทำ iter ถัดไปทันที</p>
+          <p>เช่น Newton: <code>Ans − (Ans² − 7)/(2·Ans)</code> → <Key>EXE</Key> ครั้งแรกได้ x₁ จากนั้น <Key>◀</Key> <Key>EXE</Key> อีก 3 รอบ = 4 iterations</p>
         </Callout>
 
         <Callout kind="tip" title="🎯 Trick 2 — Bisection Phase">

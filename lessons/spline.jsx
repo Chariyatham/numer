@@ -296,14 +296,14 @@ for i in range(len(xs)-1):
           <p>ในห้องสอบ ใช้เครื่องคิดเลขเช็คคำตอบที่ทำมือ ทำได้ 2 วิธี:</p>
           <p style={{margin:"8px 0 4px"}}><b>วิธีที่ 1 · Polynomial mode (เช็คว่าค่า f_i(x) ตรง)</b></p>
           <CalcSteps steps={[
-            <span><Key>HOME</Key> → <Key>Equation</Key> → เลือก <Key>Polynomial</Key></span>,
+            <span><Key>HOME</Key> → <code>Equation</code> → <Key>OK</Key> → เลือก <code>Polynomial</code> → <Key>OK</Key></span>,
             <span>เลือกลำดับ 2 (Quadratic Spline) หรือ 3 (Cubic Spline)</span>,
             <span>ใส่สัมประสิทธิ์ของ segment ที่ x อยู่ในช่วง (เช่น a₂, b₂, c₂)</span>,
-            <span>กด <Key>=</Key> เพื่อหา root ของ segment นั้น (เช็คว่า extremum อยู่ถูก)</span>,
+            <span>กด <Key>EXE</Key> เพื่อหา root ของ segment นั้น (เช็คว่า extremum อยู่ถูก)</span>,
           ]}/>
           <p style={{margin:"8px 0 4px"}}><b>วิธีที่ 2 · Table mode (ดูค่า f(x) เร็ว)</b></p>
           <CalcSteps steps={[
-            <span><Key>HOME</Key> → <Key>Table</Key> → ใส่สูตร <code>aX² + bX + c</code> หรือ <code>aX³+bX²+cX+d</code></span>,
+            <span><Key>HOME</Key> → <code>Table</code> → <Key>OK</Key> → <Key>FUNCTION</Key> → <code>Define f(x)</code> → ใส่สูตร <code>ax² + bx + c</code> หรือ <code>ax³+bx²+cx+d</code> → <Key>EXE</Key></span>,
             <span>กำหนด Start = ขอบซ้ายของ segment, End = ขอบขวา, Step = ช่วงย่อย</span>,
             <span>scroll หาค่า X ที่ต้องการ → ดู f(X) ในคอลัมน์</span>,
           ]}/>

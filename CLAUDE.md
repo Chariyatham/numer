@@ -75,6 +75,26 @@ The app uses `localStorage` heavily — font size (`numer-fs`), per-chapter scro
 
 When writing or revising lesson content: professor/sheet-level detail is the *minimum* — never summarize away topics, always explain the "why" behind each formula, and prefer animations/interactive widgets over static text. kim wants to understand deeply enough to teach others. Transcribed lectures (when available) reveal what the professor emphasizes beyond the sheets — weave that in and mark it as lecture-sourced.
 
+## กฎเครื่องคิดเลข fx-991CW (added 2026-08-17 — แก้ยกแอปหลังพบว่าเคยลอกลำดับปุ่มรุ่นเก่ามาใส่)
+
+**ห้ามเขียนลำดับปุ่มจากความจำ** ทุก sequence ต้องเปิดคู่มือเทียบ:
+- `[TH]` `~/Downloads/fx-991cw-manual.pdf` — คู่มือไทยทางการ CASIO 13 บท 74 หน้า (มีภาพหน้าจอทุกขั้น: `pdftoppm -f <หน้า> -l <หน้า> -r 110 -png`)
+- `[EN]` `fx-570CW_991CW_EN.pdf` จาก casio.com — ละเอียดกว่า มีสิ่งที่คู่มือไทยไม่มี (Solver, Replay, Table Type, Fill Formula)
+
+**fx-991CW ≠ fx-991EX/ES PLUS** — เครื่องรุ่นนี้ **ไม่มี** ปุ่ม `OPTN` · `STO` · `RCL` · `∫dx` · `d/dx` · `CALC` · `MODE` · `S⇔D` · `=`
+งานพวกนั้นย้ายไป: `CATALOG` (คำสั่ง/ฟังก์ชัน) · `TOOLS` (ตั้งค่าของโหมด) · `VARIABLE` (ตัวแปร) · `FUNCTION` (f(x)/g(x)) · `SETTINGS` · `FORMAT` · `EXE`
+
+Sequence ที่ตรวจแล้วและใช้ทั้งแอป (หน้าอ้างอิงเต็มอยู่ใน `lessons/calculator.jsx`):
+- เก็บตัวแปร = `VARIABLE` → `[A=]` → `[Store]` (คอมโพเนนต์ `<Sto v="A"/>` ใน `lib/components.jsx` · ในสตริง `calc:` ใช้ `VAR▸A`)
+- รันสูตรซ้ำ = Replay `◀` แล้ว `EXE` (ตอนผลยังค้างจอ) หรือ `▲` เลื่อนประวัติ (หลังออกจากเมนู) — **ไม่ใช่ `↑=`** และคู่มือไม่ได้รับรองว่ากด `EXE` ซ้ำเฉย ๆ แล้วรันใหม่
+- Table = `FUNCTION`→`Define f(x)` → `TOOLS`→`Table Range` → Start/End/Step แล้ว `▸Execute` · ตั้ง `TOOLS`→`Table Type`→`f(x)` ได้ 45 แถว (ไม่งั้น 30 + คอลัมน์ ERROR)
+- ∫ / d/dx / Σ = `CATALOG`→`Func Analysis`→ (Derivative / Integration / Summation ตามลำดับนี้)
+- SOLVE = `HOME`→`Equation`→`Solver` (คู่มือบอกเองว่าใช้ Newton's method)
+- Matrix = `TOOLS`→`[MatA:]`→`Confirm` · det = `CATALOG`→`Matrix`→`Matrix Calc`→`Determinant` · เก็บผล MatAns = `TOOLS`→`[Store]`→`[MatD]`
+
+**อะไรที่คู่มือไม่ได้เขียน ห้ามอ้าง** (เคยพลาด: เขียนว่าปุ่ม ∫ ใช้ Gauss-Kronrod / d/dx ใช้ central difference — คู่มือไม่เคยพูดถึงอัลกอริทึมภายในเลย)
+จุดที่คู่มือสองเล่มขัดกัน ให้เขียนบอกทั้งสองทาง เช่นหน้าจบการกรอกข้อมูล Statistics: EN น.72 = `OK` · TH หน้า 33 = `EXE`
+
 ## Lesson QA — กฎตัวเลข (added 2026-07-26 after cross-model review)
 
 ทุก defect ที่เจอในการรีวิวไขว้เป็น failure class เดียวกัน: **เลขที่คำนวณต่อจากเลขที่ปัดแล้ว**. กฎ:
@@ -96,7 +116,8 @@ Review pipeline ก่อน commit บทเรียน (ทำครบทั
 **หน้าใหม่** (ต้องมี `<script>` ใน `index.html` + entry ใน `CHAPTERS` ของ `app.jsx`):
 - `lessons/plan.jsx` → `#plan` "แผนเตรียมสอบ" — แผนรายวัน ติ๊กได้ (localStorage `numer-planchk-v3`)
 - `lessons/memorize.jsx` → `#memo` "ท่องก่อนสอบ" — คอมโพเนนต์ `Deck` การ์ดพลิก (localStorage `numer-recall`)
-  การ์ดเป็น array `{id, q, hint, a}` โดย `a` เป็น JSX · **แก้อาร์เรย์ด้วย script ต้องระวัง**: การ์ดบางใบเรียงไม่ตามชื่อ id และใบสุดท้ายของ deck ติดกับ `];` ของ deck ถัดไป
+  การ์ดเป็น array `{id, q, hint, a}` โดย `a` เป็น JSX · **แก้อาร์เรย์ด้วย script ต้องระวัง**: การ์ดบางใบเรียงไม่ตามชื่อ id (`CODE_CARDS` เรียง C·D·A·B·B2·E ตามลำดับบท ไม่ใช่ตามตัวอักษร — ตั้งใจ) และใบสุดท้ายของ deck ติดกับ `];` ของ deck ถัดไป
+  ⚠︎ **backslash ในสตริง KaTeX ต้องเป็น `\\` เสมอ** เพราะอยู่ใน JS template literal — เขียน `\frac` ตัวเดียวจะกลายเป็นตัวอักษร `frac` (หรือ `\f` = form feed) แล้ว KaTeX พัง · เช็คด้วย: หา backslash run ที่ยาวเป็นเลขคี่ในไฟล์
 
 **คอมโพเนนต์แชร์ใน `lib/components.jsx`:**
 - `<ExamRules/>` — กฎห้องสอบ 10 ข้อจากปากอาจารย์ (แหล่งเดียว ใช้ทุกบทที่ออกสอบ) แต่ละข้อกำกับที่มา
