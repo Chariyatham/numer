@@ -540,7 +540,7 @@ function MemorizeLesson() {
             ["6 · กฎห้องสอบ", "4 ใบ", "ถอดจากไฟล์เสียงคาบ 5 + 8 ส.ค."],
           ]}
         />
-        <p style={{margin:"8px 0 0", fontSize:'0.84rem'}}><b>ตัดออกแล้ว:</b> Gauss-Jordan · Matrix Inversion · LU · Cholesky (อาจารย์บอกว่าออกถึงแค่ Cramer/Gauss — รวมใบ “ทั้ง 6 วิธีบนระบบเดียวกัน” ที่ตัดออก 16 ส.ค.) · Jacobi · Gauss-Seidel · Conjugate Gradient · Interpolation · Spline · Regression · Romberg · Gauss-Legendre · Richardson — ทั้งหมดอยู่ใน “สรุป Final” ส่วนที่เป็น<b>เนื้อหาหลังมิดเทอม</b> หรือไม่ปรากฏในไฟล์เสียงเลย</p>
+        <p style={{margin:"8px 0 0", fontSize:'0.84rem'}}><b>สถานะ 4 ก.ย. 2569:</b> เด็คนี้ยังเป็น<b>ฉบับขอบเขตมิดเทอม</b> (สอบไปแล้ว) · <b>Gauss-Jordan · Matrix Inversion · LU · Cholesky · Jacobi · Gauss-Seidel กลับเข้าขอบเขตแล้ว</b> เพราะการบ้าน 6-7 สั่งครบทั้ง 8 วิธี — ตอนนี้ยังไม่มีการ์ดของ 6 ตัวนี้ ให้ท่องจากบท <a href="#linear">Linear Systems</a> หมวด 📮 ไปก่อน · Conjugate Gradient · Interpolation · Spline · Regression · Romberg · Gauss-Legendre · Richardson ยังไม่มีสัญญาณว่าสอบ</p>
       </Callout>
 
       <Callout kind="tip" title="วิธีใช้ให้ได้ผลจริง — อย่าแค่ “อ่านผ่าน”">

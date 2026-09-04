@@ -514,7 +514,7 @@ print(f"R² = {R2:.4f}")`} height={300}/>
       <p>คำตอบ: x = 2, y = 3, z = −1</p>
     </div>
   },
-  { id: "L11", topic: "linear", diff: "medium", title: "LU Decomposition (Doolittle) — ไม่ออกมิดเทอม",
+  { id: "L11", topic: "linear", diff: "medium", title: "LU Decomposition (Doolittle) — การบ้าน 6-7 ข้อ 1.5",
     q: <p>แตก A เป็น LU ของ <MB>{`A = \\begin{pmatrix} 4 & 3 \\\\ 6 & 3 \\end{pmatrix}`}</MB> แล้วแก้ระบบ <M>{`Ax = (10, 12)^T`}</M></p>,
     a: <div>
       <p>L = [[1,0],[1.5,1]], U = [[4,3],[0,-1.5]]</p>
@@ -524,7 +524,7 @@ print(f"R² = {R2:.4f}")`} height={300}/>
       <p>ตรวจ: 4(1) + 3(2) = 10 ✓ · 6(1) + 3(2) = 12 ✓</p>
     </div>
   },
-  { id: "L12", topic: "linear", diff: "hard", title: "Cholesky Decomposition — ไม่ออกมิดเทอม",
+  { id: "L12", topic: "linear", diff: "hard", title: "Cholesky Decomposition — การบ้าน 6-7 ข้อ 1.6",
     q: <p>ตรวจว่า matrix <MB>{`A = \\begin{pmatrix} 4 & 12 & -16 \\\\ 12 & 37 & -43 \\\\ -16 & -43 & 98 \\end{pmatrix}`}</MB> เป็น SPD หรือไม่ แล้วหา Cholesky factor L</p>,
     a: <div>
       <p>ตรวจ symmetry ✓ ตรวจ leading mins: 4, 4·37−144=4, det = 36 — ทั้งหมด &gt;0 → SPD ✓</p>
@@ -532,7 +532,7 @@ print(f"R² = {R2:.4f}")`} height={300}/>
       <p>ตรวจ LLᵀ = A ทีละช่อง: (2)(2)=4 ✓ · (6)(2)=12 ✓ · 6²+1²=37 ✓ · (−8)(2)=−16 ✓ · (−8)(6)+(5)(1)=−43 ✓ · (−8)²+5²+3²=98 ✓</p>
     </div>
   },
-  { id: "L13", topic: "linear", diff: "hard", title: "Matrix Inversion — ไม่ออกมิดเทอม",
+  { id: "L13", topic: "linear", diff: "hard", title: "Matrix Inversion — การบ้าน 6-7 ข้อ 1.4",
     q: <p>หา A⁻¹ ของ <MB>{`A = \\begin{pmatrix} 1 & 2 \\\\ 3 & 7 \\end{pmatrix}`}</MB> โดย Gauss-Jordan บน [A | I]</p>,
     a: <div>
       <p>[1 2 | 1 0; 3 7 | 0 1] → R2 ← R2 − 3R1: [1 2 | 1 0; 0 1 | -3 1]</p>

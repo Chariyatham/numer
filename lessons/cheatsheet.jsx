@@ -141,8 +141,8 @@ function CheatLesson() {
           </ul>
         </div>
 
-        <Callout kind="warn" title="ตัดออกจาก cheat sheet นี้แล้ว — อาจารย์บอกว่าไม่ออก">
-          <p style={{margin:0}}>Gauss-Jordan · Matrix Inversion · LU · Cholesky · <b>Jacobi · Gauss-Seidel</b> (สองตัวหลังเคยอยู่ตรงนี้ ย้ายออกแล้ว) — ทั้งหมดเป็นเนื้อหาหลังมิดเทอมหรือถูกตัดออกจากขอบเขต · สูตรเต็มยังอยู่ในบท <a href="#linear">Linear Systems</a> ถ้าอยากดู</p>
+        <Callout kind="danger" title="⚠︎ กล่องนี้เคยบอกว่า “ไม่ออก” — หมดอายุแล้วหลังมิดเทอม">
+          <p style={{margin:0}}>Gauss-Jordan · Matrix Inversion · LU · Cholesky · <b>Jacobi · Gauss-Seidel</b> — ตอนเตรียมมิดเทอมตัดออกถูกแล้ว แต่ <b>การบ้าน 6-7 สั่งครบทั้ง 8 วิธี</b> ⇒ ทุกตัวกลับเข้าขอบเขตของ<b>ข้อสอบท้ายคาบ</b>แล้ว · เฉลยเต็มบนระบบเดียวกันอยู่ที่บท <a href="#linear">Linear Systems</a> หมวด 📮</p>
         </Callout>
       </Sect>
 
@@ -263,8 +263,8 @@ function CheatLesson() {
       </Sect>
 
 
-      <Callout kind="warn" title="⬇︎ ข้างล่างนี้ไม่ออกมิดเทอม — ข้ามได้ถ้าเหลือเวลาน้อย">
-        <p style={{margin:0}}>4 บทข้างบนคือขอบเขตมิดเทอมทั้งหมด · ที่เหลือ (Conjugate Gradient · Interpolation · Spline · Regression) เป็น<b>เนื้อหาหลังมิดเทอม</b> เก็บไว้ตอนเตรียมไฟนอล — <b>คืนวันที่ 19 ให้อ่านแค่ 4 บทบนเท่านั้น</b></p>
+      <Callout kind="tip" title="⬇︎ ข้างล่างนี้คือของรออยู่ข้างหน้า — ยังไม่ต้องรีบ">
+        <p style={{margin:0}}>4 บทข้างบนสอบมิดเทอมไปแล้ว 21 ส.ค. · ที่เหลือ (Conjugate Gradient · Interpolation · Spline · Regression) คือ<b>เนื้อหาครึ่งหลัง</b> — <b>รอดูว่าการบ้านใบถัดไปสั่งอะไร แล้วค่อยลงมาอ่านตัวนั้น</b> เพราะเรื่องที่สอนเดินตามการบ้านเสมอ</p>
       </Callout>
 
       <Sect tag="—" title="Conjugate Gradient · Cheat Sheet">

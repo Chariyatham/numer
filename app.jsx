@@ -10,26 +10,26 @@ const smoothScrollTo = (el) => {
 
 const CHAPTERS = [
   { group: "① เริ่มที่นี่", items: [
-    { id: "plan", num: "🗓", title: "แผนเตรียมสอบ — ทำอะไรวันไหน", comp: "PlanLesson" },
+    { id: "plan", num: "🗓", title: "แผนหลังมิดเทอม — ทำอะไรวันไหน", comp: "PlanLesson" },
     { id: "intro", num: "00", title: "ปฐมนิเทศ · วิธีใช้เว็บนี้", comp: "IntroLesson" },
   ]},
-  { group: "② อ่าน 4 บทนี้ (ตามลำดับ)", items: [
+  { group: "② กำลังเรียนอยู่ตอนนี้ ⬅ เริ่มที่นี่", items: [
+    { id: "linear", num: "4", title: "Linear Systems · ครบ 8 วิธี", comp: "LinearSystemsLesson" },
+  ]},
+  { group: "③ ผ่านมิดเทอมมาแล้ว (ไว้ทวน)", items: [
     { id: "integ", num: "1", title: "Integration", comp: "IntegrationLesson" },
     { id: "diff", num: "2", title: "Differentiation", comp: "DifferentiationLesson" },
     { id: "root", num: "3", title: "Root Finding", comp: "RootFindingLesson" },
-    { id: "linear", num: "4", title: "Linear Systems (Cramer · Gauss)", comp: "LinearSystemsLesson" },
   ]},
-  { group: "③ ท่องให้ขึ้นใจ", items: [
+  { group: "④ ท่อง + ซ้อมทำข้อสอบ", items: [
     { id: "memo", num: "🧠", title: "ท่องก่อนสอบ · ทุกอย่างหน้าเดียว", comp: "MemorizeLesson" },
     { id: "cheat", num: "⚡", title: "Cheat Sheet · ทวนคืนก่อนสอบ", comp: "CheatLesson" },
     { id: "calc", num: "📟", title: "Calculator Master · fx-991CW", comp: "CalculatorLesson" },
-  ]},
-  { group: "④ ซ้อมทำข้อสอบ", items: [
     { id: "code", num: "⌨", title: "เขียนโค้ดจากหัว · 6 โครง", comp: "CodeDrillLesson" },
     { id: "midterm", num: "✸", title: "ห้องสอบ · สุ่มชุด + สมุดพลาด", comp: "MidtermLesson" },
     { id: "problems", num: "★", title: "Problem Bank · 40+ ข้อ", comp: "ProblemsLesson" },
   ]},
-  { group: "นอกขอบเขต midterm", items: [
+  { group: "⑤ ยังไม่ถึง — รอการบ้านใบถัดไปชี้", items: [
     { id: "map", num: "🗺", title: "แผนที่คอนเซปต์ทั้งคอร์ส", comp: "ConceptMapLesson" },
     { id: "conjugate", num: "—", title: "Conjugate Gradient", comp: "ConjugateLesson" },
     { id: "interp", num: "—", title: "Interpolation", comp: "InterpolationLesson" },
