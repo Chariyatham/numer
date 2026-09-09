@@ -664,6 +664,71 @@ function ExamRules({ open = false }) {
   );
 }
 
+// ===== กฎเขียนโค้ดของอาจารย์ =====
+// ที่มา: kim สอบท้ายคาบแล้วได้ 1 เต็ม 6 ทั้งที่อัลกอริทึมถูก เพราะเขียนลูปรอบตายตัว
+// (kim 9 ก.ย. 2569: "ต้องเป็น loop ที่ไม่ได้กำหนดจำนวนรอบ ใส่ค่าอะไรมาก็ทำได้")
+// ข้อโค้ดกินราวครึ่งข้อสอบ ⇒ กฎกล่องนี้คือของที่คุ้มที่สุดต่อเวลาที่ลงในวิชานี้
+const CODE_RULES = [
+  { t: "ลูปต้องหยุดด้วย tolerance ไม่ใช่จำนวนรอบ",
+    d: "เขียน while ที่วนจนกว่า error จะเล็กพอ — ห้าม for i in range(4) ต่อให้โจทย์บอกว่า 4 รอบ · ถ้าอยากกันลูปไม่รู้จบ ใส่ max_iter เป็นตาข่ายได้ แต่ตัวที่สั่งหยุดจริงต้องเป็น tolerance",
+    src: "⭐ kim โดนตัดคะแนนมาแล้ว" },
+  { t: "ใส่ค่าอะไรเข้าไปก็ต้องทำงานได้",
+    d: "เปลี่ยน A, b, x₀, tol เป็นชุดใหม่แล้วโปรแกรมต้องยังถูก ⇒ ห้ามฮาร์ดโค้ดคำตอบ ห้ามฮาร์ดโค้ดขนาด n ให้ใช้ len() เอา",
+    src: "⭐ kim โดนตัดคะแนนมาแล้ว" },
+  { t: "ฮาร์ดโค้ดข้อมูลไว้บนสุด — ห้ามรับ input จากผู้ใช้",
+    d: "ไม่มี input() ไม่มี scanf ในห้องสอบไม่มีใครมานั่งพิมพ์ให้ · ประกาศ A, b, tol เป็นตัวแปรด้านบนแล้วแก้ตรงนั้น",
+    src: "ชีทติว mid หน้า 1 (ลายมือ)" },
+  { t: "พิมพ์ทุกรอบ ไม่ใช่แค่คำตอบสุดท้าย",
+    d: "โชว์ iteration ที่เท่าไหร่ · ค่า x ทุกตัว · error ของรอบนั้น — โค้ดของอาจารย์ในชีททำแบบนี้หมด และตารางที่ได้ใช้เทียบกับข้อทำมือได้เลย",
+    src: "ชีทสรุป Final (ทุกหน้าที่มีโค้ด)" },
+  { t: "ภาษาไม่ถูกบังคับ",
+    d: "ชีทติว mid เขียนด้วย C · ชีทสรุป Final เขียนด้วย JavaScript ⇒ เขียน Python ได้ไม่ผิด · สิ่งที่ถูกตรวจคือ “โครงลูป” ไม่ใช่ syntax",
+    src: "เทียบชีท 2 ใบ 9 ก.ย." },
+];
+
+function CodeRules({ open = false }) {
+  return (
+    <details className="callout danger exam-rules" open={open} style={{marginBottom:16}}>
+      <summary style={{cursor:"pointer", fontWeight:700, listStyle:"none"}}>
+        ⌨️ กฎเขียนโค้ดของอาจารย์ — ใช้กับ<em>ข้อโค้ดทุกข้อ</em> (กดเพื่อเปิด/ปิด)
+      </summary>
+      <p style={{margin:"8px 0 6px", fontSize:'0.84rem', color:"var(--text-dim)"}}>
+        <b>นี่คือสาเหตุที่เคยได้ 1 เต็ม 6 ทั้งที่วิธีถูก</b> — ไม่ใช่เพราะทำไม่เป็น แต่เพราะโครงลูปผิดแบบ · แก้ครั้งเดียวใช้ได้ทุกข้อ
+      </p>
+      <ol style={{margin:0, paddingLeft:20, lineHeight:1.6}}>
+        {CODE_RULES.map((r, i) => (
+          <li key={i} style={{marginBottom:7}}>
+            <b>{r.t}</b>
+            <span className="tag" style={{marginLeft:6, fontSize:'0.68rem'}}>{r.src}</span>
+            <br/>
+            <span style={{fontSize:'0.84rem', color:"var(--text-dim)"}}>{r.d}</span>
+          </li>
+        ))}
+      </ol>
+      <div className="grid-2" style={{marginTop:10}}>
+        <div>
+          <div className="kicker" style={{color:"var(--red)"}}>❌ แบบที่โดนตัดคะแนน</div>
+          <pre style={{fontFamily:"var(--font-mono)", fontSize:'0.78rem', background:"var(--bg-soft)",
+                       padding:"8px 10px", borderRadius:6, margin:"4px 0 0", overflowX:"auto"}}>{`for k in range(4):        # รอบตายตัว
+    x = step(x)
+print(x)`}</pre>
+        </div>
+        <div>
+          <div className="kicker" style={{color:"var(--green)"}}>✅ แบบที่อาจารย์รับ</div>
+          <pre style={{fontFamily:"var(--font-mono)", fontSize:'0.78rem', background:"var(--bg-soft)",
+                       padding:"8px 10px", borderRadius:6, margin:"4px 0 0", overflowX:"auto"}}>{`err, k = 1.0, 0
+while err > tol and k < 200:
+    k += 1
+    x_old = x[:]
+    x = step(x)
+    err = max(abs(a-b) for a,b in zip(x, x_old))
+    print(k, x, err)`}</pre>
+        </div>
+      </div>
+    </details>
+  );
+}
+
 // ===== ทางลัดของแต่ละบท =====
 // เหลือ 13 วันและยังไม่ได้อ่านอะไรเลย ⇒ ปัญหาไม่ใช่ "เนื้อหาไม่พอ" แต่คือ
 // "ไม่รู้ว่าต้องอ่านแค่ไหน" · กล่องนี้บอกเส้นทางสั้นที่สุดที่ยังทำข้อสอบได้
@@ -712,5 +777,5 @@ Object.assign(window, {
   TeX, M, MB, useKaTeXReady, FastPath,
   CodeBlock, PythonRunner, loadPyodide,
   Problem, TimedExam, Sect, Callout, Hero, ConvergenceStrip, NumTable, Formula,
-  Key, Sto, CalcSteps, ExamRules,
+  Key, Sto, CalcSteps, ExamRules, CodeRules,
 });

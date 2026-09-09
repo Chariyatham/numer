@@ -68,9 +68,7 @@ function GaussViz({ A0, b0 }) {
 
 // === Jacobi / Gauss-Seidel comparator ===
 function IterativeSolver({ method = "jacobi" }) {
-  const A = [[-3, 1, 12], [6, 8, 2], [4, 11, -1]];
-  const b = [50, 38, 40];
-  // Need diagonal dominance for convergence — let me use a better example
+  // ตัวอย่างเล็ก 3 ตัวแปรไว้ดูภาพเคลื่อนไหว (ตัวอย่างจริงของอาจารย์เป็น 4×4 อยู่ในเนื้อหมวด)
   const A2 = [[5, 1, 1], [1, 5, 1], [1, 1, 5]];
   const b2 = [7, 7, 7]; // x = [1,1,1]
   const x0 = [0, 0, 0];
@@ -325,6 +323,8 @@ function LinearSystemsLesson() {
       />
 
       <ExamRules/>
+
+      <CodeRules/>
 
       <FastPath
         minutes={150}
@@ -1573,28 +1573,28 @@ def is_dominant(M):
     return all(abs(M[i][i]) > sum(abs(M[i][j]) for j in range(n) if j != i) for i in range(n))
 
 # ── 1.7 Jacobi ───────────────────────────────────────────────
-def jacobi(A, b, tol=1e-6, max_iter=200):
+def jacobi(A, b, tol=1e-6, cap=200):
     M, c = (A, b) if is_dominant(A) else dominant_form(A, b)
-    x = [0.0]*n
-    for k in range(max_iter):
-        xn = [(c[i] - sum(M[i][j]*x[j] for j in range(n) if j != i)) / M[i][i]
-              for i in range(n)]                      # ใช้ค่าเก่าทั้งชุด
-        if max(abs(xn[i] - x[i]) for i in range(n)) < tol:
-            return xn, k+1
-        x = xn
-    return x, max_iter
+    x, k, err = [0.0]*n, 0, 1.0
+    while err > tol and k < cap:                      # หยุดด้วย tol ไม่ใช่จำนวนรอบ
+        k += 1
+        old = x[:]
+        x = [(c[i] - sum(M[i][j]*old[j] for j in range(n) if j != i)) / M[i][i]
+             for i in range(n)]                       # ทางขวาใช้ old ล้วน
+        err = max(abs(x[i] - old[i]) for i in range(n))
+    return x, k
 
 # ── 1.8 Gauss-Seidel ─────────────────────────────────────────
-def gauss_seidel(A, b, tol=1e-6, max_iter=200):
+def gauss_seidel(A, b, tol=1e-6, cap=200):
     M, c = (A, b) if is_dominant(A) else dominant_form(A, b)
-    x = [0.0]*n
-    for k in range(max_iter):
+    x, k, err = [0.0]*n, 0, 1.0
+    while err > tol and k < cap:
+        k += 1
         old = x[:]
         for i in range(n):                            # เขียนทับทันที = ใช้ค่าใหม่ต่อ
             x[i] = (c[i] - sum(M[i][j]*x[j] for j in range(n) if j != i)) / M[i][i]
-        if max(abs(x[i] - old[i]) for i in range(n)) < tol:
-            return x, k+1
-    return x, max_iter
+        err = max(abs(x[i] - old[i]) for i in range(n))
+    return x, k
 
 print(f"det A = {det3(A)}")
 print("A เดิม diagonally dominant?", is_dominant(A), "-> 1.7/1.8 ต้องแปลงระบบก่อน")
@@ -1852,12 +1852,28 @@ for S, name in [(0, "ไม่มีแหล่งความร้อน"), (
 
         <h3>ตัวอย่างจากสไตล์อาจารย์ (สรุป Numer หน้า 2)</h3>
         <p>ระบบ 4×4 (แสดงจากสไลด์):</p>
-        <MB>{`\\begin{bmatrix} 5 & -1 & 0 & 0 \\\\ -1 & 5 & -1 & 0 \\\\ 0 & -1 & 5 & -1 \\\\ 0 & 0 & -1 & 5 \\end{bmatrix} \\begin{bmatrix} x_1 \\\\ x_2 \\\\ x_3 \\\\ x_4 \\end{bmatrix} = \\begin{bmatrix} 12 \\\\ 17 \\\\ 14 \\\\ 7 \\end{bmatrix}`}</MB>
-        <p>เริ่ม <M>x^{`(0)`} = (0,0,0,0)</M>:</p>
-        <MB>{`x_1 = \\frac{12 - (-1)x_2 - 0\\cdot x_3 - 0\\cdot x_4}{5} = \\frac{12 + x_2}{5}`}</MB>
-        <MB>{`x_2 = \\frac{17 + x_1 + x_3}{5}, \\quad x_3 = \\frac{14 + x_2 + x_4}{5}, \\quad x_4 = \\frac{7 + x_3}{5}`}</MB>
-        <p>Iteration 1: <M>{`x_1 = 2.4, x_2 = 3.4, x_3 = 2.8, x_4 = 1.4`}</M></p>
-        <p>Iteration 2 (ใช้ค่าเก่า): <M>{`x_1 = (12+3.4)/5 = 3.08, x_2 = (17+2.4+2.8)/5 = 4.44, \\ldots`}</M></p>
+        <Callout kind="good" title="⭐ ระบบนี้คือตัวอย่างที่อาจารย์ใช้เอง — ชีทสรุป Final หน้า 2–5">
+          <p style={{margin:0}}>ทั้ง <b>Jacobi · Gauss-Seidel · Conjugate Gradient</b> ในชีทใช้<b>ระบบเดียวกันหมด</b> ⇒ จำเมทริกซ์ตัวนี้ตัวเดียว ซ้อมได้ทั้ง 3 วิธี · คำตอบจริง <M>{`x=(1.554252,\\; 2.114370,\\; 1.659824,\\; 0.736070)`}</M></p>
+        </Callout>
+        <MB>{`\\begin{bmatrix} 5 & 2 & 0 & 0 \\\\ 2 & 5 & 2 & 0 \\\\ 0 & 2 & 5 & 2 \\\\ 0 & 0 & 2 & 5 \\end{bmatrix} \\begin{bmatrix} x_1 \\\\ x_2 \\\\ x_3 \\\\ x_4 \\end{bmatrix} = \\begin{bmatrix} 12 \\\\ 17 \\\\ 14 \\\\ 7 \\end{bmatrix}`}</MB>
+        <p><b>เช็ค dominance ก่อนเสมอ:</b> 5 &gt; 2 ✓ · 5 &gt; 2+2 ✓ · 5 &gt; 2+2 ✓ · 5 &gt; 2 ✓ ⇒ <b>ลู่เข้าแน่นอน</b> — ต่างจากระบบการบ้าน 6-7 ที่ตกทุกแถวและต้องแปลงก่อน</p>
+        <p>ย้ายตัวเองไว้ซ้าย เริ่ม <M>x^{`(0)`} = (0,0,0,0)</M>:</p>
+        <MB>{`x_1=\\frac{12-2x_2}{5}\\quad x_2=\\frac{17-2x_1-2x_3}{5}\\quad x_3=\\frac{14-2x_2-2x_4}{5}\\quad x_4=\\frac{7-2x_3}{5}`}</MB>
+        <NumTable
+          headers={["k", "x₁", "x₂", "x₃", "x₄"]}
+          rows={[
+            ["1", "2.400000", "3.400000", "2.800000", "1.400000"],
+            ["2", "1.040000", "1.320000", "0.880000", "0.280000"],
+            ["3", "1.872000", "2.632000", "2.160000", "1.048000"],
+            ["4", "1.347200", "1.787200", "1.328000", "0.536000"],
+            ["20", "1.554057", "2.114060", "1.659509", "0.735879"],
+          ]}
+        />
+        <p style={{fontSize:'0.88rem'}}><b>รอบ 2 กางให้ดู</b> — ทุกช่องทางขวาใช้ค่าจาก<b>รอบ 1 ทั้งชุด</b>: x₁ = (12−2(3.4))/5 = <b>1.04</b> · x₂ = (17−2(2.4)−2(2.8))/5 = <b>1.32</b> · x₃ = (14−2(3.4)−2(1.4))/5 = <b>0.88</b> · x₄ = (7−2(2.8))/5 = <b>0.28</b></p>
+        <Callout kind="warn" title="นิยาม ε ที่ชีทใช้ — และทำไมรอบแรกได้ 1 เสมอ">
+          <p style={{margin:"0 0 6px"}}>ชีทใช้ <b>relative error</b> ไม่ใช่ผลต่างเฉย ๆ:</p><MB>{`\\varepsilon_i=\\left|\\frac{x_i^{new}-x_i}{x_i^{new}}\\right|`}</MB>
+          <p style={{margin:0}}>อาจารย์ตั้งเกณฑ์ <M>{`\\varepsilon < 0.001`}</M> · <b>รอบแรกได้ ε = 1 ทุกครั้ง</b> เพราะค่าเก่าเป็น 0 (ตัวเศษ = ตัวส่วน) — ไม่ใช่คำนวณผิด</p>
+        </Callout>
 
         <h3>Demo · ทำซ้ำจนลู่เข้า</h3>
         <IterativeSolver method="jacobi"/>
@@ -1865,11 +1881,12 @@ for S, name in [(0, "ไม่มีแหล่งความร้อน"), (
         <h3>fx-991CW · วน iteration ด้วยตัวแปร A, B, C</h3>
         <Callout title="เก็บ x แต่ละตัวในตัวแปร แล้ววนซ้ำด้วย Replay (◀ EXE)">
           <CalcSteps steps={[
-            <span>ตั้งค่าเริ่ม: <code>0</code> <Sto v="A"/>, <code>0</code> <Sto v="B"/>, <code>0</code> <Sto v="C"/> (= x₁,x₂,x₃ เริ่มต้น)</span>,
-            <span>คำนวณ x₁ ใหม่: พิมพ์ <code>(7−B−C)÷5</code> → <Key>EXE</Key> → <Sto v="A"/></span>,
-            <span>x₂ ใหม่: <code>(7−A−C)÷5</code> → <Key>EXE</Key> → <Sto v="B"/></span>,
-            <span>x₃ ใหม่: <code>(7−A−B)÷5</code> → <Key>EXE</Key> → <Sto v="C"/> — ครบ 1 รอบ</span>,
-            <span>กดลำดับ 3 บรรทัดนี้ซ้ำ (ดึงสูตรเดิมกลับมาด้วย <Key>◀</Key>) → ค่า A, B, C ลู่เข้าหา (1, 1, 1)</span>,
+            <span>ตั้งค่าเริ่ม: <code>0</code> <Sto v="A"/>, <code>0</code> <Sto v="B"/>, <code>0</code> <Sto v="C"/>, <code>0</code> <Sto v="D"/> (= x₁…x₄ เริ่มต้น)</span>,
+            <span>x₁ ใหม่: พิมพ์ <code>(12−2B)÷5</code> → <Key>EXE</Key> → <Sto v="A"/></span>,
+            <span>x₂ ใหม่: <code>(17−2A−2C)÷5</code> → <Key>EXE</Key> → <Sto v="B"/></span>,
+            <span>x₃ ใหม่: <code>(14−2B−2D)÷5</code> → <Key>EXE</Key> → <Sto v="C"/></span>,
+            <span>x₄ ใหม่: <code>(7−2C)÷5</code> → <Key>EXE</Key> → <Sto v="D"/> — ครบ 1 รอบ</span>,
+            <span>กด 4 บรรทัดนี้ซ้ำ (ดึงสูตรเดิมกลับด้วย <Key>◀</Key>) → ลู่เข้าหา (1.5543, 2.1144, 1.6598, 0.7361)</span>,
             <span><b>Jacobi vs Gauss-Seidel:</b> ถ้าใช้ A, B, C ที่ <em>เพิ่งเก็บทับในรอบนี้</em> = Gauss-Seidel (เร็วกว่า); ถ้าอยากเป๊ะแบบ Jacobi ต้องเก็บค่าเก่าไว้อีกชุด (D, E, F) ก่อนอัปเดต</span>,
           ]}/>
         </Callout>
@@ -1880,28 +1897,31 @@ for S, name in [(0, "ไม่มีแหล่งความร้อน"), (
           <p>ตัวอย่าง: matrix <M>{`\\begin{pmatrix} 5 & 1 \\\\ 1 & 5\\end{pmatrix}`}</M> diagonal-dominant (5 &gt; 1) ✓ แต่ <M>{`\\begin{pmatrix} 1 & 5 \\\\ 5 & 1\\end{pmatrix}`}</M> ไม่ (1 &lt; 5) ✗</p>
         </Callout>
 
-        <PythonRunner code={`import numpy as np
+        <PythonRunner code={`# Jacobi — ระบบของอาจารย์ (ชีทสรุป Final หน้า 2)
+# กฎอาจารย์: ลูปห้ามกำหนดจำนวนรอบ · ใส่ค่าอะไรมาก็ต้องทำงานได้
+A   = [[5,2,0,0],[2,5,2,0],[0,2,5,2],[0,0,2,5]]
+b   = [12, 17, 14, 7]
+x   = [0.0, 0.0, 0.0, 0.0]
+tol = 0.001
+n   = len(A)                     # อ่านขนาดจากข้อมูล ไม่ฮาร์ดโค้ด 4
 
-def jacobi(A, b, x0, tol=1e-6, max_iter=50):
-    n = len(A)
-    x = x0[:]
-    for k in range(max_iter):
-        xn = [0]*n
-        for i in range(n):
-            s = b[i]
-            for j in range(n):
-                if j != i:
-                    s -= A[i][j] * x[j]    # ใช้ค่าเก่าทั้งหมด
-            xn[i] = s / A[i][i]
-        err = max(abs(xn[i]-x[i]) for i in range(n))
-        print(f"k={k+1:2d}  x={[round(v,4) for v in xn]}  ε={err:.2e}")
-        if err < tol: return xn
-        x = xn
+# เช็คเงื่อนไขลู่เข้าก่อนเสมอ
+dom = all(abs(A[i][i]) > sum(abs(A[i][j]) for j in range(n) if j != i) for i in range(n))
+print("diagonally dominant?", dom, "\\n")
 
-A = [[5,-1,0,0],[-1,5,-1,0],[0,-1,5,-1],[0,0,-1,5]]
-b = [12, 17, 14, 7]
-ans = jacobi(A, b, [0,0,0,0])
-print(f"\\nคำตอบ ≈ {[round(v,4) for v in ans]}")`} height={260}/>
+k, err = 0, 1.0
+while err > tol and k < 200:
+    k += 1
+    old = x[:]                                   # เก็บค่าเก่าทั้งชุดก่อน
+    x = [(b[i] - sum(A[i][j]*old[j] for j in range(n) if j != i)) / A[i][i]
+         for i in range(n)]                      # ทางขวาใช้ old ล้วน = Jacobi
+    err = max(abs((x[i]-old[i])/x[i]) for i in range(n))
+    print(f"Iteration {k}")
+    for i in range(n):
+        print(f"  x{i+1} = {x[i]:.6f}")
+    print(f"  Error = {err:.6f}")
+
+print("\\nคำตอบ:", [round(v, 6) for v in x], f"({k} รอบ)")`} height={300}/>
       </Sect>
 
       <Sect tag="8" title="Gauss-Seidel — Jacobi ฉบับ Upgrade" read="must" min={20}>
@@ -1915,49 +1935,56 @@ print(f"\\nคำตอบ ≈ {[round(v,4) for v in ans]}")`} height={260}/>
           ถ้าเรา <em>เพิ่งคำนวณ</em> <M>{`x_1^{(k+1)}`}</M> ใหม่ได้แล้ว ก็เอามาใช้ตอนคำนวณ <M>{`x_2^{(k+1)}`}</M> เลย — ไม่ต้องรอรอบหน้า → ข้อมูลใหม่กว่า → ลู่เข้าเร็วขึ้น ~2 เท่า
         </Callout>
 
-        <h3>ตัวอย่างเทียบ Jacobi vs Gauss-Seidel</h3>
-        <p>จากสไลด์: เริ่มเหมือนกัน <M>{`x^{(0)} = (0,0,0,0)`}</M> ทำ 1 iteration:</p>
+        <h3>ตัวอย่างเทียบ Jacobi vs Gauss-Seidel — รอบที่ 1 ของระบบเดียวกัน</h3>
+        <p>ระบบของอาจารย์ เริ่มเหมือนกันที่ <M>{`x^{(0)} = (0,0,0,0)`}</M> · ต่างกันแค่ว่า "ใช้ค่าไหนทางขวา"</p>
         <div className="grid-2">
           <div className="card tight">
-            <div className="kicker">Jacobi (ใช้ค่าเก่า)</div>
+            <div className="kicker">Jacobi (ใช้ค่าเก่าทั้งชุด)</div>
             <div className="mono" style={{fontSize:'0.778rem', lineHeight:1.7}}>
-              x₁ = (12+0)/5 = 2.40<br/>
-              x₂ = (17+0+0)/5 = 3.40<br/>
-              x₃ = (14+0+0)/5 = 2.80<br/>
-              x₄ = (7+0)/5 = 1.40
+              x₁ = (12 − 2·0)/5 = 2.40<br/>
+              x₂ = (17 − 2·<b>0</b> − 2·0)/5 = 3.40<br/>
+              x₃ = (14 − 2·<b>0</b> − 2·0)/5 = 2.80<br/>
+              x₄ = (7 − 2·<b>0</b>)/5 = 1.40
             </div>
+            <div style={{fontSize:'0.75rem', color:"var(--text-faint)", marginTop:6}}>ตัวหนา = ยังเป็น 0 ของรอบก่อน</div>
           </div>
           <div className="card tight" style={{borderColor:"var(--green-dim)"}}>
             <div className="kicker" style={{color:"var(--green)"}}>Gauss-Seidel (ใช้ค่าใหม่ทันที)</div>
             <div className="mono" style={{fontSize:'0.778rem', lineHeight:1.7}}>
-              x₁ = (12+0)/5 = 2.40 <em>← x₁ ใหม่</em><br/>
-              x₂ = (17+<b>2.40</b>+0)/5 = 3.88 <em>← x₂ ใหม่</em><br/>
-              x₃ = (14+<b>3.88</b>+0)/5 = 3.576<br/>
-              x₄ = (7+<b>3.576</b>)/5 = 2.1152
+              x₁ = (12 − 2·0)/5 = 2.40 <em>← เก็บทับเลย</em><br/>
+              x₂ = (17 − 2·<b>2.40</b> − 2·0)/5 = 2.44<br/>
+              x₃ = (14 − 2·<b>2.44</b> − 2·0)/5 = 1.824<br/>
+              x₄ = (7 − 2·<b>1.824</b>)/5 = 0.6704
             </div>
+            <div style={{fontSize:'0.75rem', color:"var(--text-faint)", marginTop:6}}>ตัวหนา = ค่าที่เพิ่งได้ในรอบนี้</div>
           </div>
         </div>
+        <p style={{fontSize:'0.88rem'}}>รอบเดียวก็เห็นแล้วว่า Gauss-Seidel เข้าใกล้คำตอบจริง (1.5543, 2.1144, 1.6598, 0.7361) มากกว่า ⇒ ที่เกณฑ์ ε &lt; 0.001 <b>Gauss-Seidel จบใน 7 รอบ ส่วน Jacobi ใช้ 20 รอบ</b></p>
 
         <IterativeSolver method="seidel"/>
 
-        <PythonRunner code={`def gauss_seidel(A, b, x0, tol=1e-6, max_iter=50):
-    n = len(A)
-    x = x0[:]
-    for k in range(max_iter):
-        prev = x[:]
-        for i in range(n):
-            s = b[i]
-            for j in range(n):
-                if j != i:
-                    s -= A[i][j] * x[j]    # x[j] อาจเป็นค่าใหม่ที่เพิ่งคำนวณ!
-            x[i] = s / A[i][i]
-        err = max(abs(x[i]-prev[i]) for i in range(n))
-        print(f"k={k+1:2d}  x={[round(v,4) for v in x]}  ε={err:.2e}")
-        if err < tol: return x
+        <PythonRunner code={`# Gauss-Seidel — ระบบของอาจารย์ (ชีทสรุป Final หน้า 3)
+# กฎอาจารย์: หยุดด้วย tolerance ไม่ใช่จำนวนรอบ -> ใช้ while ไม่ใช่ for range(4)
+A   = [[5,2,0,0],[2,5,2,0],[0,2,5,2],[0,0,2,5]]
+b   = [12, 17, 14, 7]
+x   = [0.0, 0.0, 0.0, 0.0]      # x0 — เปลี่ยนได้ โปรแกรมต้องยังทำงาน
+tol = 0.001                      # เกณฑ์ที่อาจารย์ใช้
+n   = len(A)
 
-A = [[5,-1,0,0],[-1,5,-1,0],[0,-1,5,-1],[0,0,-1,5]]
-b = [12,17,14,7]
-ans = gauss_seidel(A, b, [0,0,0,0])`} height={220}/>
+k, err = 0, 1.0
+while err > tol and k < 200:     # max 200 = ตาข่ายกันลูปไม่รู้จบ ไม่ใช่ตัวสั่งหยุด
+    k += 1
+    prev = x[:]
+    for i in range(n):
+        s = b[i] - sum(A[i][j]*x[j] for j in range(n) if j != i)
+        x[i] = s / A[i][i]       # เขียนทับทันที = รอบถัดไปใช้ค่าใหม่
+    err = max(abs((x[i]-prev[i])/x[i]) for i in range(n))   # ε relative ตามชีท
+    print(f"Iteration {k}")
+    for i in range(n):
+        print(f"  x{i+1} = {x[i]:.6f}")
+    print(f"  Error = {err:.6f}")
+
+print("\\nคำตอบ:", [round(v, 6) for v in x], f"({k} รอบ)")`} height={300}/>
       </Sect>
 
       <Sect tag="9" title="Quick Reference & Decision Tree" read="must" min={10}>

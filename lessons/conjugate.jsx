@@ -40,6 +40,8 @@ function ConjugateLesson() {
         meta={["Symmetric PD", "n-step convergence", "Quadratic form", "Krylov subspace"]}
       />
 
+      <CodeRules/>
+
       <Sect tag="0" title="ทำไมต้องมี CG?">
         <p>Gauss-Seidel ลู่เข้าช้าเมื่อ matrix ใหญ่ขึ้น — สำหรับ <em>symmetric positive-definite</em> matrix ขนาด n×n, <b>Conjugate Gradient รับประกันลู่เข้าใน n iterations</b></p>
         <Callout kind="tip" title="แนวคิด — มอง Ax = b เป็นปัญหาหาค่าต่ำสุด">

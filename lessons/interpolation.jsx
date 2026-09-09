@@ -25,6 +25,8 @@ function InterpolationLesson() {
         meta={["Linear / Quadratic / Polynomial", "Newton Divided Diff", "Lagrange", "n+1 จุด → degree n"]}
       />
 
+      <CodeRules/>
+
       <Sect tag="0" title="Interpolation vs Regression">
         <div className="grid-2">
           <Callout kind="good" title="Interpolation">

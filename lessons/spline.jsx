@@ -24,6 +24,8 @@ function SplineLesson() {
         meta={["Linear / Quadratic / Cubic", "Piecewise", "Function + Slope ต่อเนื่อง"]}
       />
 
+      <CodeRules/>
+
       <Sect tag="0" title="ทำไมต้องมี Spline?">
         <p>Newton/Lagrange polynomial degree สูง ๆ มีปัญหา <b>Runge's phenomenon</b> — โค้งเด้งไป-มาตรงจุดปลาย (โดยเฉพาะ data เป็น <M>{`1/(1+x^2)`}</M> ใน <M>{`[-5, 5]`}</M>)</p>
         <Callout kind="tip" title="ไอเดียของ Spline">

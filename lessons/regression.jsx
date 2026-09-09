@@ -24,6 +24,8 @@ function RegressionLesson() {
         meta={["Linear", "Polynomial", "Multiple Linear", "Normal Equations"]}
       />
 
+      <CodeRules/>
+
       <Sect tag="0" title="ทำไมไม่ใช้ Interpolation?">
         <p>ข้อมูลจริงจากการวัดมี <b>noise/error</b> — ใช้ polynomial degree สูงผ่านทุกจุดจะได้กราฟ "บ้า" ที่ทำนายค่าใหม่ผิดเพี้ยน</p>
         <p>Regression: ยอมรับว่าเส้นโค้ง<em>ไม่ผ่าน</em>ทุกจุด — แลกกับการได้เส้นที่ "เป็นตัวแทน" ของแนวโน้มข้อมูล</p>

@@ -25,6 +25,8 @@ function CodeDrillLesson() {
         meta={["6 โครงหลัก", "เติมช่องว่าง 10 ข้อ", "กระดาษเปล่า 5 ข้อ", "ตาราง JS ↔ Python"]}
       />
 
+      <CodeRules/>
+
       <Callout kind="danger" title="ทำไมหน้านี้ถึงคุ้มที่สุดตอนนี้">
         <NumTable
           headers={["ข้อเท็จจริง", "ผลที่ตามมา"]}
