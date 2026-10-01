@@ -10,32 +10,32 @@ const smoothScrollTo = (el) => {
 
 const CHAPTERS = [
   { group: "① เริ่มที่นี่", items: [
-    { id: "plan", num: "🗓", title: "แผนหลังมิดเทอม — ทำอะไรวันไหน", comp: "PlanLesson" },
+    { id: "plan", num: "🗓", title: "แผนเตรียมไฟนอล — 7 สัปดาห์", comp: "PlanLesson" },
     { id: "intro", num: "00", title: "ปฐมนิเทศ · วิธีใช้เว็บนี้", comp: "IntroLesson" },
   ]},
-  { group: "② กำลังเรียนอยู่ตอนนี้ ⬅ เริ่มที่นี่", items: [
-    { id: "linear", num: "4", title: "Linear Systems · ครบ 8 วิธี", comp: "LinearSystemsLesson" },
+  { group: "② ออกไฟนอล — 5 บทนี้ ⬅ เริ่มที่นี่", items: [
+    { id: "linear", num: "4", title: "Linear Systems · 7 วิธีที่ออกไฟนอล", comp: "LinearSystemsLesson" },
+    { id: "interp", num: "5", title: "Interpolation", comp: "InterpolationLesson" },
+    { id: "spline", num: "6", title: "Spline Interpolation", comp: "SplineLesson" },
+    { id: "regression", num: "7", title: "Least-Squares Regression", comp: "RegressionLesson" },
+    { id: "conjugate", num: "8", title: "Conjugate Gradient", comp: "ConjugateLesson" },
   ]},
-  { group: "③ ผ่านมิดเทอมมาแล้ว (ไว้ทวน)", items: [
+  { group: "③ ท่อง + ซ้อมทำข้อสอบ", items: [
+    { id: "memo", num: "🧠", title: "ท่องก่อนสอบ · ทุกอย่างหน้าเดียว", comp: "MemorizeLesson" },
+    { id: "cheat", num: "⚡", title: "Cheat Sheet · ทวนคืนก่อนสอบ", comp: "CheatLesson" },
+    { id: "calc", num: "📟", title: "Calculator Master · fx-991CW", comp: "CalculatorLesson" },
+    { id: "code", num: "⌨", title: "เขียนโค้ดจากหัว · ทุกโครง", comp: "CodeDrillLesson" },
+    { id: "midterm", num: "✸", title: "ห้องสอบ · สุ่มชุด + ดริลประยุกต์ + สมุดพลาด", comp: "MidtermLesson" },
+    { id: "exam", num: "★", title: "Mock Final Exam", comp: "ExamLesson" },
+    { id: "problems", num: "★", title: "Problem Bank · 40+ ข้อ", comp: "ProblemsLesson" },
+  ]},
+  { group: "④ ออกมิดไปแล้ว (ไว้ทวน)", items: [
     { id: "integ", num: "1", title: "Integration", comp: "IntegrationLesson" },
     { id: "diff", num: "2", title: "Differentiation", comp: "DifferentiationLesson" },
     { id: "root", num: "3", title: "Root Finding", comp: "RootFindingLesson" },
   ]},
-  { group: "④ ท่อง + ซ้อมทำข้อสอบ", items: [
-    { id: "memo", num: "🧠", title: "ท่องก่อนสอบ · ทุกอย่างหน้าเดียว", comp: "MemorizeLesson" },
-    { id: "cheat", num: "⚡", title: "Cheat Sheet · ทวนคืนก่อนสอบ", comp: "CheatLesson" },
-    { id: "calc", num: "📟", title: "Calculator Master · fx-991CW", comp: "CalculatorLesson" },
-    { id: "code", num: "⌨", title: "เขียนโค้ดจากหัว · 6 โครง", comp: "CodeDrillLesson" },
-    { id: "midterm", num: "✸", title: "ห้องสอบ · สุ่มชุด + สมุดพลาด", comp: "MidtermLesson" },
-    { id: "problems", num: "★", title: "Problem Bank · 40+ ข้อ", comp: "ProblemsLesson" },
-  ]},
-  { group: "⑤ ยังไม่ถึง — รอการบ้านใบถัดไปชี้", items: [
+  { group: "⑤ ภาพรวมทั้งคอร์ส", items: [
     { id: "map", num: "🗺", title: "แผนที่คอนเซปต์ทั้งคอร์ส", comp: "ConceptMapLesson" },
-    { id: "conjugate", num: "—", title: "Conjugate Gradient", comp: "ConjugateLesson" },
-    { id: "interp", num: "—", title: "Interpolation", comp: "InterpolationLesson" },
-    { id: "spline", num: "—", title: "Spline Interpolation", comp: "SplineLesson" },
-    { id: "regression", num: "—", title: "Least-Squares Regression", comp: "RegressionLesson" },
-    { id: "exam", num: "—", title: "Mock Final Exam", comp: "ExamLesson" },
   ]},
 ];
 

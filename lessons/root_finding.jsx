@@ -801,7 +801,9 @@ f(a)·f(m) = (−0.640381)(0.204423) < 0 → b ← m → a = 1.875, b = 1.90625
         return None, []
     table = []
     prev = None
-    for i in range(max_iter):
+    i = 0
+    err = None
+    while err is None or err > tol:          # ★ หยุดด้วย tolerance ไม่ใช่จำนวนรอบ
         m = (a + b) / 2
         fm = f(m)
         err = None if prev is None else abs(m - prev)   # ผลต่างสัมบูรณ์สองรอบติดกัน (ตามโจทย์)
@@ -813,6 +815,9 @@ f(a)·f(m) = (−0.640381)(0.204423) < 0 → b ← m → a = 1.875, b = 1.90625
         else:
             a = m
         prev = m
+        i += 1
+        if i >= max_iter:                    # ตาข่ายกันลูปไม่รู้จบเท่านั้น
+            break
     return m, table
 
 # โจทย์: หา 4√13
@@ -876,14 +881,17 @@ assert f(xl) * f(xr) <= 0, "f(xl) และ f(xr) ต้องเครื่อ
 tol = 1e-7         # "ไม่เปลี่ยน 6 ทศนิยม" → ใช้ 1e-7 เผื่อ
 prev = None
 iters = 0
-for _ in range(500):
+err = None
+while err is None or err > tol:              # ★ หยุดด้วย tolerance
     m = (xl + xr) / 2
     iters += 1
-    if prev is not None and abs(m - prev) < tol:
+    err = None if prev is None else abs(m - prev)
+    if err is not None and err < tol:
         break
     if f(xl) * f(m) < 0: xr = m
     else:                xl = m
     prev = m
+    if iters >= 500: break                   # ตาข่ายกันลูปไม่รู้จบ
 
 print(f"{m:.4f}    (Bisection · {iters} iterations)")`} height={300}/>
       </Sect>
@@ -1051,15 +1059,18 @@ assert f(xl) * f(xr) <= 0, "f(xl) และ f(xr) ต้องเครื่อ
 tol = 1e-7
 prev = None
 iters = 0
-for _ in range(2000):
+err = None
+while err is None or err > tol:              # ★ หยุดด้วย tolerance
     fl, fr = f(xl), f(xr)
     m = (xl * fr - xr * fl) / (fr - fl)
     iters += 1
-    if prev is not None and abs(m - prev) < tol:
+    err = None if prev is None else abs(m - prev)
+    if err is not None and err < tol:
         break
     if fl * f(m) < 0: xr = m
     else:             xl = m
     prev = m
+    if iters >= 2000: break                  # ตาข่ายกันลูปไม่รู้จบ
 
 print(f"{m:.4f}    (False Position · {iters} iterations)")`} height={300}/>
       </Sect>
@@ -1139,15 +1150,21 @@ x₁₄ = 0.5669089   ← |Δx| = 0.0006477 < 0.001  ✓ หยุด
 g   = lambda x: math.exp(-x)
 x   = 0.0          # ① Initial Value
 tol = 0.001        #    เกณฑ์ที่อาจารย์ตั้งเป็นปกติ
+i   = 0
+dx  = float('inf')
 
-for i in range(50):
+while dx > tol:                                  # ★ ลูปหยุดด้วย tolerance ไม่ใช่จำนวนรอบ
     xn = g(x)                                    # ② Iteration Form
-    print(f"รอบ {i+1:2d}: x={x:.7f} -> {xn:.7f}   |dx|={abs(xn-x):.7f}")
-    if abs(xn - x) < tol:                        # ③ เงื่อนไขหยุด (absolute)
+    dx = abs(xn - x)                             # ③ เงื่อนไขหยุด (absolute)
+    i += 1
+    print(f"รอบ {i:2d}: x={x:.7f} -> {xn:.7f}   |dx|={dx:.7f}")
+    if dx < tol:
         break
     x = xn
+    if i >= 50:                                  # ตาข่ายกันลูปไม่รู้จบเท่านั้น
+        break
 
-print(f"\\nตอบ x = {xn:.7f}   (หยุดที่รอบ {i+1})")
+print(f"\\nตอบ x = {xn:.7f}   (หยุดที่รอบ {i})")
 print(f"ค่าจริง = 0.5671432904   คลาดเคลื่อน = {abs(xn-0.5671432904)/0.5671432904*100:.4f}%")
 print(f"เช็คลู่เข้า |g'(ราก)| = {math.exp(-0.5671432904):.7f} < 1  -> ลู่เข้า")`} height={330}/>
 
@@ -1218,6 +1235,9 @@ x₈ = 2.6366428   ε = 0.0111500
         <PythonRunner code={`# One-point Iteration · เปรียบเทียบ g(x) ที่ดีกับที่ลู่ออก
 # จากชีท Mid p.4 — เลือก g(x) ผิดทำให้คำตอบวนไม่หยุด
 
+# ⚠︎ เซลล์นี้เป็น "เดโมเปรียบเทียบรูป g(x)" จงใจรันครบ 8 รอบเพื่อให้เห็นว่ารูปไหนลู่ออก
+#    -> ห้ามลอกโครง for range(...) นี้ไปตอบข้อสอบ · ข้อสอบต้องเป็น while + tolerance
+#       (ดูเซลล์ถัดไป หรือหน้า #code โครง B)
 def one_point(g, x0, label, max_iter=8):
     print(f"=== {label} ===")
     x = x0
@@ -1239,13 +1259,17 @@ import math
 
 def one_point(g, x0, tol=1e-6, max_iter=50):
     x = x0
-    for i in range(max_iter):
+    i, err = 0, float('inf')
+    while err > tol:                     # ★ หยุดด้วย tolerance ไม่ใช่จำนวนรอบ
         xn = g(x)
         err = abs((xn - x) / xn) if xn != 0 else abs(xn - x)
-        print(f"i={i+1:2d}  x_old={x:.8f}  x_new={xn:.8f}  err={err:.2e}")
+        i += 1
+        print(f"i={i:2d}  x_old={x:.8f}  x_new={xn:.8f}  err={err:.2e}")
         if err < tol:
             return xn
         x = xn
+        if i >= max_iter:                # ตาข่ายกันลูปไม่รู้จบเท่านั้น
+            return xn
 
 # รูป C — เร็วที่สุด: x = 0.5*(x + 7/x)  (จริง ๆ คือ Newton สำหรับ x²−7)
 ans = one_point(lambda x: 0.5 * (x + 7/x), x0=2.0)
@@ -1437,17 +1461,21 @@ Newton ใช้ 4 iter ได้ความแม่น 6 ทศนิยม �
 
 def newton(f, fp, x0, tol=1e-6, max_iter=50):
     x = x0
-    for i in range(max_iter):
+    i, err = 0, float('inf')
+    while err > tol:                     # ★ หยุดด้วย tolerance ไม่ใช่จำนวนรอบ
         fx, fpx = f(x), fp(x)
         if fpx == 0:
             print("f'(x) = 0 → method ล้มเหลว")
             return None
         xn = x - fx/fpx
         err = abs((xn - x)/xn) if xn != 0 else abs(xn - x)
-        print(f"i={i+1:2d}  x={x:.8f}  f(x)={fx:+.4e}  f'(x)={fpx:.4f}  x_new={xn:.8f}  err={err:.2e}")
+        i += 1
+        print(f"i={i:2d}  x={x:.8f}  f(x)={fx:+.4e}  f'(x)={fpx:.4f}  x_new={xn:.8f}  err={err:.2e}")
         if err < tol:
             return xn
         x = xn
+        if i >= max_iter:                # ตาข่ายกันลูปไม่รู้จบเท่านั้น
+            return xn
 
 # ข้อสอบ: หา √7
 f  = lambda x: x**2 - 7
@@ -1710,13 +1738,16 @@ x₃ = 8/3 − (1/9)(2.5 − 8/3) / (−0.75 − 1/9)
         </Problem>
 
         <PythonRunner code={`def secant(f, x0, x1, tol=1e-6, max_iter=50):
-    for i in range(max_iter):
+    i, err = 0, float('inf')
+    while err > tol:                     # ★ หยุดด้วย tolerance ไม่ใช่จำนวนรอบ
         f0, f1 = f(x0), f(x1)
         x2 = x1 - f1*(x0 - x1)/(f0 - f1)
         err = abs((x2 - x1)/x2)
-        print(f"i={i+1:2d}  x0={x0:.6f}  x1={x1:.6f}  x2={x2:.6f}  err={err:.2e}")
+        i += 1
+        print(f"i={i:2d}  x0={x0:.6f}  x1={x1:.6f}  x2={x2:.6f}  err={err:.2e}")
         if err < tol: return x2
-        x0, x1 = x1, x2
+        x0, x1 = x1, x2                  # ★ บรรทัดเลื่อนตัวแปร
+        if i >= max_iter: return x2      # ตาข่ายกันลูปไม่รู้จบเท่านั้น
 
 f = lambda x: x**2 - 7
 ans = secant(f, 2.0, 3.0)
@@ -2050,19 +2081,25 @@ def fprime(f, x, h=1e-7):
 
 print("\\nNewton (อนุพันธ์เชิงตัวเลข) จาก i0 = 0.02, tol = 0.001:")
 x, tol = 0.02, 0.001                       # ① Initial Value
-for k in range(50):
+k, dx = 0, float('inf')
+while dx > tol:                            # ★ หยุดด้วย tolerance ไม่ใช่จำนวนรอบ
     xn = x - f(x)/fprime(f, x)             # ② Iteration Form
-    print(f"  รอบ {k+1}: i={x:.8f} -> {xn:.8f}  |di|={abs(xn-x):.2e}")
-    if abs(xn - x) < tol:                  # ③ เงื่อนไขหยุด (absolute)
-        x = xn; break
+    dx = abs(xn - x)                       # ③ เงื่อนไขหยุด (absolute)
+    k += 1
+    print(f"  รอบ {k}: i={x:.8f} -> {xn:.8f}  |di|={dx:.2e}")
     x = xn
+    if k >= 50: break                      # ตาข่ายกันลูปไม่รู้จบ
 
 # --- Secant: ได้คำตอบเดียวกันโดยไม่ต้องมี f' เลย ---
 x0, x1 = 0.01, 0.02
-for k in range(50):
+j, dx = 0, float('inf')
+while dx > 1e-12:                          # ★ หยุดด้วย tolerance เหมือนกัน
     x2 = x1 - f(x1)*(x0 - x1)/(f(x0) - f(x1))
-    if abs(x2 - x1) < 1e-12: break
-    x0, x1 = x1, x2
+    dx = abs(x2 - x1)
+    j += 1
+    if dx < 1e-12: break
+    x0, x1 = x1, x2                        # ★ บรรทัดเลื่อนตัวแปร
+    if j >= 50: break
 
 print(f"\\nNewton  -> i = {x:.8f}  = {x*100:.5f}% ต่อเดือน")
 print(f"Secant  -> i = {x2:.8f}  = {x2*100:.5f}% ต่อเดือน")`} height={360}/>
@@ -2145,15 +2182,19 @@ print(f"Secant  -> i = {x2:.8f}  = {x2*100:.5f}% ต่อเดือน")`} he
     if f(xl) * f(xr) > 0:
         return None
     prev = None
-    for i in range(200):
+    i, err = 0, None
+    while err is None or err > tol:      # ★ หยุดด้วย tolerance ไม่ใช่จำนวนรอบ
         m = (xl + xr) / 2
-        if prev is not None and abs(m - prev) < tol:
+        err = None if prev is None else abs(m - prev)
+        if err is not None and err < tol:
             return m
         if f(xl) * f(m) < 0:
             xr = m
         else:
             xl = m
         prev = m
+        i += 1
+        if i >= 200: break               # ตาข่ายกันลูปไม่รู้จบเท่านั้น
     return m
 
 # ทดสอบ

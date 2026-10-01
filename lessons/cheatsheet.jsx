@@ -6,122 +6,29 @@ function CheatLesson() {
       <Hero
         kicker="⚡ · Speed Tricks"
         title="Cheat Sheet & Speed Tricks"
-        lead="สรุปสูตรครบทุกบทในหน้าเดียว + Decision tree เลือก method + กับดักที่ออกข้อสอบบ่อย"
-        meta={["4 บทที่ออกสอบอยู่บนสุด", "Decision tree", "Top 22 mistakes", "Print-ready"]}
+        lead="สรุปสูตรครบทุกบทในหน้าเดียว + Decision tree เลือก method + กับดักที่ออกข้อสอบบ่อย · เรียงใหม่แล้ว — 5 บทที่ออกไฟนอลอยู่บนสุด ส่วน 3 บทที่สอบมิดไปแล้วย้ายลงไปเป็นหมวด “ทวน” ท้ายหน้า"
+        meta={["5 บทไฟนอลอยู่บนสุด", "Decision tree", "Top 22 mistakes", "Print-ready"]}
       />
 
-      <Callout kind="good" title="📍 เรียงใหม่แล้ว — 4 บทที่ออกมิดเทอมอยู่บนสุด (01–04)">
-        <p style={{margin:"0 0 6px"}}><b>01 Integration → 02 Differentiation → 03 Root Finding → 04 Linear</b> เรียงตามลำดับเดียวกับเมนูซ้ายเป๊ะ · ตามด้วยกับดัก + speed tricks + เช็คลิสต์ก่อนเข้าห้องสอบ · <b>ของนอกขอบเขตถูกดันลงไปท้ายหน้าหมดแล้ว</b> (เดิมแทรกอยู่ตรงกลางทำให้ต้องเลื่อนผ่าน)</p>
+      <Callout kind="good" title="📍 เรียงใหม่ 9 ก.ย. — 5 บทที่ออก‍ไฟนอลอยู่บนสุด (01–05)">
+        <p style={{margin:"0 0 6px"}}><b>01 Linear Systems → 02 Interpolation → 03 Spline → 04 Regression → 05 Conjugate Gradient</b> · ตามด้วยกับดัก + speed tricks + เช็คลิสต์ก่อนเข้าห้องสอบ · <b>3 บทที่สอบมิดไปแล้ว (Integration · Differentiation · Root Finding) ถูกย้ายลงไปท้ายหน้าเป็นหมวด “ทวน”</b> — ยังต้องอ่าน แต่ไม่ใช่ทางหลักแล้ว</p>
         <p style={{margin:0}}>กด <Key>Ctrl/Cmd</Key> + <Key>P</Key> เพื่อพิมพ์ออกมาทบทวนก่อนสอบ (CSS ปรับให้อ่านได้บนกระดาษ) · <span style={{color:"var(--yellow)"}}>แต่<b>เอากระดาษเข้าห้องสอบไม่ได้</b> — พิมพ์ไว้ทวนก่อนเข้าเท่านั้น</span></p>
       </Callout>
+
 
       {/* DECISION TREE */}
       <Sect tag="🌳" title="Decision Tree · เห็นโจทย์ปุ๊บ เลือก method ทันที">
         <DecisionTree/>
       </Sect>
 
-      <Sect tag="01" title="Integration · Cheat Sheet">
+      <Sect tag="01" title="Linear Systems · Cheat Sheet — 7 วิธีที่ออกไฟนอล">
+        <Callout kind="danger" title="⚠︎ อ่านก่อน — บทนี้เปลี่ยนขอบเขตไปแล้ว 2 รอบ">
+          <p style={{margin:"0 0 6px"}}>ตอนเตรียมมิดเทอมเขียนไว้ว่า &ldquo;ออกแค่ Cramer กับ Gauss · Jordan/Inversion/LU/Cholesky ตัดออก&rdquo; — <b>ตอนนี้กลับด้านหมด</b></p>
+          <p style={{margin:0}}>kim ยืนยัน 9 ก.ย. ว่าข้อสอบมิดออก Linear <b>แค่ Cramer&rsquo;s Rule อย่างเดียว</b> ⇒ ตามกฎ &ldquo;ไฟนอล = เรื่องที่ไม่ออกมิด&rdquo; + <b><code>การบ้าน6-7.pdf</code> ข้อ 1.2–1.8</b> ⇒ <b>ไฟนอลออก 7 วิธี: Gauss Elimination · Gauss-Jordan · Matrix Inversion · LU · Cholesky · Jacobi · Gauss-Seidel</b> · เฉลยเต็มบนระบบเดียวกันอยู่ที่บท <a href="#linear">Linear Systems</a> หมวด 📮</p>
+        </Callout>
+
         <div className="cheat-card">
-          <h4>Trapezoidal (single)</h4>
-          <MB>{`I = \\frac{h}{2}[f(a) + f(b)], \\quad h = b - a`}</MB>
-
-          <h4>Composite Trapezoidal (n ช่วง)</h4>
-          <MB>{`I = \\frac{h}{2}\\left[f(x_0) + f(x_n) + 2\\sum_{i=1}^{n-1} f(x_i)\\right], \\quad h = \\frac{b-a}{n}`}</MB>
-
-          <h4>Simpson 1/3 (single, 3 จุด)</h4>
-          <MB>{`I = \\frac{h}{3}[f(a) + 4f(m) + f(b)], \\quad h = \\frac{b-a}{2}`}</MB>
-
-          <h4>Composite Simpson 1/3 (n พาราโบลา → 2n ช่วง)</h4>
-          <MB>{`I = \\frac{h}{3}\\left[f(x_0) + f(x_{2n}) + 4\\sum_{i \\text{ คี่}} f(x_i) + 2\\sum_{i \\text{ คู่}} f(x_i)\\right], \\quad h = \\frac{b-a}{2n}`}</MB>
-          <p>Pattern น้ำหนัก: <b>1, 4, 2, 4, 2, 4, ..., 4, 1</b> · <M>n</M> = จำนวนพาราโบลา (ช่องย่อย = 2n เป็นคู่เสมอ)</p>
-
-          <Callout title="Error">
-            <ul>
-              <li>Trapezoidal: O(h³) per interval, O(h²) composite</li>
-              <li>Simpson: O(h⁵) per interval, O(h⁴) composite → แม่นกว่า Trap ~64× ที่ n เดียวกัน</li>
-            </ul>
-          </Callout>
-        </div>
-      </Sect>
-
-      <Sect tag="02" title="Differentiation · Cheat Sheet">
-        <div className="cheat-card">
-          <h4>First Derivative · ชุดธรรมดา</h4>
-          <table className="tbl mono">
-            <thead><tr><th>Method</th><th>สูตร</th><th>Error</th></tr></thead>
-            <tbody>
-              <tr><td>Forward</td><td>[f(x+h) − f(x)]/h</td><td>O(h)</td></tr>
-              <tr><td>Backward</td><td>[f(x) − f(x−h)]/h</td><td>O(h)</td></tr>
-              <tr><td>Central</td><td>[f(x+h) − f(x−h)]/(2h)</td><td>O(h²)</td></tr>
-            </tbody>
-          </table>
-
-          <h4>First Derivative · ชุดละเอียด (โจทย์ระบุ Big-O สูง)</h4>
-          <table className="tbl mono">
-            <thead><tr><th>Method</th><th>สูตร</th><th>Error</th></tr></thead>
-            <tbody>
-              <tr><td>Forward</td><td>[−f(x+2h) + 4f(x+h) − 3f(x)]/(2h)</td><td>O(h²)</td></tr>
-              <tr><td>Backward</td><td>[3f(x) − 4f(x−h) + f(x−2h)]/(2h)</td><td>O(h²)</td></tr>
-              <tr><td>Central 5-point</td><td>[−f(x+2h) + 8f(x+h) − 8f(x−h) + f(x−2h)]/(12h)</td><td>O(h⁴)</td></tr>
-            </tbody>
-          </table>
-
-          <h4>Second Derivative</h4>
-          <table className="tbl mono">
-            <thead><tr><th>Method</th><th>สูตร</th><th>Error</th></tr></thead>
-            <tbody>
-              <tr><td>Forward</td><td>[f(x+2h) − 2f(x+h) + f(x)]/h²</td><td>O(h)</td></tr>
-              <tr><td>Backward</td><td>[f(x) − 2f(x−h) + f(x−2h)]/h²</td><td>O(h)</td></tr>
-              <tr><td>Central</td><td>[f(x+h) − 2f(x) + f(x−h)]/h²</td><td>O(h²)</td></tr>
-              <tr><td>Forward ละเอียด</td><td>[−f(x+3h) + 4f(x+2h) − 5f(x+h) + 2f(x)]/h²</td><td>O(h²)</td></tr>
-              <tr><td>Backward ละเอียด</td><td>[2f(x) − 5f(x−h) + 4f(x−2h) − f(x−3h)]/h²</td><td>O(h²)</td></tr>
-              <tr><td>Central 5-point</td><td>[−f(x+2h) + 16f(x+h) − 30f(x) + 16f(x−h) − f(x−2h)]/(12h²)</td><td>O(h⁴)</td></tr>
-            </tbody>
-          </table>
-
-          <Callout kind="warn" title="Big-O ในโจทย์ = คำสั่งเลือกชุดสูตร">
-            โจทย์เขียน “forward O(h)” → ชุดธรรมดา · “forward O(h²)” → ชุดละเอียด (ใช้ชุดธรรมดาแล้วอ้าง O(h²) = ผิดทั้งข้อ) · <b>เช็กเร็ว:</b> ผลรวมสัมประสิทธิ์ทุกสูตรต้องเป็น 0 (เช่น −1+4−3 = 0 ✓)
-          </Callout>
-          <Callout kind="tip">เลือก central เมื่อมีข้อมูลทั้งสองข้าง — แม่นกว่า ~10× · ต้น/ท้ายตารางเท่านั้นที่จำเป็นต้องใช้ forward/backward</Callout>
-        </div>
-      </Sect>
-
-      <Sect tag="03" title="Root Finding · Cheat Sheet">
-        <div className="cheat-card">
-          <h4>สูตรหลัก</h4>
-          <NumTable headers={["Method","สูตร", "Convergence"]} rows={[
-            ["Bisection", "xₘ = (xₗ + xᵣ)/2", "Linear (1/2)"],
-            ["False Position", "xₘ = xᵣ − f(xᵣ)(xₗ−xᵣ)/(f(xₗ)−f(xᵣ))", "Super-linear"],
-            ["One-point", "x_{n+1} = g(x_n)", "Linear ถ้า |g'|<1"],
-            ["Newton", "x_{n+1} = x_n − f(x_n)/f'(x_n)", "Quadratic ≈ 2x"],
-            ["Secant", "x_{n+1} = x_n − f(x_n)(x_{n-1}−x_n)/(f(x_{n-1})−f(x_n))", "Super-linear ≈ 1.618"],
-          ]}/>
-          <h4>Error สำหรับทุก method</h4>
-          <MB>{`\\varepsilon_a = \\left|\\frac{x_{\\text{new}} - x_{\\text{old}}}{x_{\\text{new}}}\\right| \\times 100\\%`}</MB>
-          <h4>เลือก method</h4>
-          <ul>
-            <li>โจทย์ให้ <b>ช่วง [a, b]</b> + <code>f(a)·f(b) &lt; 0</code> → Bisection / False Position</li>
-            <li>โจทย์ให้ <b>x₀ + f'(x)</b> → Newton</li>
-            <li>โจทย์ให้ <b>x₀, x₁</b> สองจุด → Secant</li>
-            <li>โจทย์ให้ <b>x = g(x)</b> → One-point</li>
-            <li>โจทย์ <b>scan ทีละ...</b> → Graphical</li>
-          </ul>
-        </div>
-      </Sect>
-
-      <Sect tag="04" title="Linear Systems · Cheat Sheet">
-        <div className="cheat-card">
-          <h4>Cramer’s Rule <span className="tag green">สอน 8 ส.ค. · ออกแน่</span></h4>
-          <MB>{`x_i=\\frac{\\det A_i}{\\det A}\\quad\\text{โดย } A_i = A \\text{ ที่แทนคอลัมน์ที่ } i \\text{ ด้วย } b`}</MB>
-          <ul>
-            <li><b>ใช้ได้แค่ 2×2 กับ 3×3</b> (อาจารย์บอกเอง “4×4 ไม่ทำ · n×n ไม่ทำ”) · เมทริกซ์<b>ต้องจัตุรัส</b> ไม่งั้นหา det ไม่ได้ → ใช้ Gauss แทน</li>
-            <li><M>{`\\det A = 0`}</M> ⇒ หยุด ไม่มีคำตอบเดียว</li>
-            <li>det 2×2: <M>{`ad-bc`}</M> · det 3×3: กระจายแถวแรก <M>{`a_{11}M_{11}-a_{12}M_{12}+a_{13}M_{13}`}</M> (เครื่องหมาย + − +)</li>
-            <li><b>ใช้เครื่องคิดเลขหา det ได้</b> — แต่ต้องเขียนสูตร + เมทริกซ์ <M>{`A_i`}</M> ให้เห็น ไม่งั้นข้อ “จงแสดงวิธีทำ” ได้ 0</li>
-            <li>ตรวจฟรี: <M>{`\\det A = `}</M> ผลคูณตัวหลักหลังทำ Gauss</li>
-          </ul>
-
-          <h4>Gauss Elimination <span className="tag green">อาจารย์บอกเอง · ออกแน่</span></h4>
+          <h4>① Gauss Elimination <span className="tag green">⭐ ออกไฟนอล · โครงแม่ของทุกวิธี</span></h4>
           <ol>
             <li>Forward: <M>{`R_i \\leftarrow R_i - (a_{ik}/a_{kk}) R_k`}</M> ทำทุก i &gt; k → ได้ Upper Triangular</li>
             <li>Back-sub: <M>{`x_i = (b_i - \\sum_{j>i} a_{ij}x_j)/a_{ii}`}</M> ไล่จากแถวล่างขึ้นบน</li>
@@ -133,17 +40,144 @@ function CheatLesson() {
             <li>โค้ด: จุดตายคือ <code>for j in range(k, <b>n+1</b>)</code> — ลืม +1 คอลัมน์ <M>b</M> ไม่อัปเดต</li>
           </ul>
 
-          <h4>เมทริกซ์ไม่จัตุรัส (สมการ ≠ ตัวแปร) <span className="tag green">ออกแน่</span></h4>
+          <h4>② Gauss-Jordan <span className="tag green">⭐ ออกไฟนอล · การบ้าน 6-7 ข้อ 1.3</span></h4>
+          <ul>
+            <li>= Gauss + <b>2 อย่างเพิ่ม</b>: (ก) หารแถว pivot ด้วย <M>{`a_{kk}`}</M> ให้ตัวหลักเป็น 1 (ข) กำจัด<b>ข้างบนด้วย</b> ไม่ใช่แค่ข้างล่าง</li>
+            <li>ลูปเปลี่ยนจาก <code>for i in range(k+1, n)</code> เป็น <code>for i in range(n): if i != k</code></li>
+            <li>จบแล้วได้ Identity ⇒ <b>อ่านคำตอบจากคอลัมน์ b ได้เลย ไม่ต้อง back-substitute</b></li>
+            <li>จุดตาย: <b>ลืม normalize</b> ⇒ ได้แค่ diagonal ไม่ใช่ identity ⇒ ต้องหารทีหลัง ไม่งั้นคำตอบผิดหมด</li>
+          </ul>
+
+          <h4>③ Matrix Inversion <span className="tag green">⭐ ออกไฟนอล · การบ้าน 6-7 ข้อ 1.4</span></h4>
+          <ul>
+            <li>ต่อ augment <M>{`[A \\mid I]`}</M> → ทำ Gauss-Jordan ทั้งแถบ → ได้ <M>{`[I \\mid A^{-1}]`}</M> → <M>{`x = A^{-1}b`}</M></li>
+            <li>2×2 มีสูตรลัด: <M>{`A^{-1}=\\frac{1}{ad-bc}\\begin{bmatrix} d & -b \\\\ -c & a\\end{bmatrix}`}</M></li>
+            <li>จุดตายในโค้ด: ลูปคอลัมน์ต้องวิ่งถึง <b>2n</b> ไม่ใช่ n (ไม่งั้นครึ่งขวาไม่ถูกอัปเดต)</li>
+            <li>ตรวจฟรี: <M>{`A\\cdot A^{-1} = I`}</M> · <M>{`\\det A = 0`}</M> ⇒ ไม่มี inverse ⇒ วิธีนี้ใช้ไม่ได้</li>
+          </ul>
+
+          <h4>④ LU Decomposition (Doolittle) <span className="tag green">⭐ ออกไฟนอล · การบ้าน 6-7 ข้อ 1.5</span></h4>
+          <ul>
+            <li><M>{`A = LU`}</M> · <b>Doolittle:</b> แนวทแยงของ <M>L</M> เป็น 1 · <b>Crout:</b> แนวทแยงของ <M>U</M> เป็น 1 (ต่างกันแค่นี้)</li>
+            <li><M>U</M> = ผลลัพธ์ของ forward elimination · <M>{`L_{ik}`}</M> = <b>ตัวคูณ</b> <M>{`a_{ik}/a_{kk}`}</M> ที่ใช้กำจัด</li>
+            <li>แก้ 2 ขั้น: <M>{`Ly = b`}</M> (forward sub, ไล่ลง) แล้ว <M>{`Ux = y`}</M> (back sub, ไล่ขึ้น)</li>
+            <li><b>จุดตายอันดับ 1:</b> ต้อง<b>เก็บ</b> <code>L[i][k] = factor</code> <b>ก่อน</b>เอา factor ไปกำจัดแถว — เขียนสลับลำดับ = L ผิดทั้งตัว</li>
+            <li>คุ้มตรงไหน: แยก LU ครั้งเดียว แล้วเปลี่ยน <M>b</M> กี่ชุดก็ใช้ซ้ำได้ ต่างจาก Gauss ที่ต้องทำใหม่ทุกครั้ง</li>
+          </ul>
+
+          <h4>⑤ Cholesky <span className="tag green">⭐ ออกไฟนอล · การบ้าน 6-7 ข้อ 1.6</span></h4>
+          <ul>
+            <li><M>{`A = LL^{T}`}</M> — <b>ใช้ได้เฉพาะ symmetric positive definite</b> (ต้องเช็ค <M>{`A = A^{T}`}</M> ก่อนเสมอ)</li>
+            <li>แนวทแยง: <M>{`L_{jj}=\\sqrt{a_{jj}-\\sum_{k<j} L_{jk}^{2}}`}</M></li>
+            <li>ใต้แนวทแยง: <M>{`L_{ij}=\\dfrac{a_{ij}-\\sum_{k<j} L_{ik}L_{jk}}{L_{jj}}`}</M></li>
+            <li>แก้ 2 ขั้นเหมือน LU เป๊ะ: <M>{`Ly=b`}</M> แล้ว <M>{`L^{T}x=y`}</M> ⇒ <b>เขียนฟังก์ชัน substitution ครั้งเดียว ใช้ได้ทั้ง LU และ Cholesky</b></li>
+            <li>จุดตาย: ถ้าใต้ <M>{`\\sqrt{\\ }`}</M> <b>ติดลบ</b> = ไม่ positive definite ⇒ วิธีนี้ใช้ไม่ได้ ต้องเปลี่ยนไป LU</li>
+          </ul>
+
+          <h4>⑥⑦ Jacobi &amp; Gauss-Seidel <span className="tag green">⭐ ออกไฟนอล · การบ้าน 6-7 ข้อ 1.7–1.8</span></h4>
+          <MB>{`x_i^{\\text{new}}=\\frac{1}{a_{ii}}\\Big(b_i-\\sum_{j\\neq i} a_{ij}x_j\\Big)`}</MB>
+          <ul>
+            <li><b>ต่างกันบรรทัดเดียว:</b> <b>Jacobi</b> ใช้ <M>{`x^{\\text{old}}`}</M> ทั้งรอบ (คำนวณครบแล้วค่อยเปลี่ยน) · <b>Gauss-Seidel</b> ใช้ค่าใหม่<b>ทันที</b>ที่คำนวณได้ ⇒ ลู่เข้าเร็วกว่าราวเท่าตัว</li>
+            <li>ในโค้ด Jacobi ต้องมี <code>x_new = x[:]</code> แยกลิสต์ · Gauss-Seidel เขียนทับ <code>x[i]</code> ได้เลย</li>
+            <li><b>เงื่อนไขลู่เข้า:</b> diagonally dominant <M>{`|a_{ii}| > \\sum_{j\\neq i}|a_{ij}|`}</M> ทุกแถว — <b>ถ้าไม่ผ่าน ให้สลับแถวก่อน</b> ไม่งั้นลู่ออกไม่มีวันหยุด</li>
+            <li>หยุดเมื่อ <M>{`\\max|x^{\\text{new}}-x^{\\text{old}}| < tol`}</M> · อาจารย์ใช้ <M>{`tol = 0.001`}</M> เป็นปกติ</li>
+            <li><b>จุดตายที่เสียคะแนนจริง:</b> เขียน <code>for k in range(20)</code> แทน <code>while</code> — <b>อาจารย์หักเพราะลูปต้องหยุดด้วย tolerance ไม่ใช่จำนวนรอบ</b></li>
+          </ul>
+
+          <h4>เมทริกซ์ไม่จัตุรัส (สมการ ≠ ตัวแปร)</h4>
           <ul>
             <li><b>สมการน้อยกว่าตัวแปร</b> → คำตอบไม่จำกัด ⇒ ตอบเป็นรูป parametric (ให้ตัวแปรอิสระ)</li>
             <li><b>สมการมากกว่าตัวแปร</b> → มักไม่มีคำตอบ (ขัดกันเอง) ⇒ Gauss จะโผล่แถว <M>{`0=c`}</M> ที่ <M>{`c\\neq0`}</M></li>
             <li>หา det ไม่ได้ ⇒ <b>Cramer / LU / Cholesky ใช้ไม่ได้ทั้งหมด</b> เหลือแต่ Gauss</li>
           </ul>
+
+          <h4>Cramer&rsquo;s Rule <span className="tag">ออกมิดไปแล้ว · ไว้ตรวจคำตอบ</span></h4>
+          <MB>{`x_i=\\frac{\\det A_i}{\\det A}\\quad\\text{โดย } A_i = A \\text{ ที่แทนคอลัมน์ที่ } i \\text{ ด้วย } b`}</MB>
+          <ul>
+            <li>ใช้ได้แค่ 2×2 กับ 3×3 (อาจารย์บอกเอง &ldquo;4×4 ไม่ทำ · n×n ไม่ทำ&rdquo;) · เมทริกซ์ต้องจัตุรัส</li>
+            <li><b>ค่าที่แท้จริงตอนนี้ = ตัวตรวจคำตอบ</b> — ทำ Gauss/LU เสร็จแล้วกด det ในเครื่องเช็คซ้ำได้เร็ว ๆ (ผิด=0 ⇒ ตรวจด้วยวิธีที่สองคุ้มเสมอ)</li>
+            <li>ตรวจฟรีอีกทาง: <M>{`\\det A = `}</M> ผลคูณตัวหลักหลังทำ Gauss</li>
+          </ul>
         </div>
 
-        <Callout kind="danger" title="⚠︎ กล่องนี้เคยบอกว่า “ไม่ออก” — หมดอายุแล้วหลังมิดเทอม">
-          <p style={{margin:0}}>Gauss-Jordan · Matrix Inversion · LU · Cholesky · <b>Jacobi · Gauss-Seidel</b> — ตอนเตรียมมิดเทอมตัดออกถูกแล้ว แต่ <b>การบ้าน 6-7 สั่งครบทั้ง 8 วิธี</b> ⇒ ทุกตัวกลับเข้าขอบเขตของ<b>ข้อสอบท้ายคาบ</b>แล้ว · เฉลยเต็มบนระบบเดียวกันอยู่ที่บท <a href="#linear">Linear Systems</a> หมวด 📮</p>
+        <Callout kind="tip" title="⭐ 7 วิธี แต่มีแค่ 4 โครงโค้ด">
+          <p style={{margin:0}}><b>E</b> Gauss = โครงแม่ · <b>F</b> Jordan/Inversion = E + normalize + กำจัดข้างบน · <b>G</b> LU/Cholesky = E ที่เก็บตัวคูณไว้ แล้วใช้ substitution ชุดเดียวกัน · <b>J</b> Jacobi/Gauss-Seidel = รูปเดียวกับ open method ของบท Root · ⇒ ซ้อมที่หน้า <a href="#code">เขียนโค้ดจากหัว</a></p>
         </Callout>
+      </Sect>
+      <Sect tag="02" title="Interpolation · Cheat Sheet">
+        <div className="cheat-card">
+          <h4>Newton's Divided Difference</h4>
+          <MB>{`f(x) = c_0 + c_1(x-x_0) + c_2(x-x_0)(x-x_1) + \\cdots`}</MB>
+          <p>ค่าสัมประสิทธิ์ <M>c_i</M> อ่านจาก<b>คอลัมน์บนสุด</b>ของตาราง DD</p>
+
+          <h4>Lagrange</h4>
+          <MB>{`f(x) = \\sum_i L_i(x) y_i, \\quad L_i(x) = \\prod_{j \\neq i} \\frac{x - x_j}{x_i - x_j}`}</MB>
+          <p><b>ทริค:</b> "ตัวบน = x ตรงข้าม, ตัวล่าง = ตัวเรา"</p>
+
+          <h4>n+1 จุด → polynomial degree n สูงสุด</h4>
+          <ul>
+            <li>2 จุด → linear</li>
+            <li>3 จุด → quadratic</li>
+            <li>n+1 จุด → degree n (มี polynomial เดียว — Newton = Lagrange)</li>
+          </ul>
+        </div>
+      </Sect>
+
+      <Sect tag="03" title="Spline · Cheat Sheet">
+        <div className="cheat-card">
+          <h4>Linear Spline</h4>
+          <MB>{`f_i(x) = y_i + m_i(x - x_i), \\quad m_i = \\frac{y_{i+1} - y_i}{x_{i+1} - x_i}`}</MB>
+
+          <h4>Quadratic Spline (n ช่วง → 3n unknowns)</h4>
+          <p>เงื่อนไข: ผ่านจุด (2n) + slope ต่อเนื่อง (n−1) + ปิด a₁ = 0 (1) = 3n สมการ</p>
+
+          <h4>Cubic Spline (n ช่วง → 4n unknowns)</h4>
+          <p>เงื่อนไข: ผ่านจุด (2n) + slope (n−1) + curvature (n−1) + Natural f''(x₀) = f''(xₙ) = 0 (2) = 4n สมการ</p>
+
+          <Callout title="ทริคจำ continuity">
+            <ul>
+              <li>Linear: C⁰ (ต่อเนื่องค่าเท่านั้น)</li>
+              <li>Quadratic: C¹ (ค่า + slope)</li>
+              <li>Cubic: C² (ค่า + slope + curvature)</li>
+            </ul>
+          </Callout>
+        </div>
+      </Sect>
+
+      <Sect tag="04" title="Regression · Cheat Sheet">
+        <div className="cheat-card">
+          <h4>Linear: <M>{`y = a_0 + a_1 x`}</M></h4>
+          <MB>{`a_1 = \\frac{n\\sum xy - \\sum x \\sum y}{n\\sum x^2 - (\\sum x)^2}, \\quad a_0 = \\frac{\\sum y - a_1 \\sum x}{n}`}</MB>
+
+          <h4>Polynomial degree m</h4>
+          <p>Normal Equations: matrix (m+1)×(m+1)</p>
+          <MB>{`A_{ij} = \\sum x^{i+j-2},\\quad b_i = \\sum x^{i-1} y`}</MB>
+
+          <h4>R² (coefficient of determination)</h4>
+          <MB>{`R^2 = 1 - \\frac{SS_{\\text{res}}}{SS_{\\text{tot}}} = 1 - \\frac{\\sum(y_i - \\hat y_i)^2}{\\sum(y_i - \\bar y)^2}`}</MB>
+          <p>R² ใกล้ 1 → fit ดี, ใกล้ 0 → fit แย่</p>
+
+          <h4>Linearization tricks</h4>
+          <ul>
+            <li><M>{`y = a e^{bx}`}</M> → <M>{`\\ln y = \\ln a + bx`}</M> (linear in (x, ln y))</li>
+            <li><M>{`y = a x^b`}</M> → <M>{`\\ln y = \\ln a + b \\ln x`}</M> (linear in (ln x, ln y))</li>
+            <li><M>{`y = 1/(a + bx)`}</M> → <M>{`1/y = a + bx`}</M></li>
+          </ul>
+        </div>
+      </Sect>
+
+      <Sect tag="05" title="Conjugate Gradient · Cheat Sheet">
+        <div className="cheat-card">
+          <h4>Initial (k = 0)</h4>
+          <MB>{`r^{(0)} = Ax^{(0)} - b, \\quad d^{(0)} = -r^{(0)}`}</MB>
+
+          <h4>วน loop</h4>
+          <MB>{`\\alpha_k = -\\frac{r^T d}{d^T A d}, \\quad x^{(k+1)} = x^{(k)} + \\alpha_k d^{(k)}`}</MB>
+          <MB>{`r^{(k+1)} = Ax^{(k+1)} - b, \\quad \\beta_k = \\frac{r^{(k+1) T} A d^{(k)}}{d^{(k) T} A d^{(k)}}`}</MB>
+          <MB>{`d^{(k+1)} = -r^{(k+1)} + \\beta_k d^{(k)}`}</MB>
+
+          <p><b>ต้องการ:</b> A สมมาตร + positive definite | <b>หยุดเมื่อ:</b> <M>{`\\|r\\| < \\text{tol}`}</M> | <b>ลู่เข้าใน:</b> n iterations</p>
+        </div>
       </Sect>
 
       <Sect tag="❌" title="Top 22 พลาดบ่อย — อย่าทำซ้ำ!">
@@ -262,83 +296,96 @@ function CheatLesson() {
         </Callout>
       </Sect>
 
-
-      <Callout kind="tip" title="⬇︎ ข้างล่างนี้คือของรออยู่ข้างหน้า — ยังไม่ต้องรีบ">
-        <p style={{margin:0}}>4 บทข้างบนสอบมิดเทอมไปแล้ว 21 ส.ค. · ที่เหลือ (Conjugate Gradient · Interpolation · Spline · Regression) คือ<b>เนื้อหาครึ่งหลัง</b> — <b>รอดูว่าการบ้านใบถัดไปสั่งอะไร แล้วค่อยลงมาอ่านตัวนั้น</b> เพราะเรื่องที่สอนเดินตามการบ้านเสมอ</p>
+      <Callout kind="tip" title="⬇︎ ข้างล่างนี้คือ 3 บทที่สอบมิดไปแล้ว — ไว้ทวน ไม่ใช่ทางหลัก">
+        <p style={{margin:0}}>Integration · Differentiation · Root Finding ออกมิดเทอมไปแล้ว 21 ส.ค. ⇒ <b>ตามกฎ “ไฟนอล = เรื่องที่ไม่ออกมิด” จึงไม่ใช่ขอบเขตหลัก</b> · <b>แต่ห้ามลืมสนิท</b> — ข้อสอบมิดพิสูจน์แล้วว่าอาจารย์ชอบ<b>ต่อสองบท</b>เข้าด้วยกัน (ข้อที่ให้ผลลัพธ์ Trap/Simpson มาแล้วหา x ย้อนกลับ จริง ๆ คือ Root Finding) ⇒ กวาดสัปดาห์ละครั้ง สัปดาห์สุดท้ายอ่านอีกรอบ</p>
       </Callout>
 
-      <Sect tag="—" title="Conjugate Gradient · Cheat Sheet">
+
+      <Sect tag="ทวน" title="Integration · Cheat Sheet">
         <div className="cheat-card">
-          <h4>Initial (k = 0)</h4>
-          <MB>{`r^{(0)} = Ax^{(0)} - b, \\quad d^{(0)} = -r^{(0)}`}</MB>
+          <h4>Trapezoidal (single)</h4>
+          <MB>{`I = \\frac{h}{2}[f(a) + f(b)], \\quad h = b - a`}</MB>
 
-          <h4>วน loop</h4>
-          <MB>{`\\alpha_k = -\\frac{r^T d}{d^T A d}, \\quad x^{(k+1)} = x^{(k)} + \\alpha_k d^{(k)}`}</MB>
-          <MB>{`r^{(k+1)} = Ax^{(k+1)} - b, \\quad \\beta_k = \\frac{r^{(k+1) T} A d^{(k)}}{d^{(k) T} A d^{(k)}}`}</MB>
-          <MB>{`d^{(k+1)} = -r^{(k+1)} + \\beta_k d^{(k)}`}</MB>
+          <h4>Composite Trapezoidal (n ช่วง)</h4>
+          <MB>{`I = \\frac{h}{2}\\left[f(x_0) + f(x_n) + 2\\sum_{i=1}^{n-1} f(x_i)\\right], \\quad h = \\frac{b-a}{n}`}</MB>
 
-          <p><b>ต้องการ:</b> A สมมาตร + positive definite | <b>หยุดเมื่อ:</b> <M>{`\\|r\\| < \\text{tol}`}</M> | <b>ลู่เข้าใน:</b> n iterations</p>
-        </div>
-      </Sect>
+          <h4>Simpson 1/3 (single, 3 จุด)</h4>
+          <MB>{`I = \\frac{h}{3}[f(a) + 4f(m) + f(b)], \\quad h = \\frac{b-a}{2}`}</MB>
 
-      <Sect tag="—" title="Interpolation · Cheat Sheet">
-        <div className="cheat-card">
-          <h4>Newton's Divided Difference</h4>
-          <MB>{`f(x) = c_0 + c_1(x-x_0) + c_2(x-x_0)(x-x_1) + \\cdots`}</MB>
-          <p>ค่าสัมประสิทธิ์ <M>c_i</M> อ่านจาก<b>คอลัมน์บนสุด</b>ของตาราง DD</p>
+          <h4>Composite Simpson 1/3 (n พาราโบลา → 2n ช่วง)</h4>
+          <MB>{`I = \\frac{h}{3}\\left[f(x_0) + f(x_{2n}) + 4\\sum_{i \\text{ คี่}} f(x_i) + 2\\sum_{i \\text{ คู่}} f(x_i)\\right], \\quad h = \\frac{b-a}{2n}`}</MB>
+          <p>Pattern น้ำหนัก: <b>1, 4, 2, 4, 2, 4, ..., 4, 1</b> · <M>n</M> = จำนวนพาราโบลา (ช่องย่อย = 2n เป็นคู่เสมอ)</p>
 
-          <h4>Lagrange</h4>
-          <MB>{`f(x) = \\sum_i L_i(x) y_i, \\quad L_i(x) = \\prod_{j \\neq i} \\frac{x - x_j}{x_i - x_j}`}</MB>
-          <p><b>ทริค:</b> "ตัวบน = x ตรงข้าม, ตัวล่าง = ตัวเรา"</p>
-
-          <h4>n+1 จุด → polynomial degree n สูงสุด</h4>
-          <ul>
-            <li>2 จุด → linear</li>
-            <li>3 จุด → quadratic</li>
-            <li>n+1 จุด → degree n (มี polynomial เดียว — Newton = Lagrange)</li>
-          </ul>
-        </div>
-      </Sect>
-
-      <Sect tag="—" title="Spline · Cheat Sheet">
-        <div className="cheat-card">
-          <h4>Linear Spline</h4>
-          <MB>{`f_i(x) = y_i + m_i(x - x_i), \\quad m_i = \\frac{y_{i+1} - y_i}{x_{i+1} - x_i}`}</MB>
-
-          <h4>Quadratic Spline (n ช่วง → 3n unknowns)</h4>
-          <p>เงื่อนไข: ผ่านจุด (2n) + slope ต่อเนื่อง (n−1) + ปิด a₁ = 0 (1) = 3n สมการ</p>
-
-          <h4>Cubic Spline (n ช่วง → 4n unknowns)</h4>
-          <p>เงื่อนไข: ผ่านจุด (2n) + slope (n−1) + curvature (n−1) + Natural f''(x₀) = f''(xₙ) = 0 (2) = 4n สมการ</p>
-
-          <Callout title="ทริคจำ continuity">
+          <Callout title="Error">
             <ul>
-              <li>Linear: C⁰ (ต่อเนื่องค่าเท่านั้น)</li>
-              <li>Quadratic: C¹ (ค่า + slope)</li>
-              <li>Cubic: C² (ค่า + slope + curvature)</li>
+              <li>Trapezoidal: O(h³) per interval, O(h²) composite</li>
+              <li>Simpson: O(h⁵) per interval, O(h⁴) composite → แม่นกว่า Trap ~64× ที่ n เดียวกัน</li>
             </ul>
           </Callout>
         </div>
       </Sect>
 
-      <Sect tag="—" title="Regression · Cheat Sheet">
+      <Sect tag="ทวน" title="Differentiation · Cheat Sheet">
         <div className="cheat-card">
-          <h4>Linear: <M>{`y = a_0 + a_1 x`}</M></h4>
-          <MB>{`a_1 = \\frac{n\\sum xy - \\sum x \\sum y}{n\\sum x^2 - (\\sum x)^2}, \\quad a_0 = \\frac{\\sum y - a_1 \\sum x}{n}`}</MB>
+          <h4>First Derivative · ชุดธรรมดา</h4>
+          <table className="tbl mono">
+            <thead><tr><th>Method</th><th>สูตร</th><th>Error</th></tr></thead>
+            <tbody>
+              <tr><td>Forward</td><td>[f(x+h) − f(x)]/h</td><td>O(h)</td></tr>
+              <tr><td>Backward</td><td>[f(x) − f(x−h)]/h</td><td>O(h)</td></tr>
+              <tr><td>Central</td><td>[f(x+h) − f(x−h)]/(2h)</td><td>O(h²)</td></tr>
+            </tbody>
+          </table>
 
-          <h4>Polynomial degree m</h4>
-          <p>Normal Equations: matrix (m+1)×(m+1)</p>
-          <MB>{`A_{ij} = \\sum x^{i+j-2},\\quad b_i = \\sum x^{i-1} y`}</MB>
+          <h4>First Derivative · ชุดละเอียด (โจทย์ระบุ Big-O สูง)</h4>
+          <table className="tbl mono">
+            <thead><tr><th>Method</th><th>สูตร</th><th>Error</th></tr></thead>
+            <tbody>
+              <tr><td>Forward</td><td>[−f(x+2h) + 4f(x+h) − 3f(x)]/(2h)</td><td>O(h²)</td></tr>
+              <tr><td>Backward</td><td>[3f(x) − 4f(x−h) + f(x−2h)]/(2h)</td><td>O(h²)</td></tr>
+              <tr><td>Central 5-point</td><td>[−f(x+2h) + 8f(x+h) − 8f(x−h) + f(x−2h)]/(12h)</td><td>O(h⁴)</td></tr>
+            </tbody>
+          </table>
 
-          <h4>R² (coefficient of determination)</h4>
-          <MB>{`R^2 = 1 - \\frac{SS_{\\text{res}}}{SS_{\\text{tot}}} = 1 - \\frac{\\sum(y_i - \\hat y_i)^2}{\\sum(y_i - \\bar y)^2}`}</MB>
-          <p>R² ใกล้ 1 → fit ดี, ใกล้ 0 → fit แย่</p>
+          <h4>Second Derivative</h4>
+          <table className="tbl mono">
+            <thead><tr><th>Method</th><th>สูตร</th><th>Error</th></tr></thead>
+            <tbody>
+              <tr><td>Forward</td><td>[f(x+2h) − 2f(x+h) + f(x)]/h²</td><td>O(h)</td></tr>
+              <tr><td>Backward</td><td>[f(x) − 2f(x−h) + f(x−2h)]/h²</td><td>O(h)</td></tr>
+              <tr><td>Central</td><td>[f(x+h) − 2f(x) + f(x−h)]/h²</td><td>O(h²)</td></tr>
+              <tr><td>Forward ละเอียด</td><td>[−f(x+3h) + 4f(x+2h) − 5f(x+h) + 2f(x)]/h²</td><td>O(h²)</td></tr>
+              <tr><td>Backward ละเอียด</td><td>[2f(x) − 5f(x−h) + 4f(x−2h) − f(x−3h)]/h²</td><td>O(h²)</td></tr>
+              <tr><td>Central 5-point</td><td>[−f(x+2h) + 16f(x+h) − 30f(x) + 16f(x−h) − f(x−2h)]/(12h²)</td><td>O(h⁴)</td></tr>
+            </tbody>
+          </table>
 
-          <h4>Linearization tricks</h4>
+          <Callout kind="warn" title="Big-O ในโจทย์ = คำสั่งเลือกชุดสูตร">
+            โจทย์เขียน “forward O(h)” → ชุดธรรมดา · “forward O(h²)” → ชุดละเอียด (ใช้ชุดธรรมดาแล้วอ้าง O(h²) = ผิดทั้งข้อ) · <b>เช็กเร็ว:</b> ผลรวมสัมประสิทธิ์ทุกสูตรต้องเป็น 0 (เช่น −1+4−3 = 0 ✓)
+          </Callout>
+          <Callout kind="tip">เลือก central เมื่อมีข้อมูลทั้งสองข้าง — แม่นกว่า ~10× · ต้น/ท้ายตารางเท่านั้นที่จำเป็นต้องใช้ forward/backward</Callout>
+        </div>
+      </Sect>
+
+      <Sect tag="ทวน" title="Root Finding · Cheat Sheet">
+        <div className="cheat-card">
+          <h4>สูตรหลัก</h4>
+          <NumTable headers={["Method","สูตร", "Convergence"]} rows={[
+            ["Bisection", "xₘ = (xₗ + xᵣ)/2", "Linear (1/2)"],
+            ["False Position", "xₘ = xᵣ − f(xᵣ)(xₗ−xᵣ)/(f(xₗ)−f(xᵣ))", "Super-linear"],
+            ["One-point", "x_{n+1} = g(x_n)", "Linear ถ้า |g'|<1"],
+            ["Newton", "x_{n+1} = x_n − f(x_n)/f'(x_n)", "Quadratic ≈ 2x"],
+            ["Secant", "x_{n+1} = x_n − f(x_n)(x_{n-1}−x_n)/(f(x_{n-1})−f(x_n))", "Super-linear ≈ 1.618"],
+          ]}/>
+          <h4>Error สำหรับทุก method</h4>
+          <MB>{`\\varepsilon_a = \\left|\\frac{x_{\\text{new}} - x_{\\text{old}}}{x_{\\text{new}}}\\right| \\times 100\\%`}</MB>
+          <h4>เลือก method</h4>
           <ul>
-            <li><M>{`y = a e^{bx}`}</M> → <M>{`\\ln y = \\ln a + bx`}</M> (linear in (x, ln y))</li>
-            <li><M>{`y = a x^b`}</M> → <M>{`\\ln y = \\ln a + b \\ln x`}</M> (linear in (ln x, ln y))</li>
-            <li><M>{`y = 1/(a + bx)`}</M> → <M>{`1/y = a + bx`}</M></li>
+            <li>โจทย์ให้ <b>ช่วง [a, b]</b> + <code>f(a)·f(b) &lt; 0</code> → Bisection / False Position</li>
+            <li>โจทย์ให้ <b>x₀ + f'(x)</b> → Newton</li>
+            <li>โจทย์ให้ <b>x₀, x₁</b> สองจุด → Secant</li>
+            <li>โจทย์ให้ <b>x = g(x)</b> → One-point</li>
+            <li>โจทย์ <b>scan ทีละ...</b> → Graphical</li>
           </ul>
         </div>
       </Sect>

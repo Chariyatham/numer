@@ -122,39 +122,63 @@ function ErrorLog() {
 // ทุกครั้ง จะได้ชินกับการเปิดข้อสอบมาแล้วเจอสัดส่วนที่ไม่ได้เตรียมใจไว้
 const DRAW_KEY = "numer-lastdraw";
 
-const CH = { integ: "Integration", diff: "Differentiation", root: "Root Finding", lin: "Linear Systems" };
+const CH = { integ:"Integration", diff:"Differentiation", root:"Root Finding", lin:"Linear Systems",
+             interp:"Interpolation", spline:"Spline", reg:"Regression", cg:"Conjugate Gradient" };
+
+// f = รูปแบบโจทย์ · std ปกติ · app ประยุกต์/ตั้งสมการเอง · rev ย้อนกลับ · pick ต้องเลือกเอง · mix ผสมสองบท
+const FMT = { std:"", app:"ประยุกต์", rev:"ย้อนกลับ", pick:"ต้องเลือกเอง", mix:"ผสมบท" };
+
+// บทที่อยู่ในขอบเขตไฟนอล (ตามใบการบ้าน 6-7 ขึ้นไป) — ใช้กรองตอนสุ่ม
+const FINAL_CH = ["lin", "interp", "spline", "reg", "cg"];
 
 const POOL = [
-  // ชุดสอบเสมือน A/B/C (หน้านี้ หมวด 🎓)
-  { id:"A1", ch:"integ", t:"hand", w:"หมวด 🎓 ชุด A" }, { id:"A2", ch:"root",  t:"code", w:"หมวด 🎓 ชุด A" },
-  { id:"A3", ch:"diff",  t:"hand", w:"หมวด 🎓 ชุด A" }, { id:"A4", ch:"integ", t:"code", w:"หมวด 🎓 ชุด A" },
-  { id:"A5", ch:"root",  t:"hand", w:"หมวด 🎓 ชุด A" }, { id:"A6", ch:"diff",  t:"code", w:"หมวด 🎓 ชุด A" },
-  { id:"B1", ch:"root",  t:"hand", w:"หมวด 🎓 ชุด B" }, { id:"B2", ch:"diff",  t:"code", w:"หมวด 🎓 ชุด B" },
-  { id:"B3", ch:"integ", t:"hand", w:"หมวด 🎓 ชุด B" }, { id:"B4", ch:"root",  t:"code", w:"หมวด 🎓 ชุด B" },
-  { id:"B5", ch:"diff",  t:"hand", w:"หมวด 🎓 ชุด B" }, { id:"B6", ch:"integ", t:"code", w:"หมวด 🎓 ชุด B" },
-  { id:"C1", ch:"integ", t:"hand", w:"หมวด 🎓 ชุด C" }, { id:"C2", ch:"root",  t:"code", w:"หมวด 🎓 ชุด C" },
-  { id:"C3", ch:"root",  t:"hand", w:"หมวด 🎓 ชุด C" }, { id:"C4", ch:"integ", t:"code", w:"หมวด 🎓 ชุด C" },
-  { id:"C5", ch:"diff",  t:"hand", w:"หมวด 🎓 ชุด C" }, { id:"C6", ch:"diff",  t:"code", w:"หมวด 🎓 ชุด C" },
-  // ชุดโจทย์ยาก 10 ข้อ (หน้านี้ หมวด 🔥)
-  { id:"ยาก 1",  ch:"integ", t:"hand", w:"หมวด 🔥" }, { id:"ยาก 2",  ch:"integ", t:"hand", w:"หมวด 🔥" },
-  { id:"ยาก 3",  ch:"integ", t:"hand", w:"หมวด 🔥" }, { id:"ยาก 4",  ch:"diff",  t:"hand", w:"หมวด 🔥" },
-  { id:"ยาก 5",  ch:"root",  t:"hand", w:"หมวด 🔥" }, { id:"ยาก 6",  ch:"root",  t:"hand", w:"หมวด 🔥" },
-  { id:"ยาก 7",  ch:"root",  t:"hand", w:"หมวด 🔥" }, { id:"ยาก 8",  ch:"root",  t:"hand", w:"หมวด 🔥" },
-  { id:"ยาก 9",  ch:"integ", t:"hand", w:"หมวด 🔥" }, { id:"ยาก 10", ch:"diff",  t:"hand", w:"หมวด 🔥" },
-  // ชุด Linear สไตล์ข้อสอบ (หน้านี้ หมวด 🔢)
-  { id:"L1 Cramer ประยุกต์", ch:"lin", t:"hand", w:"หมวด 🔢 ชุด L" },
-  { id:"L2 Gauss (โปรแกรม)", ch:"lin", t:"code", w:"หมวด 🔢 ชุด L" },
-  { id:"L3 Gauss ทำมือ",     ch:"lin", t:"hand", w:"หมวด 🔢 ชุด L" },
-  { id:"L4 Cramer (โปรแกรม)", ch:"lin", t:"code", w:"หมวด 🔢 ชุด L" },
-  // เฉลยใบงาน — ตรงนี้เก็บเฉพาะ Cramer/Gauss (ขอบเขตมิดเทอม) · เฉลยครบ 8 วิธีอยู่ที่บท #linear หมวด 📮
-  { id:"ใบงาน 1.1 Cramer",     ch:"lin", t:"hand", w:"#linear หมวด 📮" },
-  { id:"ใบงาน 1.2 Gauss Elim", ch:"lin", t:"hand", w:"#linear หมวด 📮" },
-  // ดริลเขียนโค้ดจากหัว (หน้า #code)
-  { id:"กระดาษเปล่า 1", ch:"root",  t:"code", w:"#code หมวด 3" },
-  { id:"กระดาษเปล่า 2", ch:"root",  t:"code", w:"#code หมวด 3" },
-  { id:"กระดาษเปล่า 3", ch:"integ", t:"code", w:"#code หมวด 3" },
-  { id:"กระดาษเปล่า 4", ch:"diff",  t:"code", w:"#code หมวด 3" },
-  { id:"กระดาษเปล่า 5", ch:"lin",   t:"code", w:"#code หมวด 3" },
+  // ── ไฟนอล · Linear 7 วิธี (การบ้าน 6-7 ข้อ 1.2–1.8) ──
+  { id:"ใบงาน 1.2 Gauss Elimination", ch:"lin", t:"code", f:"std", w:"#linear หมวด 📮" },
+  { id:"ใบงาน 1.3 Gauss-Jordan",      ch:"lin", t:"code", f:"std", w:"#linear หมวด 📮" },
+  { id:"ใบงาน 1.4 Matrix Inversion",  ch:"lin", t:"code", f:"std", w:"#linear หมวด 📮" },
+  { id:"ใบงาน 1.5 LU Decomposition",  ch:"lin", t:"code", f:"std", w:"#linear หมวด 📮" },
+  { id:"ใบงาน 1.6 Cholesky",          ch:"lin", t:"code", f:"std", w:"#linear หมวด 📮" },
+  { id:"ใบงาน 1.7 Jacobi",            ch:"lin", t:"code", f:"pick", w:"#linear หมวด 📮" },
+  { id:"ใบงาน 1.8 Gauss-Seidel",      ch:"lin", t:"code", f:"pick", w:"#linear หมวด 📮" },
+  { id:"Gauss ทำมือ · เดินตาราง",      ch:"lin", t:"hand", f:"std", w:"#linear หมวด 2" },
+  { id:"LU ทำมือ · แยก L,U แล้วแทน",   ch:"lin", t:"hand", f:"std", w:"#linear หมวด 5" },
+  { id:"Cholesky ทำมือ · 3×3 SPD",     ch:"lin", t:"hand", f:"std", w:"#linear หมวด 6" },
+  { id:"Jacobi/GS ทำมือ · เดินตาราง",   ch:"lin", t:"hand", f:"pick", w:"#linear หมวด 7–8" },
+  { id:"Linear · โจทย์ประยุกต์ตั้งสมการเอง", ch:"lin", t:"hand", f:"app", w:"#linear หมวด 🎯" },
+  { id:"F5 · ผสมสาร 3 ถัง (ตั้งระบบเอง)", ch:"lin", t:"code", f:"app", w:"หมวด 🧨" },
+  // ── ไฟนอล · Interpolation ──
+  { id:"Newton DD · ทำมือ",            ch:"interp", t:"hand", f:"std", w:"#interp หมวด เขียนมือ" },
+  { id:"Lagrange · ทำมือ",             ch:"interp", t:"hand", f:"std", w:"#interp หมวด Lagrange" },
+  { id:"Newton DD/Lagrange · โปรแกรม",  ch:"interp", t:"code", f:"std", w:"#code โครง K · P8" },
+  { id:"F1 · ให้ค่ามา หา x ย้อนกลับ",    ch:"interp", t:"hand", f:"rev", w:"หมวด 🧨" },
+  { id:"F6 · ตารางจรวด ไม่บอก h",       ch:"interp", t:"hand", f:"app", w:"หมวด 🧨" },
+  // ── ไฟนอล · Spline ──
+  { id:"Linear Spline · ทำมือ",        ch:"spline", t:"hand", f:"std", w:"#spline ข้อสอบจำลอง 1" },
+  { id:"Quadratic Spline · ทำมือ",     ch:"spline", t:"hand", f:"std", w:"#spline ข้อสอบจำลอง 2" },
+  { id:"Cubic Spline · โปรแกรม",       ch:"spline", t:"code", f:"std", w:"#spline หมวด Cubic" },
+  { id:"F3 · จุดคร่อมรอยต่อ เลือก segment", ch:"spline", t:"hand", f:"pick", w:"หมวด 🧨" },
+  // ── ไฟนอล · Regression ──
+  { id:"Linear Regression · ทำมือ",    ch:"reg", t:"hand", f:"std", w:"#regression ข้อสอบจำลอง 1" },
+  { id:"Polynomial Regression",        ch:"reg", t:"code", f:"std", w:"#regression หมวด Polynomial" },
+  { id:"Multiple Linear Regression",   ch:"reg", t:"code", f:"std", w:"#regression หมวด Multiple" },
+  { id:"F2 · Linearize + ย้อนกลับ",     ch:"reg", t:"code", f:"rev", w:"หมวด 🧨" },
+  { id:"F4 · Regression แล้วหา x",      ch:"reg", t:"hand", f:"mix", w:"หมวด 🧨" },
+  { id:"P9 · Regression + Linearization", ch:"reg", t:"code", f:"app", w:"#code หมวด 3 · P9" },
+  // ── ไฟนอล · Conjugate Gradient ──
+  { id:"Conjugate Gradient · โปรแกรม", ch:"cg", t:"code", f:"std", w:"#conjugate ข้อสอบจำลอง" },
+  // ── ดริลกระดาษเปล่าของไฟนอล (หน้า #code) ──
+  { id:"P6 · LU เต็มรูป (กระดาษเปล่า)",       ch:"lin", t:"code", f:"std", w:"#code หมวด 3" },
+  { id:"P7 · Gauss-Seidel เต็มรูป (กระดาษเปล่า)", ch:"lin", t:"code", f:"pick", w:"#code หมวด 3" },
+  // ── บททวน (ออกมิดไปแล้ว — โผล่ได้ในโจทย์ผสม) ──
+  { id:"ยาก 2 · Simpson ช่องเป็นเลขคี่", ch:"integ", t:"hand", f:"pick", w:"หมวด 🔥" },
+  { id:"ยาก 3 · หา n จากสูตร error",     ch:"integ", t:"hand", f:"rev",  w:"หมวด 🔥" },
+  { id:"ยาก 5 · ถังน้ำทรงกลม",           ch:"root",  t:"hand", f:"app",  w:"หมวด 🔥" },
+  { id:"ยาก 6 · One-point เลือกรูป g(x)", ch:"root",  t:"hand", f:"pick", w:"หมวด 🔥" },
+  { id:"ยาก 7 · Bisection แล้วต่อ Newton", ch:"root", t:"hand", f:"mix",  w:"หมวด 🔥" },
+  { id:"ยาก 1 · ประยุกต์ Integration รถทดสอบ", ch:"integ", t:"hand", f:"app", w:"หมวด 🔥" },
+  { id:"ยาก 4 · Diff เทียบอันดับความแม่น", ch:"diff", t:"hand", f:"std", w:"หมวด 🔥" },
+  { id:"กระดาษเปล่า P3 · Composite Simpson", ch:"integ", t:"code", f:"std", w:"#code หมวด 3" },
+  { id:"กระดาษเปล่า P2 · Secant",        ch:"root",  t:"code", f:"std", w:"#code หมวด 3" },
 ];
 
 function pick(arr, n) {
@@ -170,6 +194,9 @@ function RandomExamDraw() {
   const [draw, setDraw] = React.useState(() => {
     try { return JSON.parse(localStorage.getItem(DRAW_KEY) || "null"); } catch { return null; }
   });
+  const [nQ, setNQ] = React.useState(6);
+  const [mins, setMins] = React.useState(180);
+  const [finalOnly, setFinalOnly] = React.useState(true);
   const [left, setLeft] = React.useState(180 * 60);
   const [running, setRunning] = React.useState(false);
 
@@ -180,56 +207,84 @@ function RandomExamDraw() {
   }, [running]);
 
   const roll = () => {
-    // อาจารย์บอก "โค้ดครึ่งหนึ่ง คำนวณครึ่งหนึ่ง" ⇒ ล็อก 3 โค้ด + 3 มือ
-    // ส่วนบทไหนกี่ข้อ ปล่อยสุ่มล้วน เพราะนั่นคือสิ่งที่เราไม่รู้จริง ๆ
-    const items = [...pick(POOL.filter(p => p.t === "code"), 3),
-                   ...pick(POOL.filter(p => p.t === "hand"), 3)];
-    const order = pick(items, 6);
-    const brain = Math.floor(Math.random() * 6);
-    const next = { order, brain, at: new Date().toLocaleString("th-TH") };
+    const base = finalOnly ? POOL.filter(p => FINAL_CH.includes(p.ch)) : POOL;
+    // ① ล็อกอย่างน้อย 2 ข้อให้เป็น "รูปแบบอันตราย" (ประยุกต์ · ย้อนกลับ · เลือกเอง · ผสมบท)
+    //    เพราะนี่คือสิ่งที่พลาดจริงในมิด ไม่ใช่การเดินสูตร
+    const danger = base.filter(p => p.f !== "std");
+    const nDanger = Math.min(Math.max(2, Math.round(nQ / 3)), danger.length, nQ);
+    const chosen = pick(danger, nDanger);
+    // ② ที่เหลือสุ่มจากทั้งกอง แต่ถ่วงให้มีข้อโค้ดอย่างน้อย 1 ใน 3
+    const rest = base.filter(p => !chosen.includes(p));
+    const needCode = Math.max(0, Math.ceil(nQ / 3) - chosen.filter(p => p.t === "code").length);
+    const codePicks = pick(rest.filter(p => p.t === "code"), needCode);
+    const filler = pick(rest.filter(p => !codePicks.includes(p)), Math.max(0, nQ - chosen.length - codePicks.length));
+    const order = pick([...chosen, ...codePicks, ...filler], nQ);
+    const next = { order, mins, at: new Date().toLocaleString("th-TH") };
     setDraw(next);
     localStorage.setItem(DRAW_KEY, JSON.stringify(next));
-    setLeft(180 * 60); setRunning(false);
+    setLeft(mins * 60); setRunning(false);
   };
 
   const mmss = (s) => `${String(Math.floor(s/3600)).padStart(2,"0")}:${String(Math.floor(s/60)%60).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`;
-  const dist = draw ? Object.keys(CH).map(k => ({ k, n: draw.order.filter(o => o.ch === k).length })) : [];
+  const dist = draw ? Object.keys(CH).map(k => ({ k, n: draw.order.filter(o => o.ch === k).length })).filter(d => d.n > 0) : [];
+  const nCode = draw ? draw.order.filter(o => o.t === "code").length : 0;
+  const nDangerShown = draw ? draw.order.filter(o => o.f !== "std").length : 0;
 
   return (
     <div className="card" style={{padding:"14px 16px"}}>
+      <div style={{display:"flex", gap:10, alignItems:"center", flexWrap:"wrap", marginBottom:10}}>
+        <label style={{fontSize:'0.84rem'}}>จำนวนข้อ{" "}
+          <select value={nQ} onChange={e => setNQ(+e.target.value)}>
+            {[4,5,6,7,8].map(v => <option key={v} value={v}>{v}</option>)}
+          </select>
+        </label>
+        <label style={{fontSize:'0.84rem'}}>เวลา{" "}
+          <select value={mins} onChange={e => setMins(+e.target.value)}>
+            {[90,120,150,180].map(v => <option key={v} value={v}>{v} นาที</option>)}
+          </select>
+        </label>
+        <label style={{fontSize:'0.84rem', display:"flex", gap:6, alignItems:"center"}}>
+          <input type="checkbox" checked={finalOnly} onChange={e => setFinalOnly(e.target.checked)}
+                 style={{accentColor:"var(--green)"}}/>
+          เฉพาะบทที่ออกไฟนอล
+        </label>
+      </div>
       <div style={{display:"flex", gap:10, alignItems:"center", flexWrap:"wrap"}}>
         <button className="btn small primary" onClick={roll}>🎲 สุ่มชุดสอบใหม่</button>
         {draw && <>
           <span style={{fontFamily:"var(--font-mono)", fontSize:'1.4rem', fontWeight:700,
                         color: left < 15*60 ? "var(--red)" : "var(--green)"}}>{mmss(left)}</span>
           <button className="btn small" onClick={() => setRunning(r => !r)}>{running ? "⏸ พัก" : "▶ เริ่มจับเวลา"}</button>
-          <button className="btn small ghost" onClick={() => { setLeft(180*60); setRunning(false); }}>↺ รีเซ็ตเวลา</button>
+          <button className="btn small ghost" onClick={() => { setLeft((draw.mins||mins)*60); setRunning(false); }}>↺ รีเซ็ตเวลา</button>
         </>}
       </div>
 
       {!draw ? (
-        <p className="muted" style={{margin:"12px 0 0", fontSize:'0.84rem'}}>กดปุ่มเพื่อสุ่ม — จะได้ <b>6 ข้อ (3 โค้ด + 3 มือ)</b> แต่<b>สัดส่วนบทสุ่มทุกครั้ง</b> เหมือนตอนเปิดข้อสอบจริงที่ไม่รู้ว่าบทไหนมากี่ข้อ</p>
+        <p className="muted" style={{margin:"12px 0 0", fontSize:'0.84rem'}}>กดปุ่มเพื่อสุ่ม · <b>ทุกชุดจะถูกบังคับให้มี &ldquo;โจทย์รูปแบบอันตราย&rdquo; อย่างน้อย 2 ข้อ</b> (ประยุกต์ · ย้อนกลับ · ต้องเลือกเอง · ผสมบท) เพราะนั่นคือสิ่งที่พลาดจริงในมิด ไม่ใช่การเดินสูตร · <b>สัดส่วนบทสุ่มล้วน</b> เพราะเราไม่รู้ว่าไฟนอลจะให้บทไหนกี่ข้อ</p>
       ) : (
         <>
           <p style={{margin:"12px 0 6px", fontSize:'0.82rem', color:"var(--text-dim)"}}>สุ่มเมื่อ {draw.at} — เปิดหน้าใหม่ก็ยังเป็นชุดเดิมจนกว่าจะกดสุ่มใหม่</p>
           <NumTable
-            headers={["ข้อ", "โจทย์", "บท", "ประเภท", "อยู่ที่"]}
+            headers={["ข้อ", "โจทย์", "บท", "ประเภท", "รูปแบบ", "อยู่ที่"]}
             rows={draw.order.map((o, i) => [
               i + 1,
-              <span>{o.id}{i === draw.brain && <span className="tag" style={{marginLeft:6, borderColor:"var(--red)", color:"var(--red)"}}>ข้อวัดสมอง</span>}</span>,
+              o.id,
               CH[o.ch],
               o.t === "code" ? "เขียนโปรแกรม" : "คำนวณมือ",
+              o.f === "std" ? <span className="muted">ตรงไปตรงมา</span>
+                : <span className="tag" style={{borderColor:"var(--red)", color:"var(--red)"}}>{FMT[o.f]}</span>,
               o.w,
             ])}
           />
           <p style={{margin:"8px 0 0", fontSize:'0.86rem'}}>
-            <b>สัดส่วนบทที่สุ่มได้รอบนี้:</b>{" "}
-            {dist.filter(d => d.n > 0).map(d => `${CH[d.k]} ${d.n} ข้อ`).join(" · ")}
+            <b>รอบนี้ได้:</b> {dist.map(d => `${CH[d.k]} ${d.n}`).join(" · ")} · <b>โค้ด {nCode} / มือ {draw.order.length - nCode}</b> · <b style={{color:"var(--red)"}}>รูปแบบอันตราย {nDangerShown} ข้อ</b>
           </p>
           <Callout kind="warn" title="กติกาของรอบนี้">
             <ul style={{margin:0, paddingLeft:18, fontSize:'0.86rem'}}>
-              <li><b>ข้อที่ติดป้าย “ข้อวัดสมอง” ให้ทิ้ง</b> — ทำอีก 5 ข้อให้ครบใน 180 นาที (36 นาที/ข้อ) เหลือเวลาค่อยกลับมาแตะ</li>
-              <li>เปิดเฉพาะ<b>โจทย์</b>ตามที่ตารางบอก อย่าเผลออ่านเฉลยข้าง ๆ</li>
+              <li><b>ทำข้อโค้ดก่อนทั้งหมด</b> แล้วค่อยข้อคำนวณมือ — ข้อโค้ดไม่มีเลขให้ปัดพลาด คุมได้ที่สุด</li>
+              <li><b>ข้อที่ติดป้ายแดง อ่านโจทย์ให้จบก่อนจับปากกา</b> — เขียนก่อนว่า &ldquo;ใช้วิธีอะไร · ตัวไม่รู้คือตัวไหน · h/ช่วง คืออะไร&rdquo;</li>
+              <li><b>ตันเกิน 8 นาทีให้ข้ามทันที</b> แล้ววนกลับมาทีหลัง — อย่าฝืน เพราะผิด = 0 เท่ากับไม่ทำ แต่เสียเวลาข้ออื่นไปด้วย</li>
+              <li>ทุกคำตอบที่เป็นตัวเลข <b>แทนกลับตรวจ</b> และ<b>ตอบเป็นทศนิยม ห้ามเศษส่วน</b></li>
               <li>จบแล้วกรอก<b>สมุดพลาด</b> (หมวด 🩺) ทุกข้อที่ไม่ได้คะแนน รวมข้อที่ทำไม่ทัน</li>
             </ul>
           </Callout>
@@ -243,26 +298,32 @@ function MidtermLesson() {
   return (
     <div>
       <Hero
-        kicker="✸ ห้องสอบ · Midterm"
-        title="ห้องซ้อมสอบกลางภาค"
-        lead="ขอบเขตจริง + ทริกเก็บคะแนนให้ได้มากที่สุด + ทริกเครื่องคิดเลข + ข้อสอบยากจับเวลา — ทุกข้อเฉลยเต็มและยืนยันเลขด้วยโปรแกรมแล้ว"
+        kicker="✸ ห้องสอบ"
+        title="ห้องซ้อมสอบ — ไฟนอล 26 ต.ค."
+        lead="สุ่มชุดสอบจับเวลา + ดริลโจทย์ประยุกต์ที่พลาดจริงในมิด + สมุดพลาด · หมวดของมิดเทอมยังอยู่ครบด้านล่างไว้ทวน — ทุกข้อเฉลยเต็มและยืนยันเลขด้วยโปรแกรมแล้ว"
         readout={{
-          label: "ศุกร์ 21 ส.ค. · 09:00–12:00 · 6 ข้อ · 90 คะแนน",
+          label: "จันทร์ 26 ต.ค. 2569 · ไฟนอล 50 คะแนน",
           steps: [
-            { x: "เขียนโค้ด ~3 ข้อ", w: 50 },
-            { x: "คำนวณมือ ~3 ข้อ", w: 50 },
-            { x: "ทิ้งข้อวัดสมอง ⇒ 36 นาที/ข้อ", w: 100 },
+            { x: "มิดได้แล้ว 17.33 / 40", w: 43 },
+            { x: "ต้องเก็บอีก 22.67 ถึงผ่าน", w: 57 },
+            { x: "= ทำไฟนอลให้ได้ 45.3%", w: 100 },
           ],
-          result: "75",
-          note: "อาจารย์บอกเอง: 1 ใน 6 ข้อ “ต้องเป็นคนพิเศษ” ถึงทำได้ ⇒ เล็ง 5 ข้อให้ถูกหมด · ตอบเศษส่วน = 0",
+          result: "45%",
+          note: "ทำไฟนอลได้ครึ่งหนึ่ง = ผ่าน D สบาย · ได้สองในสาม (65%) = ได้ C · ตอบเศษส่วน = 0",
         }}
-        meta={["แนวข้อสอบจากอาจารย์", "กติกา 1/0", "คู่มือฟังก์ชัน", "ดริล 20 + โจทย์ยาก 10"]}
+        meta={["สุ่มชุด + จับเวลา", "ดริลประยุกต์ 6 ข้อ", "สมุดพลาด", "หมวดมิดไว้ทวน"]}
       />
 
-      <Callout kind="warn" title="📌 อ่านตรงนี้ก่อน — หน้านี้ “มีชีวิต” จะอัปเดตเรื่อย ๆ จนถึงวันสอบ">
-        <p style={{margin:"0 0 6px"}}>ขอบเขตที่<b>ยืนยันแล้ว 4 บท</b>: <b>Integration + Differentiation + Root Finding</b> (จบวันที่ 5 ส.ค.) และ <b>ระบบสมการเชิงเส้น</b> ที่เปิดบทในคาบชดเชย <b>เสาร์ 8 ส.ค.</b> — เริ่มที่ <b>Cramer’s Rule (เอาแค่ 2×2 กับ 3×3)</b></p>
-        <p style={{margin:"0 0 6px"}}>⭐ <b>ขอบเขต Linear ปิดแล้ว — อาจารย์บอกเองว่าข้อสอบออกถึงแค่ Cramer กับ Gauss Elimination</b> และย้ำเรื่อง “matrix เท่ากันกับไม่เท่ากัน” (จัตุรัส/ไม่จัตุรัส) ⇒ <b>Gauss-Jordan · Matrix Inversion · LU · Cholesky ไม่ออก</b> ตัดออกจากแผนแล้ว · คาบสุดท้ายผ่านไปแล้วและไม่มีคาบเหลือก่อนสอบ</p>
-        <p style={{margin:0, fontSize:'0.84rem'}}>อาจารย์<b>ไม่บอกว่าบทไหนกี่ข้อ</b> บอกแค่ “ออกทุกบทที่สอน” + “โค้ดครึ่งหนึ่ง คำนวณครึ่งหนึ่ง” ⇒ หน้านี้กระจายน้ำหนักเท่า ๆ กันทุกบท · <b>ชุดสอบเสมือน A/B/C ทำก่อนรู้ว่า Linear เข้าขอบเขต จึงไม่มีข้อ Linear เลย — เติมไว้ที่หมวด 🔢 ชุด L แล้ว</b></p>
+      <Callout kind="danger" title="📌 อ่านก่อน — หน้านี้มีทั้งของไฟนอลและของมิด อย่าสลับกัน">
+        <NumTable
+          headers={["หมวด", "ใช้ตอนนี้ไหม", "ทำไม"]}
+          rows={[
+            [<span><b>🎲 สุ่มชุดสอบ</b> · <b>🧨 ดริลประยุกต์ไฟนอล</b> · <b>🩺 สมุดพลาด</b></span>, <b style={{color:"var(--green)"}}>✅ ใช้เลย</b>, "อัปเดตเป็นขอบเขตไฟนอลแล้ว (Linear 7 วิธี · Interpolation · Spline · Regression · CG)"],
+            [<span><b>⚡ กลยุทธ์ตรวจแค่คำตอบ</b> · <b>💡 ฟังก์ชันที่ไม่รู้จัก</b> · <b>🎯 ถอดรหัสโจทย์ประยุกต์</b> · <b>🏃 ดริลแปลงโจทย์ 20 ข้อ</b></span>, <b style={{color:"var(--green)"}}>✅ ใช้ได้ตลอด</b>, "เป็นทักษะ ไม่ผูกกับบท — และ 🎯 กับ 🏃 คือตัวแก้จุดที่พลาดจริงในมิด"],
+            [<span><b>🎓 ชุดสอบเสมือน A/B/C</b> · <b>🔥 โจทย์ยาก 10 ข้อ</b> · <b>🔢 ชุด L</b> · <b>❌ 12 กับดัก</b></span>, <span style={{color:"var(--yellow)"}}>⚠︎ ของมิด — ไว้ทวน</span>, "เนื้อหาเป็น Integration/Diff/Root/Cramer ซึ่งสอบไปแล้ว แต่ยังโผล่ได้ในโจทย์ผสมสองบท"],
+          ]}
+        />
+        <p style={{margin:"8px 0 0"}}><b>ขอบเขตไฟนอลยึด<a href="#plan">ใบการบ้าน</a></b> — <code>การบ้าน6-7.pdf</code> สั่ง Linear ครบ 8 วิธี ⇒ Gauss-Jordan · Inversion · LU · Cholesky · Jacobi · Gauss-Seidel <b>กลับเข้าขอบเขตทั้งชุด</b> (กล่องเก่าตรงนี้เคยเขียนว่า &ldquo;ไม่ออก&rdquo; — นั่นคือขอบเขต<b>มิดเทอม</b> หมดอายุแล้ว) · <span style={{color:"var(--yellow)"}}>ใบการบ้านใหม่มาเมื่อไหร่ ขอบเขตขยับตามทันที</span></p>
       </Callout>
 
       {/* ═══════════ 0 · เกมแพลน ═══════════ */}
@@ -308,7 +369,7 @@ function MidtermLesson() {
         <p style={{margin:0}}>เช็คลิสต์ 24 ข้อ 4 เฟส (อ่านเนื้อหา → ทำเอง → ซ้อมจับเวลา → วันสอบ) พร้อมกฎ “ถ้าไม่ทันตัดอะไรก่อน” ย้ายไปอยู่หน้า <b>“แผนเตรียมสอบ 13 วัน”</b> ในเมนูซ้ายบนสุด — กดเข้าง่ายกว่า ไม่ต้องเลื่อนหาในหน้านี้</p>
       </Callout>
 
-      <Sect tag="0" title="เกมแพลน 180 นาที — จัดลำดับก่อนลงมือข้อแรก">
+      <Sect tag="0" title="เกมแพลนในห้องสอบ — จัดลำดับก่อนลงมือข้อแรก">
         <p>อาจารย์วิชานี้ตรวจ<b>แค่คำตอบสุดท้าย</b> ผิดคือ 0 ไม่มีคะแนนบางส่วน ⇒ เกมไม่ใช่ “ทำให้ครบทุกข้อ” แต่คือ <b>“เลือกข้อที่ทำได้ แล้วทำให้ถูกจริง ๆ”</b> — และกันเวลาไว้<b>ตรวจ</b>ให้พอเสมอ</p>
 
         <NumTable
@@ -379,7 +440,7 @@ function MidtermLesson() {
       </Sect>
 
       {/* ═══════════ 📟 · เครื่องคิดเลข ═══════════ */}
-      <Sect tag="📟" title="ทริกเครื่องคิดเลข fx-991CW — เฉพาะที่ใช้จริงใน 4 บทที่ออกสอบ">
+      <Sect tag="📟" title="ทริกเครื่องคิดเลข fx-991CW — ที่ใช้จริงในห้องสอบ">
         <p>เครื่องคิดเลขไม่ได้ช่วยแค่ “บวกเลขเร็ว” — 4 ทริกข้างล่างคือตัวที่<b>ประหยัดเวลาเป็นสิบนาที</b>ในข้อสอบจริง</p>
 
         <Callout kind="good" title="① Table mode — ดึง f(xᵢ) ทุกจุดในทีเดียว (ใช้กับ Integration + Diff)">
@@ -2196,7 +2257,334 @@ else:
       </Sect>
 
       {/* ═══════════ 🎲 · สุ่มชุดสอบ ═══════════ */}
-      <Sect tag="🎲" title="สุ่มชุดสอบ — ฝึกกับสิ่งที่เราไม่รู้ คือ “บทไหนออกกี่ข้อ”">
+
+      {/* ═══════════ 🧨 · ดริลโจทย์ประยุกต์ไฟนอล ═══════════ */}
+      <Sect tag="🧨" title="ดริลโจทย์ประยุกต์ไฟนอล · 6 ข้อ — เจาะเฉพาะรูปแบบที่พลาดจริงในมิด">
+        <Callout kind="danger" title="ทำไมต้องมีหมวดนี้ — เนื้อหาคาดเดาได้ แต่โจทย์ประยุกต์ไม่">
+          <p style={{margin:"0 0 6px"}}><b>ขอบเขตเดินตามใบการบ้าน ⇒ รู้ล่วงหน้าว่าจะออกวิธีอะไร</b> · แต่มิดเทอมพิสูจน์แล้วว่า <b>อาจารย์ไม่เอาข้อการบ้านมาตรง ๆ</b> — ดัดเป็นโจทย์ประยุกต์เสมอ ⇒ &ldquo;ทำการบ้านได้&rdquo; ไม่ได้แปลว่าทำข้อสอบได้</p>
+          <NumTable
+            headers={["รูปแบบที่พลาดจริงในมิด", "หน้าตาในข้อสอบ", "ข้อในหมวดนี้"]}
+            rows={[
+              [<b>ไม่บอกตัวแปรตรง ๆ</b>, <span>ข้อ Diff จรวด — <b>ลืมว่า h คือระยะห่างในตาราง</b></span>, "F6"],
+              [<b>ย้อนกลับ</b>, "ให้ผลลัพธ์ Trap/Simpson มา แล้วให้หา x", "F1"],
+              [<b>ต้องเลือกเอง</b>, "ให้ 3 ช่วง เลือกเองแล้วต่อ bisection", "F3"],
+              [<b>ต้องตั้งสมการเอง</b>, "โจทย์เป็นเรื่องเล่า ไม่มีสมการให้", "F5"],
+              [<b>ผสมสองบท</b>, "อินทิเกรตเสร็จแล้วต้องหาราก", "F2 · F4"],
+            ]}
+          />
+          <p style={{margin:"8px 0 0"}}><b>วิธีใช้:</b> อ่านโจทย์แล้ว<b>เขียนแค่ &ldquo;ใช้วิธีอะไร + ตัวไม่รู้คือตัวไหน + ข้อมูลอะไรคือ h/ช่วง&rdquo;</b> ก่อน อย่าเพิ่งคำนวณ · ถ้าขั้นนี้ผ่าน ที่เหลือคือเดินสูตรซึ่งซ้อมมาแล้ว · ทุกเลขในเฉลยรันด้วยโปรแกรมแล้ว</p>
+        </Callout>
+
+        <TimedExam presets={[90, 60, 40]} label="6 ข้อ · แนะนำ 90 นาที (ข้อละ 15 นาที)">
+
+        <Problem label="F1 · ย้อนกลับ — ให้ค่ามา แล้วหา x (Interpolation ⇒ Root Finding)" solution={
+          <div>
+            <p style={{margin:"0 0 6px"}}><b>ถอดรหัส:</b> โจทย์ให้ <M>{`P(x)`}</M> ผ่านจุด แล้วถามค่า <M>x</M> ⇒ <b>ไม่ใช่ interpolation อย่างเดียว</b> · ขั้นที่ 1 หา <M>{`P(x)`}</M> ด้วย Newton DD · ขั้นที่ 2 แก้ <M>{`P(x)-7=0`}</M> ด้วย <b>Root Finding</b></p>
+            <NumTable
+              headers={["order", "สัมประสิทธิ์"]}
+              rows={[["b₀", "1"], ["b₁", "1"], ["b₂", "1"], ["b₃", "0"]]}
+            />
+            <p style={{margin:"6px 0"}}><M>{`P(x)=1+1(x-0)+1(x-0)(x-1)+0=x^{2}+1`}</M> · <M>{`b_3=0`}</M> แปลว่าข้อมูลเป็นพหุนามดีกรี 2 พอดี</p>
+            <p style={{margin:"0 0 6px"}}>แก้ <M>{`x^{2}+1=7`}</M> ด้วย Bisection บน <M>{`[2,3]`}</M> (เพราะ <M>{`P(2)=5<7<10=P(3)`}</M>) ⇒ <b><M>{`x=2.449491`}</M></b> (20 รอบ ที่ <M>{`tol=10^{-6}`}</M>) · ค่าจริง <M>{`\sqrt{6}=2.449490`}</M></p>
+            <PythonRunner code={`xs = [0, 1, 2, 3]
+ys = [1, 2, 5, 10]
+n  = len(xs)
+
+c = ys[:]                                   # ① Newton DD หาพหุนาม
+for j in range(1, n):
+    for i in range(n-1, j-1, -1):
+        c[i] = (c[i] - c[i-1]) / (xs[i] - xs[i-j])
+print("coef =", c)
+
+def P(x):
+    p, t = c[0], 1.0
+    for k in range(1, n):
+        t *= (x - xs[k-1]); p += c[k] * t
+    return p
+
+f = lambda x: P(x) - 7                      # ② กลายเป็นปัญหา Root Finding
+xl, xr, tol = 2.0, 3.0, 1e-6
+prev, i = None, 0
+while True:
+    xm = (xl + xr) / 2; i += 1
+    if prev is not None and abs(xm - prev) < tol:
+        break
+    if f(xl) * f(xm) > 0: xl = xm
+    else:                 xr = xm
+    prev = xm
+print(f"x = {xm:.6f}   ({i} รอบ)")
+print(f"ตรวจ: P({xm:.6f}) = {P(xm):.6f}  (ต้องได้ 7)")`} height={340}/>
+            <Callout kind="warn" title="กับดักของข้อนี้">
+              <p style={{margin:0}}>คนที่ทำไม่เป็นคือคนที่<b>พยายาม interpolate ย้อนกลับ</b> (สลับ x กับ y แล้วสร้างพหุนามใหม่) — <b>ทำได้แต่ผิดหลัก</b> เพราะ y ไม่ได้เรียงแบบ monotonic เสมอ · ท่าที่ถูกคือ <b>ตั้ง <M>{`P(x)-\\text{ค่าเป้า}=0`}</M> แล้วใช้ Root Finding</b> — ท่าเดียวกันเป๊ะกับข้อ Trap/Simpson ย้อนกลับที่เจอในมิด</p>
+            </Callout>
+          </div>
+        }>
+          จากตาราง <M>{`(0,1),(1,2),(2,5),(3,10)`}</M> · <b>(ก)</b> หาพหุนาม interpolate ด้วย Newton Divided-Difference · <b>(ข)</b> จงหาค่า <M>x</M> ที่ทำให้ <M>{`P(x)=7`}</M> ให้ละเอียด 6 ตำแหน่ง
+        </Problem>
+
+        <Problem label="F2 · ประยุกต์ — โจทย์ไม่บอกว่าต้อง Linearize (Regression ⇒ ย้อนกลับ)" solution={
+          <div>
+            <p style={{margin:"0 0 6px"}}><b>ถอดรหัส:</b> ค่าลดลงแบบ<b>คูณด้วยอัตราคงที่</b> (8.1 → 5.4 → 3.6 → 2.4 → 1.6 · แต่ละก้าวคูณ ⅔) ⇒ ไม่ใช่เส้นตรง แต่เป็น <M>{`C=ae^{bt}`}</M> ⇒ <b>ต้อง take log ก่อน fit</b></p>
+            <p style={{margin:"0 0 6px"}}>fit <M>{`\\ln C`}</M> กับ <M>t</M> ได้ <M>{`\\ln C = 2.497329 - 0.405465\\,t`}</M> ⇒ <M>{`a=e^{2.497329}=12.150000`}</M>, <M>{`b=-0.405465`}</M></p>
+            <MB>{`C(t)=12.150000\\,e^{-0.405465\\,t}\\qquad r^{2}=1.000000\\ (\\text{บนสเกล log})`}</MB>
+            <p style={{margin:"0 0 6px"}}><b>(ข) ย้อนกลับ:</b> แก้ <M>{`12.15\\,e^{-0.405465t}=1.0`}</M> ⇒ <M>{`t=\\dfrac{\\ln(1/12.15)}{-0.405465}=`}</M> <b>6.159172 ชม.</b></p>
+            <PythonRunner code={`import math
+
+t = [1, 2, 3, 4, 5]
+C = [8.1, 5.4, 3.6, 2.4, 1.6]
+n = len(t)
+
+lc = [math.log(v) for v in C]               # ① linearize: ln C = ln a + b t
+Sx  = sum(t)
+Sy  = sum(lc)
+Sxy = sum(t[i]*lc[i] for i in range(n))
+Sxx = sum(v*v for v in t)
+b  = (n*Sxy - Sx*Sy) / (n*Sxx - Sx*Sx)
+c0 = Sy/n - b*Sx/n
+a  = math.exp(c0)                           # ★ ต้อง exp กลับ ห้ามตอบ c0
+print(f"ln C = {c0:.6f} + {b:.6f} t")
+print(f"C(t) = {a:.6f} * e^({b:.6f} t)")
+
+Sr = sum((lc[i] - (c0 + b*t[i]))**2 for i in range(n))
+St = sum((v - Sy/n)**2 for v in lc)
+print(f"r2 (log scale) = {1 - Sr/St:.6f}")
+
+for tt in t:                                # ตรวจ: ต้องได้ใกล้ข้อมูลเดิม
+    print(f"  t={tt}  ทำนาย {a*math.exp(b*tt):.4f}   จริง {C[t.index(tt)]}")
+
+target = 1.0                                # ② ย้อนกลับ: หา t ที่ C = 1.0
+print(f"\\nC = {target} ที่ t = {math.log(target/a)/b:.6f} ชม.")`} height={400}/>
+            <Callout kind="danger" title="2 กับดักที่ทำให้ได้ 0 ทั้งที่เดินสูตรถูก">
+              <ul style={{margin:0, paddingLeft:18}}>
+                <li><b>fit เส้นตรงกับข้อมูลดิบเลย</b> โดยไม่ take log ⇒ ได้เส้นตรงที่ผ่านกลาง ๆ แต่ทำนายผิดหมด · <b>สัญญาณว่าต้อง linearize: ข้อมูลลดลง/เพิ่มขึ้นแบบทวีคูณ ไม่ใช่ทีละเท่า ๆ กัน</b></li>
+                <li><b>ตอบ <M>{`c_0=2.497329`}</M> เป็นค่า <M>a</M></b> — <M>{`c_0`}</M> คือ <M>{`\\ln a`}</M> ต้อง <M>{`a=e^{c_0}=12.15`}</M></li>
+              </ul>
+            </Callout>
+          </div>
+        }>
+          ความเข้มข้นยาในเลือดวัดได้ตามตาราง — <M>{`t`}</M> (ชม.): 1, 2, 3, 4, 5 · <M>C</M> (mg/L): 8.1, 5.4, 3.6, 2.4, 1.6 · <b>(ก)</b> หาสมการที่อธิบายข้อมูลชุดนี้ พร้อมบอกว่าเลือกโมเดลนี้เพราะอะไร · <b>(ข)</b> ต้องรอกี่ชั่วโมงความเข้มข้นจึงเหลือ 1.0 mg/L
+        </Problem>
+
+        <Problem label="F3 · ต้องเลือกเอง — จุดคร่อมรอยต่อของ Spline" solution={
+          <div>
+            <p style={{margin:"0 0 6px"}}><b>ถอดรหัส:</b> ก่อนแทนสูตรต้อง<b>หา segment</b> เสมอ · ช่วงคือ <M>{`[0,2],[2,5],[5,9]`}</M></p>
+            <NumTable
+              headers={["ถาม x =", "อยู่ช่วงไหน", "ความชันของช่วง", "S(x)"]}
+              rows={[
+                ["2.0", <span>คร่อมพอดี — <b>ช่วง 1 หรือ 2 ก็ได้</b></span>, "—", <b>5.000000</b>],
+                ["4.9", <span>ช่วง 2 · <M>{`[2,5]`}</M></span>, <span><M>{`(3-5)/(5-2)=-0.666667`}</M></span>, <b>3.066667</b>],
+                ["5.1", <span>ช่วง 3 · <M>{`[5,9]`}</M></span>, <span><M>{`(8-3)/(9-5)=1.25`}</M></span>, <b>3.125000</b>],
+              ]}
+            />
+            <p style={{margin:"6px 0 0"}}><b>คำตอบข้อ (ค):</b> ที่ <M>{`x=2`}</M> ใช้ช่วงไหนก็ได้ผลเท่ากัน (<M>{`S=5`}</M>) เพราะ <b>Spline บังคับว่าต้องต่อเนื่องที่จุดต่อ</b> — ถ้าคำนวณสองช่วงแล้วได้ไม่เท่ากัน แปลว่า<b>ทำผิด</b></p>
+            <PythonRunner code={`xs = [0, 2, 5, 9]
+ys = [1, 5, 3, 8]
+
+def segment(xs, xq):
+    for i in range(len(xs) - 1):
+        if xs[i] <= xq <= xs[i+1]:
+            return i
+    raise ValueError(f"x={xq} อยู่นอกช่วงข้อมูล [{xs[0]}, {xs[-1]}] -> extrapolation")
+
+for xq in (2.0, 4.9, 5.1, 9.5):
+    try:
+        i = segment(xs, xq)
+        m = (ys[i+1] - ys[i]) / (xs[i+1] - xs[i])
+        print(f"x={xq:4}: ช่วงที่ {i+1} [{xs[i]},{xs[i+1]}]  m={m:9.6f}  S={ys[i] + m*(xq - xs[i]):.6f}")
+    except ValueError as e:
+        print(f"x={xq:4}: {e}")`} height={220}/>
+            <Callout kind="warn" title="กับดัก — และของแถมที่โจทย์ไม่ได้ถามแต่ควรทัก">
+              <p style={{margin:"0 0 6px"}}>คนพลาดเพราะ<b>ใช้ช่วงแรกกับทุกค่า x</b> โดยไม่เช็ค · <M>{`x=4.9`}</M> กับ <M>{`5.1`}</M> ต่างกันแค่ 0.2 แต่<b>อยู่คนละพหุนาม</b> และความชันกลับทิศจาก −0.67 เป็น +1.25</p>
+              <p style={{margin:0}}>ถ้าโจทย์ถาม <M>{`x=9.5`}</M> ซึ่ง<b>อยู่นอกช่วงข้อมูล</b> ⇒ นั่นคือ <b>extrapolation ไม่ใช่ spline</b> — ต้องเขียนทักไว้ ไม่ใช่ยืดสูตรช่วงสุดท้ายออกไปเฉย ๆ</p>
+            </Callout>
+          </div>
+        }>
+          จุดข้อมูล <M>{`(0,1),(2,5),(5,3),(9,8)`}</M> ใช้ <b>Linear Spline</b> · <b>(ก)</b> หา <M>{`S(4.9)`}</M> · <b>(ข)</b> หา <M>{`S(5.1)`}</M> · <b>(ค)</b> ที่ <M>{`x=2`}</M> ต้องใช้พหุนามช่วงไหน และทำไมคำตอบถึงไม่ขึ้นกับการเลือก
+        </Problem>
+
+        <Problem label="F4 · ผสมสองบท — Regression แล้วต่อด้วย Root Finding" solution={
+          <div>
+            <p style={{margin:"0 0 6px"}}><b>ถอดรหัส:</b> ข้อมูลลดลงเกือบเป็นเส้นตรง (ผลต่างคงที่ราว −1.0 ต่อ 10°) ⇒ <b>Linear Regression</b> ไม่ต้อง linearize · แล้วคำถาม (ข) คือ<b>ย้อนกลับ</b> ⇒ แก้สมการเส้นตรง</p>
+            <NumTable
+              headers={["ผลรวมที่ต้องหา", "ค่า"]}
+              rows={[["Σx", "100"], ["Σy", "36.5"], ["Σxy", "630"], ["Σx²", "3000"], ["n", "5"]]}
+            />
+            <MB>{`a_1=\\frac{5(630)-100(36.5)}{5(3000)-100^{2}}=\\frac{-500}{5000}=-0.101000`}</MB>
+            <p style={{margin:"0 0 6px"}}><M>{`a_0=\\dfrac{36.5}{5}-(-0.101)\\dfrac{100}{5}=9.320000`}</M> ⇒ <b><M>{`y=9.320000-0.101000\\,x`}</M></b> · <M>{`r^{2}=0.990388`}</M></p>
+            <p style={{margin:0}}><b>(ข)</b> แก้ <M>{`9.32-0.101x=6.0`}</M> ⇒ <M>{`x=\\dfrac{6.0-9.32}{-0.101}=`}</M> <b>32.871287 °C</b></p>
+            <PythonRunner code={`X = [0, 10, 20, 30, 40]          # อุณหภูมิ (°C)
+Y = [9.5, 8.2, 7.1, 6.3, 5.4]    # ออกซิเจนละลาย (mg/L)
+n = len(X)
+
+Sx  = sum(X)
+Sy  = sum(Y)
+Sxy = sum(X[i]*Y[i] for i in range(n))
+Sxx = sum(v*v for v in X)
+print(f"Sx={Sx}  Sy={Sy}  Sxy={Sxy}  Sxx={Sxx}")
+
+a1 = (n*Sxy - Sx*Sy) / (n*Sxx - Sx*Sx)
+a0 = Sy/n - a1*Sx/n
+print(f"y = {a0:.6f} + {a1:.6f} x")
+
+Sr = sum((Y[i] - (a0 + a1*X[i]))**2 for i in range(n))
+St = sum((v - Sy/n)**2 for v in Y)
+print(f"r2 = {1 - Sr/St:.6f}")
+
+target = 6.0                     # ย้อนกลับ: หา x ที่ y = 6.0
+x = (target - a0) / a1
+print(f"y = {target} ที่ x = {x:.6f} °C")
+print(f"ตรวจ: y({x:.6f}) = {a0 + a1*x:.6f}")`} height={300}/>
+            <Callout kind="tip" title="ทำไมข้อนี้ง่ายกว่าที่คิด">
+              <p style={{margin:0}}>&ldquo;ย้อนกลับ&rdquo; ของ Regression เชิงเส้น<b>ไม่ต้องใช้ Root Finding เลย</b> — ย้ายข้างตรง ๆ ได้ · แต่ถ้าโจทย์ให้ <b>Polynomial Regression</b> แล้วถามย้อนกลับ ตอนนั้นถึงต้องใช้ Bisection/Newton จริง ๆ · <b>ดูก่อนว่าสมการที่ได้แก้ด้วยมือได้ไหม อย่ารีบเปิด Root Finding</b></p>
+            </Callout>
+          </div>
+        }>
+          ปริมาณออกซิเจนละลายในน้ำ (mg/L) ที่อุณหภูมิต่าง ๆ — <M>x</M> (°C): 0, 10, 20, 30, 40 · <M>y</M>: 9.5, 8.2, 7.1, 6.3, 5.4 · <b>(ก)</b> หาสมการเส้นตรงที่พอดีที่สุด พร้อม <M>{`r^{2}`}</M> · <b>(ข)</b> อุณหภูมิเท่าไรที่ทำให้ออกซิเจนเหลือ 6.0 mg/L
+        </Problem>
+
+        <Problem label="F5 · ต้องตั้งสมการเอง — โจทย์เล่าเรื่อง ไม่มีเมทริกซ์ให้ (Linear)" solution={
+          <div>
+            <p style={{margin:"0 0 6px"}}><b>ขั้นที่ยากที่สุดคือขั้นนี้ — แปลงเรื่องเล่าเป็น 3 สมการ:</b></p>
+            <NumTable
+              headers={["เงื่อนไขในโจทย์", "สมการ"]}
+              rows={[
+                ["ปริมาตรรวม 100 ลิตร", <M>{`x_1+x_2+x_3=100`}</M>],
+                [<span>ความเข้มข้นรวม 26% ของ 100 ลิตร</span>, <M>{`0.10x_1+0.20x_2+0.50x_3=26`}</M>],
+                ["งบประมาณ 3,750 บาท", <M>{`20x_1+35x_2+60x_3=3750`}</M>],
+              ]}
+            />
+            <MB>{`\\begin{bmatrix} 1 & 1 & 1 \\\\ 0.10 & 0.20 & 0.50 \\\\ 20 & 35 & 60 \\end{bmatrix}\\begin{bmatrix} x_1 \\\\ x_2 \\\\ x_3\\end{bmatrix}=\\begin{bmatrix} 100 \\\\ 26 \\\\ 3750\\end{bmatrix}`}</MB>
+            <p style={{margin:"0 0 6px"}}><b>แยก LU (Doolittle):</b></p>
+            <CodeBlock code={`L = | 1     0     0 |     U = | 1    1     1  |
+    | 0.1   1     0 |         | 0    0.1   0.4 |
+    | 20    150   1 |         | 0    0    -20  |
+
+Ly = b  ->  y = (100, 16, -650)
+Ux = y  ->  x3 = -650/-20 = 32.5
+            x2 = (16 - 0.4(32.5))/0.1 = 30.0
+            x1 = 100 - 30 - 32.5 = 37.5`}/>
+            <p style={{margin:"6px 0 6px"}}><b>คำตอบ: <M>{`x_1=37.5`}</M> · <M>{`x_2=30.0`}</M> · <M>{`x_3=32.5`}</M> ลิตร</b> · det ได้ฟรีจากผลคูณตัวหลัก <M>{`=1(0.1)(-20)=-2`}</M></p>
+            <p style={{margin:"0 0 6px"}}><b>(ค) ใช้ Gauss-Seidel ตรง ๆ ไม่ได้</b> — แถวที่ 1 มี <M>{`|1| \\not> |1|+|1|`}</M> ⇒ <b>ไม่ diagonally dominant</b> ⇒ ลู่ออก · ต้องผสมแถวสร้างระบบสมมูลก่อน (วิธีเดียวกับการบ้าน 6-7 ข้อ 1.7)</p>
+            <PythonRunner code={`A = [[1, 1, 1], [0.10, 0.20, 0.50], [20, 35, 60]]
+b = [100, 26, 3750]
+n = len(A)
+
+L = [[1.0 if i == j else 0.0 for j in range(n)] for i in range(n)]
+U = [row[:] for row in A]
+for k in range(n):
+    for i in range(k+1, n):
+        f = U[i][k] / U[k][k]
+        L[i][k] = f
+        for j in range(k, n):
+            U[i][j] -= f * U[k][j]
+
+print("L ="); [print("  ", [f"{v:8.4f}" for v in r]) for r in L]
+print("U ="); [print("  ", [f"{v:8.4f}" for v in r]) for r in U]
+
+y = [0.0]*n
+for i in range(n):
+    y[i] = b[i] - sum(L[i][k]*y[k] for k in range(i))
+x = [0.0]*n
+for i in range(n-1, -1, -1):
+    x[i] = (y[i] - sum(U[i][j]*x[j] for j in range(i+1, n))) / U[i][i]
+
+print("\\ny =", [f"{v:.4f}" for v in y])
+for i in range(n):
+    print(f"x{i+1} = {x[i]:.6f} ลิตร")
+
+det = 1.0
+for i in range(n): det *= U[i][i]
+print(f"\\ndet A = {det:.6f}   (ผลคูณตัวหลัก ได้ฟรีจาก LU)")
+
+print("รวม  =", round(sum(x), 4), "ลิตร   (ต้องได้ 100)")
+print("เข้มข้น =", round(0.10*x[0]+0.20*x[1]+0.50*x[2], 4), "  (ต้องได้ 26)")
+print("ค่าใช้จ่าย =", round(20*x[0]+35*x[1]+60*x[2], 4), "  (ต้องได้ 3750)")
+
+dom = all(abs(A[i][i]) > sum(abs(A[i][j]) for j in range(n) if j != i) for i in range(n))
+print("\\ndiagonally dominant?", dom, "-> Gauss-Seidel ตรง ๆ จะลู่ออก")`} height={480}/>
+            <Callout kind="danger" title="วิธีแปลงเรื่องเล่าเป็นสมการ — ใช้ได้ทุกข้อ">
+              <ol style={{margin:0, paddingLeft:20}}>
+                <li><b>ตั้งชื่อตัวไม่รู้ก่อน</b> — &ldquo;ใช้สารละลาย A กี่ลิตร&rdquo; ⇒ <M>{`x_1`}</M> · <b>นับจำนวนตัวไม่รู้ = ต้องมีสมการเท่านั้น</b></li>
+                <li><b>หาประโยคที่พูดถึง &ldquo;รวม&rdquo;</b> — รวมปริมาตร / รวมเงิน / รวมมวล ⇒ ได้สมการละ 1 ข้อ</li>
+                <li><b>เปอร์เซ็นต์ต้องคูณปริมาณเสมอ</b> — 26% ของ 100 ลิตร = 26 ไม่ใช่ 0.26 · <span style={{color:"var(--yellow)"}}>จุดที่คนพลาดมากสุดในโจทย์ผสมสาร</span></li>
+                <li><b>แทนกลับตรวจทุกสมการ</b> — ข้อนี้ตรวจได้ 3 ทาง (ปริมาตร · ความเข้มข้น · เงิน) ⇒ ถ้าครบทั้งสามคือถูกแน่</li>
+              </ol>
+            </Callout>
+          </div>
+        }>
+          โรงงานผสมสารละลาย 3 ชนิด (เข้มข้น 10% · 20% · 50% · ราคา 20 · 35 · 60 บาท/ลิตร) ให้ได้ <b>100 ลิตรที่ความเข้มข้น 26%</b> โดยใช้งบพอดี <b>3,750 บาท</b> · <b>(ก)</b> ตั้งระบบสมการ · <b>(ข)</b> แก้ด้วย <b>LU Decomposition</b> พร้อมบอก det · <b>(ค)</b> ถ้าจะใช้ Gauss-Seidel กับระบบนี้ตรง ๆ ได้ไหม เพราะอะไร
+        </Problem>
+
+        <Problem label="F6 · ⭐ ไม่บอก h — ข้อที่พลาดจริงในมิดเทอม (Newton Forward)" solution={
+          <div>
+            <Callout kind="danger" title="⚠︎ นี่คือข้อที่เสียคะแนนไปในมิด — อ่านให้ดี">
+              <p style={{margin:0}}>โจทย์<b>ไม่เคยเขียนว่า &ldquo;h = ...&rdquo;</b> · <b><M>h</M> คือระยะห่างระหว่างจุดในตาราง</b> — ในตารางนี้ <M>{`t`}</M> ไป 0, 2, 4, 6, 8 ⇒ <b><M>{`h=2`}</M></b> · <b>h ทุกบทคือระยะห่าง</b> ไม่ว่าจะบท Diff, Integration หรือ Interpolation</p>
+            </Callout>
+            <p style={{margin:"8px 0 6px"}}><b>ตารางผลต่างไปข้างหน้า</b> (แต่ละคอลัมน์ = ตัวล่างลบตัวบน):</p>
+            <NumTable
+              headers={["t", "s", "Δs", "Δ²s", "Δ³s"]}
+              rows={[
+                ["0", "0", "12", "20", "0"],
+                ["2", "12", "32", "20", "0"],
+                ["4", "44", "52", "20", ""],
+                ["6", "96", "72", "", ""],
+                ["8", "168", "", "", ""],
+              ]}
+            />
+            <p style={{margin:"6px 0"}}><M>{`\\Delta^{3}s=0`}</M> ⇒ ข้อมูลเป็น<b>พหุนามดีกรี 2 พอดี</b> ⇒ อนุกรมจบที่พจน์ที่ 3 ไม่มี error จากการตัดปลาย</p>
+            <p style={{margin:"0 0 6px"}}><M>{`s=\\dfrac{t-t_0}{h}=\\dfrac{3-0}{2}=1.5`}</M></p>
+            <MB>{`s(3)=0+1.5(12)+\\frac{1.5(0.5)}{2}(20)=0+18+7.5=25.500000`}</MB>
+            <p style={{margin:"0 0 6px"}}><b>ตรวจด้วย Lagrange:</b> ได้ <b>25.500000</b> ตรงกันเป๊ะ ✓ (สมการจริงคือ <M>{`s=t^{2}+2.5t`}</M>)</p>
+            <p style={{margin:0}}><b>(ข)</b> ที่ <M>{`t=5`}</M>: <M>{`s=2.5`}</M> ⇒ <M>{`s(5)=`}</M> <b>67.500000</b></p>
+            <PythonRunner code={`t = [0, 2, 4, 6, 8]              # ★ h อ่านจากตรงนี้ โจทย์ไม่บอก
+s = [0, 12, 44, 96, 168]
+h = t[1] - t[0]
+print("h =", h, " (ระยะห่างระหว่างจุด — โจทย์ไม่ได้เขียนให้)")
+
+d = [s[:]]                       # ตารางผลต่างไปข้างหน้า
+while len(d[-1]) > 1:
+    prev = d[-1]
+    d.append([prev[i+1] - prev[i] for i in range(len(prev)-1)])
+for k, row in enumerate(d):
+    print(f"  d^{k}:", row)
+
+def newton_forward(tq):
+    ss = (tq - t[0]) / h
+    val, term = d[0][0], 1.0
+    for k in range(1, len(d)):
+        term *= (ss - (k-1)) / k
+        val += term * d[k][0]
+    return ss, val
+
+def lagrange(tq):                # ตรวจด้วยวิธีที่สอง
+    p = 0.0
+    for i in range(len(t)):
+        Li = 1.0
+        for j in range(len(t)):
+            if j != i:
+                Li *= (tq - t[j]) / (t[i] - t[j])
+        p += s[i] * Li
+    return p
+
+for tq in (3.0, 5.0):
+    ss, v = newton_forward(tq)
+    print(f"\\nt={tq}: s_var={ss}  Newton Forward = {v:.6f}")
+    print(f"          ตรวจด้วย Lagrange = {lagrange(tq):.6f}")`} height={420}/>
+            <Callout kind="warn" title="เช็คลิสต์ 3 ข้อสำหรับ “โจทย์ตาราง” ทุกข้อ">
+              <ol style={{margin:0, paddingLeft:20}}>
+                <li><b>อ่าน h จากคอลัมน์แรกก่อนเสมอ</b> — และเช็คว่า<b>ห่างเท่ากันจริงไหม</b> ถ้าไม่เท่า Forward/Backward ใช้ไม่ได้ ต้อง Newton DD หรือ Lagrange</li>
+                <li><b>จุดที่ถามอยู่ต้นหรือท้ายตาราง</b> — ต้น ⇒ Forward · ท้าย ⇒ Backward (ใช้ผิดฝั่งได้คำตอบเดียวกันในทางทฤษฎี แต่ error สะสมต่างกัน)</li>
+                <li><b>ไล่ตารางผลต่างจนถึงคอลัมน์ที่เป็น 0</b> — คอลัมน์ที่เป็นศูนย์บอกว่าดีกรีของพหุนามคือเท่าไร และอนุกรมจบตรงไหน</li>
+              </ol>
+            </Callout>
+          </div>
+        }>
+          จรวดทดสอบวัดระยะทาง <M>s</M> (เมตร) ที่เวลา <M>t</M> (วินาที) ได้ตาราง — <M>t</M>: 0, 2, 4, 6, 8 · <M>s</M>: 0, 12, 44, 96, 168 · <b>(ก)</b> ประมาณ <M>{`s`}</M> ที่ <M>{`t=3`}</M> ด้วย <b>Newton Forward Difference</b> · <b>(ข)</b> ที่ <M>{`t=5`}</M> · <b>(ค)</b> ตรวจคำตอบข้อ (ก) ด้วยวิธีที่สอง
+        </Problem>
+
+        </TimedExam>
+      </Sect>
+      <Sect tag="🎲" title="สุ่มชุดสอบ — ฝึกกับสิ่งที่เราไม่รู้: บทไหนออกกี่ข้อ และจะเจอโจทย์ประยุกต์แบบไหน">
         <Callout kind="danger" title="ปัญหาจริงไม่ใช่ “ทำไม่เป็น” แต่คือ “ไม่รู้ว่าจะเจออะไร”">
           <p style={{margin:"0 0 6px"}}>อาจารย์บอกแค่ <b>“ออกทุกเรื่องที่เรียน”</b> กับ <b>“โค้ดครึ่งหนึ่ง คำนวณครึ่งหนึ่ง”</b> — <b>ไม่เคยบอกว่าบทไหนกี่ข้อ</b> ⇒ เปิดข้อสอบมาอาจเจอ Integration 3 ข้อ หรืออาจไม่เจอเลยก็ได้</p>
           <p style={{margin:0}}>ถ้าซ้อมด้วยชุดที่รู้ล่วงหน้าว่ามีอะไร จะไม่ได้ฝึกส่วนที่ยากที่สุดจริง ๆ คือ<b>การเปิดมาแล้วต้องจัดลำดับใหม่ทันที</b> · เครื่องนี้จึงล็อกแค่ <b>3 โค้ด + 3 มือ</b> (ตามที่อาจารย์บอก) แล้ว<b>ปล่อยสัดส่วนบทให้สุ่มล้วน</b> — ซ้อมหลายรอบแล้วจะชินกับทุกหน้าตาที่เป็นไปได้</p>
@@ -2263,7 +2651,7 @@ else:
         </Callout>
       </Sect>
 
-      <Sect tag="❌" title="12 กับดักที่ทำให้เสียคะแนนฟรี — เฉพาะ 4 บทที่ออกสอบ">
+      <Sect tag="❌" title="12 กับดักที่ทำให้เสียคะแนนฟรี (ของบทที่ออกมิด — ไว้ทวน)">
         <NumTable
           headers={["#", "กับดัก", "วิธีกันไว้"]}
           rows={[

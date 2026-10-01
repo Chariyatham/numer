@@ -370,7 +370,10 @@ print(f"RMSE = {rmse:.4f}")`} height={300}/>
             [5, 148.4, 5.000],
           ]}
         />
-        <p>fit linear on (x, ln y): <M>{`\\ln y = 0 + 1.0 \\cdot x`}</M> → <M>{`a = e^0 = 1, b = 1.0`}</M> → <M>{`y = e^x`}</M> ✓</p>
+        <p>fit linear on (x, ln y) ได้จริง: <M>{`\\ln y = -0.004483 + 1.001187\\,x`}</M> ⇒ <M>{`a=e^{-0.004483}=0.995527`}</M>, <M>{`b=1.001187`}</M> ⇒ <M>{`y \\approx 0.9955\\,e^{1.0012x}`}</M></p>
+        <Callout kind="tip" title="ทำไมไม่ได้ a = 1, b = 1 เป๊ะ">
+          <p style={{margin:0}}>ข้อมูลชุดนี้คือ <M>{`e^1,\\ldots,e^5`}</M> ที่<b>ปัดเหลือทศนิยม 1 ตำแหน่ง</b> (2.7 แทน 2.71828) ⇒ fit จึงเบี่ยงจาก 1 นิดหน่อย · <span style={{color:"var(--yellow)"}}><b>อย่าปัดแล้วเขียนว่า &ldquo;= 1 พอดี&rdquo;</b> — ในห้องสอบให้ตอบเลขที่คำนวณได้จริง</span> · แต่ก็แปลว่า<b>เดาโมเดลถูก</b>: ถ้าเดาผิด <M>{`r^2`}</M> จะพังไปเลย ไม่ใช่เบี่ยงแค่ 0.1%</p>
+        </Callout>
 
         <PythonRunner code={`import math
 
@@ -442,10 +445,19 @@ print(f"y ≈ {a2:.4f} · x^{b2:.4f}")`} height={280}/>
       <Sect tag="✸" title="ข้อสอบจำลอง">
         <Problem label="ข้อ 1 · Linear Regression" solution={
           <div>
-            <p>n = 5, Σx = 15, Σy = 27, Σxy = 99, Σx² = 55</p>
+            <p><M>{`n = 5`}</M> · ผลรวมที่ต้องหา 4 ตัว:</p>
+            <NumTable
+              headers={["Σx", "Σy", "Σxy", "Σx²"]}
+              rows={[[15, 37, 132, 55]]}
+            />
             <p>Normal equations:</p>
-            <MB>{`\\begin{pmatrix} 5 & 15 \\\\ 15 & 55 \\end{pmatrix}\\begin{pmatrix} a_0 \\\\ a_1 \\end{pmatrix} = \\begin{pmatrix} 27 \\\\ 99 \\end{pmatrix}`}</MB>
-            <p>แก้ได้ <M>{`a_1 = 2.4, a_0 = 0.2`}</M> → <M>{`y = 0.2 + 2.4x`}</M></p>
+            <MB>{`\\begin{pmatrix} 5 & 15 \\\\ 15 & 55 \\end{pmatrix}\\begin{pmatrix} a_0 \\\\ a_1 \\end{pmatrix} = \\begin{pmatrix} 37 \\\\ 132 \\end{pmatrix}`}</MB>
+            <MB>{`a_1=\\frac{5(132)-15(37)}{5(55)-15^{2}}=\\frac{660-555}{275-225}=\\frac{105}{50}=2.100000`}</MB>
+            <MB>{`a_0=\\frac{37}{5}-2.1\\left(\\frac{15}{5}\\right)=7.4-6.3=1.100000`}</MB>
+            <p>⇒ <M>{`y = 1.100000 + 2.100000\\,x`}</M> · <M>{`r^{2}=0.975664`}</M></p>
+            <Callout kind="tip" title="ตรวจฟรี — เส้นต้องผ่านจุดศูนย์ถ่วงเสมอ">
+              <p style={{margin:0}}>เส้น least-squares <b>ผ่าน <M>{`(\\bar x,\\bar y)`}</M> เสมอ</b> · ที่นี่ <M>{`\\bar x=3,\\ \\bar y=7.4`}</M> · แทนดู: <M>{`1.1+2.1(3)=7.4`}</M> ✓ — ถ้าไม่ผ่าน แปลว่าคำนวณ <M>{`a_0`}</M> ผิด</p>
+            </Callout>
           </div>
         }>
           ข้อมูล: x = [1,2,3,4,5], y = [3,5,8,10,11]<br/>
@@ -453,7 +465,16 @@ print(f"y ≈ {a2:.4f} · x^{b2:.4f}")`} height={280}/>
         </Problem>
 
         <Problem label="ข้อ 2 · Quadratic" solution={
-          <p>ใช้สูตร Normal Equation 3×3 — n=6, Σx=15, Σx²=55, Σx³=225, Σx⁴=979, Σy=152.6, Σxy=585.6, Σx²y=2488.8</p>
+          <div>
+            <p>Normal Equation 3×3 · <M>{`n=6`}</M> · Σx=15, Σx²=55, Σx³=225, Σx⁴=979, Σy=152.6, Σxy=585.6, Σx²y=2488.8</p>
+            <MB>{`\\begin{pmatrix} 6 & 15 & 55 \\\\ 15 & 55 & 225 \\\\ 55 & 225 & 979 \\end{pmatrix}\\begin{pmatrix} a_0 \\\\ a_1 \\\\ a_2 \\end{pmatrix} = \\begin{pmatrix} 152.6 \\\\ 585.6 \\\\ 2488.8 \\end{pmatrix}`}</MB>
+            <p>แก้ด้วย <b>Gauss Elimination</b> (โครง E ที่ซ้อมไว้แล้ว) ได้:</p>
+            <MB>{`y = 2.478571 + 2.359286\\,x + 1.860714\\,x^{2}`}</MB>
+            <p><M>{`y(4.5)=2.478571+2.359286(4.5)+1.860714(4.5)^{2}=`}</M> <b>50.774821</b></p>
+            <Callout kind="tip" title="⭐ นี่คือจุดที่ Regression กับ Linear Systems ต่อกัน">
+              <p style={{margin:0}}>เมทริกซ์ normal equations <b>สมมาตรเสมอ</b> (<M>{`A=A^{T}`}</M>) ⇒ แก้ด้วย <b>Cholesky</b> ก็ได้ เร็วกว่า Gauss เท่าตัว · <span style={{color:"var(--yellow)"}}>โจทย์ที่ให้ &ldquo;fit polynomial&rdquo; จริง ๆ คือโจทย์ Linear Systems ที่ห่อด้วยการสร้าง Σ</span></p>
+            </Callout>
+          </div>
         }>
           ข้อมูล: x = [0,1,2,3,4,5], y = [2.1, 7.7, 13.6, 27.2, 40.9, 61.1]<br/>
           Fit polynomial degree 2 และคำนวณ <M>y(4.5)</M>

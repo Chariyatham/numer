@@ -9,20 +9,19 @@ function CodeDrillLesson() {
       <Hero
         kicker="⌨ เขียนโค้ดจากหัว"
         title="Code from Memory"
-        lead="ครึ่งหนึ่งของข้อสอบคือข้อเขียนโปรแกรม และห้ามเปิดโพย — หน้านี้ฝึกให้เขียนออกมาได้เองบนกระดาษเปล่า"
+        lead="ครึ่งหนึ่งของข้อสอบคือข้อเขียนโปรแกรม และห้ามเปิดโพย — หน้านี้ฝึกให้เขียนออกมาได้เองบนกระดาษเปล่า · หมวด 1★ คือโครงของไฟนอล (Linear 7 วิธี + Interp/Spline/Regression)"
         readout={{
-          label: "โปรแกรมทั้งหมดที่ออกสอบ ย่อเหลือ 6 โครง",
+          label: "โปรแกรมของไฟนอล ย่อเหลือ 4 โครง (+ K สำหรับ 3 บทหลัง)",
           steps: [
-            { x: "A · Bracketing", w: 17 },
-            { x: "B/B′ · Open + Secant", w: 33 },
-            { x: "C · Summation", w: 17 },
-            { x: "D · Finite diff", w: 17 },
-            { x: "E · Linear", w: 16 },
+            { x: "E · Gauss", w: 30 },
+            { x: "F · Jordan/Inversion", w: 24 },
+            { x: "G+H · LU/Cholesky", w: 20 },
+            { x: "J · Jacobi/Seidel", w: 14 },
           ],
-          result: "6",
-          note: "จำ 6 โครงนี้ได้ = เขียนได้ทุกข้อ เพราะที่เหลือคือเปลี่ยนไม่กี่บรรทัด",
+          result: "4",
+          note: "Linear 7 วิธีที่ออกไฟนอล ใช้แค่ 4 โครงนี้ — ที่เหลือคือเปลี่ยนไม่กี่บรรทัด",
         }}
-        meta={["6 โครงหลัก", "เติมช่องว่าง 10 ข้อ", "กระดาษเปล่า 5 ข้อ", "ตาราง JS ↔ Python"]}
+        meta={["6 โครงมิด + 5 โครงไฟนอล", "เติมช่องว่าง 18 ข้อ", "กระดาษเปล่า 9 ข้อ", "ตาราง JS ↔ Python"]}
       />
 
       <CodeRules/>
@@ -41,7 +40,7 @@ function CodeDrillLesson() {
       </Callout>
 
       {/* ═══════════ 1 · 6 โครง ═══════════ */}
-      <Sect tag="1" title="6 โครงที่ครอบคลุมทุกโปรแกรมในข้อสอบ">
+      <Sect tag="1" title="6 โครงพื้นฐาน — เขียนตอนติวมิด แต่ยังใช้ต่อในไฟนอล (E คือโครงแม่)">
         <Callout kind="good" title="🎙️ เขียนตามกรอบ 3 ขั้นของอาจารย์เสมอ">
           <p style={{margin:0}}>ทุกโครงข้างล่างวางตาม ① <b>Initial Value</b> ② <b>Iteration Form</b> ③ <b>เงื่อนไขหยุด</b> · เงื่อนไขหยุดใช้ <b>absolute</b> <code>abs(ค่าใหม่ − ค่าเก่า) &lt; tol</code> โดยอาจารย์ตั้ง <code>tol = 0.001</code> เว้นแต่โจทย์สั่งเอง</p>
         </Callout>
@@ -237,11 +236,254 @@ else:
         </Callout>
       </Sect>
 
+      {/* ═══════════ 1★ · โครงไฟนอล ═══════════ */}
+      <Sect tag="1★" title="โครงไฟนอล 5 โครง — F · G · H · J · K (ต่อยอดจากโครง E ทั้งหมด)">
+        <Callout kind="good" title="⭐ 7 วิธี Linear ที่ออกไฟนอล ยุบเหลือ 4 โครงจริง ๆ">
+          <NumTable
+            headers={["โครง", "ใช้กับ", "ต่อยอดจากอะไร"]}
+            rows={[
+              [<b>E</b>, "Gauss Elimination (ข้อ 1.2)", "โครงแม่ — อยู่หมวดข้างบนแล้ว"],
+              [<b>F</b>, "Gauss-Jordan (1.3) · Matrix Inversion (1.4)", "E + normalize แถว pivot + กำจัดข้างบนด้วย"],
+              [<b>G</b>, "LU Decomposition (1.5)", "E แต่เก็บตัวคูณไว้ใน L แทนที่จะทิ้ง"],
+              [<b>H</b>, "Cholesky (1.6)", "G — ใช้ forward/back substitution ชุดเดียวกันเป๊ะ"],
+              [<b>J</b>, "Jacobi (1.7) · Gauss-Seidel (1.8)", "รูปเดียวกับ open method ของบท Root (โครง B)"],
+              [<b>K</b>, "Interpolation · Regression · Spline", "C (summation) + E (แก้ระบบ normal equations)"],
+            ]}
+          />
+          <p style={{margin:"8px 0 0"}}>ทุกโครงข้างล่างรันจริงแล้ว — ระบบตัวอย่างคือ<b>ระบบเดียวกับการบ้าน 6-7</b> คำตอบต้องได้ <M>{`x=(-1,\\;2,\\;1)`}</M> ทุกวิธี (ยกเว้น Cholesky ที่ต้องใช้ระบบ symmetric)</p>
+        </Callout>
+
+        <h3>โครง F · <span style={{color:"var(--signal)"}}>[Linear 1.3–1.4]</span> Gauss-Jordan &amp; Matrix Inversion</h3>
+        <p style={{margin:"0 0 6px", fontSize:'0.86rem'}}>ต่างจากโครง E แค่ <b>2 อย่าง</b>: (ก) หารแถว pivot ให้ตัวหลักเป็น 1 (ข) ลูป <code>i</code> วิ่งทุกแถวที่ <code>i != k</code> ไม่ใช่แค่ <code>i &gt; k</code> ⇒ จบแล้วได้ Identity <b>อ่านคำตอบจากคอลัมน์ b ได้เลย ไม่ต้อง back-substitute</b></p>
+        <CodeBlock code={`A = [[-2, 3, 1], [3, 4, -5], [1, -2, 1]]   # ★ เปลี่ยนตามโจทย์
+b = [9, 0, -4]
+n = len(A)                                 # ห้ามฮาร์ดโค้ด 3
+M = [A[i][:] + [b[i]] for i in range(n)]   # ① augment [A|b] · copy ทีละแถว
+
+for k in range(n):
+    if M[k][k] == 0:                       # pivot = 0 -> สลับแถวก่อน
+        for r in range(k+1, n):
+            if M[r][k] != 0:
+                M[k], M[r] = M[r], M[k]
+                break
+    p = M[k][k]
+    for j in range(k, n+1):                # ② normalize: ทำตัวหลักให้เป็น 1
+        M[k][j] /= p
+    for i in range(n):                     # ③ กำจัด "ทุกแถว" ยกเว้นแถว pivot เอง
+        if i != k:
+            f = M[i][k]
+            for j in range(k, n+1):
+                M[i][j] -= f * M[k][j]
+    print(f"k={k+1}:", [f"{M[r][n]:8.4f}" for r in range(n)])
+
+for i in range(n):
+    print(f"x{i+1} = {M[i][n]:.6f}")       # อ่านจากคอลัมน์ b ตรง ๆ`}/>
+        <p style={{margin:"12px 0 6px", fontSize:'0.86rem'}}><b>ตัวย่อย F′ · Matrix Inversion</b> — โครงเดิมเป๊ะ เปลี่ยนแค่ <b>ต่อ <M>I</M> แทน <M>b</M></b> แล้วลูปคอลัมน์วิ่งถึง <code>2*n</code></p>
+        <CodeBlock code={`M = [A[i][:] + [1.0 if i == j else 0.0 for j in range(n)]    # ① augment [A|I]
+     for i in range(n)]
+
+for k in range(n):                          # ② Gauss-Jordan เหมือนเดิม
+    p = M[k][k]
+    for j in range(k, 2*n):                 # ★ ถึง 2n ไม่ใช่ n
+        M[k][j] /= p
+    for i in range(n):
+        if i != k:
+            f = M[i][k]
+            for j in range(k, 2*n):         # ★ ถึง 2n
+                M[i][j] -= f * M[k][j]
+
+Ainv = [row[n:] for row in M]               # ③ ครึ่งขวา = A^-1
+x = [sum(Ainv[i][j]*b[j] for j in range(n)) for i in range(n)]   # ④ x = A^-1 b
+for i in range(n):
+    print(f"x{i+1} = {x[i]:.6f}")`}/>
+        <Callout kind="warn" title="3 จุดตายของโครง F">
+          <ul style={{margin:0, paddingLeft:18}}>
+            <li><b>ลืม normalize</b> (ข้าม <code>M[k][j] /= p</code>) ⇒ ได้ diagonal ไม่ใช่ identity ⇒ คำตอบผิดทุกตัวเพราะยังไม่ได้หารด้วยตัวหลัก</li>
+            <li><b><code>if i != k</code> ไม่ใช่ <code>range(k+1, n)</code></b> — ถ้าเขียนแบบ E ก็ได้แค่ Gauss ธรรมดา ข้างบนเส้นทแยงไม่ถูกกำจัด</li>
+            <li><b>Inversion: ลูปคอลัมน์ต้องถึง <code>2*n</code></b> — เขียน <code>n</code> ครึ่งขวาจะไม่ถูกอัปเดต ได้ <M>{`A^{-1}`}</M> เป็นเมทริกซ์เอกลักษณ์เดิม (พังเงียบ ๆ ไม่ error)</li>
+          </ul>
+        </Callout>
+
+        <h3>โครง G · <span style={{color:"var(--signal)"}}>[Linear 1.5]</span> LU Decomposition (Doolittle)</h3>
+        <p style={{margin:"0 0 6px", fontSize:'0.86rem'}}>โครง E ทุกประการ <b>ยกเว้นบรรทัดเดียว</b>: ตัวคูณ <code>f</code> ที่ E ใช้แล้วทิ้ง — G เก็บไว้ใน <code>L[i][k]</code></p>
+        <CodeBlock code={`A = [[-2, 3, 1], [3, 4, -5], [1, -2, 1]]   # ★ เปลี่ยนตามโจทย์
+b = [9, 0, -4]
+n = len(A)
+
+L = [[1.0 if i == j else 0.0 for j in range(n)] for i in range(n)]   # Doolittle: diag L = 1
+U = [row[:] for row in A]                  # ★ copy ทีละแถว ไม่งั้นแก้ A ตัวจริง
+
+for k in range(n):                         # ① แยก A = L·U
+    for i in range(k+1, n):
+        f = U[i][k] / U[k][k]
+        L[i][k] = f                        # ★★ เก็บ "ก่อน" เอา f ไปกำจัด — จุดตายอันดับ 1
+        for j in range(k, n):
+            U[i][j] -= f * U[k][j]
+
+y = [0.0] * n                              # ② Ly = b  (forward substitution, ไล่ลง)
+for i in range(n):
+    y[i] = b[i] - sum(L[i][k]*y[k] for k in range(i))     # diag L = 1 จึงไม่ต้องหาร
+
+x = [0.0] * n                              # ③ Ux = y  (back substitution, ไล่ขึ้น)
+for i in range(n-1, -1, -1):
+    x[i] = (y[i] - sum(U[i][j]*x[j] for j in range(i+1, n))) / U[i][i]
+
+for i in range(n):
+    print(f"x{i+1} = {x[i]:.6f}")`}/>
+        <Callout kind="danger" title="⚠︎ บรรทัดที่สลับลำดับแล้วพังทั้งตัว">
+          <p style={{margin:0}}>ถ้าเขียน <code>for j: U[i][j] -= f*U[k][j]</code> ก่อนแล้วค่อย <code>L[i][k] = U[i][k]/U[k][k]</code> — ตอนนั้น <code>U[i][k]</code> กลายเป็น 0 ไปแล้ว ⇒ <b><M>L</M> จะเป็นเมทริกซ์เอกลักษณ์ทั้งตัว</b> · <code>L·U</code> ก็ยังคูณได้ไม่ error แต่ <M>{`LU \\neq A`}</M> ⇒ ตรวจเสมอด้วย <b>คูณ L·U กลับ ต้องได้ A</b></p>
+        </Callout>
+
+        <h3>โครง H · <span style={{color:"var(--signal)"}}>[Linear 1.6]</span> Cholesky</h3>
+        <p style={{margin:"0 0 6px", fontSize:'0.86rem'}}><b>ครึ่งหลังเหมือนโครง G เป๊ะ</b> — ต่างแค่หา <M>L</M> ด้วยสูตรราก แล้วใช้ <M>{`L^{T}`}</M> แทน <M>U</M> ⇒ เขียน substitution ครั้งเดียว ใช้ได้ทั้ง 1.5 และ 1.6</p>
+        <CodeBlock code={`import math
+
+A = [[4, 2, -2], [2, 10, 2], [-2, 2, 5]]   # ★ ต้อง symmetric positive definite เท่านั้น
+b = [2, 20, 5]
+n = len(A)
+
+sym = all(A[i][j] == A[j][i] for i in range(n) for j in range(n))
+print("symmetric?", sym)                   # ① เช็คก่อนเสมอ ไม่ผ่าน = ใช้วิธีนี้ไม่ได้
+
+L = [[0.0]*n for _ in range(n)]
+for i in range(n):                         # ② A = L·L^T
+    for j in range(i+1):
+        s = sum(L[i][k]*L[j][k] for k in range(j))
+        if i == j:
+            L[i][j] = math.sqrt(A[i][i] - s)      # ★ ติดลบใต้ราก = ไม่ SPD
+        else:
+            L[i][j] = (A[i][j] - s) / L[j][j]
+
+y = [0.0] * n                              # ③ Ly = b
+for i in range(n):
+    y[i] = (b[i] - sum(L[i][k]*y[k] for k in range(i))) / L[i][i]
+
+x = [0.0] * n                              # ④ L^T x = y  → L[k][i] คือ L^T[i][k]
+for i in range(n-1, -1, -1):
+    x[i] = (y[i] - sum(L[k][i]*x[k] for k in range(i+1, n))) / L[i][i]
+
+for i in range(n):
+    print(f"x{i+1} = {x[i]:.6f}")           # -0.629630  2.148148  -0.111111`}/>
+        <Callout kind="warn" title="2 จุดตายของโครง H">
+          <ul style={{margin:0, paddingLeft:18}}>
+            <li><b>ต่างจาก LU: forward substitution ต้องหารด้วย <code>L[i][i]</code></b> — เพราะแนวทแยงของ Cholesky ไม่ใช่ 1 (ของ Doolittle เป็น 1 เลยไม่ต้องหาร) ⇒ ลอกโค้ด LU มาตรง ๆ แล้วลืมหาร = ผิด</li>
+            <li><b>ขั้น back substitution ใช้ <code>L[k][i]</code> ไม่ใช่ <code>L[i][k]</code></b> — เพราะ <M>{`L^{T}_{ik}=L_{ki}`}</M> · เขียนสลับ index แล้วรันผ่านแต่ได้เลขผิด</li>
+          </ul>
+        </Callout>
+
+        <h3>โครง J · <span style={{color:"var(--signal)"}}>[Linear 1.7–1.8]</span> Jacobi &amp; Gauss-Seidel</h3>
+        <p style={{margin:"0 0 6px", fontSize:'0.86rem'}}>สองวิธีนี้<b>ต่างกันบรรทัดเดียว</b> — Jacobi อ่านจาก <code>old</code> · Gauss-Seidel อ่านจาก <code>x</code> ที่เพิ่งเขียนทับไป · และนี่คือ 2 ข้อที่ <b>ต้องใช้ <code>while</code> จริง ๆ</b> ไม่ใช่แค่ตามกฎ</p>
+        <CodeBlock code={`# ★★ เช็คก่อนเสมอ: diagonally dominant ไหม ถ้าไม่ ต้องผสมแถวให้ dominant ก่อน
+#    ระบบการบ้าน 6-7 ตัวเดิม "ลู่ออก" — ตัวข้างล่างคือระบบสมมูลที่แปลงแล้ว
+A = [[5, 0, -3], [-3, 5, 0], [0, -1, 3]]   # E1'=R2+2R3 · E2'=R1-R3 · E3'=R1+2R3
+b = [-8, 13, 1]
+n = len(A)
+
+dom = all(abs(A[i][i]) > sum(abs(A[i][j]) for j in range(n) if j != i) for i in range(n))
+print("diagonally dominant?", dom)         # ① ไม่ผ่าน = ลู่ออก ไม่มีวันหยุด
+
+tol = 0.001                                # ② อาจารย์ใช้ค่านี้เป็นปกติ
+x = [0.0] * n                              # ③ Initial Value
+k, err = 0, 1.0
+
+while err > tol:                           # ★ ห้าม for k in range(N) — อาจารย์หัก
+    k += 1
+    old = x[:]                             # ★ Jacobi ต้องเก็บค่าเก่าไว้ทั้งชุด
+    for i in range(n):
+        s = sum(A[i][j]*old[j] for j in range(n) if j != i)   # Jacobi   : ใช้ old
+        # s = sum(A[i][j]*x[j] for j in range(n) if j != i)   # G-Seidel : ใช้ x ค่าใหม่
+        x[i] = (b[i] - s) / A[i][i]                           # ④ Iteration Form
+    err = max(abs(x[i] - old[i]) for i in range(n))           # ⑤ เงื่อนไขหยุด
+    print(f"k={k:2d}", [f"{v:9.6f}" for v in x], f"err={err:.6f}")
+
+for i in range(n):
+    print(f"x{i+1} = {x[i]:.6f}")           # -1.000000  2.000000  1.000000`}/>
+        <Callout kind="danger" title="⚠︎ 3 จุดตายของโครง J — และตัวเลขที่ควรรู้ล่วงหน้า">
+          <ul style={{margin:0, paddingLeft:18}}>
+            <li><b>ลืม <code>old = x[:]</code></b> ⇒ Jacobi กลายเป็น Gauss-Seidel ทันที (ตอบข้อ 1.7 ด้วยวิธีข้อ 1.8 = ผิด) · ต้อง <code>x[:]</code> เท่านั้น <code>old = x</code> ชี้ลิสต์เดียวกัน</li>
+            <li><b>เขียน <code>for k in range(20)</code>แทน <code>while</code></b> — นี่คือจุดที่อาจารย์หักคะแนนจริง (สอบท้ายคาบเคยได้ 1 เต็ม 6 เพราะข้อนี้)</li>
+            <li><b>ไม่เช็ค dominance ก่อน</b> ⇒ ระบบการบ้าน 6-7 ตัวเดิมจะลู่ออก · <code>err</code> โตขึ้นเรื่อย ๆ ลูปไม่มีวันจบ</li>
+          </ul>
+          <p style={{margin:"8px 0 0"}}>รันจริงบนระบบข้างบนที่ <M>{`tol=0.001`}</M> เริ่ม <M>{`x^{(0)}=(0,0,0)`}</M>: <b>Jacobi จบรอบที่ 12</b> · <b>Gauss-Seidel จบรอบที่ 5</b> — ถ้าเขียนถูก ตัวเลขต้องออกมาแบบนี้</p>
+        </Callout>
+
+        <h3>โครง K · <span style={{color:"var(--signal)"}}>[Interpolation · Regression · Spline]</span> 4 ตัวย่อย</h3>
+        <p style={{margin:"0 0 6px", fontSize:'0.86rem'}}><b>K1 Newton DD</b> — ตารางสามเหลี่ยม · ต้องวน <code>i</code> <b>ถอยหลัง</b> ไม่งั้นเขียนทับค่าที่ยังต้องใช้</p>
+        <CodeBlock code={`xs = [1, 4, 6, 5]                          # ★ ไม่ต้องเรียง ไม่ต้องห่างเท่ากัน
+ys = [0, 1.386294, 1.791759, 1.609438]
+xq = 2                                     # จุดที่โจทย์ถาม
+n = len(xs)
+
+c = ys[:]                                  # ① แถวแรกของตาราง = ys
+for j in range(1, n):                      # ② ไล่ทีละ order
+    for i in range(n-1, j-1, -1):          # ★ ถอยหลัง! ไม่งั้นทับค่าที่ยังต้องใช้
+        c[i] = (c[i] - c[i-1]) / (xs[i] - xs[i-j])
+    print(f"order {j}: c{j} = {c[j]:.6f}")
+
+p, term = c[0], 1.0                        # ③ f = c0 + c1(x-x0) + c2(x-x0)(x-x1) + ...
+for k in range(1, n):
+    term *= (xq - xs[k-1])
+    p += c[k] * term
+print(f"f({xq}) = {p:.6f}")                # 0.628767`}/>
+        <p style={{margin:"12px 0 6px", fontSize:'0.86rem'}}><b>K2 Lagrange</b> — สั้นกว่ามาก แต่คำนวณใหม่ทั้งหมดทุกครั้งที่เปลี่ยน <M>{`x_q`}</M> · <b>ต้องได้เลขเท่ากับ K1 เป๊ะ</b> ⇒ ใช้ตรวจกันเองได้ (กติกา &ldquo;ตรวจด้วยวิธีที่สอง&rdquo;)</p>
+        <CodeBlock code={`p = 0.0
+for i in range(n):
+    Li = 1.0
+    for j in range(n):
+        if j != i:                         # ★★ บรรทัดที่ลืมบ่อยที่สุด — ไม่ใส่ = หารด้วย 0
+            Li *= (xq - xs[j]) / (xs[i] - xs[j])
+    p += ys[i] * Li
+    print(f"L{i}({xq}) = {Li:.6f}")
+print(f"f({xq}) = {p:.6f}")                # 0.628767 — ต้องตรงกับ Newton DD`}/>
+        <p style={{margin:"12px 0 6px", fontSize:'0.86rem'}}><b>K3 Linear Regression</b> — ไม่มีลูปซ้อน มีแค่ <b>4 ผลรวม</b> · Polynomial ก็สร้าง normal equations แบบเดียวกัน แล้ว<b>โยนเข้าโครง E</b></p>
+        <CodeBlock code={`xs = [1, 2, 3, 4, 5, 6, 7]                 # ★ เปลี่ยนตามโจทย์
+ys = [0.5, 2.5, 2.0, 4.0, 3.5, 6.0, 5.5]
+n = len(xs)
+
+Sx  = sum(xs)                              # ① 4 ผลรวมที่ต้องมี
+Sy  = sum(ys)
+Sxy = sum(xs[i]*ys[i] for i in range(n))
+Sxx = sum(v*v for v in xs)
+
+a1 = (n*Sxy - Sx*Sy) / (n*Sxx - Sx*Sx)     # ② ความชัน
+a0 = Sy/n - a1*Sx/n                        # ③ จุดตัดแกน y (ใช้ค่าเฉลี่ย)
+print(f"y = {a0:.6f} + {a1:.6f} x")        # y = 0.071429 + 0.839286 x
+
+Sr = sum((ys[i] - (a0 + a1*xs[i]))**2 for i in range(n))       # ④ วัดความพอดี
+St = sum((y - Sy/n)**2 for y in ys)
+print(f"r2 = {1 - Sr/St:.6f}")`}/>
+        <p style={{margin:"12px 0 6px", fontSize:'0.86rem'}}><b>K4 Spline</b> — <b>หา segment ก่อนเสมอ</b> แล้วค่อยแทนสูตร · นี่คือตระกูลเดียวกับข้อ &ldquo;เลือกช่วง bisection&rdquo; ที่พลาดในมิด</p>
+        <CodeBlock code={`xs = [1, 2, 4, 7]                          # ★ ต้องเรียงจากน้อยไปมาก
+ys = [3, 5, 4, 8]
+xq = 3.5
+
+def segment(xs, xq):                       # ① หาว่า xq ตกอยู่ช่วงไหน
+    for i in range(len(xs) - 1):
+        if xs[i] <= xq <= xs[i+1]:
+            return i
+    raise ValueError("xq อยู่นอกช่วงข้อมูล -> เป็น extrapolation ไม่ใช่ spline")
+
+i = segment(xs, xq)
+print(f"xq อยู่ช่วงที่ {i+1}: [{xs[i]}, {xs[i+1]}]")
+
+m = (ys[i+1] - ys[i]) / (xs[i+1] - xs[i])  # ② Linear spline = ลากเส้นตรงในช่วงนั้น
+y = ys[i] + m * (xq - xs[i])
+print(f"S({xq}) = {y:.6f}")                # 4.250000`}/>
+        <Callout kind="warn" title="จุดตายของโครง K">
+          <ul style={{margin:0, paddingLeft:18}}>
+            <li><b>Newton DD: ลูป <code>i</code> ต้องถอยหลัง</b> <code>range(n-1, j-1, -1)</code> — วนไปหน้าจะเขียนทับ <code>c[i-1]</code> ที่รอบถัดไปยังต้องใช้ ⇒ ตารางเพี้ยนตั้งแต่ order 2</li>
+            <li><b>Lagrange: ลืม <code>if j != i</code></b> ⇒ <code>(xs[i]-xs[i])</code> = หารด้วยศูนย์ ⇒ ZeroDivisionError ทันที (อันนี้ยังดี เพราะ error ให้เห็น)</li>
+            <li><b>Regression: <code>a0</code> ต้องใช้ค่าเฉลี่ย</b> <code>Sy/n - a1*Sx/n</code> ไม่ใช่ <code>Sy - a1*Sx</code></li>
+            <li><b>Spline: ไม่หา segment ก่อน</b> แล้วแทนสูตรของช่วงแรกเสมอ — พังเงียบ ๆ ได้เลขที่ดูสมเหตุสมผลแต่ผิด</li>
+          </ul>
+        </Callout>
+      </Sect>
+
       {/* ═══════════ 2 · เติมช่องว่าง ═══════════ */}
-      <Sect tag="2" title="ดริลเติมช่องว่าง · 10 ข้อ — เจาะบรรทัดที่ลืมบ่อยที่สุด">
+      <Sect tag="2" title="ดริลเติมช่องว่าง · 18 ข้อ — เจาะบรรทัดที่ลืมบ่อยที่สุด (C11–C18 = ของไฟนอล)">
         <p>อ่านโค้ดแล้วเติมบรรทัดที่หายไป <b>โดยไม่เลื่อนกลับไปดูโครงข้างบน</b> — ถ้าเติมไม่ได้แปลว่ายังไม่พร้อมเขียนบนกระดาษ</p>
 
-        <TimedExam presets={[20, 12, 8]} label="10 ข้อ · แนะนำ 20 นาที (ข้อละ 2 นาที)">
+        <TimedExam presets={[36, 20, 12]} label="18 ข้อ · แนะนำ 36 นาที (ข้อละ 2 นาที)">
 
         <Problem label="C1 · Bisection — บรรทัดตัดสินใจ" solution={
           <div>
@@ -393,11 +635,130 @@ Ak = [row[:] for row in A]`}/>
           เขียน 2 ก้อนนี้: (ก) <b>back substitution</b> ของ Gauss ครบทั้งลูป (ข) บรรทัด<b>คัดลอกเมทริกซ์</b>ของ Cramer ก่อนแทนคอลัมน์ด้วย <M>b</M>
         </Problem>
 
+
+        <Problem label="C11 · Gauss-Jordan — 2 บรรทัดที่ทำให้มันไม่ใช่ Gauss ธรรมดา" solution={
+          <div>
+            <CodeBlock code={`    p = M[k][k]
+    for j in range(k, n+1):        # ① normalize แถว pivot ให้ตัวหลัก = 1
+        M[k][j] /= p
+    for i in range(n):             # ② กำจัด "ทุกแถว" ไม่ใช่แค่ข้างล่าง
+        if i != k:`}/>
+            <p style={{margin:"6px 0 0"}}>ขาด ① ⇒ ได้แค่ diagonal matrix ต้องหารทีหลัง · ขาด ② (เขียน <code>range(k+1, n)</code>) ⇒ ได้ Gauss ธรรมดา ต้อง back-substitute ⇒ <b>คำตอบในคอลัมน์ b ยังผิดอยู่</b></p>
+          </div>
+        }>
+          <CodeBlock code={`for k in range(n):
+    # ▁▁▁▁▁ เติม: ทำตัวหลักให้เป็น 1 ▁▁▁▁▁
+    # ▁▁▁▁▁ เติม: หัวลูปที่กำจัดทุกแถวยกเว้นแถว pivot ▁▁▁▁▁
+            f = M[i][k]
+            for j in range(k, n+1):
+                M[i][j] -= f * M[k][j]`}/>
+        </Problem>
+
+        <Problem label="C12 · Matrix Inversion — ตัวเลขในลูปที่ต่างจาก Gauss-Jordan" solution={
+          <div>
+            <CodeBlock code={`M = [A[i][:] + [1.0 if i == j else 0.0 for j in range(n)]
+     for i in range(n)]            # augment [A|I]
+# ...
+    for j in range(k, 2*n):        # ★ 2*n ไม่ใช่ n  (ทั้งสองลูป j)
+Ainv = [row[n:] for row in M]      # ครึ่งขวาคือ A^-1`}/>
+            <p style={{margin:"6px 0 0"}}>ถ้าเขียน <code>range(k, n)</code> ครึ่งขวาไม่ถูกแตะเลย ⇒ <code>Ainv</code> ออกมาเป็น <M>I</M> เดิม ⇒ <M>{`x = I\\cdot b = b`}</M> · <b>รันผ่านไม่ error แต่ได้ b คืนมาเฉย ๆ</b></p>
+          </div>
+        }>
+          เติม 3 จุด: (ก) บรรทัด <b>augment</b> <M>{`[A\\mid I]`}</M> (ข) <b>ขอบเขตลูป j</b> ทั้งสองที่ (ค) บรรทัดดึง <M>{`A^{-1}`}</M> ออกมาหลังจบ
+        </Problem>
+
+        <Problem label="C13 · LU — บรรทัดที่ต้องอยู่ก่อน ไม่ใช่หลัง ⭐" solution={
+          <div>
+            <CodeBlock code={`        f = U[i][k] / U[k][k]
+        L[i][k] = f                # ★ เก็บก่อน
+        for j in range(k, n):      # แล้วค่อยกำจัด
+            U[i][j] -= f * U[k][j]`}/>
+            <p style={{margin:"6px 0 0"}}>สลับลำดับ (กำจัดก่อนแล้วค่อยเก็บ <code>L[i][k] = U[i][k]/U[k][k]</code>) ⇒ ตอนนั้น <code>U[i][k]</code> เป็น 0 ไปแล้ว ⇒ <b><M>L</M> กลายเป็นเมทริกซ์เอกลักษณ์</b> · ตรวจได้ด้วย <b>คูณ L·U กลับ ต้องได้ A</b></p>
+          </div>
+        }>
+          <CodeBlock code={`for k in range(n):
+    for i in range(k+1, n):
+        # ▁▁▁▁▁ เติม 4 บรรทัด: หา f, เก็บลง L, แล้วกำจัดแถว i ▁▁▁▁▁`}/>
+        </Problem>
+
+        <Problem label="C14 · LU — forward substitution ต่างจาก Cholesky ตรงไหน" solution={
+          <div>
+            <CodeBlock code={`# LU (Doolittle) — diag L = 1 จึงไม่ต้องหาร
+for i in range(n):
+    y[i] = b[i] - sum(L[i][k]*y[k] for k in range(i))
+
+# Cholesky — diag L ไม่ใช่ 1 ต้องหาร
+for i in range(n):
+    y[i] = (b[i] - sum(L[i][k]*y[k] for k in range(i))) / L[i][i]`}/>
+            <p style={{margin:"6px 0 0"}}><b>นี่คือจุดที่พลาดตอนลอกโค้ด LU มาทำ Cholesky</b> — ลืมใส่ <code>/ L[i][i]</code> · โปรแกรมรันผ่าน แต่ <M>y</M> ผิดตั้งแต่ตัวแรก</p>
+          </div>
+        }>
+          เขียน <b>forward substitution</b> ของทั้ง 2 วิธี แล้วบอกว่า<b>ต่างกันตรงไหน</b> และ<b>ทำไม</b>
+        </Problem>
+
+        <Problem label="C15 · Cholesky — สูตร 2 บรรทัดในลูป" solution={
+          <div>
+            <CodeBlock code={`        s = sum(L[i][k]*L[j][k] for k in range(j))
+        if i == j:
+            L[i][j] = math.sqrt(A[i][i] - s)
+        else:
+            L[i][j] = (A[i][j] - s) / L[j][j]`}/>
+            <p style={{margin:"6px 0 0"}}>ผลรวม <code>s</code> วิ่งถึง <code>range(j)</code> เท่านั้น (ไม่ใช่ <code>range(i)</code>) — คือช่องที่คำนวณเสร็จแล้วทางซ้ายของคอลัมน์ <M>j</M> · <span style={{color:"var(--yellow)"}}>ถ้า <M>{`A_{ii}-s<0`}</M> แปลว่าไม่ใช่ SPD ⇒ ต้องเปลี่ยนไปใช้ LU</span></p>
+          </div>
+        }>
+          <CodeBlock code={`for i in range(n):
+    for j in range(i+1):
+        # ▁▁▁▁▁ เติม 5 บรรทัด: หา s แล้วแยกกรณีแนวทแยง / ใต้แนวทแยง ▁▁▁▁▁`}/>
+        </Problem>
+
+        <Problem label="C16 · Jacobi vs Gauss-Seidel — บรรทัดเดียวที่ต่างกัน ⭐" solution={
+          <div>
+            <CodeBlock code={`    old = x[:]                                             # ★ ต้องมีทั้งสองวิธี (ใช้วัด err)
+    for i in range(n):
+        s = sum(A[i][j]*old[j] for j in range(n) if j != i)   # Jacobi   → old
+        # s = sum(A[i][j]*x[j] for j in range(n) if j != i)   # G-Seidel → x
+        x[i] = (b[i] - s) / A[i][i]
+    err = max(abs(x[i] - old[i]) for i in range(n))`}/>
+            <p style={{margin:"6px 0 0"}}><b>Jacobi อ่านจาก <code>old</code></b> (ค่าทั้งชุดของรอบก่อน) · <b>Gauss-Seidel อ่านจาก <code>x</code></b> ที่เพิ่งเขียนทับไปในรอบเดียวกัน · <span style={{color:"var(--yellow)"}}><code>old = x</code> เฉย ๆ ไม่พอ ต้อง <code>x[:]</code> ไม่งั้นชี้ลิสต์เดียวกัน ⇒ Jacobi กลายเป็น Gauss-Seidel เงียบ ๆ</span></p>
+          </div>
+        }>
+          เขียนตัวลูปด้านในให้ครบ แล้วชี้ว่า<b>บรรทัดไหนตัวเดียว</b>ที่เปลี่ยน Jacobi เป็น Gauss-Seidel
+        </Problem>
+
+        <Problem label="C17 · Newton Divided-Difference — ทิศทางของลูป" solution={
+          <div>
+            <CodeBlock code={`c = ys[:]
+for j in range(1, n):
+    for i in range(n-1, j-1, -1):          # ★ ถอยหลัง
+        c[i] = (c[i] - c[i-1]) / (xs[i] - xs[i-j])`}/>
+            <p style={{margin:"6px 0 0"}}>ถ้าวนไปหน้า (<code>range(j, n)</code>) จะเขียนทับ <code>c[i-1]</code> ที่รอบถัดไปยังต้องใช้ ⇒ <b>ตารางเพี้ยนตั้งแต่ order 2</b> · ตัวหารคือ <code>xs[i] - xs[i-j]</code> — ระยะ <b>j ช่อง</b> ไม่ใช่ช่องเดียว</p>
+          </div>
+        }>
+          <CodeBlock code={`c = ys[:]
+for j in range(1, n):
+    # ▁▁▁▁▁ เติม 2 บรรทัด: ลูป i และสูตร divided difference ▁▁▁▁▁`}/>
+        </Problem>
+
+        <Problem label="C18 · Lagrange + Regression — 2 บรรทัดที่ลืมบ่อยสุดของ 2 บท" solution={
+          <div>
+            <CodeBlock code={`# Lagrange — ข้ามตัวเอง
+    for j in range(n):
+        if j != i:
+            Li *= (xq - xs[j]) / (xs[i] - xs[j])
+
+# Linear Regression — a0 ใช้ "ค่าเฉลี่ย"
+a1 = (n*Sxy - Sx*Sy) / (n*Sxx - Sx*Sx)
+a0 = Sy/n - a1*Sx/n`}/>
+            <p style={{margin:"6px 0 0"}}>ลืม <code>if j != i</code> ⇒ <code>(xs[i]-xs[i]) = 0</code> ⇒ ZeroDivisionError (โชคดีที่ error ให้เห็น) · <code>a0</code> เขียน <code>Sy - a1*Sx</code> ⇒ ลืมหาร <M>n</M> ⇒ เส้นเลื่อนขึ้นทั้งเส้น <b>ไม่ error แต่ผิด</b></p>
+          </div>
+        }>
+          เติม (ก) บรรทัดกันหารศูนย์ของ <b>Lagrange</b> (ข) สูตร <M>{`a_1`}</M> และ <M>{`a_0`}</M> ของ <b>Linear Regression</b>
+        </Problem>
         </TimedExam>
       </Sect>
 
       {/* ═══════════ 3 · กระดาษเปล่า ═══════════ */}
-      <Sect tag="3" title="ดริลกระดาษเปล่า · 5 ข้อ — เขียนทั้งโปรแกรมโดยไม่ดูอะไรเลย">
+      <Sect tag="3" title="ดริลกระดาษเปล่า · 11 ข้อ — เขียนทั้งโปรแกรมโดยไม่ดูอะไรเลย (P6–P11 = ของไฟนอล)">
         <Callout kind="danger" title="กติกาของดริลนี้ — ทำแบบนี้เท่านั้นถึงจะได้ผล">
           <ol style={{margin:0, paddingLeft:20}}>
             <li>ปิดหน้าจอ หยิบ<b>กระดาษเปล่ากับปากกา</b> (เขียนบนคอมไม่นับ เพราะในห้องสอบไม่มี autocomplete)</li>
@@ -407,7 +768,7 @@ Ak = [row[:] for row in A]`}/>
           </ol>
         </Callout>
 
-        <TimedExam presets={[50, 30, 20]} label="5 ข้อ · แนะนำ 50 นาที (ข้อละ 10 นาที)">
+        <TimedExam presets={[110, 60, 30]} label="11 ข้อ · แนะนำ 110 นาที (ข้อละ 10 นาที)">
 
         <Problem label="P1 · Bisection เต็มรูปแบบ" solution={
           <div>
@@ -596,7 +957,7 @@ print("แทนกลับตรวจ:", [round(sum(A[i][j]*x[j] for j in ran
               </ul>
             </Callout>
             <Callout kind="good" title="ทำไมใช้ระบบนี้">
-              <p style={{margin:0}}>เป็นระบบเดียวกับ<b>การบ้าน 6-7 ของปีนี้</b> (<code>numer_ชีทเรียนปีนี้/การบ้าน6-7.pdf</code> — ยืนยันแล้ว 4 ก.ย. ว่าตัวเลขตรงกับใบปีที่แล้วเป๊ะ เพิ่มแค่ Jacobi/Gauss-Seidel เป็น 8 ข้อ) ⇒ ระบบนี้คือตัวที่ต้องเดินให้คล่องที่สุด · คำตอบเป็น<b>จำนวนเต็มพอดี <M>{`(-1,\\,2,\\,1)`}</M></b> ⇒ แทนกลับแล้วต้องลงตัวเป๊ะทั้ง 3 บรรทัด ถ้าไม่ลงตัวคือคำนวณผิด รู้ทันทีในห้องสอบ</p>
+              <p style={{margin:0}}>เป็นระบบเดียวกับ<b>การบ้าน 6-7 ของปีนี้</b> (<code>numer_ชีทเรียนปีนี้/1_การบ้าน/การบ้าน06-07 Linear 8 วิธี.pdf</code> — ยืนยันแล้ว 4 ก.ย. ว่าตัวเลขตรงกับใบปีที่แล้วเป๊ะ เพิ่มแค่ Jacobi/Gauss-Seidel เป็น 8 ข้อ) ⇒ ระบบนี้คือตัวที่ต้องเดินให้คล่องที่สุด · คำตอบเป็น<b>จำนวนเต็มพอดี <M>{`(-1,\\,2,\\,1)`}</M></b> ⇒ แทนกลับแล้วต้องลงตัวเป๊ะทั้ง 3 บรรทัด ถ้าไม่ลงตัวคือคำนวณผิด รู้ทันทีในห้องสอบ</p>
             </Callout>
           </div>
         }>
@@ -605,6 +966,300 @@ print("แทนกลับตรวจ:", [round(sum(A[i][j]*x[j] for j in ran
           พิมพ์ <M>{`x_1,x_2,x_3`}</M> เป็นทศนิยม 6 ตำแหน่ง · <b>โบนัส:</b> ให้โปรแกรมคำนวณ <M>{`\\det A`}</M> จากผลคูณ pivot ด้วย
         </Problem>
 
+
+        <Problem label="P6 · LU Decomposition เต็มรูปแบบ (การบ้าน 6-7 ข้อ 1.5) ⭐" solution={
+          <div>
+            <PythonRunner code={`A = [[-2, 3, 1], [3, 4, -5], [1, -2, 1]]
+b = [9, 0, -4]
+n = len(A)
+
+L = [[1.0 if i == j else 0.0 for j in range(n)] for i in range(n)]
+U = [row[:] for row in A]
+
+for k in range(n):
+    for i in range(k+1, n):
+        f = U[i][k] / U[k][k]
+        L[i][k] = f                      # เก็บก่อน แล้วค่อยกำจัด
+        for j in range(k, n):
+            U[i][j] -= f * U[k][j]
+
+print("L =")
+for r in L: print("  ", [f"{v:8.4f}" for v in r])
+print("U =")
+for r in U: print("  ", [f"{v:8.4f}" for v in r])
+
+y = [0.0] * n                            # Ly = b
+for i in range(n):
+    y[i] = b[i] - sum(L[i][k]*y[k] for k in range(i))
+print("\\ny =", [f"{v:.6f}" for v in y])
+
+x = [0.0] * n                            # Ux = y
+for i in range(n-1, -1, -1):
+    x[i] = (y[i] - sum(U[i][j]*x[j] for j in range(i+1, n))) / U[i][i]
+
+for i in range(n):
+    print(f"x{i+1} = {x[i]:.6f}")
+
+chk = [sum(A[i][j]*x[j] for j in range(n)) for i in range(n)]
+print("\\nแทนกลับ Ax =", [f"{v:.4f}" for v in chk], " ต้องได้ b =", b)`} height={420}/>
+            <Callout kind="tip" title="เช็คลิสต์ให้คะแนนตัวเอง (6 ข้อ)">
+              <ul style={{margin:0, paddingLeft:18}}>
+                <li>ใช้ <code>n = len(A)</code> ไม่ฮาร์ดโค้ด 3</li>
+                <li><code>U = [row[:] for row in A]</code> — copy ทีละแถว ไม่ใช่ <code>A[:]</code></li>
+                <li><code>L</code> เริ่มด้วย 1 บนแนวทแยง (Doolittle)</li>
+                <li><b><code>L[i][k] = f</code> อยู่ก่อนลูปกำจัด</b> — จุดตายอันดับ 1</li>
+                <li>forward sub <b>ไม่หาร</b> (diag L = 1) · back sub <b>หาร</b> <code>U[i][i]</code></li>
+                <li>มีบรรทัด<b>แทนกลับตรวจ</b> ตอนท้าย</li>
+              </ul>
+            </Callout>
+          </div>
+        }>
+          เขียนโปรแกรมแก้ระบบของ<b>การบ้าน 6-7</b> ด้วย <b>LU Decomposition (Doolittle)</b> · พิมพ์ <M>L</M>, <M>U</M>, <M>y</M> และ <M>x</M> · คำตอบต้องได้ <M>{`x=(-1,\\;2,\\;1)`}</M>
+        </Problem>
+
+        <Problem label="P7 · Gauss-Seidel เต็มรูปแบบ (การบ้าน 6-7 ข้อ 1.8) ⭐" solution={
+          <div>
+            <PythonRunner code={`# ระบบเดิมของการบ้าน 6-7 ลู่ออก -> ใช้ระบบสมมูลที่ dominant
+# E1' = R2 + 2R3   E2' = R1 - R3   E3' = R1 + 2R3
+A = [[5, 0, -3], [-3, 5, 0], [0, -1, 3]]
+b = [-8, 13, 1]
+n = len(A)
+
+dom = all(abs(A[i][i]) > sum(abs(A[i][j]) for j in range(n) if j != i) for i in range(n))
+print("diagonally dominant?", dom, "\\n")
+
+tol = 0.001
+x = [0.0] * n
+k, err = 0, 1.0
+
+while err > tol:                         # หยุดด้วย tol ไม่ใช่จำนวนรอบ
+    k += 1
+    old = x[:]
+    for i in range(n):
+        s = sum(A[i][j]*x[j] for j in range(n) if j != i)   # ใช้ x ค่าใหม่ทันที
+        x[i] = (b[i] - s) / A[i][i]
+    err = max(abs(x[i] - old[i]) for i in range(n))
+    print(f"k={k:2d} " + "  ".join(f"{v:9.6f}" for v in x) + f"   err={err:.6f}")
+
+print()
+for i in range(n):
+    print(f"x{i+1} = {x[i]:.6f}")`} height={400}/>
+            <Callout kind="tip" title="เช็คลิสต์ให้คะแนนตัวเอง (6 ข้อ)">
+              <ul style={{margin:0, paddingLeft:18}}>
+                <li>มีบรรทัด<b>เช็ค diagonally dominant</b> ก่อนเข้าลูป</li>
+                <li>ใช้ <code>while err &gt; tol</code> ไม่ใช่ <code>for k in range(N)</code> ⭐</li>
+                <li><code>old = x[:]</code> ไม่ใช่ <code>old = x</code></li>
+                <li>อ่านจาก <code>x</code> (ไม่ใช่ <code>old</code>) — ไม่งั้นเป็น Jacobi</li>
+                <li><code>err = max(abs(...))</code> ครบทุกตัวแปร ไม่ใช่แค่ตัวแรก</li>
+                <li><b>print ทุกรอบ</b> — อาจารย์สั่ง</li>
+              </ul>
+              <p style={{margin:"6px 0 0"}}>ถ้าเขียนถูก ต้องจบที่ <b>รอบที่ 5</b> · เปลี่ยนเป็น Jacobi (อ่านจาก <code>old</code>) จะใช้ <b>12 รอบ</b></p>
+            </Callout>
+          </div>
+        }>
+          เขียนโปรแกรมแก้ระบบการบ้าน 6-7 ด้วย <b>Gauss-Seidel</b> · <M>{`tol = 0.001`}</M> เริ่มที่ <M>{`x^{(0)}=(0,0,0)`}</M> · <span style={{color:"var(--yellow)"}}>อย่าลืมว่าระบบเดิม<b>ลู่ออก</b> ต้องแปลงก่อน</span>
+        </Problem>
+
+        <Problem label="P8 · Newton Divided-Difference เต็มรูปแบบ" solution={
+          <div>
+            <PythonRunner code={`import math
+
+xs = [1, 4, 6, 5]                        # ไม่เรียง ไม่ห่างเท่ากัน -> ต้องใช้ DD หรือ Lagrange
+ys = [0, 1.386294, 1.791759, 1.609438]   # ln(x)
+xq = 2
+n = len(xs)
+
+c = ys[:]
+for j in range(1, n):
+    for i in range(n-1, j-1, -1):        # ถอยหลัง!
+        c[i] = (c[i] - c[i-1]) / (xs[i] - xs[i-j])
+    print(f"order {j}: c{j} = {c[j]:.6f}")
+
+p, term = c[0], 1.0
+for k in range(1, n):
+    term *= (xq - xs[k-1])
+    p += c[k] * term
+print(f"\\nNewton DD : f({xq}) = {p:.6f}")
+
+pl = 0.0                                 # ตรวจด้วยวิธีที่สอง
+for i in range(n):
+    Li = 1.0
+    for j in range(n):
+        if j != i:
+            Li *= (xq - xs[j]) / (xs[i] - xs[j])
+    pl += ys[i] * Li
+print(f"Lagrange  : f({xq}) = {pl:.6f}   (ต้องเท่ากันเป๊ะ)")
+print(f"ค่าจริง ln(2) = {math.log(2):.6f}   -> error {abs(p-math.log(2)):.6f}")`} height={380}/>
+            <Callout kind="tip" title="เช็คลิสต์ให้คะแนนตัวเอง (5 ข้อ)">
+              <ul style={{margin:0, paddingLeft:18}}>
+                <li><code>c = ys[:]</code> copy ไม่ใช่อ้างอิงตัวเดิม</li>
+                <li>ลูป <code>i</code> <b>ถอยหลัง</b> <code>range(n-1, j-1, -1)</code></li>
+                <li>ตัวหาร <code>xs[i] - xs[i-j]</code> — ระยะ <b>j ช่อง</b></li>
+                <li>ประกอบพหุนามด้วย <code>term *= (xq - xs[k-1])</code> สะสมไปเรื่อย ๆ</li>
+                <li>มี<b>วิธีที่สองไว้ตรวจ</b> (Lagrange) — กติกาผิด=0 บังคับให้ตรวจเสมอ</li>
+              </ul>
+            </Callout>
+          </div>
+        }>
+          จุด <M>{`(1,0),(4,1.386294),(6,1.791759),(5,1.609438)`}</M> · หา <M>{`f(2)`}</M> ด้วย <b>Newton Divided-Difference</b> แล้ว<b>ตรวจซ้ำด้วย Lagrange</b> — สองวิธีต้องได้เลขเท่ากัน
+        </Problem>
+
+        <Problem label="P9 · Linear Regression + Linearization เต็มรูปแบบ" solution={
+          <div>
+            <PythonRunner code={`import math
+
+xs = [1, 2, 3, 4, 5, 6, 7]
+ys = [0.5, 2.5, 2.0, 4.0, 3.5, 6.0, 5.5]
+n = len(xs)
+
+def fit(X, Y):                           # ใช้ซ้ำได้ทั้ง linear และ linearized
+    m = len(X)
+    Sx  = sum(X)
+    Sy  = sum(Y)
+    Sxy = sum(X[i]*Y[i] for i in range(m))
+    Sxx = sum(v*v for v in X)
+    a1 = (m*Sxy - Sx*Sy) / (m*Sxx - Sx*Sx)
+    a0 = Sy/m - a1*Sx/m
+    return a0, a1
+
+a0, a1 = fit(xs, ys)
+print(f"y = {a0:.6f} + {a1:.6f} x")
+
+Sr = sum((ys[i] - (a0 + a1*xs[i]))**2 for i in range(n))
+St = sum((y - sum(ys)/n)**2 for y in ys)
+print(f"Sr = {Sr:.6f}   St = {St:.6f}   r2 = {1 - Sr/St:.6f}")
+
+# ── Linearization: y = a*x^b  ->  ln y = ln a + b ln x ──
+X2 = [1, 2, 3, 4, 5]
+Y2 = [0.5, 1.7, 3.4, 5.7, 8.4]
+lx = [math.log(v) for v in X2]
+ly = [math.log(v) for v in Y2]
+c0, b = fit(lx, ly)
+a = math.exp(c0)                         # ★ ต้อง exp กลับ ไม่ใช่ตอบ c0 ตรง ๆ
+print(f"\\npower model: y = {a:.6f} * x^{b:.6f}")
+print(f"ทำนาย y(6) = {a * 6**b:.6f}")`} height={400}/>
+            <Callout kind="tip" title="เช็คลิสต์ให้คะแนนตัวเอง (5 ข้อ)">
+              <ul style={{margin:0, paddingLeft:18}}>
+                <li>ผลรวมครบ 4 ตัว: <code>Sx, Sy, Sxy, Sxx</code></li>
+                <li><code>a0 = Sy/n - a1*Sx/n</code> — <b>ใช้ค่าเฉลี่ย</b> ไม่ใช่ผลรวมดิบ</li>
+                <li>มี <M>{`r^2`}</M> จาก <M>{`1 - S_r/S_t`}</M></li>
+                <li>Linearization: take log <b>ทั้งสองแกน</b> สำหรับ power model</li>
+                <li><b><M>{`a = e^{c_0}`}</M></b> — ลืม exp กลับคือกับดักอันดับ 1 ของหัวข้อนี้</li>
+              </ul>
+            </Callout>
+          </div>
+        }>
+          (ก) fit เส้นตรงกับข้อมูล 7 จุด แล้วรายงาน <M>{`a_0, a_1, r^2`}</M> &nbsp;(ข) ข้อมูลชุดที่สองเป็น <M>{`y=ax^b`}</M> — จัดรูปให้เป็นเชิงเส้นแล้ว fit ด้วย<b>ฟังก์ชันเดิม</b> · <span style={{color:"var(--yellow)"}}>ต้อง <M>{`a=e^{c_0}`}</M> ตอนแปลงกลับ</span>
+        </Problem>
+
+        <Problem label="P10 · [การบ้าน 9] Newton DD 3 แบบ — recursive · top-down · bottom-up ⭐" solution={
+          <div>
+            <PythonRunner code={`# การบ้าน 9 · Newton Divided-Difference 3 แบบ (x = 4.2)
+xs = [0, 2, 4, 6, 8]
+ys = [9.81, 9.7487, 9.6879, 9.6879, 9.5682]
+xq = 4.2
+n = len(xs)
+
+# (1) recursive — f[x_i..x_j]
+def dd_rec(i, j):
+    if i == j:
+        return ys[i]
+    return (dd_rec(i+1, j) - dd_rec(i, j-1)) / (xs[j] - xs[i])
+
+# (2) DP top-down — recursive + จำคำตอบไว้ใน memo
+memo = {}
+def dd_memo(i, j):
+    if (i, j) in memo:
+        return memo[(i, j)]
+    if i == j:
+        r = ys[i]
+    else:
+        r = (dd_memo(i+1, j) - dd_memo(i, j-1)) / (xs[j] - xs[i])
+    memo[(i, j)] = r
+    return r
+
+# (3) DP bottom-up — ตารางสามเหลี่ยมแบบในชีท
+T = [[0.0]*n for _ in range(n)]
+for i in range(n):
+    T[i][0] = ys[i]
+for j in range(1, n):
+    for i in range(n-j):
+        T[i][j] = (T[i+1][j-1] - T[i][j-1]) / (xs[i+j] - xs[i])
+
+def newton(C):                      # C[k] = f[x0..xk]
+    total, term = 0.0, 1.0
+    for k in range(n):
+        total += C[k] * term
+        term *= (xq - xs[k])
+    return total
+
+C1 = [dd_rec(0, k) for k in range(n)]
+C2 = [dd_memo(0, k) for k in range(n)]
+C3 = [T[0][k] for k in range(n)]      # แถวบนสุด = สัมประสิทธิ์
+for name, C in [("recursive", C1), ("top-down ", C2), ("bottom-up", C3)]:
+    print(name, f"f({xq}) = {newton(C):.6f}")`} height={560}/>
+            <Callout kind="tip" title="เช็คลิสต์ให้คะแนนตัวเอง (4 ข้อ)">
+              <ul style={{margin:0, paddingLeft:18}}>
+                <li>recursive: ฐาน <code>i == j</code> คืน <code>ys[i]</code> · ตัวหารคือ <code>xs[j] - xs[i]</code> (ปลายขวา − ปลายซ้าย)</li>
+                <li>top-down = recursive <b>ตัวเดิมเป๊ะ</b> + เช็ค <code>memo</code> ก่อน + เก็บผลก่อน return</li>
+                <li>bottom-up: สัมประสิทธิ์คือ<b>แถวบนสุด</b> <code>T[0][k]</code> · ตัวหาร <code>xs[i+j] - xs[i]</code> ห่าง <b>j ช่อง</b></li>
+                <li>ทั้ง 3 แบบต้องได้ <b>9.686255</b> เท่ากัน — ถ้าไม่เท่า แปลว่าเขียนผิดสักตัว</li>
+              </ul>
+            </Callout>
+            <p style={{margin:"6px 0 0"}}>ต่างกันที่<b>ความเร็ว</b> ไม่ใช่คำตอบ: recursive คำนวณช่องเดิมซ้ำจนโตแบบ exponential · top-down กับ bottom-up คำนวณแต่ละช่องครั้งเดียว (O(n²)) — อธิบายละเอียดพร้อมจำนวนครั้งที่เรียกอยู่ที่ <a href="#interp">บท Interpolation · การบ้าน 9</a></p>
+          </div>
+        }>
+          ใช้ตารางการบ้าน 9 (x = 0,2,4,6,8) หา <M>{`f(4.2)`}</M> ด้วย polynomial 5 จุด โดยเขียน divided difference <b>3 แบบ</b> ในไฟล์เดียว แล้วพิมพ์ผลทั้ง 3 ให้เห็นว่าเท่ากัน
+        </Problem>
+
+        <Problem label="P11 · [การบ้าน 8] Conjugate Gradient — หยุดด้วย ε แล้วนับรอบ" solution={
+          <div>
+            <PythonRunner code={`# การบ้าน 8 · Conjugate Gradient (ไม่ใช้ numpy)
+A = [[5, 2, 0, 0],
+     [2, 5, 2, 0],
+     [0, 2, 5, 2],
+     [0, 0, 2, 5]]
+B = [12, 17, 14, 7]
+eps = 0.000001
+n = len(B)
+
+def matvec(M, v):
+    return [sum(M[i][j]*v[j] for j in range(n)) for i in range(n)]
+def dot(u, v):
+    return sum(u[i]*v[i] for i in range(n))
+
+X = [0.0]*n
+R = [a - b for a, b in zip(matvec(A, X), B)]     # R0 = AX0 - B
+D = [-r for r in R]                               # D0 = -R0
+k = 0
+while True:
+    AD = matvec(A, D)
+    lam = -dot(D, R) / dot(D, AD)
+    X = [X[i] + lam*D[i] for i in range(n)]
+    R = [a - b for a, b in zip(matvec(A, X), B)]
+    k += 1
+    err = dot(R, R) ** 0.5
+    print(f"k={k}  lambda={lam:.6f}  error={err:.6e}")
+    if err < eps:
+        break
+    alpha = dot(R, AD) / dot(D, AD)
+    D = [-R[i] + alpha*D[i] for i in range(n)]
+
+print("iterations =", k)
+print("X =", [round(v, 6) for v in X])`} height={560}/>
+            <Callout kind="tip" title="เช็คลิสต์ให้คะแนนตัวเอง (5 ข้อ)">
+              <ul style={{margin:0, paddingLeft:18}}>
+                <li>เริ่ม <code>R = AX − B</code> (เครื่องหมายตามสไลด์อาจารย์) และ <code>D = −R</code></li>
+                <li><code>lam = −(DᵀR)/(DᵀAD)</code> — <b>มีเครื่องหมายลบ</b></li>
+                <li>อัปเดต X → คำนวณ R ใหม่ → <b>เช็ค error ก่อน</b> ค่อยหา alpha</li>
+                <li><code>alpha = (RᵀAD)/(DᵀAD)</code> ใช้ R <b>ตัวใหม่</b> กับ D <b>ตัวเก่า</b> · แล้ว <code>D = −R + alpha·D</code></li>
+                <li>ลูป <code>while</code> หยุดด้วย <code>err &lt; eps</code> ไม่ใช่ <code>for k in range(4)</code> (กฎอาจารย์) · คำตอบ: <b>4 รอบ</b></li>
+              </ul>
+            </Callout>
+          </div>
+        }>
+          ระบบ 4×4 ของการบ้าน 8 · <M>{`X^{(0)}=0`}</M> · <M>{`\\varepsilon = 0.000001`}</M> — เขียนโปรแกรม CG <b>ไม่ใช้ numpy</b> พิมพ์ λ และ error ทุกรอบ แล้วตอบว่าต้องทำกี่รอบ
+        </Problem>
         </TimedExam>
       </Sect>
 
