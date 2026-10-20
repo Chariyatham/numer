@@ -10,15 +10,17 @@ const smoothScrollTo = (el) => {
 
 const CHAPTERS = [
   { group: "① เริ่มที่นี่", items: [
+    { id: "path", num: "▶", title: "เส้นทางเรียน · กดถัดไปอย่างเดียว", comp: "PathLesson" },
     { id: "plan", num: "🗓", title: "แผนเตรียมไฟนอล — 6 วันสุดท้าย", comp: "PlanLesson" },
     { id: "intro", num: "00", title: "ปฐมนิเทศ · วิธีใช้เว็บนี้", comp: "IntroLesson" },
   ]},
-  { group: "② ออกไฟนอล — 5 บทนี้ ⬅ เริ่มที่นี่", items: [
-    { id: "linear", num: "4", title: "Linear Systems · 7 วิธีที่ออกไฟนอล", comp: "LinearSystemsLesson" },
-    { id: "interp", num: "5", title: "Interpolation", comp: "InterpolationLesson" },
-    { id: "spline", num: "6", title: "Spline Interpolation", comp: "SplineLesson" },
-    { id: "regression", num: "7", title: "Least-Squares Regression", comp: "RegressionLesson" },
-    { id: "conjugate", num: "8", title: "Conjugate Gradient", comp: "ConjugateLesson" },
+  // เรียงตามลำดับที่อ่านจริงในแผน 6 วัน (kim ขอ 20 ต.ค.) — ไม่ใช่ลำดับบทในคอร์ส
+  { group: "② ออกไฟนอล — เรียงตามลำดับอ่าน", items: [
+    { id: "regression", num: "①", title: "Least-Squares Regression", comp: "RegressionLesson" },
+    { id: "interp", num: "②", title: "Interpolation", comp: "InterpolationLesson" },
+    { id: "spline", num: "③", title: "Spline Interpolation", comp: "SplineLesson" },
+    { id: "linear", num: "④", title: "Linear Systems · 7 วิธีที่ออกไฟนอล", comp: "LinearSystemsLesson" },
+    { id: "conjugate", num: "⑤", title: "Conjugate Gradient", comp: "ConjugateLesson" },
   ]},
   { group: "③ ท่อง + ซ้อมทำข้อสอบ", items: [
     { id: "memo", num: "🧠", title: "ท่องก่อนสอบ · ทุกอย่างหน้าเดียว", comp: "MemorizeLesson" },
@@ -168,6 +170,7 @@ function App() {
 
       <FontTweaks fs={fs} setFs={setFs} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       {window.CalcToggle && <window.CalcToggle />}
+      {window.PathBar && <window.PathBar />}
     </div>
   );
 }
