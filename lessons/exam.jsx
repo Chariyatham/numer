@@ -1,14 +1,507 @@
 // Mock Final Exam — โจทย์ครอบคลุมทุกบท สไตล์อาจารย์
 
+// ═══════════ Mock ไฟนอล 2569 แนวปีนี้ — ชุด A (เสาร์ 24) · ชุด B (อาทิตย์ 25) ═══════════
+// ทุกข้อ = การบ้าน 6–11 ที่ถูกดัด · ไม่เรียงตามบท · เลขทุกตัวรันด้วย Python (เศษส่วน/ค่าเต็ม) แล้ว 20 ต.ค. 2569
+// ⛔ ฟอร์แมต 6 ข้อ × 180 นาที เป็น "สมมติ" อิงบรีฟก่อนมิด — ไฟนอลจริงอาจไม่เหมือน (kim สั่ง 12 ก.ย.)
+function FinalMock2569() {
+  return (
+    <>
+      <Callout kind="danger" title="⭐ เริ่มที่นี่ — Mock ไฟนอลแนวปีนี้ 2 ชุด (ชุดเก่าข้างล่างมีเรื่องมิดปน)">
+        <ul style={{margin:0, paddingLeft:18}}>
+          <li><b>ชุด A = เสาร์ 24 ต.ค.</b> · <b>ชุด B = อาทิตย์ 25 ต.ค.</b> (ตาม <a href="#plan">#plan</a>) · กดเริ่มจับเวลาแล้วเฉลยจะล็อกจนหมดเวลา</li>
+          <li>ทุกข้อคือ<b>การบ้าน 6–11 ที่ถูกดัด</b> — ไม่เรียงตามบท · มีทั้งทำมือ + โค้ดของวิธีเดียวกันต่อเป็นข้อยาว · มีโจทย์ย้อนกลับ / เลือกวิธีเอง / ประยุกต์ที่ไม่บอกตัวแปรตรง ๆ</li>
+          <li>⛔ <b>ฟอร์แมต 6 ข้อ ใน 180 นาทีเป็นการสมมติ</b> (อิงบรีฟก่อนมิด) — ไฟนอลจริงอาจต่าง · สิ่งที่ซ้อมได้จริงคือ<b>ความเร็ว + ความแม่น</b></li>
+          <li><b>ตรวจแบบอาจารย์:</b> ดูแค่คำตอบสุดท้าย ผิด = 0 · ทศนิยม 6 ตำแหน่ง ห้ามเศษส่วน · ข้อโค้ดไม่ต้องรัน ให้เทียบกับเช็คลิสต์ในเฉลย · พลาดข้อไหนกรอก <a href="#midterm">สมุดพลาด 🩺</a></li>
+        </ul>
+      </Callout>
+
+      <Sect tag="Mock A" title="Mock ไฟนอล ชุด A · เสาร์ 24 ต.ค. · 180 นาที" read="must" min={180}>
+        <TimedExam presets={[60, 120, 180]} label="ชุด A · 6 ข้อ · 180 นาที (ข้อละ ~30 นาที)">
+
+        <Problem label="A1 · โยนลูกบอลขึ้นฟ้า (ประยุกต์ · มือ + โค้ด)" solution={
+          <div>
+            <p><b>วิธีที่ต้องใช้:</b> ข้อมูลมี noise และโจทย์สั่ง &ldquo;เส้นที่ใกล้ที่สุด&rdquo; ⇒ <b>Polynomial Regression m = 2</b> (ไม่ใช่ interpolation) · ระบบ normal equations แก้ด้วย <b>Gauss</b> (การบ้าน 11 + 6-7)</p>
+            <CodeBlock lang="text" title="ทำมือ" code={`Σt = 10   Σt² = 30   Σt³ = 100   Σt⁴ = 354
+Σh = 58.3   Σth = 120.7   Σt²h = 298.9      (n = 5)
+
+|  5   10   30 |  58.3          f21 = 2   f31 = 6
+| 10   30  100 | 120.7    →     R2: | 0  10   40 |   4.1
+| 30  100  354 | 298.9          R3: | 0  40  174 | −50.9
+                                f32 = 4   R3: | 0  0  14 | −67.3
+
+a2 = −67.3/14                          = −4.807143
+a1 = (4.1 − 40·a2)/10                  = 19.638571
+a0 = (58.3 − 10·a1 − 30·a2)/5          =  1.225714`}/>
+            <p>(ก) <M>{`h(t) = 1.225714 + 19.638571\\,t - 4.807143\\,t^2`}</M> · เช็คด้วย Reg Results <code>y=a+bx+cx²</code></p>
+            <p>(ข) ตกถึงพื้น ⇒ แก้ <M>{`h(t)=0`}</M> ได้ <M>{`t=-0.061488`}</M> (ทิ้ง — เวลาติดลบ) หรือ <b><M>{`t = 4.146778`}</M> วินาที</b> · ⚠ เกินข้อมูลชุดสุดท้าย (t = 4) ⇒ เป็น <b>extrapolation</b> · ต้องใช้ a ค่าเต็มที่เก็บในเครื่อง</p>
+            <p>(ค) สูงสุดเมื่อ <M>{`h'(t)=a_1+2a_2t=0 \\Rightarrow t = -a_1/(2a_2) = 2.042645`}</M> · <b><M>{`h_{max} = 21.283028`}</M> m</b></p>
+            <p style={{margin:"0 0 6px"}}>(ง) โค้ด (โครง R):</p>
+            <PythonRunner code={`# Mock A ข้อ 1 · Polynomial Regression m = 2 (โครง R)
+import numpy as np
+
+def regression(cols, y):
+    k, n = len(cols), len(y)
+    A = [[sum(cols[i][r] * cols[j][r] for r in range(n)) for j in range(k)] for i in range(k)]
+    B = [sum(cols[i][r] * y[r] for r in range(n)) for i in range(k)]
+    print("A =", A)
+    print("B =", [round(v, 6) for v in B])
+    return np.linalg.solve(A, B)
+
+t = [0, 1, 2, 3, 4]
+h = [1.3, 15.8, 21.6, 16.7, 2.9]
+a = regression([[ti ** p for ti in t] for p in range(3)], h)
+for i in range(3):
+    print(f"a{i} = {a[i]:.6f}")`} height={330}/>
+          </div>
+        }>
+          <p>โยนลูกบอลขึ้นฟ้าแล้ววัดความสูง h (เมตร) ทุก 1 วินาที เครื่องวัดมีความคลาดเคลื่อน ได้ข้อมูลดังนี้</p>
+          <NumTable headers={["t (s)", "0", "1", "2", "3", "4"]} rows={[["h (m)", "1.3", "15.8", "21.6", "16.7", "2.9"]]}/>
+          <p style={{margin:0}}>(ก) จงหาสมการกำลังสอง <M>{`h(t)=a_0+a_1t+a_2t^2`}</M> ที่<b>ใกล้ข้อมูลที่สุด</b> พร้อมแสดงวิธีทำ (แก้ระบบด้วย Gauss Elimination) · (ข) ลูกบอลตกถึงพื้น (h = 0) ที่เวลาเท่าใด · (ค) ความสูงสูงสุดเท่าใด · (ง) เขียนโปรแกรมหา <M>{`a_0, a_1, a_2`}</M></p>
+        </Problem>
+
+        <Problem label="A2 · ความดันอากาศตามความสูง (มือ + โค้ด + ย้อนกลับ)" solution={
+          <div>
+            <CodeBlock lang="text" title="ทำมือ · ตาราง divided difference" code={`x     f(x)      อันดับ 1     อันดับ 2      อันดับ 3
+0   101.3
+              −11.4
+1    89.9                 0.500000
+               −9.9                    −0.008333
+3    70.1                 0.466667
+               −8.5
+4    61.6
+
+P(2.2) = 101.3 − 11.4(2.2) + 0.5(2.2)(1.2) − 0.008333(2.2)(1.2)(−0.8)
+       = 101.3 − 25.08 + 1.32 + 0.0176 = 77.557600`}/>
+            <p>(ก) <b>77.557600 kPa</b> · ตรวจด้วย Lagrange 4 จุด ต้องได้เท่ากันเป๊ะ</p>
+            <p>(ข) 3 จุดที่ใกล้ 2.2 ที่สุด = x = 3 (ห่าง 0.8), 1 (1.2), 4 (1.8) · <M>{`L_0=0.24,\\ L_1=1.08,\\ L_2=-0.32`}</M> ⇒ <b>77.572000 kPa</b> (ต่างจาก (ก) เพราะใช้คนละชุดจุด — <b>ตอบตามที่โจทย์สั่ง</b>)</p>
+            <p>(ค) 80 อยู่ระหว่าง 89.9 (x = 1) กับ 70.1 (x = 3) ⇒ <M>{`x = 1 + \\frac{80-89.9}{70.1-89.9}(3-1) = 2.000000`}</M> km · <b>สลับบทบาท x กับ y</b> = โจทย์ย้อนกลับแบบที่พลาดในมิด</p>
+            <p style={{margin:"0 0 6px"}}>(ง) โค้ด (โครง K1 · ลูป i ถอยหลัง):</p>
+            <PythonRunner code={`# Mock A ข้อ 2 · Newton Divided-Difference แบบ bottom-up (โครง K1)
+X = [0, 1, 3, 4]                 # ความสูง (km)
+Y = [101.3, 89.9, 70.1, 61.6]    # ความดัน (kPa)
+xq = 2.2
+n = len(X)
+c = Y[:]
+for j in range(1, n):
+    for i in range(n - 1, j - 1, -1):          # ถอยหลัง
+        c[i] = (c[i] - c[i - 1]) / (X[i] - X[i - j])
+    print(f"order {j}: c{j} = {c[j]:.6f}")
+p, term = c[0], 1.0
+for k in range(1, n):
+    term *= (xq - X[k - 1])
+    p += c[k] * term
+print(f"P({xq}) = {p:.6f}")`} height={300}/>
+          </div>
+        }>
+          <p>ตารางความดันอากาศ P (kPa) ที่ความสูง x (km) จากระดับน้ำทะเล — <b>ระยะห่างไม่เท่ากัน</b></p>
+          <NumTable headers={["x (km)", "0", "1", "3", "4"]} rows={[["P (kPa)", "101.3", "89.9", "70.1", "61.6"]]}/>
+          <p style={{margin:0}}>(ก) หา P ที่ x = 2.2 ด้วย Newton Divided-Difference ใช้ทั้ง 4 จุด · (ข) หา P ที่ x = 2.2 ด้วย Lagrange กำลังสอง โดย<b>เลือก 3 จุดที่ใกล้ที่สุดเอง</b> · (ค) ความสูงเท่าใดที่ความดัน = 80 kPa (linear interpolation ระหว่างสองจุดที่คร่อม) · (ง) เขียนโปรแกรมข้อ (ก) แบบ bottom-up</p>
+        </Problem>
+
+        <Problem label="A3 · LU แยกครั้งเดียว ใช้สองครั้ง (มือ + โค้ด)" solution={
+          <div>
+            <CodeBlock lang="text" title="ทำมือ · Doolittle (แนวทแยงของ L = 1)" code={`f21 = 4/2 = 2    f31 = −2/2 = −1   → R2 = [0 3 −1]   R3 = [0 6 3]
+f32 = 6/3 = 2                       → R3 = [0 0 5]
+
+L = | 1  0  0 |      U = | 2  1  −1 |
+    | 2  1  0 |          | 0  3  −1 |
+    |−1  2  1 |          | 0  0   5 |
+
+b1 = (−1, −7, 1):  Ly = b → y = (−1, −5, 10)   Ux = y → x = (1, −1, 2)
+b2 = ( 5,  9, −2): Ly = b → y = ( 5, −1,  5)   Ux = y → x = (3,  0, 1)`}/>
+            <p>(ก) L, U ตามข้างบน · ตรวจ: คูณ L·U ต้องได้ A คืน · (ข) <b>x = (1.000000, −1.000000, 2.000000)</b> · (ค) <b>x = (3.000000, 0.000000, 1.000000)</b> — <b>ไม่ต้องแยก LU ใหม่</b> ทำแค่ forward + back substitution (นี่คือเหตุผลที่ LU มีอยู่) · เช็คด้วย Simul Equation</p>
+            <PythonRunner code={`# Mock A ข้อ 3 · LU (Doolittle) แยกครั้งเดียว ใช้กับ b สองชุด (โครง G)
+A = [[2, 1, -1], [4, 5, -3], [-2, 5, 4]]
+bs = [[-1, -7, 1], [5, 9, -2]]
+n = len(A)
+L = [[1.0 if i == j else 0.0 for j in range(n)] for i in range(n)]
+U = [row[:] for row in A]
+for k in range(n):
+    for i in range(k + 1, n):
+        f = U[i][k] / U[k][k]
+        L[i][k] = f                              # เก็บก่อนกำจัด
+        for j in range(k, n):
+            U[i][j] -= f * U[k][j]
+print("L =", L)
+print("U =", U)
+for b in bs:                                     # ★ ใช้ L, U เดิม ไม่ต้องแยกใหม่
+    y = [0.0] * n
+    for i in range(n):
+        y[i] = b[i] - sum(L[i][k] * y[k] for k in range(i))
+    x = [0.0] * n
+    for i in range(n - 1, -1, -1):
+        x[i] = (y[i] - sum(U[i][j] * x[j] for j in range(i + 1, n))) / U[i][i]
+    print("b =", b, "-> y =", y, "-> x =", [round(v, 6) for v in x])`} height={420}/>
+          </div>
+        }>
+          <MB>{`A=\\begin{pmatrix} 2 & 1 & -1 \\\\ 4 & 5 & -3 \\\\ -2 & 5 & 4 \\end{pmatrix}`}</MB>
+          <p style={{margin:0}}>(ก) แยก <M>{`A = LU`}</M> แบบ Doolittle แสดงวิธีทำ · (ข) แก้ <M>{`Ax=b_1`}</M> เมื่อ <M>{`b_1=(-1,-7,1)^T`}</M> · (ค) ถ้าเปลี่ยนเป็น <M>{`b_2=(5,9,-2)^T`}</M> จงแก้ระบบใหม่<b>โดยใช้ L, U เดิม</b> · (ง) เขียนโปรแกรมที่แยก LU ครั้งเดียวแล้วแก้ได้ทั้งสอง b</p>
+        </Problem>
+
+        <Problem label="A4 · ระบบที่ต้องจัดก่อนวนรอบ (โค้ด + มือ)" solution={
+          <div>
+            <p>(ก) ลำดับที่ให้มา แนวทแยง = 1, −1, 7 · แถว 1: |1| &lt; |6| + |−2| ⇒ <b>ไม่ diagonally dominant</b> — ถ้าดื้อทำ Gauss-Seidel ตามลำดับนี้ ค่าจะระเบิด (รอบ 2 ได้ x ≈ −453) · <b>สลับแถว</b> ให้ตัวใหญ่สุดของแต่ละตัวแปรอยู่บนแนวทแยง: <M>{`(5x-y+z=2),\\ (x+6y-2z=15),\\ (2x+y+7z=-3)`}</M> ⇒ 5 &gt; 2 · 6 &gt; 3 · 7 &gt; 3 ✓</p>
+            <CodeBlock lang="text" title="ทำมือ · Gauss-Seidel 2 รอบ เริ่ม (0, 0, 0)" code={`x = (2 + y − z)/5     y = (15 − x + 2z)/6     z = (−3 − 2x − y)/7
+
+k=1: x = 0.400000   y = 2.433333   z = −0.890476    err = 2.433333
+k=2: x = 1.064762   y = 2.025714   z = −1.022177    err = 0.664762`}/>
+            <p>(ค) โปรแกรมหยุดที่ <b>รอบที่ 6</b> ได้ <b>x = 1.000033, y = 1.999999, z = −1.000009</b> (err = 0.000179) · (ง) ถ้าเปลี่ยนเป็น Jacobi (แก้บรรทัดเดียว: อ่านจาก <code>old</code>) ต้องใช้ <b>8 รอบ</b> — GS เร็วกว่าเพราะใช้ค่าใหม่ทันที · คำตอบจริง (1, 2, −1)</p>
+            <PythonRunner code={`# Mock A ข้อ 4 · Gauss-Seidel (โครง J) — สลับแถวให้ dominant แล้ว
+A = [[5, -1, 1], [1, 6, -2], [2, 1, 7]]
+b = [2, 15, -3]
+n = len(A)
+dom = all(abs(A[i][i]) > sum(abs(A[i][j]) for j in range(n) if j != i) for i in range(n))
+print("diagonally dominant?", dom)
+tol = 0.001
+x = [0.0] * n
+k, err = 0, 1.0
+while err > tol:
+    k += 1
+    old = x[:]
+    for i in range(n):
+        s = sum(A[i][j] * x[j] for j in range(n) if j != i)     # GS: ใช้ x ค่าใหม่
+        # s = sum(A[i][j] * old[j] for j in range(n) if j != i)  # Jacobi
+        x[i] = (b[i] - s) / A[i][i]
+    err = max(abs(x[i] - old[i]) for i in range(n))
+    print(f"k={k}", [f"{v:.6f}" for v in x], f"err={err:.6f}")
+print("iterations =", k)`} height={420}/>
+          </div>
+        }>
+          <MB>{`\\begin{aligned} x+6y-2z&=15 \\\\ 5x-y+z&=2 \\\\ 2x+y+7z&=-3 \\end{aligned}`}</MB>
+          <p style={{margin:0}}>(ก) ถ้าจะแก้ด้วย Gauss-Seidel ตามลำดับนี้จะเกิดอะไรขึ้น ต้องทำอะไรก่อน · (ข) ทำมือ 2 รอบ เริ่มที่ (0, 0, 0) · (ค) เขียนโปรแกรม Gauss-Seidel หยุดเมื่อ <M>{`\\max|x^{(k)}-x^{(k-1)}| < 0.001`}</M> ตอบจำนวนรอบและคำตอบ · (ง) ถ้าใช้ Jacobi ต้องกี่รอบ</p>
+        </Problem>
+
+        <Problem label="A5 · Conjugate Gradient 2×2 ทำมือจนจบ" solution={
+          <div>
+            <CodeBlock lang="text" title="ทำมือ · R = AX − B, D = −R (แบบสไลด์อาจารย์)" code={`X0 = (0, 0)   R0 = (−1, −2)   D0 = (1, 2)
+k=1: AD0 = (6, 7)   D0ᵀR0 = −5   D0ᵀAD0 = 20
+     λ0 = −(−5)/20 = 0.250000
+     X1 = X0 + λ0·D0 = (0.250000, 0.500000)
+     R1 = AX1 − B   = (0.500000, −0.250000)    ‖R1‖ = 0.559017
+     α0 = R1ᵀAD0 / D0ᵀAD0 = 1.25/20 = 0.062500
+     D1 = −R1 + α0·D0 = (−0.437500, 0.375000)
+k=2: AD1 = (−1.375000, 0.687500)   D1ᵀR1 = −0.3125   D1ᵀAD1 = 0.859375
+     λ1 = 0.3125/0.859375 = 0.363636
+     X2 = (0.090909, 0.636364)       R2 = (0, 0)  → หยุด`}/>
+            <p>(ก) <b>X₂ = (0.090909, 0.636364)</b> · (ข) Cramer: <M>{`x_1 = \\frac{1\\cdot3-1\\cdot2}{4\\cdot3-1\\cdot1}=\\frac{1}{11}=0.090909`}</M>, <M>{`x_2=\\frac{4\\cdot2-1\\cdot1}{11}=0.636364`}</M> ✓ ตรงกันเป๊ะ · (ค) CG กับเมทริกซ์ SPD ขนาด n×n <b>จบภายใน n รอบ</b> (ถ้าไม่มี round-off) เพราะทิศ D แต่ละรอบ conjugate กัน ไม่ย้อนแก้ทิศเดิม ⇒ 2×2 จบใน 2 รอบ · (ง) โปรแกรมพิมพ์ <code>iterations = 2</code></p>
+            <PythonRunner code={`# Mock A ข้อ 5 · Conjugate Gradient 2×2
+A = [[4, 1], [1, 3]]
+B = [1, 2]
+eps = 0.000001
+n = len(B)
+def matvec(M, v):
+    return [sum(M[i][j] * v[j] for j in range(n)) for i in range(n)]
+def dot(u, v):
+    return sum(u[i] * v[i] for i in range(n))
+X = [0.0] * n
+R = [a - b for a, b in zip(matvec(A, X), B)]     # R0 = AX0 - B
+D = [-r for r in R]                               # D0 = -R0
+k = 0
+while True:
+    AD = matvec(A, D)
+    lam = -dot(D, R) / dot(D, AD)
+    X = [X[i] + lam * D[i] for i in range(n)]
+    R = [a - b for a, b in zip(matvec(A, X), B)]
+    k += 1
+    err = dot(R, R) ** 0.5
+    print(f"k={k}  lambda={lam:.6f}  X={[round(v, 6) for v in X]}  error={err:.6e}")
+    if err < eps:
+        break
+    alpha = dot(R, AD) / dot(D, AD)
+    D = [-R[i] + alpha * D[i] for i in range(n)]
+    print(f"      alpha={alpha:.6f}  D={[round(v, 6) for v in D]}")
+print("iterations =", k)`} height={460}/>
+          </div>
+        }>
+          <MB>{`A=\\begin{pmatrix} 4 & 1 \\\\ 1 & 3 \\end{pmatrix},\\quad B=\\begin{pmatrix} 1 \\\\ 2 \\end{pmatrix},\\quad X^{(0)}=\\begin{pmatrix} 0 \\\\ 0 \\end{pmatrix}`}</MB>
+          <p style={{margin:0}}>(ก) ใช้ Conjugate Gradient ทำมือจนได้คำตอบ แสดง λ, X, R, α, D ทุกรอบ · (ข) ตรวจคำตอบด้วยวิธีอื่น · (ค) อธิบายว่าทำไมจบในจำนวนรอบเท่านี้พอดี · (ง) แก้โปรแกรม CG ของการบ้าน 8 ให้ใช้กับระบบนี้ ที่ ε = 0.000001 แล้วตอบจำนวนรอบ</p>
+        </Problem>
+
+        <Problem label="A6 · Linear Spline + ย้อนกลับหลายคำตอบ" solution={
+          <div>
+            <p>(ก) 4 ≤ 4.8 ≤ 6 ⇒ ช่วงที่ 3 · <M>{`m_3=(8-5)/(6-4)=1.5`}</M> ⇒ <M>{`f(4.8)=5+1.5(0.8)=`}</M> <b>6.200000</b></p>
+            <CodeBlock lang="text" title="(ข) ไล่ทุกช่วงที่ 6 อยู่ระหว่าง y สองปลาย" code={`ช่วง 1 [0,2]: 3 → 7   m =  2    x = 0 + (6 − 3)/2    = 1.500000
+ช่วง 2 [2,4]: 7 → 5   m = −1    x = 2 + (6 − 7)/(−1) = 3.000000
+ช่วง 3 [4,6]: 5 → 8   m = 1.5   x = 4 + (6 − 5)/1.5  = 4.666667
+ช่วง 4 [6,8]: 8 → 6   m = −1    x = 6 + (6 − 8)/(−1) = 8.000000`}/>
+            <p>(ข) <b>4 คำตอบ: x = 1.5, 3, 4.666667, 8</b> · ตอบไม่ครบ = ผิด · กับดักคือหยุดที่คำตอบแรกที่เจอ (x = 8 คือจุดปลายตาราง ก็นับ)</p>
+            <PythonRunner code={`# Mock A ข้อ 6 · Linear Spline + หา x ทุกค่าที่ f(x) = yq
+xs = [0, 2, 4, 6, 8]
+ys = [3, 7, 5, 8, 6]
+xq, yq = 4.8, 6
+n = len(xs)
+for i in range(1, n):                            # ① หาช่วงของ xq ก่อน
+    if xs[i - 1] <= xq <= xs[i]:
+        m = (ys[i] - ys[i - 1]) / (xs[i] - xs[i - 1])
+        print(f"f({xq}) = {ys[i - 1] + m * (xq - xs[i - 1]):.6f}  (ช่วงที่ {i})")
+        break
+ans = []
+for i in range(1, n):                            # ② ย้อนกลับ: ไล่ "ทุกช่วง"
+    lo, hi = min(ys[i - 1], ys[i]), max(ys[i - 1], ys[i])
+    if lo <= yq <= hi and ys[i] != ys[i - 1]:
+        m = (ys[i] - ys[i - 1]) / (xs[i] - xs[i - 1])
+        x = xs[i - 1] + (yq - ys[i - 1]) / m
+        if not ans or abs(x - ans[-1]) > 1e-12:  # กันนับ knot ซ้ำ
+            ans.append(x)
+print(f"x ที่ f(x) = {yq}:", [round(v, 6) for v in ans])`} height={400}/>
+          </div>
+        }>
+          <NumTable headers={["x", "0", "2", "4", "6", "8"]} rows={[["y", "3", "7", "5", "8", "6"]]}/>
+          <p style={{margin:0}}>(ก) หา f(4.8) ด้วย Linear Spline · (ข) หา<b>ทุกค่า</b>ของ x ที่ทำให้ f(x) = 6 · (ค) เขียนโปรแกรมที่ทำได้ทั้ง (ก) และ (ข) กับตารางกี่จุดก็ได้</p>
+        </Problem>
+        </TimedExam>
+      </Sect>
+
+      <Sect tag="Mock B" title="Mock ไฟนอล ชุด B · อาทิตย์ 25 ต.ค. · 180 นาที" read="must" min={180}>
+        <TimedExam presets={[60, 120, 180]} label="ชุด B · 6 ข้อ · 180 นาที (ข้อละ ~30 นาที)">
+
+        <Problem label="B1 · หา A⁻¹ ครั้งเดียว ใช้กับหลาย b (มือ + โค้ด)" solution={
+          <div>
+            <CodeBlock lang="text" title="ทำมือ · Gauss-Jordan บน [A | I]" code={`เริ่ม  | 1 2 0 | 1 0 0 |
+      | 2 5 1 | 0 1 0 |
+      | 0 1 3 | 0 0 1 |
+k=1:  R2 ← R2 − 2R1          → | 0 1 1 | −2  1  0 |
+k=2:  R1 ← R1 − 2R2          → | 1 0 −2 |  5 −2  0 |
+      R3 ← R3 − R2           → | 0 0  2 |  2 −1  1 |
+k=3:  R3 ← R3/2              → | 0 0  1 |  1 −0.5 0.5 |
+      R1 ← R1 + 2R3          → | 1 0  0 |  7 −3   1   |
+      R2 ← R2 − R3           → | 0 1  0 | −3  1.5 −0.5 |`}/>
+            <p>(ก) <M>{`A^{-1}=\\begin{pmatrix} 7 & -3 & 1 \\\\ -3 & 1.5 & -0.5 \\\\ 1 & -0.5 & 0.5 \\end{pmatrix}`}</M> · ตรวจ <M>{`AA^{-1}=I`}</M> ด้วยโหมด Matrix · (ข) <b>x = (1, 2, 1)</b> · (ค) <b>x = (4, −0.5, 1.5)</b> = <M>{`A^{-1}b_2`}</M> คูณตรง ๆ ไม่ต้อง elimination ใหม่</p>
+            <PythonRunner code={`# Mock B ข้อ 1 · Matrix Inversion ด้วย Gauss-Jordan (โครง F′)
+A = [[1, 2, 0], [2, 5, 1], [0, 1, 3]]
+bs = [[5, 13, 5], [3, 7, 4]]
+n = len(A)
+M = [A[i][:] + [1.0 if i == j else 0.0 for j in range(n)] for i in range(n)]   # [A|I]
+for k in range(n):
+    p = M[k][k]
+    for j in range(k, 2 * n):
+        M[k][j] /= p
+    for i in range(n):
+        if i != k:
+            f = M[i][k]
+            for j in range(k, 2 * n):
+                M[i][j] -= f * M[k][j]
+Ainv = [row[n:] for row in M]
+print("A^-1 =", [[round(v, 6) for v in r] for r in Ainv])
+for b in bs:                                   # A^-1 ตัวเดียว ใช้ได้กับทุก b
+    x = [sum(Ainv[i][j] * b[j] for j in range(n)) for i in range(n)]
+    print("b =", b, "-> x =", [round(v, 6) for v in x])`} height={380}/>
+          </div>
+        }>
+          <MB>{`A=\\begin{pmatrix} 1 & 2 & 0 \\\\ 2 & 5 & 1 \\\\ 0 & 1 & 3 \\end{pmatrix},\\quad b_1=\\begin{pmatrix} 5 \\\\ 13 \\\\ 5 \\end{pmatrix},\\quad b_2=\\begin{pmatrix} 3 \\\\ 7 \\\\ 4 \\end{pmatrix}`}</MB>
+          <p style={{margin:0}}>(ก) หา <M>{`A^{-1}`}</M> ด้วย Gauss-Jordan แสดงทุกขั้น · (ข) แก้ <M>{`Ax=b_1`}</M> · (ค) แก้ <M>{`Ax=b_2`}</M> โดยใช้ผลจาก (ก) · (ง) เขียนโปรแกรม Matrix Inversion ที่ใช้ได้กับ b กี่ชุดก็ได้</p>
+        </Problem>
+
+        <Problem label="B2 · Cholesky + เมื่อไหร่ใช้ไม่ได้" solution={
+          <div>
+            <CodeBlock lang="text" title="ทำมือ · A = L·Lᵀ" code={`l11 = √9 = 3          l21 = 3/3 = 1          l31 = −6/3 = −2
+l22 = √(5 − 1²) = 2   l32 = (0 − (−2)(1))/2 = 1
+l33 = √(6 − (−2)² − 1²) = √1 = 1
+
+L y = b :  3y1 = −6 → y1 = −2 ;  y1 + 2y2 = −2 → y2 = 0 ;  −2y1 + y2 + y3 = 6 → y3 = 2
+Lᵀx = y :  x3 = 2 ;  2x2 + x3 = 0 → x2 = −1 ;  3x1 + x2 − 2x3 = −2 → x1 = 1`}/>
+            <p>(ก) A สมมาตร (<M>{`a_{ij}=a_{ji}`}</M>) และทุกค่าใต้รากเป็นบวก ⇒ positive definite ⇒ ใช้ได้ · (ข) <M>{`L=\\begin{pmatrix} 3&0&0 \\\\ 1&2&0 \\\\ -2&1&1 \\end{pmatrix}`}</M> · <b>x = (1, −1, 2)</b> · (ค) ถ้า <M>{`a_{33}=4`}</M>: <M>{`l_{33}^2 = 4-4-1=-1 < 0`}</M> ⇒ <b>ถอดรากไม่ได้ = ไม่ positive definite ⇒ ใช้ Cholesky ไม่ได้</b> (ต้องใช้ LU หรือ Gauss แทน)</p>
+            <PythonRunner code={`# Mock B ข้อ 2 · Cholesky (โครง H)
+import math
+A = [[9, 3, -6], [3, 5, 0], [-6, 0, 6]]
+b = [-6, -2, 6]
+n = len(A)
+print("symmetric?", all(A[i][j] == A[j][i] for i in range(n) for j in range(n)))
+L = [[0.0] * n for _ in range(n)]
+for i in range(n):
+    for j in range(i + 1):
+        s = sum(L[i][k] * L[j][k] for k in range(j))
+        if i == j:
+            L[i][j] = math.sqrt(A[i][i] - s)   # ติดลบใต้ราก = ไม่ positive definite
+        else:
+            L[i][j] = (A[i][j] - s) / L[j][j]
+print("L =", L)
+y = [0.0] * n
+for i in range(n):
+    y[i] = (b[i] - sum(L[i][k] * y[k] for k in range(i))) / L[i][i]
+x = [0.0] * n
+for i in range(n - 1, -1, -1):
+    x[i] = (y[i] - sum(L[k][i] * x[k] for k in range(i + 1, n))) / L[i][i]
+print("y =", y)
+print("x =", [round(v, 6) for v in x])`} height={420}/>
+          </div>
+        }>
+          <MB>{`A=\\begin{pmatrix} 9 & 3 & -6 \\\\ 3 & 5 & 0 \\\\ -6 & 0 & 6 \\end{pmatrix},\\quad b=\\begin{pmatrix} -6 \\\\ -2 \\\\ 6 \\end{pmatrix}`}</MB>
+          <p style={{margin:0}}>(ก) ระบบนี้ใช้ Cholesky ได้ไหม เพราะอะไร · (ข) แก้ระบบด้วย Cholesky แสดง L, y, x · (ค) ถ้าเปลี่ยน <M>{`a_{33}`}</M> จาก 6 เป็น 4 ยังใช้ Cholesky ได้ไหม · (ง) เขียนโปรแกรม Cholesky</p>
+        </Problem>
+
+        <Problem label="B3 · Jacobi นับรอบ (มือ + โค้ด)" solution={
+          <div>
+            <CodeBlock lang="text" title="ทำมือ · Jacobi เริ่ม (0, 0, 0) — ใช้ค่ารอบก่อนทั้งชุด" code={`x1 = (6 + x2 − 2x3)/10     x2 = (22 + x1 + x3)/11     x3 = (−10 − 2x1 + x2)/10
+
+k=1: (0.600000, 2.000000, −1.000000)   err = 2.000000
+k=2: (1.000000, 1.963636, −0.920000)   err = 0.400000
+k=3: (0.980364, 2.007273, −1.003636)   err = 0.083636`}/>
+            <p>(ก) dominant: 10 &gt; 3 · 11 &gt; 2 · 10 &gt; 3 ✓ · (ข) ตามตาราง · (ค) <b>หยุดรอบที่ 7</b> ได้ <b>(0.999928, 2.000040, −1.000046)</b> err = 0.000330 · (ง) Gauss-Seidel ใช้ <b>4 รอบ</b> · คำตอบจริง (1, 2, −1)</p>
+            <PythonRunner code={`# Mock B ข้อ 3 · Jacobi (โครง J)
+A = [[10, -1, 2], [-1, 11, -1], [2, -1, 10]]
+b = [6, 22, -10]
+n = len(A)
+tol = 0.001
+x = [0.0] * n
+k, err = 0, 1.0
+while err > tol:
+    k += 1
+    old = x[:]                                 # Jacobi ต้องเก็บค่าเก่าทั้งชุด
+    for i in range(n):
+        s = sum(A[i][j] * old[j] for j in range(n) if j != i)
+        x[i] = (b[i] - s) / A[i][i]
+    err = max(abs(x[i] - old[i]) for i in range(n))
+    print(f"k={k}", [f"{v:.6f}" for v in x], f"err={err:.6f}")
+print("iterations =", k)`} height={380}/>
+          </div>
+        }>
+          <MB>{`\\begin{aligned} 10x_1-x_2+2x_3&=6 \\\\ -x_1+11x_2-x_3&=22 \\\\ 2x_1-x_2+10x_3&=-10 \\end{aligned}`}</MB>
+          <p style={{margin:0}}>(ก) ตรวจว่าลู่เข้าแน่ไหม · (ข) Jacobi ทำมือ 3 รอบ เริ่ม (0, 0, 0) พร้อม error แต่ละรอบ · (ค) เขียนโปรแกรม Jacobi หยุดเมื่อ <M>{`\\max|\\Delta x| < 0.001`}</M> ตอบจำนวนรอบ · (ง) ถ้าเป็น Gauss-Seidel ใช้กี่รอบ</p>
+        </Problem>
+
+        <Problem label="B4 · ราคาคอนโด (ประยุกต์ · Multiple Regression)" solution={
+          <div>
+            <p><b>วิธีที่ต้องใช้:</b> ตัวแปรอิสระ 2 ตัว ⇒ <b>Multiple Linear Regression</b> · คอลัมน์ = [1, x₁, x₂] ⇒ ระบบ 3×3</p>
+            <CodeBlock lang="text" title="ทำมือ · ผลรวม 9 ตัว (n = 6)" code={`Σx1 = 29    Σx2 = 29    Σx1² = 151    Σx1x2 = 140    Σx2² = 203
+Σy = 18.1   Σx1y = 94.0  Σx2y = 81.6
+
+|  6   29   29 | |a0|   | 18.1 |
+| 29  151  140 | |a1| = | 94.0 |
+| 29  140  203 | |a2|   | 81.6 |      → Simul Equation (3 Unknowns)`}/>
+            <p>(ก) <M>{`y = 0.560945 + 0.600122\\,x_1 - 0.092042\\,x_2`}</M> · (ข) พื้นที่ 45 ตร.ม. ⇒ <M>{`x_1 = 4.5`}</M> (หน่วยละ 10 ตร.ม. — <b>กับดักหน่วย</b>) ⇒ <b>2.985370 ล้านบาท</b> · (ค) <M>{`3 = a_0 + 5a_1 + a_2x_2 \\Rightarrow x_2 = 6.101091`}</M> ปี (ใช้ a ค่าเต็ม) · a₂ ติดลบ = ตึกยิ่งเก่ายิ่งถูก — สมเหตุสมผล</p>
+            <PythonRunner code={`# Mock B ข้อ 4 · Multiple Linear Regression (โครง R)
+import numpy as np
+
+def regression(cols, y):
+    k, n = len(cols), len(y)
+    A = [[sum(cols[i][r] * cols[j][r] for r in range(n)) for j in range(k)] for i in range(k)]
+    B = [sum(cols[i][r] * y[r] for r in range(n)) for i in range(k)]
+    print("A =", A)
+    print("B =", [round(v, 6) for v in B])
+    return np.linalg.solve(A, B)
+
+x1 = [3, 4, 5, 6, 4, 7]                 # พื้นที่ (หน่วยละ 10 ตร.ม.)
+x2 = [2, 5, 1, 8, 10, 3]                # อายุอาคาร (ปี)
+y = [2.2, 2.4, 3.5, 3.4, 2.1, 4.5]      # ราคา (ล้านบาท)
+a = regression([[1] * len(y), x1, x2], y)
+for i in range(3):
+    print(f"a{i} = {a[i]:.6f}")
+print(f"ราคา (x1=4.5, x2=3) = {a[0] + a[1] * 4.5 + a[2] * 3:.6f}")`} height={360}/>
+          </div>
+        }>
+          <p>ราคาคอนโด y (ล้านบาท) เทียบกับพื้นที่ x₁ (<b>หน่วยละ 10 ตร.ม.</b>) และอายุอาคาร x₂ (ปี)</p>
+          <NumTable headers={["x₁", "3", "4", "5", "6", "4", "7"]} rows={[["x₂", "2", "5", "1", "8", "10", "3"], ["y", "2.2", "2.4", "3.5", "3.4", "2.1", "4.5"]]}/>
+          <p style={{margin:0}}>(ก) หาสมการ <M>{`y=a_0+a_1x_1+a_2x_2`}</M> แบบ least-squares · (ข) ประมาณราคาห้อง <b>45 ตร.ม.</b> ในตึกอายุ 3 ปี · (ค) มีงบ 3.0 ล้าน อยากได้ห้อง 50 ตร.ม. ต้องเป็นตึกอายุกี่ปี · (ง) เขียนโปรแกรม</p>
+        </Problem>
+
+        <Problem label="B5 · Quadratic Spline 3 จุด (เทียบ Linear Spline)" solution={
+          <div>
+            <CodeBlock lang="text" title="ทำมือ · 2 ช่วง × 3 ตัวแปร = 6 สมการ" code={`f1(x) = a1x² + b1x + c1  บน [1, 3]      f2(x) = a2x² + b2x + c2  บน [3, 4]
+① a1 = 0 (ปิดระบบ ตามชีท)       ② f1(1) = 2 :  b1 + c1 = 2
+③ f1(3) = 6 :  3b1 + c1 = 6      ⇒ b1 = 2, c1 = 0  → f1(x) = 2x
+④ slope ต่อเนื่องที่ x = 3 :  2a1(3) + b1 = 2a2(3) + b2  ⇒  6a2 + b2 = 2
+⑤ f2(3) = 6 :  9a2 + 3b2 + c2 = 6
+⑥ f2(4) = 3 : 16a2 + 4b2 + c2 = 3      ⑥ − ⑤ : 7a2 + b2 = −3
+④ กับ ⑥−⑤ ⇒ a2 = −5, b2 = 32, c2 = −45  → f2(x) = −5x² + 32x − 45`}/>
+            <p>(ก) <b>f(3.5) = f₂(3.5) = 5.750000</b> · Linear Spline ได้ 4.500000 — ต่างกันเพราะ quadratic ต้องรักษา slope ต่อเนื่อง จึง<b>พุ่งเกิน</b>ไปถึง 6.2 ที่ x = 3.2 ก่อนลงมา</p>
+            <p>(ข) f(x) = 5: ช่วง 1 → 2x = 5 ⇒ <b>x = 2.5</b> · ช่วง 2 → <M>{`-5x^2+32x-50=0`}</M> ได้ 2.710102 (<b>ทิ้ง — อยู่นอก [3, 4]</b>) กับ <b>3.689898</b> ⇒ <b>2 คำตอบ: 2.5 และ 3.689898</b></p>
+            <p>(ค) ถ้าเรียงแถวแบบชีท (สมการผ่านจุดทั้ง 4 ก่อน แล้ว slope แล้ว <M>{`a_1=0`}</M> ไว้ท้าย) Gauss ธรรมดาจะเจอ <b>pivot = 0 ที่ขั้นที่ 3</b> แล้วหารศูนย์พัง ⇒ ใส่บรรทัดสลับแถว <code>if M[k][k] == 0</code> ไว้ในโครง E เสมอ (โค้ดข้างล่างเรียง <M>{`a_1=0`}</M> ไว้แถวแรกเลยไม่เจอ แต่ก็ใส่กันไว้)</p>
+            <PythonRunner code={`# Mock B ข้อ 5 · Quadratic Spline 3 จุด (a1 = 0) → ระบบ 6×6 แล้วแก้ด้วยโครง E
+xs = [1, 3, 4]
+ys = [2, 6, 3]
+# ตัวแปร [a1, b1, c1, a2, b2, c2]
+M = [[1, 0, 0, 0, 0, 0, 0],                       # a1 = 0  (ปิดระบบ)
+     [xs[0]**2, xs[0], 1, 0, 0, 0, ys[0]],        # f1(x0) = y0
+     [xs[1]**2, xs[1], 1, 0, 0, 0, ys[1]],        # f1(x1) = y1
+     [2*xs[1], 1, 0, -2*xs[1], -1, 0, 0],         # f1'(x1) = f2'(x1)
+     [0, 0, 0, xs[1]**2, xs[1], 1, ys[1]],        # f2(x1) = y1
+     [0, 0, 0, xs[2]**2, xs[2], 1, ys[2]]]        # f2(x2) = y2
+n = len(M)
+for k in range(n):                                # Gauss + สลับแถวถ้า pivot = 0
+    if M[k][k] == 0:
+        for r in range(k + 1, n):
+            if M[r][k] != 0:
+                M[k], M[r] = M[r], M[k]
+                break
+    for i in range(k + 1, n):
+        f = M[i][k] / M[k][k]
+        for j in range(k, n + 1):
+            M[i][j] -= f * M[k][j]
+c = [0.0] * n
+for i in range(n - 1, -1, -1):
+    c[i] = (M[i][n] - sum(M[i][j] * c[j] for j in range(i + 1, n))) / M[i][i]
+print("a1, b1, c1, a2, b2, c2 =", [round(v, 6) + 0.0 for v in c])
+xq = 3.5
+a, bb, cc = (c[0:3] if xq <= xs[1] else c[3:6])   # เลือกช่วงก่อนแทน
+print(f"f({xq}) = {a * xq**2 + bb * xq + cc:.6f}")`} height={460}/>
+          </div>
+        }>
+          <NumTable headers={["x", "1", "3", "4"]} rows={[["y", "2", "6", "3"]]}/>
+          <p style={{margin:0}}>(ก) หา f(3.5) ด้วย Quadratic Spline (กำหนด <M>{`a_1=0`}</M>) และเทียบกับ Linear Spline · (ข) หาทุกค่า x ที่ f(x) = 5 จาก Quadratic Spline · (ค) เขียนโปรแกรมตั้งระบบ 6 สมการแล้วแก้ด้วย Gauss</p>
+        </Problem>
+
+        <Problem label="B6 · ความเร็วเสียงตามความสูง (เลขใหญ่ · 2 วิธีต้องเท่ากัน)" solution={
+          <div>
+            <p><b>ทางลัด:</b> หาร x ทุกตัวด้วย 1000 ก่อน (1, 3, 4, 6 และ x = 4.5) — <M>{`L_i`}</M> เป็นอัตราส่วนของผลต่าง x จึง<b>ไม่เปลี่ยน</b> · ห้ามหาร y</p>
+            <CodeBlock lang="text" title="ทำมือ · Lagrange 4 จุด ที่ x = 4.5 (หน่วย km)" code={`L0 = (4.5−3)(4.5−4)(4.5−6) / ((1−3)(1−4)(1−6)) =  0.037500
+L1 = (4.5−1)(4.5−4)(4.5−6) / ((3−1)(3−4)(3−6)) = −0.437500
+L2 = (4.5−1)(4.5−3)(4.5−6) / ((4−1)(4−3)(4−6)) =  1.312500
+L3 = (4.5−1)(4.5−3)(4.5−4) / ((6−1)(6−3)(6−4)) =  0.087500
+(ตรวจ: ΣLi = 1 ✓)
+v = 336.4(0.0375) + 328.6(−0.4375) + 324.6(1.3125) + 316.5(0.0875) = 322.583750`}/>
+            <p>(ก) <b>322.583750 m/s</b> · (ข) Newton DD (หน่วย km): <M>{`c = 336.4,\\ -3.9,\\ -0.033333,\\ 0.003333`}</M> ⇒ ได้ <b>322.583750</b> เท่ากันเป๊ะ (พหุนามดีกรี 3 ผ่าน 4 จุดมีตัวเดียว) · (ค) linear ระหว่าง 4000 กับ 6000 = <b>322.575000</b></p>
+            <PythonRunner code={`# Mock B ข้อ 6 · Lagrange n จุด (โครง K2) + Newton DD แบบ recursive
+X = [1000, 3000, 4000, 6000]          # ความสูง (m)
+Y = [336.4, 328.6, 324.6, 316.5]      # ความเร็วเสียง (m/s)
+xq = 4500
+n = len(X)
+p = 0.0
+for i in range(n):
+    Li = 1.0
+    for j in range(n):
+        if j != i:
+            Li *= (xq - X[j]) / (X[i] - X[j])
+    print(f"L{i} = {Li:.6f}")
+    p += Y[i] * Li
+print(f"Lagrange: v({xq}) = {p:.6f}")
+
+def dd(i, j):                          # f[x_i, ..., x_j] แบบ recursive
+    if i == j:
+        return Y[i]
+    return (dd(i + 1, j) - dd(i, j - 1)) / (X[j] - X[i])
+
+q, term = 0.0, 1.0
+for k in range(n):
+    q += dd(0, k) * term
+    term *= (xq - X[k])
+print(f"Newton DD (recursive): v({xq}) = {q:.6f}")`} height={460}/>
+          </div>
+        }>
+          <NumTable headers={["ความสูง x (m)", "1000", "3000", "4000", "6000"]} rows={[["ความเร็วเสียง v (m/s)", "336.4", "328.6", "324.6", "316.5"]]}/>
+          <p style={{margin:0}}>(ก) หา v ที่ความสูง 4500 m ด้วย Lagrange ใช้ทั้ง 4 จุด · (ข) ตรวจด้วย Newton Divided-Difference · (ค) ถ้าใช้ linear interpolation ได้เท่าไหร่ · (ง) เขียนโปรแกรม Lagrange n จุด และ divided difference แบบ <b>recursive</b> (การบ้าน 9)</p>
+        </Problem>
+        </TimedExam>
+      </Sect>
+
+      <Callout kind="warn" title="⬇ ชุดเก่า (Set A–K) — เขียนก่อนรู้ขอบเขตปีนี้ มีเรื่องมิดปนอยู่">
+        <p style={{margin:0}}>ชุดข้างล่างมี Root Finding · Integration · Romberg · Differentiation ซึ่ง<b>ออกมิดไปแล้ว</b> · ถ้าทำ Mock A/B เสร็จแล้วอยากได้โจทย์เพิ่ม ให้เลือกเฉพาะข้อ Linear · Interpolation · Spline · Regression</p>
+      </Callout>
+    </>
+  );
+}
+
 function ExamLesson() {
   return (
     <div>
       <Hero
         kicker="★ · Mock Final Exam"
-        title="ข้อสอบจำลอง · ระดับ Final จริง"
-        lead="โจทย์ผสมทุกบท สไตล์ที่อาจารย์ออกจริง — เน้นเขียนมือ + เขียนโปรแกรม + วิเคราะห์ error"
-        meta={["8 ข้อใหญ่", "ระดับ Final", "เวลาแนะนำ 3 ชั่วโมง", "เฉลยครบ"]}
+        title="ข้อสอบจำลอง · Mock ไฟนอล 2569"
+        lead="ชุด A (เสาร์) กับชุด B (อาทิตย์) ด้านบนคือแนวปีนี้ — การบ้าน 6–11 ที่ถูกดัด ไม่เรียงบท มือ + โค้ด · ชุดเก่าข้างล่างมีเรื่องมิดปน"
+        meta={["Mock A · Mock B แนวปีนี้", "การบ้าน 6–11 ที่ถูกดัด", "180 นาที/ชุด", "เฉลย + โค้ดรันได้"]}
       />
+
+      <FinalMock2569/>
 
       <Sect tag="Set A" title="ชุดที่ 1 — Root Finding & Linear Systems">
         <Problem label="ข้อ 1 (15 คะแนน) · ผสม Bisection + Newton" solution={
