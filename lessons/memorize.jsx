@@ -636,6 +636,13 @@ const REG_CARDS = [
         <Callout kind="danger" title="⚠︎ กับดักอันดับ 1 — ลืมแปลงกลับ">
           <p style={{margin:0}}>fit แล้วได้ <M>{`c_0`}</M> กับ <M>b</M> จากระบบเชิงเส้น · <b><M>{`c_0`}</M> ไม่ใช่คำตอบ</b> ต้อง <M>{`a=e^{c_0}`}</M> ก่อน (ถ้าใช้ log ฐาน 10 ก็ <M>{`a=10^{c_0}`}</M>) · <M>b</M> ใช้ได้ตรง ๆ ไม่ต้องแปลง · <b>ตรวจเสมอ: แทน x ตัวหนึ่งกลับเข้าโมเดลเดิม ต้องได้ y ใกล้ของจริง</b></p>
         </Callout></> },
+  { id: "r5", q: "⭐ [การบ้าน 11] กฎข้อเดียวที่สร้าง normal equations ได้ทั้ง Linear · Poly · Multiple",
+    hint: "คิดว่า f = ผลรวมของ (a × คอลัมน์) — แล้วช่อง (i, j) คืออะไร?",
+    a: <><MB>{`A_{ij}=\\sum_r \\mathrm{col}_i[r]\\,\\mathrm{col}_j[r]\\qquad B_i=\\sum_r \\mathrm{col}_i[r]\\,y_r`}</MB>
+        <p style={{margin:"0 0 6px"}}>แถว i มาจาก <M>{`\\partial E/\\partial a_i=0`}</M> · คอลัมน์: Linear <code>[1, x]</code> · Poly <code>[1, x, x²]</code> (ได้ <M>{`\\sum x^{i+j}`}</M> ขั้นบันได) · Multiple <code>[1, x₁, x₂, x₃]</code> · ช่อง (0,0) = n เสมอ · สมมาตรเสมอ</p>
+        <Callout kind="danger" title="⚠︎ กับดักผิด = 0 ของการบ้าน 11">
+          <p style={{margin:0}}>a₂ = −0.0018431373 ตัวเล็กแต่คูณ x² = 4225 ⇒ ปัดเหลือ −0.001843 แล้วแทน f(65) ได้ 36.461730 แทนที่จะเป็น <b>36.461176</b> · เก็บค่าเต็มในเครื่อง หรือจด a ให้มีเลขนัยสำคัญ ≥ 6 ตัว</p>
+        </Callout></> },
 ];
 
 // ────────── ชุดที่ 10 · กฎห้องสอบ + ค่ากดเครื่อง ──────────
@@ -710,7 +717,7 @@ function MemorizeLesson() {
             [<b>6 · Linear 6 วิธีที่เหลือ ⭐</b>, "8 ใบ", <span><code>การบ้าน6-7.pdf</code> ข้อ 1.3–1.8 · kim ยืนยันว่าอาจารย์รวมใบนี้เข้าไฟนอล</span>],
             [<b>7 · Interpolation ⭐</b>, "6 ใบ", <span><code>uploads/INTERPOLATION I–II.pdf</code> + สรุป Final</span>],
             [<b>8 · Spline ⭐</b>, "4 ใบ", <span><code>uploads/SPLINE_regression.pdf</code></span>],
-            [<b>9 · Regression ⭐</b>, "4 ใบ", <span><code>uploads/SPLINE_regression.pdf</code> + <code>MultipleLinear_Integration.pdf</code></span>],
+            [<b>9 · Regression ⭐</b>, "5 ใบ", <span><code>uploads/SPLINE_regression.pdf</code> + <code>MultipleLinear_Integration.pdf</code> + การบ้าน 11</span>],
             ["10 · กฎห้องสอบ", "4 ใบ", "ถอดจากไฟล์เสียงคาบ 5 + 8 ส.ค."],
           ]}
         />
@@ -731,7 +738,7 @@ function MemorizeLesson() {
           headers={["ลำดับ", "ท่องชุดไหน", "ทำไมอยู่ตรงนี้"]}
           rows={[
             ["1", <span><b>ชุดที่ 6</b> · Linear 6 วิธีที่เหลือ</span>, <span>การบ้าน 6-7 สั่งครบ ⇒ เป็นของที่<b>ออกแน่ที่สุด</b> · ใบ n5 (Jacobi vs GS) กับ n6 (กับดักลู่ออก) คุ้มที่สุด</span>],
-            ["2", <span><b>ชุดที่ 9</b> · Regression</span>, <span>สูตร <M>{`a_1,a_0`}</M> ท่องได้ใน 10 นาที แล้วได้ทั้งข้อทำมือและข้อโค้ด · ใบ r4 Linearization คือจุดที่ข้อสอบชอบซ่อน</span>],
+            ["2", <span><b>ชุดที่ 9</b> · Regression</span>, <span>สูตร <M>{`a_1,a_0`}</M> ท่องได้ใน 10 นาที แล้วได้ทั้งข้อทำมือและข้อโค้ด · ใบ r5 คือกฎเดียวที่ตอบการบ้าน 11 ได้ทั้งใบ</span>],
             ["3", <span><b>ชุดที่ 7</b> · Interpolation</span>, <span>ใบ p3 มี <M>h</M> — ตัวที่ทำให้พลาดข้อ Diff จรวดในมิดเทอม</span>],
             ["4", <span><b>ชุดที่ 8</b> · Spline</span>, <span>ใบ s1 (หา segment ก่อน) + s3 (นับตัวแปร 3n / 4n) พอสำหรับข้อสอบแล้ว</span>],
             ["5", <span><b>ชุดที่ 10</b> · กฎห้องสอบ</span>, "กันเสียคะแนนฟรีในข้อที่ทำถูกแล้ว — ห้ามเศษส่วน · ผิด=0 · แทนกลับตรวจ"],
@@ -791,7 +798,7 @@ function MemorizeLesson() {
         subtitle="ใบ s1 สำคัญที่สุด: ต้องหา segment ก่อนแทนสูตรเสมอ — ตระกูลเดียวกับข้อ “เลือกช่วง bisection” ที่พลาดในมิด" cards={SPLINE_CARDS}/>
 
       <Deck id="reg" title="ชุดที่ 9 · Least-Squares Regression"
-        subtitle="ใบ r1 (สูตร a₁ a₀) กับ r4 (Linearization) คือสองใบที่ออกสอบแน่ — r4 คือจุดที่ข้อสอบชอบซ่อน" cards={REG_CARDS}/>
+        subtitle="ใบ r1 (สูตร a₁ a₀) กับ r5 (กฎสร้าง normal equations ของการบ้าน 11) คือแกน · r4 Linearization ไม่อยู่ในใบการบ้าน 11 (มีในชีทปีที่แล้ว) ⇒ ทำทีหลัง" cards={REG_CARDS}/>
 
       <Deck id="rule" title="ชุดที่ 10 · กฎห้องสอบ + ค่ากดเครื่อง"
         subtitle="ชุดนี้ไม่ใช่เนื้อหา แต่เป็นตัวกันเสียคะแนนฟรี — ท่องพร้อมกับสูตร" cards={RULE_CARDS}/>

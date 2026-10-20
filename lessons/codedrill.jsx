@@ -21,7 +21,7 @@ function CodeDrillLesson() {
           result: "4",
           note: "Linear 7 วิธีที่ออกไฟนอล ใช้แค่ 4 โครงนี้ — ที่เหลือคือเปลี่ยนไม่กี่บรรทัด",
         }}
-        meta={["6 โครงมิด + 5 โครงไฟนอล", "เติมช่องว่าง 18 ข้อ", "กระดาษเปล่า 9 ข้อ", "ตาราง JS ↔ Python"]}
+        meta={["6 โครงมิด + 5 โครงไฟนอล", "เติมช่องว่าง 18 ข้อ", "กระดาษเปล่า 12 ข้อ", "ตาราง JS ↔ Python"]}
       />
 
       <CodeRules/>
@@ -37,6 +37,23 @@ function CodeDrillLesson() {
           ]}
         />
         <p style={{margin:"8px 0 0"}}><b>ข่าวดี:</b> โปรแกรมทุกตัวที่ออกสอบย่อเหลือ <b>6 โครง</b> ที่แชร์กันได้ — ไม่ต้องท่อง 12 โปรแกรมแยกกัน</p>
+      </Callout>
+
+      <Callout kind="good" title="🌳 ไฟนอลทั้งหมด = 3 ตระกูลโค้ด — จำแม่ให้แน่น ลูกคือแก้ไม่กี่บรรทัด">
+        <NumTable
+          headers={["ตระกูล", "โครง", "ใช้กับ (การบ้าน)", "ต่างจากแม่ตรงไหน"]}
+          rows={[
+            [<b>① แก้ระบบตรง</b>, <b>E · Gauss</b>, "Gauss Elimination (6-7 ข้อ 1.2)", <b>แม่ของตระกูล — ต้องเขียนได้ก่อนตัวอื่น</b>],
+            ["", "F · F′", "Gauss-Jordan · Matrix Inversion (1.3–1.4)", "E + หารแถว pivot ให้เป็น 1 + กำจัดทุกแถว · F′ ต่อ [A|I]"],
+            ["", "G · H", "LU · Cholesky (1.5–1.6)", "E ที่เก็บตัวคูณไว้ใน L + forward/back substitution ชุดเดียวกัน"],
+            ["", <b>R · Regression</b>, "Linear · Poly · Multiple (การบ้าน 11)", "สร้าง A[i][j] = Σcolᵢ·colⱼ แล้วโยนเข้า E (หรือ solve) — P12"],
+            ["", "Spline กำลัง 2–3", "Quadratic / Cubic Spline (สไลด์ 17–18)", "ตั้งระบบสมการจากเงื่อนไขต่อเนื่อง แล้วโยนเข้า E"],
+            [<b>② วนจนหยุดด้วย tolerance</b>, <b>J · Jacobi / GS</b>, "Jacobi · Gauss-Seidel (1.7–1.8)", <span>ต่างกันบรรทัดเดียว · <code>while err &gt; tol</code> ห้าม for นับรอบ</span>],
+            ["", "CG", "Conjugate Gradient (การบ้าน 8)", "while + ε เหมือน J แต่เดินด้วยเวกเตอร์ R, D — P11"],
+            [<b>③ สูตรตรง ไม่มีระบบสมการ</b>, "K1 · K2 · K4", "Newton DD (9) · Lagrange (10) · Linear Spline (10)", "สั้นสุด · DD ลูปถอยหลัง · Lagrange ข้าม j = i · Spline หาช่วงก่อน"],
+          ]}
+        />
+        <p style={{margin:"8px 0 0"}}>ลำดับท่องที่คุ้มสุด: <b>R → K1/K2/K4 → E → F/G/H → J → CG</b> (ตามแผน 6 วันใน <a href="#plan">#plan</a>) · ทุกเช้าเขียนโครงของเมื่อวานใหม่บนกระดาษเปล่าก่อนเริ่มเรื่องใหม่</p>
       </Callout>
 
       {/* ═══════════ 1 · 6 โครง ═══════════ */}
@@ -758,7 +775,7 @@ a0 = Sy/n - a1*Sx/n`}/>
       </Sect>
 
       {/* ═══════════ 3 · กระดาษเปล่า ═══════════ */}
-      <Sect tag="3" title="ดริลกระดาษเปล่า · 11 ข้อ — เขียนทั้งโปรแกรมโดยไม่ดูอะไรเลย (P6–P11 = ของไฟนอล)">
+      <Sect tag="3" title="ดริลกระดาษเปล่า · 12 ข้อ — เขียนทั้งโปรแกรมโดยไม่ดูอะไรเลย (P5–P12 = ของไฟนอล)">
         <Callout kind="danger" title="กติกาของดริลนี้ — ทำแบบนี้เท่านั้นถึงจะได้ผล">
           <ol style={{margin:0, paddingLeft:20}}>
             <li>ปิดหน้าจอ หยิบ<b>กระดาษเปล่ากับปากกา</b> (เขียนบนคอมไม่นับ เพราะในห้องสอบไม่มี autocomplete)</li>
@@ -768,7 +785,7 @@ a0 = Sy/n - a1*Sx/n`}/>
           </ol>
         </Callout>
 
-        <TimedExam presets={[110, 60, 30]} label="11 ข้อ · แนะนำ 110 นาที (ข้อละ 10 นาที)">
+        <TimedExam presets={[120, 60, 30]} label="12 ข้อ · แนะนำ 120 นาที (ข้อละ 10 นาที)">
 
         <Problem label="P1 · Bisection เต็มรูปแบบ" solution={
           <div>
@@ -1259,6 +1276,65 @@ print("X =", [round(v, 6) for v in X])`} height={560}/>
           </div>
         }>
           ระบบ 4×4 ของการบ้าน 8 · <M>{`X^{(0)}=0`}</M> · <M>{`\\varepsilon = 0.000001`}</M> — เขียนโปรแกรม CG <b>ไม่ใช้ numpy</b> พิมพ์ λ และ error ทุกรอบ แล้วตอบว่าต้องทำกี่รอบ
+        </Problem>
+        <Problem label="P12 · [การบ้าน 11] Regression ทั้งใบด้วยฟังก์ชันเดียว — Linear · Poly m=2 · Multiple ⭐" solution={
+          <div>
+            <PythonRunner code={`# การบ้าน 11 · Least-Squares Regression — ฟังก์ชันเดียวตอบได้ทั้ง 3 ข้อ
+import numpy as np
+
+def regression(cols, y):
+    k = len(cols)                          # จำนวน a ที่ต้องหา
+    n = len(y)                             # จำนวนจุด — ห้ามฮาร์ดโค้ด 9
+    A = [[0.0] * k for _ in range(k)]
+    B = [0.0] * k
+    for i in range(k):                     # ① normal equations (แถว i = diff เทียบ a_i)
+        for j in range(k):
+            A[i][j] = sum(cols[i][r] * cols[j][r] for r in range(n))
+        B[i] = sum(cols[i][r] * y[r] for r in range(n))
+    print("A =", A)
+    print("B =", B)
+    a = np.linalg.solve(A, B)              # ② แก้ระบบ (หรือ gauss(A, B) ของโครง E)
+    for i in range(k):
+        print(f"a{i} = {a[i]:.10f}")
+    return a
+
+# ── ข้อ 1 · Linear  f(x) = a0 + a1·x  ⇒ คอลัมน์ [1, x]
+x = [10, 15, 20, 30, 40, 50, 60, 70, 80]
+y = [5, 9, 15, 18, 22, 30, 35, 38, 43]
+n = len(x)
+print("ข้อ 1 · Linear")
+a = regression([[1] * n, x], y)
+print(f"f(65) = {a[0] + a[1] * 65:.6f}")
+
+# ── ข้อ 2 · Polynomial m = 2  ⇒ คอลัมน์ [x^0, x^1, x^2]
+m = 2
+print()
+print("ข้อ 2 · Polynomial m = 2")
+a = regression([[xi ** p for xi in x] for p in range(m + 1)], y)
+print(f"f(65) = {sum(a[p] * 65 ** p for p in range(m + 1)):.6f}")
+
+# ── ข้อ 3 · Multiple  ⇒ คอลัมน์ [1, x1, x2, x3]
+x1 = [1, 0, 2, 3, 4, 2, 1]
+x2 = [0, 1, 4, 2, 1, 3, 6]
+x3 = [1, 3, 1, 2, 5, 3, 4]
+Y  = [4, -5, -6, 0, -1, -7, -20]
+print()
+print("ข้อ 3 · Multiple")
+a = regression([[1] * len(Y), x1, x2, x3], Y)`} height={620}/>
+            <Callout kind="tip" title="เช็คลิสต์ให้คะแนนตัวเอง (6 ข้อ)">
+              <ul style={{margin:0, paddingLeft:18}}>
+                <li><code>k = len(cols)</code> · <code>n = len(y)</code> — <b>ไม่ฮาร์ดโค้ด 9</b> และไม่มี <code>A[0][0] = 9</code> แบบโค้ดชีทปีที่แล้ว</li>
+                <li>ลูปซ้อน i, j: <code>A[i][j] = Σ cols[i][r]·cols[j][r]</code></li>
+                <li><code>B[i] = Σ cols[i][r]·y[r]</code> — อยู่ในลูป i แต่<b>นอก</b>ลูป j</li>
+                <li>คอลัมน์ถูก 3 แบบ: <code>[[1]*n, x]</code> · <code>[[xi**p for xi in x] for p in range(m+1)]</code> · <code>[[1]*n, x1, x2, x3]</code></li>
+                <li>พิมพ์ A, B และ a ทุกตัว · f(65) คิดจาก a <b>ค่าเต็ม</b> ไม่ใช่ค่าที่ปัด</li>
+                <li>คำตอบ: f(65) = <b>36.240000</b> · a₂ = <b>−0.0018431373</b> · Multiple = <b>4, 2, −3, −2</b></li>
+              </ul>
+            </Callout>
+            <p className="muted" style={{fontSize:'0.778rem', margin:"6px 0 0"}}>ถ้าข้อสอบห้ามใช้ library: แทน <code>np.linalg.solve(A, B)</code> ด้วย <code>gauss(A, B)</code> จากโครง E (P5) · ชีทปีที่แล้วใช้ <code>math.inv</code> ของ mathjs (ใช้ library ได้ — อ้างจากชีท ไม่ใช่คำอาจารย์) · ทำมือเต็มอยู่ที่ <a href="#regression">#regression</a> หมวด HW11</p>
+          </div>
+        }>
+          การบ้าน 11 ทั้งใบ: เขียนฟังก์ชัน <code>regression(cols, y)</code> <b>ตัวเดียว</b> ที่สร้าง normal equations จากคอลัมน์ แล้วเรียก 3 ครั้ง — (1) Linear + f(65) (2) Polynomial m = 2 (3) Multiple x₁, x₂, x₃ · ข้อมูลตามใบการบ้าน 11
         </Problem>
         </TimedExam>
       </Sect>
