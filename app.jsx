@@ -10,7 +10,7 @@ const smoothScrollTo = (el) => {
 
 const CHAPTERS = [
   { group: "① เริ่มที่นี่", items: [
-    { id: "plan", num: "🗓", title: "แผนเตรียมไฟนอล — 7 สัปดาห์", comp: "PlanLesson" },
+    { id: "plan", num: "🗓", title: "แผนเตรียมไฟนอล — 6 วันสุดท้าย", comp: "PlanLesson" },
     { id: "intro", num: "00", title: "ปฐมนิเทศ · วิธีใช้เว็บนี้", comp: "IntroLesson" },
   ]},
   { group: "② ออกไฟนอล — 5 บทนี้ ⬅ เริ่มที่นี่", items: [
