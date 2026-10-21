@@ -1227,6 +1227,7 @@ for name, C in [("recursive", C1), ("top-down ", C2), ("bottom-up", C3)]:
           </div>
         }>
           ใช้ตารางการบ้าน 9 (x = 0,2,4,6,8) หา <M>{`f(4.2)`}</M> ด้วย polynomial 5 จุด โดยเขียน divided difference <b>3 แบบ</b> ในไฟล์เดียว แล้วพิมพ์ผลทั้ง 3 ให้เห็นว่าเท่ากัน
+          <span style={{display:"block", marginTop:6, color:"var(--yellow)"}}>📌 อาจารย์โพสต์สั่งเอง 19 ก.ย.: <i>&ldquo;การบ้าน 9 มีการเขียน code นะครับ 1. เขียนแบบ recursive 2. เขียนแบบ dynamic top down 3. เขียนแบบ dynamic bottom up (ตารางตาม sheet)&rdquo;</i> — ห้ามข้ามแบบไหน</span>
         </Problem>
 
         <Problem label="P11 · [การบ้าน 8] Conjugate Gradient — หยุดด้วย ε แล้วนับรอบ" solution={

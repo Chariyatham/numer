@@ -5,6 +5,8 @@
 //   • เวลาที่มี ณ 20 ต.ค.: kim ตอบว่า "เต็มที่เลย" ⇒ วางไว้ ~8 ชม./วัน (คืนวันอังคาร ~3–4 ชม.)
 //   • ขอบเขต = ใบการบ้าน 6-7 · 8 · 9 · 10 · 11 + Quadratic/Cubic Spline จากสไลด์ Interpolation+Spline หน้า 17–18
 //     (kim ยืนยัน 20 ต.ค. ว่าอยู่ในเอกสาร "เขียนเล็ก ๆ" แต่ไม่มีใบการบ้าน ⇒ ทำหลังสุด)
+//   • โพสต์ Google Classroom ของอาจารย์ (kim แปะมา 21 ต.ค.): 24 มิ.ย. "F score < 40 (39, 39.2, 39.5)" = ไม่ปัดขึ้น ·
+//     9 ก.ย. สถิติมิด mean 13.46 / SD 9.17 / max 38.22 · 19 ก.ย. การบ้าน 9 ต้องเขียน code 3 แบบ (ห้ามอยู่ในรายการตัด)
 //   ⛔ ห้ามเขียนว่าไฟนอล = 6 ข้อ×15 / 1 ข้อทำไม่ได้ เป็นข้อเท็จจริง — นั่นคือบรีฟ *ก่อนมิด* (transcripts/w6.txt)
 //      kim สั่ง 12 ก.ย.: ฟอร์แมตไฟนอลอาจไม่เหมือนมิด · เป้าให้พูดเป็น % · ขอบเขตยึดใบการบ้าน
 // เปลี่ยน key เป็น final-v3 เพราะรายการข้อเปลี่ยนหมด
@@ -27,7 +29,7 @@ const PLAN = [
     items: [
       ["d1a", <span>เช้า 30 นาที: เขียนโครง R ใหม่จากความจำ + <a href="#memo">#memo</a> 10 นาที</span>],
       ["d1b", <span>🟥 <a href="#interp">#interp</a> หมวด HW9 · Newton DD ที่ <b>x = 4.2</b> — ตารางสามเหลี่ยมทำมือ (linear / quadratic / polynomial)</span>],
-      ["d1c", <span>⭐ โค้ด DD แบบ <b>bottom-up (ตาราง)</b> ก่อน → แล้วค่อย recursive / top-down (<a href="#code">#code</a> P10)</span>],
+      ["d1c", <span>⭐ โค้ด DD <b>ต้องเขียนได้ครบ 3 แบบ</b> (อาจารย์โพสต์สั่งเอง 19 ก.ย.): <b>bottom-up (ตาราง)</b> ก่อน → recursive → top-down = recursive + memo (<a href="#code">#code</a> P10)</span>],
       ["d1d", <span>🟥 <a href="#interp">#interp</a> หมวด HW10 · Lagrange ที่ <b>x = 42,285</b> + จัดรูป L₀, L₁ · ตรวจว่าได้เท่ากับ DD</span>],
       ["d1e", <span>⭐ โค้ด Lagrange รับ <b>n จุด</b> (โครง K2 · จุดตาย <code>if j != i</code>)</span>],
       ["d1f", <span>🟥 <a href="#spline">#spline</a> หมวด HW10 · Linear Spline ที่ x = 4.5 + โค้ด (โครง K4 · <b>หาช่วงก่อนแทนสูตร</b>) + โจทย์พลิก S-A, S-B</span>],
@@ -191,7 +193,7 @@ function PlanLesson() {
           rows={[
             [<b>Linear · 7 วิธี</b>, "Gauss Elimination · Gauss-Jordan · Matrix Inversion · LU · Cholesky · Jacobi · Gauss-Seidel (Cramer ออกมิดไปแล้ว)", <span>การบ้าน 6-7 (สั่ง 8 วิธี)</span>],
             ["Conjugate Gradient", "โค้ด 4×4 ε = 1e-6 · f(x₁,x₂) + contour · พิสูจน์ λ, α", "การบ้าน 8"],
-            ["Newton Divided-Difference", "x = 4.2 (เลขท้ายรหัส 2) · โค้ด 3 แบบ: recursive / DP top-down / DP bottom-up", "การบ้าน 9"],
+            ["Newton Divided-Difference", "x = 4.2 (เลขท้ายรหัส 2) · โค้ด 3 แบบ: recursive / DP top-down / DP bottom-up", "การบ้าน 9 + โพสต์อาจารย์ 19 ก.ย."],
             ["Lagrange + Linear Spline", "Lagrange linear/quad/poly ที่ x = 42,285 + โค้ด n จุด · Linear Spline ที่ x = 4.5 + โค้ด", "การบ้าน 10"],
             [<b>Least-Squares Regression</b>, "Linear + f(65) · Polynomial m = 2 · Multiple (x₁, x₂, x₃) — ทุกข้อมีเขียน code", <span>การบ้าน 11 (20 ต.ค.)</span>],
             ["Quadratic / Cubic Spline", <span>อยู่ในสไลด์ Interpolation + Spline หน้า 17–18 (ตัวหนังสือเล็ก) · <b>ไม่มีใบการบ้าน</b></span>, <span style={{color:"var(--yellow)"}}>kim ยืนยัน 20 ต.ค. ⇒ อยู่ในขอบเขต แต่ทำหลังสุด</span>],
@@ -209,7 +211,7 @@ function PlanLesson() {
           headers={["เป้า", "ต้องได้จากไฟนอล", "= กี่ % ของไฟนอล", "รวมทั้งวิชา (/90)"]}
           highlight={1}
           rows={[
-            [<b>D — ผ่าน (เส้นตาย)</b>, <b>22.67 / 50</b>, <b>45.3%</b>, "40.00 พอดี"],
+            [<b>D — ผ่าน (เส้นตาย)</b>, <b>22.67 / 50</b>, <b>45.3%</b>, <span>40.00 พอดี · <b>39.5 ก็ยัง F</b> (อาจารย์เขียนเอง ไม่ปัดขึ้น)</span>],
             [<span><b>ผ่านชัวร์</b> ← เป้าของแผนนี้</span>, <b>27.50 / 50</b>, <b>55%</b>, <span>44.83 — เผื่อพลาดได้ ~10% (≈4.8 คะแนน)</span>],
             [<span className="muted">C</span>, "32.67 / 50", "65.3%", "50.00 พอดี"],
             [<span className="muted">ทำได้ 1 ใน 3</span>, "16.67 / 50", "33%", <span style={{color:"var(--red)"}}>34.00 — <b>ไม่ผ่าน</b></span>],
@@ -258,9 +260,8 @@ function PlanLesson() {
             ["2", "Cubic Spline (d3f)", "ระบบสมการใหญ่ กินเวลามาก · ไม่มีใบการบ้าน"],
             ["3", "Quadratic Spline (d3e)", "ไม่มีใบการบ้าน — แต่ห้ามตัด Linear Spline"],
             ["4", "Cholesky ทำมือ (d2e)", "เก็บโครงโค้ด H ไว้ถ้าทำได้ (ใช้ substitution ชุดเดียวกับ LU)"],
-            ["5", "DD แบบ recursive / top-down", "เก็บแบบ bottom-up (ตาราง) ไว้ — ตรงกับวิธีทำมือที่สุด"],
             [<b>ห้ามตัด</b>, <b>โครง E (Gauss) · J (Jacobi/GS) · R (Regression)</b>, "E เป็นแม่ของ Jordan / Inversion / LU / Spline · J คือที่กฎ tolerance ใช้จริง · R ตอบการบ้าน 11 ได้ทั้งใบ"],
-            [<b>ห้ามตัด</b>, <b>Newton DD + Lagrange + Linear Spline</b>, "การบ้าน 9–10 สั่งตรง ๆ ทั้งมือและโค้ด"],
+            [<b>ห้ามตัด</b>, <b>Newton DD (โค้ดครบ 3 แบบ) + Lagrange + Linear Spline</b>, "การบ้าน 9–10 สั่งตรง ๆ ทั้งมือและโค้ด · โค้ด DD 3 แบบ อาจารย์โพสต์สั่งเอง 19 ก.ย. — top-down คือ recursive + memo อีก 3 บรรทัด"],
             [<b>ห้ามตัด</b>, <b>Mock อย่างน้อย 1 รอบ (d4a)</b>, "ไม่งั้นจะเจอ “ทำไม่ทัน” ครั้งแรกในห้องสอบจริง"],
             [<b>ห้ามตัด</b>, <b>การนอน</b>, "อ่านเต็มเวลา 6 วันติด ถ้าอดนอนจะพลาดเลขง่าย ๆ ในห้อง — และผิด = 0"],
           ]}
@@ -277,6 +278,9 @@ function PlanLesson() {
             ["ข้อมูลการบ้าน 11 = ชุดเดียวกับชีทสรุป Final ปีที่แล้วหน้า 19", "เทียบตัวเลขแล้ว ผลตรงกันทุกตัว", "สูง"],
             ["ตรวจแค่คำตอบ · ผิด = 0 · ห้ามเศษส่วน · “แสดงวิธีทำ” ต้องเขียนวิธี", "kim + ไฟล์เสียงคาบ 5 ส.ค. (transcripts/w6.txt)", "สูง"],
             [<span className="muted">“ครึ่งโค้ดครึ่งมือ”</span>, <span className="muted">บรีฟ<b>ก่อนมิด</b> (ไฟล์เสียงเดียวกัน)</span>, <span style={{color:"var(--yellow)"}}>⛔ ไม่รับประกันว่าไฟนอลจะเหมือน — อย่าตรึง</span>],
+            ["F = คะแนนรวม < 40 · ไม่ปัดขึ้น (39 · 39.2 · 39.5 ก็ F)", "โพสต์ Classroom ของอาจารย์ 24 มิ.ย.", "สูงสุด — อาจารย์เขียนเอง"],
+            ["สถิติมิดทั้งห้อง: เฉลี่ย 13.46 · SD 9.17 · ต่ำสุด 0 · สูงสุด 38.22 (เต็ม 40)", "โพสต์ Classroom ของอาจารย์ 9 ก.ย.", "สูงสุด"],
+            ["โค้ด DD ต้องได้ 3 แบบ: recursive · DP top-down · DP bottom-up (ตารางตามชีท)", "โพสต์ Classroom ของอาจารย์ 19 ก.ย.", "สูงสุด — อาจารย์เขียนเอง"],
             ["ลูปต้องหยุดด้วย tolerance ไม่ใช่จำนวนรอบ", "kim เล่าเหตุที่สอบท้ายคาบได้ 1 เต็ม 6", "สูง"],
             ["อ่านเต็มเวลา · แทบยังไม่เริ่ม ณ 20 ต.ค.", "kim (20 ต.ค.)", "สูงสุด"],
           ]}
