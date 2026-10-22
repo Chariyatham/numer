@@ -287,7 +287,7 @@ for i in range(1, n + 1):
 #          f(4.5) = 7.230469`}/>
       </Sect>
 
-      <EasyNext href="#e-axb" label="④ ระบบสมการ Ax = b (แบบตรง)" ready={false}/>
+      <EasyNext href="#e-axb" label="④ ระบบสมการ Ax = b (แบบตรง)"/>
     </div>
   );
 }

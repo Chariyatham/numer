@@ -16,6 +16,7 @@ const CHAPTERS = [
     { id: "e-reg", num: "①", title: "Regression · หาเส้นที่ใกล้ข้อมูล", comp: "EasyRegressionLesson" },
     { id: "e-interp", num: "②", title: "Interpolation · เส้นผ่านทุกจุด (DD · Lagrange)", comp: "EasyInterpLesson" },
     { id: "e-spline", num: "③", title: "Spline · ต่อเส้นทีละช่วง", comp: "EasySplineLesson" },
+    { id: "e-axb", num: "④", title: "Ax = b แบบตรง · Gauss → Jordan → Inverse → LU → Cholesky", comp: "EasyAxbLesson" },
   ]},
   { group: "② ซ้อม", items: [
     { id: "exam", num: "★", title: "Mock ไฟนอล (ชุด A · B)", comp: "ExamLesson" },
