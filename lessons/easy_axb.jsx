@@ -438,7 +438,7 @@ print([f"{v:.6f}" for v in x])
 # ผลลัพธ์: ['-1.000000', '2.000000', '1.000000']`}/>
       </Sect>
 
-      <EasyNext href="#e-iter" label="⑤ Ax = b แบบวนซ้ำ (Jacobi · Gauss-Seidel · CG)" ready={false}/>
+      <EasyNext href="#e-iter" label="⑤ Ax = b แบบวนซ้ำ (Jacobi · Gauss-Seidel · CG)"/>
     </div>
   );
 }

@@ -10,13 +10,13 @@ const smoothScrollTo = (el) => {
 
 const CHAPTERS = [
   // 23 ต.ค. 2569: kim เพิ่งเริ่มอ่าน + งง "บทไหนทำอะไร" ⇒ กลุ่ม ① = หน้าอ่านง่าย อ่านไล่จากบนลงล่าง (แทนเส้นทาง 40 ขั้น + แถบลอย)
-  // หน้าใหม่เพิ่มเข้ากลุ่ม ① ทีละหน้าเมื่อเขียนเสร็จ
   { group: "① อ่านตามลำดับนี้", items: [
     { id: "start", num: "▶", title: "เริ่มที่นี่ · 4 บทคืออะไร + อ่าน 3 วัน", comp: "EasyStartLesson" },
     { id: "e-reg", num: "①", title: "Regression · หาเส้นที่ใกล้ข้อมูล", comp: "EasyRegressionLesson" },
     { id: "e-interp", num: "②", title: "Interpolation · เส้นผ่านทุกจุด (DD · Lagrange)", comp: "EasyInterpLesson" },
     { id: "e-spline", num: "③", title: "Spline · ต่อเส้นทีละช่วง", comp: "EasySplineLesson" },
     { id: "e-axb", num: "④", title: "Ax = b แบบตรง · Gauss → Jordan → Inverse → LU → Cholesky", comp: "EasyAxbLesson" },
+    { id: "e-iter", num: "⑤", title: "Ax = b แบบวนซ้ำ · Jacobi · Gauss-Seidel · CG", comp: "EasyIterLesson" },
   ]},
   { group: "② ซ้อม", items: [
     { id: "exam", num: "★", title: "Mock ไฟนอล (ชุด A · B)", comp: "ExamLesson" },
