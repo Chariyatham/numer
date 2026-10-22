@@ -773,7 +773,40 @@ function FastPath({ minutes, must, skip, check }) {
   );
 }
 
+// ===== หน้าอ่านง่าย (เพิ่ม 23 ต.ค.) — เฉลยแบบเขียนในกระดาษสอบ ไม่มีปุ่มให้กด =====
+// kim: "วิธีทำให้อ่านง่าย ทีละขั้นตอนเหมือนเขียนในกระดาษสอบ" ⇒ ทุกขั้นแสดงพร้อมกัน สูตรเป็น KaTeX จริง ไม่ใช่ตัวหนังสือ monospace
+function Paper({ title, children }) {
+  return (
+    <div className="paper">
+      {title && <div className="paper-title">✍️ {title}</div>}
+      {children}
+    </div>
+  );
+}
+function PStep({ n, title, children }) {
+  return (
+    <div className="pstep">
+      <div className="pstep-head"><span className="pstep-n">ขั้นที่ {n}</span>{title}</div>
+      <div className="pstep-body">{children}</div>
+    </div>
+  );
+}
+function PAns({ children }) {
+  return <div className="paper-ans"><b>ตอบ</b>{children}</div>;
+}
+// ลิงก์ไปหน้าถัดไปท้ายหน้าอ่านง่าย · ready=false ⇒ หน้านั้นยังไม่ขึ้นเว็บ
+function EasyNext({ href, label, ready = true }) {
+  return (
+    <div className="easy-next">
+      {ready
+        ? <a className="btn primary" href={href}>อ่านต่อ: {label} ▶</a>
+        : <span className="muted">หน้าถัดไป ({label}) กำลังตามมา — รีเฟรชหน้าเว็บอีกครั้งภายหลัง</span>}
+    </div>
+  );
+}
+
 Object.assign(window, {
+  Paper, PStep, PAns, EasyNext,
   TeX, M, MB, useKaTeXReady, FastPath,
   CodeBlock, PythonRunner, loadPyodide,
   Problem, TimedExam, Sect, Callout, Hero, ConvergenceStrip, NumTable, Formula,

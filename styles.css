@@ -272,6 +272,45 @@ li::marker { color: var(--text-faint); }
 .callout.good { border-color: var(--green); background: rgba(131,193,103,0.06); }
 .callout.tip  { border-color: var(--yellow); background: rgba(255,214,107,0.06); }
 .callout-title { font-weight: 600; margin-bottom: 4px; }
+
+/* ---------------- หน้าอ่านง่าย · กระดาษคำตอบ (Paper / PStep / PAns) ---------------- */
+.paper {
+  background: var(--paper-soft);
+  border: 1px solid var(--border-strong);
+  border-left: 3px solid var(--green);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin: 16px 0;
+}
+.paper-title { font-weight: 600; color: var(--green); margin-bottom: 8px; }
+.pstep { padding: 12px 0; border-top: 1px dashed var(--border-strong); }
+.paper-title + .pstep, .paper > .pstep:first-child { border-top: 0; padding-top: 4px; }
+.pstep-head { margin-bottom: 6px; line-height: 1.7; }
+.pstep-n {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--bg);
+  background: var(--blue);
+  border-radius: 4px;
+  padding: 1px 8px;
+  margin-right: 8px;
+  vertical-align: 1px;
+}
+.pstep-body > p { margin: 6px 0; }
+.paper .math-block { background: transparent; border: 0; border-radius: 0; padding: 4px 0 4px 14px; margin: 4px 0; }
+.paper .katex-display > .katex { text-align: left; }
+.paper-ans {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: rgba(131,193,103,0.10);
+  border: 1px solid var(--green-dim);
+  border-radius: 8px;
+}
+.paper-ans > b:first-child { color: var(--green); margin-right: 10px; }
+.easy-next { margin: 28px 0 8px; padding-top: 18px; border-top: 1px solid var(--border); }
+ol.easy-steps { padding-left: 22px; line-height: 1.85; }
+ol.easy-steps li { margin: 2px 0; }
 /* กฎห้องสอบ — พับเก็บได้ ให้ทุกบทมีเหมือนกันโดยไม่กินพื้นที่ */
 .exam-rules > summary::-webkit-details-marker { display: none; }
 .exam-rules > summary::before { content: "▸ "; color: var(--red); }

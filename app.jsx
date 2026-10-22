@@ -9,35 +9,35 @@ const smoothScrollTo = (el) => {
 };
 
 const CHAPTERS = [
-  { group: "① เริ่มที่นี่", items: [
-    { id: "path", num: "▶", title: "เส้นทางเรียน · กดถัดไปอย่างเดียว", comp: "PathLesson" },
-    { id: "plan", num: "🗓", title: "แผนเตรียมไฟนอล — 6 วันสุดท้าย", comp: "PlanLesson" },
-    { id: "intro", num: "00", title: "ปฐมนิเทศ · วิธีใช้เว็บนี้", comp: "IntroLesson" },
+  // 23 ต.ค. 2569: kim เพิ่งเริ่มอ่าน + งง "บทไหนทำอะไร" ⇒ กลุ่ม ① = หน้าอ่านง่าย อ่านไล่จากบนลงล่าง (แทนเส้นทาง 40 ขั้น + แถบลอย)
+  // หน้าใหม่เพิ่มเข้ากลุ่ม ① ทีละหน้าเมื่อเขียนเสร็จ
+  { group: "① อ่านตามลำดับนี้", items: [
+    { id: "start", num: "▶", title: "เริ่มที่นี่ · 4 บทคืออะไร + อ่าน 3 วัน", comp: "EasyStartLesson" },
+    { id: "e-reg", num: "①", title: "Regression · หาเส้นที่ใกล้ข้อมูล", comp: "EasyRegressionLesson" },
   ]},
-  // เรียงตามลำดับที่อ่านจริงในแผน 6 วัน (kim ขอ 20 ต.ค.) — ไม่ใช่ลำดับบทในคอร์ส
-  { group: "② ออกไฟนอล — เรียงตามลำดับอ่าน", items: [
-    { id: "regression", num: "①", title: "Least-Squares Regression", comp: "RegressionLesson" },
-    { id: "interp", num: "②", title: "Interpolation", comp: "InterpolationLesson" },
-    { id: "spline", num: "③", title: "Spline Interpolation", comp: "SplineLesson" },
-    { id: "linear", num: "④", title: "Linear Systems · 7 วิธีที่ออกไฟนอล", comp: "LinearSystemsLesson" },
-    { id: "conjugate", num: "⑤", title: "Conjugate Gradient", comp: "ConjugateLesson" },
+  { group: "② ซ้อม", items: [
+    { id: "exam", num: "★", title: "Mock ไฟนอล (ชุด A · B)", comp: "ExamLesson" },
+    { id: "code", num: "⌨", title: "เขียนโค้ดจากหัว · กดรันได้", comp: "CodeDrillLesson" },
+    { id: "memo", num: "🧠", title: "ท่องก่อนสอบ · การ์ดพลิก", comp: "MemorizeLesson" },
+    { id: "calc", num: "📟", title: "เครื่องคิดเลข fx-991CW", comp: "CalculatorLesson" },
   ]},
-  { group: "③ ท่อง + ซ้อมทำข้อสอบ", items: [
-    { id: "memo", num: "🧠", title: "ท่องก่อนสอบ · ทุกอย่างหน้าเดียว", comp: "MemorizeLesson" },
-    { id: "cheat", num: "⚡", title: "Cheat Sheet · ทวนคืนก่อนสอบ", comp: "CheatLesson" },
-    { id: "calc", num: "📟", title: "Calculator Master · fx-991CW", comp: "CalculatorLesson" },
-    { id: "code", num: "⌨", title: "เขียนโค้ดจากหัว · ทุกโครง", comp: "CodeDrillLesson" },
-    { id: "midterm", num: "✸", title: "ห้องสอบ · สุ่มชุด + ดริลประยุกต์ + สมุดพลาด", comp: "MidtermLesson" },
-    { id: "exam", num: "★", title: "Mock Final Exam", comp: "ExamLesson" },
-    { id: "problems", num: "★", title: "Problem Bank · 40+ ข้อ", comp: "ProblemsLesson" },
+  { group: "③ เนื้อหาเต็ม (ไว้ค้นเพิ่ม · ไม่ต้องอ่าน)", items: [
+    { id: "regression", num: "·", title: "Regression (ฉบับเต็ม)", comp: "RegressionLesson" },
+    { id: "interp", num: "·", title: "Interpolation (ฉบับเต็ม)", comp: "InterpolationLesson" },
+    { id: "spline", num: "·", title: "Spline (ฉบับเต็ม)", comp: "SplineLesson" },
+    { id: "linear", num: "·", title: "ระบบสมการ Ax = b (ฉบับเต็ม)", comp: "LinearSystemsLesson" },
+    { id: "conjugate", num: "·", title: "Conjugate Gradient (ฉบับเต็ม)", comp: "ConjugateLesson" },
+    { id: "cheat", num: "·", title: "Cheat Sheet", comp: "CheatLesson" },
+    { id: "problems", num: "·", title: "Problem Bank", comp: "ProblemsLesson" },
+    { id: "midterm", num: "·", title: "ห้องสอบมิด · สมุดพลาด", comp: "MidtermLesson" },
+    { id: "plan", num: "·", title: "แผน 6 วัน (เก่า · เลิกใช้)", comp: "PlanLesson" },
+    { id: "intro", num: "·", title: "ปฐมนิเทศ (เก่า)", comp: "IntroLesson" },
+    { id: "map", num: "·", title: "แผนที่คอนเซปต์ทั้งคอร์ส", comp: "ConceptMapLesson" },
   ]},
-  { group: "④ ออกมิดไปแล้ว (ไว้ทวน)", items: [
+  { group: "④ ออกมิดไปแล้ว (ไม่ออกไฟนอล)", items: [
     { id: "integ", num: "1", title: "Integration", comp: "IntegrationLesson" },
     { id: "diff", num: "2", title: "Differentiation", comp: "DifferentiationLesson" },
     { id: "root", num: "3", title: "Root Finding", comp: "RootFindingLesson" },
-  ]},
-  { group: "⑤ ภาพรวมทั้งคอร์ส", items: [
-    { id: "map", num: "🗺", title: "แผนที่คอนเซปต์ทั้งคอร์ส", comp: "ConceptMapLesson" },
   ]},
 ];
 
@@ -45,7 +45,7 @@ const ALL_ITEMS = CHAPTERS.flatMap(g => g.items);
 
 function getCurrentId() {
   const h = location.hash.replace(/^#/, "");
-  return ALL_ITEMS.find(it => it.id === h)?.id || "intro";
+  return ALL_ITEMS.find(it => it.id === h)?.id || "start";
 }
 
 function App() {
@@ -170,7 +170,6 @@ function App() {
 
       <FontTweaks fs={fs} setFs={setFs} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       {window.CalcToggle && <window.CalcToggle />}
-      {window.PathBar && <window.PathBar />}
     </div>
   );
 }
