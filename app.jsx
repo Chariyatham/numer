@@ -15,6 +15,7 @@ const CHAPTERS = [
     { id: "start", num: "▶", title: "เริ่มที่นี่ · 4 บทคืออะไร + อ่าน 3 วัน", comp: "EasyStartLesson" },
     { id: "e-reg", num: "①", title: "Regression · หาเส้นที่ใกล้ข้อมูล", comp: "EasyRegressionLesson" },
     { id: "e-interp", num: "②", title: "Interpolation · เส้นผ่านทุกจุด (DD · Lagrange)", comp: "EasyInterpLesson" },
+    { id: "e-spline", num: "③", title: "Spline · ต่อเส้นทีละช่วง", comp: "EasySplineLesson" },
   ]},
   { group: "② ซ้อม", items: [
     { id: "exam", num: "★", title: "Mock ไฟนอล (ชุด A · B)", comp: "ExamLesson" },

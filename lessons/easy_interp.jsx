@@ -346,7 +346,7 @@ print(f"f({xq}) = {p:.6f}")
 # ผลลัพธ์: f(42285) = 9.686082   (ใช้แค่ 2 หรือ 3 จุด ให้ตัด xs, ys เหลือจุดที่โจทย์สั่ง)`}/>
       </Sect>
 
-      <EasyNext href="#e-spline" label="③ Spline" ready={false}/>
+      <EasyNext href="#e-spline" label="③ Spline"/>
     </div>
   );
 }
