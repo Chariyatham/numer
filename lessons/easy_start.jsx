@@ -22,6 +22,7 @@ function EasyStartLesson() {
             [<a href="#e-axb"><b>④ ระบบสมการ Ax = b</b><br/>หาค่าตัวแปร</a>, "สมการ 3–4 สมการ (เช่น −2x₁ + 3x₂ + x₃ = 9)", "x₁, x₂, x₃", <span>แบบตรง: Gauss · Gauss-Jordan · Inversion · LU · Cholesky<br/>แบบวนซ้ำ: Jacobi · Gauss-Seidel · Conjugate Gradient</span>],
           ]}
         />
+        <FigFourChapters/>
         <Callout kind="danger" title="⚠️ คำว่า “Linear” มีหลายความหมาย — อย่าสับสน">
           <ul style={{margin:0, paddingLeft:18}}>
             <li><b>Linear Regression</b> = บท ① ลากเส้นตรงเส้นเดียวให้ใกล้กลุ่มข้อมูล</li>

@@ -37,6 +37,7 @@ function EasySplineLesson() {
       <Sect tag="1" title="Linear Spline ⭐">
         <h3>คืออะไร</h3>
         <p>ลากเส้นตรงต่อจุดที่ติดกันทีละคู่ · อยากรู้ค่าที่ x ไหน ใช้เส้นตรงของช่วงที่ x อยู่</p>
+        <FigSpline kind="lin"/>
 
         <h3>โจทย์หน้าตาแบบไหน</h3>
         <p>&ldquo;จงหาค่า y = f(x) เมื่อ x = 4.5 ด้วยวิธี Linear Spline พร้อมเขียน code&rdquo; (การบ้าน 10)</p>
@@ -109,6 +110,7 @@ for i in range(1, n):                       # ① หาช่วงที่ X[
       <Sect tag="2" title="Quadratic Spline (ถ้ามีเวลา)">
         <h3>คืออะไร</h3>
         <p>แต่ละช่วงเป็นโค้งกำลัง 2 <M>{`f_i(x)=a_ix^2+b_ix+c_i`}</M> ต่อกันโดย<b>ความชันเท่ากันที่จุดต่อ</b> (ไม่หักมุม)</p>
+        <FigSpline kind="quad"/>
 
         <h3>โจทย์หน้าตาแบบไหน</h3>
         <p>&ldquo;จงหาค่า y เมื่อ x = 4.5 ด้วยวิธี Quadratic Spline&rdquo; หรือ &ldquo;หาค่า a, b, c ของแต่ละช่วง&rdquo;</p>
@@ -197,6 +199,7 @@ for i in range(2, len(X)):               # เดินช่วงที่ 2, 
       <Sect tag="3" title="Cubic Spline (ถ้ามีเวลา — ตัดเป็นอย่างแรก)">
         <h3>คืออะไร</h3>
         <p>แต่ละช่วงเป็นโค้งกำลัง 3 ต่อกันโดย<b>ความชันและความโค้ง (f'') เท่ากัน</b>ที่จุดต่อ — เรียบที่สุดใน 3 แบบ · ปลายสองข้างให้ f'' = 0 (natural spline)</p>
+        <FigSpline kind="cub"/>
 
         <h3>โจทย์หน้าตาแบบไหน</h3>
         <p>&ldquo;จงหาค่า y เมื่อ x = 4.5 ด้วยวิธี Cubic Spline&rdquo; (ใบปีที่แล้วเขียนว่า &ldquo;ทำตามขั้นตอนนี้หรือเปิดหนังสือ textbook&rdquo; = ตำรา Chapra ที่อาจารย์โพสต์ใน Classroom)</p>

@@ -32,6 +32,7 @@ function EasyRegressionLesson() {
       <Sect tag="1" title="Linear Regression — เส้นตรง">
         <h3>คืออะไร</h3>
         <p>หาเส้นตรง <M>{`f(x)=a_0+a_1x`}</M> ที่ใกล้ทุกจุดที่สุด · <M>{`a_1`}</M> = ความชัน · <M>{`a_0`}</M> = จุดตัดแกน y</p>
+        <FigLinReg/>
 
         <h3>โจทย์หน้าตาแบบไหน</h3>
         <p>&ldquo;กำหนดตาราง x, f(x) … จงใช้ Linear Regression หา <M>{`f(x)=a_0+a_1x`}</M> และค่า <M>{`f(65)`}</M>&rdquo;</p>
@@ -132,6 +133,7 @@ print(f"f(65) = {a0 + a1 * 65:.6f}")
       <Sect tag="2" title="Polynomial Regression (m = 2) — เส้นโค้ง">
         <h3>คืออะไร</h3>
         <p>เหมือน Linear แต่เส้นเป็น<b>โค้ง</b> <M>{`f(x)=a_0+a_1x+a_2x^2`}</M> (order m = 2) · ต้องหา a 3 ตัว จึงได้ระบบ 3 × 3</p>
+        <FigPolyReg/>
 
         <h3>โจทย์หน้าตาแบบไหน</h3>
         <p>&ldquo;จงใช้ Polynomial Regression order m = 2 ในการสร้างสมการ <M>{`f(x)=a_0+a_1x+a_2x^2`}</M>&rdquo; (มักใช้ตารางเดียวกับข้อ Linear)</p>
@@ -240,6 +242,7 @@ for i in range(m + 1):
       <Sect tag="3" title="Multiple Linear Regression — หลายตัวแปร">
         <h3>คืออะไร</h3>
         <p>y ขึ้นกับหลายตัวแปรพร้อมกัน ⇒ หา <M>{`f=a_0+a_1x_1+a_2x_2+a_3x_3`}</M> · ต้องหา a 4 ตัว จึงได้ระบบ 4 × 4</p>
+        <FigMultiReg/>
 
         <h3>โจทย์หน้าตาแบบไหน</h3>
         <p>ตารางมีหลายคอลัมน์ <b>x₁ x₂ x₃ Y</b> · &ldquo;จงใช้ Multiple Linear Regression สร้างสมการ <M>{`f(x)=a_0+a_1x_1+a_2x_2+a_3x_3`}</M>&rdquo;</p>

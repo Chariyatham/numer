@@ -17,6 +17,7 @@ function EasyAxbLesson() {
       <Sect tag="0" title="ภาพรวม — อ่านก่อน">
         <p>ระบบของการบ้าน 6-7 (ใช้ทั้งหน้า):</p>
         <MB>{`\\begin{aligned} -2x_1+3x_2+x_3&=9\\\\ 3x_1+4x_2-5x_3&=0\\\\ x_1-2x_2+x_3&=-4 \\end{aligned}\\qquad\\Longrightarrow\\qquad \\underbrace{\\begin{bmatrix}-2&3&1\\\\3&4&-5\\\\1&-2&1\\end{bmatrix}}_{A}\\underbrace{\\begin{bmatrix}x_1\\\\x_2\\\\x_3\\end{bmatrix}}_{x}=\\underbrace{\\begin{bmatrix}9\\\\0\\\\-4\\end{bmatrix}}_{b}`}</MB>
+        <FigIntersect/>
         <NumTable
           headers={["วิธี", "ทำอะไร (บรรทัดเดียว)", "ข้อ"]}
           rows={[
@@ -45,6 +46,7 @@ function EasyAxbLesson() {
       <Sect tag="1" title="Gauss Elimination ⭐ (แม่ของทุกวิธี)">
         <h3>คืออะไร</h3>
         <p>ใช้การบวกลบแถว (row operation) ทำให้<b>ใต้เส้นทแยงเป็น 0 หมด</b> (เมทริกซ์สามเหลี่ยมบน) แล้วแก้จาก<b>แถวล่างขึ้นบน</b> (back substitution)</p>
+        <FigGauss/>
 
         <h3>โจทย์หน้าตาแบบไหน</h3>
         <p>&ldquo;จงแก้ระบบสมการ … ด้วยวิธี Gauss Elimination Method — เขียนโปรแกรม (ต้องมีวิธีทำมาแสดงด้วย)&rdquo;</p>
@@ -126,6 +128,7 @@ print([f"{v:.6f}" for v in x])
       <Sect tag="2" title="Gauss-Jordan">
         <h3>คืออะไร</h3>
         <p>เหมือน Gauss แต่ทำ<b>ทั้งบนและล่าง</b>ของตัวหลักให้เป็น 0 และหารแถวให้<b>ตัวหลักเป็น 1</b> ⇒ ฝั่งซ้ายกลายเป็นเมทริกซ์เอกลักษณ์ I แล้ว<b>อ่านคำตอบจากคอลัมน์ขวาได้เลย</b> ไม่ต้องแทนค่าย้อนกลับ</p>
+        <FigJordan/>
 
         <h3>โจทย์หน้าตาแบบไหน</h3>
         <p>&ldquo;จงแก้ระบบสมการ … ด้วยวิธี Gauss Jordan Method&rdquo;</p>
@@ -184,6 +187,7 @@ print([f"{M[i][n]:.6f}" for i in range(n)])
       <Sect tag="3" title="Matrix Inversion">
         <h3>คืออะไร</h3>
         <p>หาเมทริกซ์ผกผัน <M>{`A^{-1}`}</M> ก่อน แล้วคูณ <M>{`x=A^{-1}b`}</M> · หา <M>{`A^{-1}`}</M> ด้วย Gauss-Jordan บน <M>{`[A\\,|\\,I]`}</M>: ทำซ้ายเป็น I แล้วฝั่งขวาจะกลายเป็น <M>{`A^{-1}`}</M></p>
+        <FigInverse/>
 
         <h3>โจทย์หน้าตาแบบไหน</h3>
         <p>&ldquo;จงแก้ระบบสมการ … ด้วยวิธี Matrix Inversion&rdquo; หรือ &ldquo;หา A⁻¹&rdquo; · ข้อดี: ถ้าโจทย์เปลี่ยน b หลายชุด ใช้ A⁻¹ เดิมคูณได้เลย</p>
@@ -262,6 +266,7 @@ print([f"{v:.6f}" for v in x])
       <Sect tag="4" title="LU Decomposition (Doolittle)">
         <h3>คืออะไร</h3>
         <p>แยก <M>{`A=LU`}</M> — L = สามเหลี่ยมล่าง (เส้นทแยงเป็น 1) · U = สามเหลี่ยมบน · <b>U คือเมทริกซ์ตอนจบ Gauss</b> และ <b>L เก็บตัวคูณ m ของ Gauss</b> ⇒ ทำ Gauss มาแล้วแทบไม่ต้องคำนวณใหม่ · จากนั้นแก้ 2 รอบ: <M>{`Ly=b`}</M> แล้ว <M>{`Ux=y`}</M></p>
+        <FigLU/>
 
         <h3>โจทย์หน้าตาแบบไหน</h3>
         <p>&ldquo;จงแก้ระบบสมการ … ด้วยวิธี LU Decomposition&rdquo; · มักให้ b หลายชุด (แยก LU ครั้งเดียว ใช้ซ้ำได้)</p>
@@ -351,6 +356,7 @@ print([f"{v:.6f}" for v in x])
       <Sect tag="5" title="Cholesky Decomposition">
         <h3>คืออะไร</h3>
         <p>แยก <M>{`A=LL^T`}</M> (L สามเหลี่ยมล่าง ใช้ตัวเดียวทั้งสองฝั่ง) · <b>ใช้ได้เฉพาะ A สมมาตร</b> (<M>{`a_{ij}=a_{ji}`}</M>) และ positive definite · จากนั้นแก้ <M>{`Ly=b`}</M> แล้ว <M>{`L^Tx=y`}</M> เหมือน LU</p>
+        <FigCholesky/>
 
         <h3>โจทย์หน้าตาแบบไหน</h3>
         <p>&ldquo;จงแก้ระบบสมการ … ด้วยวิธี Cholesky Decomposition&rdquo; · <b>ถ้า A ไม่สมมาตร</b> (เช่นการบ้านนี้) ให้คูณ <M>{`A^T`}</M> ทั้งสองข้างก่อน: <M>{`(A^TA)x=A^Tb`}</M> — <M>{`A^TA`}</M> สมมาตรเสมอ (ชีทสรุป Final p.11)</p>

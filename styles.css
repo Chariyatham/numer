@@ -311,6 +311,36 @@ li::marker { color: var(--text-faint); }
 .easy-next { margin: 28px 0 8px; padding-top: 18px; border-top: 1px solid var(--border); }
 ol.easy-steps { padding-left: 22px; line-height: 1.85; }
 ol.easy-steps li { margin: 2px 0; }
+/* ภาพในหัว (lessons/easy_figs.jsx) — สีตัวหนังสือใน SVG ใส่เป็น attribute fill · ตรงนี้กำหนดแค่ฟอนต์ */
+.efig {
+  margin: 14px auto 22px;
+  max-width: 680px;
+  background: var(--screen);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px 14px;
+}
+.efig-title { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; letter-spacing: 0.05em; color: var(--text); text-align: center; }
+.efig-sub { text-align: center; color: var(--text-dim); font-size: 0.9rem; margin: 4px 0 10px; line-height: 1.6; }
+.efig-svg { width: 100%; height: auto; display: block; }
+.efig-svg .ef-tick { font-family: var(--font-mono); font-size: 13px; }
+.efig-svg .ef-ax { font-family: var(--font-display); font-size: 18px; font-style: italic; }
+.efig-svg .ef-lab { font-family: var(--font-thai); font-size: 16px; font-weight: 500; }
+.efig-svg .ef-lab-s { font-family: var(--font-thai); font-size: 14px; }
+.efig-svg .ef-num { font-family: var(--font-mono); font-size: 15px; font-weight: 600; }
+.efig-svg .ef-cell { font-family: var(--font-mono); font-size: 13px; font-weight: 600; }
+.efig-note { font-size: 0.88rem; color: var(--text-dim); margin-top: 10px; line-height: 1.75; }
+.efig-note b { color: var(--text); }
+.ef-keys { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-bottom: 6px; }
+.ef-key { white-space: nowrap; color: var(--text); }
+.ef-sw { display: inline-block; width: 20px; height: 0; border-top: 3px solid; vertical-align: middle; margin-right: 6px; }
+.ef-sw.dash { border-top-style: dashed; }
+.ef-sw.dot { width: 10px; height: 10px; border: 0; border-radius: 50%; }
+.efig-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.efig-mini { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 8px 4px; }
+.efig-mini-t { text-align: center; font-weight: 600; color: var(--text); font-size: 0.9rem; }
+.efig-mini-t span { display: block; font-weight: 400; color: var(--text-dim); font-size: 0.8rem; }
+@media (max-width: 600px) { .ef-key { white-space: normal; } .efig { padding: 12px 10px 10px; } }
 /* กฎห้องสอบ — พับเก็บได้ ให้ทุกบทมีเหมือนกันโดยไม่กินพื้นที่ */
 .exam-rules > summary::-webkit-details-marker { display: none; }
 .exam-rules > summary::before { content: "▸ "; color: var(--red); }

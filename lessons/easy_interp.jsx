@@ -14,6 +14,7 @@ function EasyInterpLesson() {
       />
 
       <Sect tag="0" title="ภาพรวม — อ่านก่อน">
+        <FigRegVsInterp/>
         <Callout kind="good" title="⭐ Newton DD กับ Lagrange ได้เส้นเดียวกัน คำตอบเท่ากันเป๊ะ">
           <p style={{margin:0}}>ผ่านจุดชุดเดียวกัน มีพหุนามได้แค่เส้นเดียว ⇒ สองวิธีนี้ต่างกันแค่ <b>วิธีเขียน</b> · ใช้ประโยชน์: ทำวิธีหนึ่งเสร็จ แล้วใช้อีกวิธีตรวจคำตอบที่ x เดียวกัน</p>
         </Callout>
@@ -36,6 +37,7 @@ function EasyInterpLesson() {
       <Sect tag="1" title="Newton's Divided-Difference">
         <h3>คืออะไร</h3>
         <p>เขียนพหุนามเป็น <M>{`f(x)=C_0+C_1(x-x_0)+C_2(x-x_0)(x-x_1)+\\cdots`}</M> โดยหา C ทุกตัวจาก <b>ตารางผลต่างแบ่ง (divided difference)</b> — <b>C คือแถวบนสุดของตาราง</b></p>
+        <FigDD/>
 
         <h3>โจทย์หน้าตาแบบไหน</h3>
         <p>&ldquo;กำหนดตาราง x, y … จงหาค่า y เมื่อ x = 4.2 ด้วย Linear (จุด 1, 5) · Quadratic (จุด 1, 3, 5) · Polynomial (จุด 1–5)&rdquo; + เขียนโค้ด 3 แบบ</p>
@@ -221,6 +223,7 @@ for name, C in [("recursive", C1), ("top-down ", C2), ("bottom-up", C3)]:
       <Sect tag="2" title="Lagrange Interpolation">
         <h3>คืออะไร</h3>
         <p>เขียนพหุนามเส้นเดียวกับ DD อีกแบบ: <M>{`f(x)=\\sum y_i\\,L_i(x)`}</M> · <M>{`L_i`}</M> คือ &ldquo;น้ำหนัก&rdquo; ของจุด i — มีค่า 1 ที่จุดตัวเอง และ 0 ที่จุดอื่น</p>
+        <FigLagrange/>
 
         <h3>โจทย์หน้าตาแบบไหน</h3>
         <p>&ldquo;จงหาค่า y เมื่อ x = 42,285 ด้วยวิธี Lagrange Interpolation แบบ Linear · Quadratic · Polynomial&rdquo; + จัดรูป L₀, L₁ + เขียนโค้ดที่รับกี่จุดก็ได้ (การบ้าน 10)</p>
